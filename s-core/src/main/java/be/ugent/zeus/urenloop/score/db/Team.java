@@ -14,7 +14,7 @@ import javax.persistence.NamedQuery;
  */
 @Entity
 @NamedQueries(
-@NamedQuery(name = "Team.findByMac", query = "SELECT t.* from Team t where t.macAddress = :mac;"))
+@NamedQuery(name = "Team.findByMac", query = "SELECT t from Team t where t.macAddress = :mac"))
 public class Team implements Serializable {
 
   @Id
