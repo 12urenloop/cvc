@@ -1,24 +1,27 @@
-module CounterWatcher where
+module CountVonCount.CounterWatcher
+    ( CounterWatcher
+    , makeCounterWatcher
+    , runCounterWatcher
+    ) where
 
 import Control.Concurrent.Chan.Strict (Chan, readChan, writeChan)
 import Data.Monoid (mempty)
 
-import Control.Applicative ((<$>), (<*>), pure)
 
-import Counter
-import Types
+import CountVonCount.Counter
+import CountVonCount.Types
 
 data CounterWatcher = CounterWatcher
-    { watcherIdentifier :: String
-    , watcherInChan     :: Chan Measurement
-    , watcherOutChan    :: Chan Lap
+    { watcherTeam    :: String
+    , watcherInChan  :: Chan Measurement
+    , watcherOutChan :: Chan (Team, Lap)
     }
 
 -- | Create a new watcher
 --
-makeCounterWatcher :: String             -- ^ Identifier
+makeCounterWatcher :: Team               -- ^ Identifier
                    -> Chan Measurement   -- ^ In Channel
-                   -> Chan Lap           -- ^ Out Channel
+                   -> Chan (Team, Lap)   -- ^ Out Channel
                    -> IO CounterWatcher  -- ^ Resulting watcher
 makeCounterWatcher identifier inChan outChan = return $
     CounterWatcher identifier inChan outChan
@@ -28,9 +31,10 @@ makeCounterWatcher identifier inChan outChan = return $
 runCounterWatcher :: CounterWatcher -> IO ()
 runCounterWatcher watcher = runCounterWatcher' mempty
   where
+    team = watcherTeam watcher
     runCounterWatcher' counter = do
         measurement <- readChan $ watcherInChan watcher
         let (lap, counter') = tick measurement counter
         case lap of Nothing -> return ()
-                    Just l  -> writeChan (watcherOutChan watcher) l
+                    Just l  -> writeChan (watcherOutChan watcher) (team, l)
         runCounterWatcher' counter'

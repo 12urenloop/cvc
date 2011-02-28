@@ -1,5 +1,5 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-module Counter
+module CountVonCount.Counter
     ( Counter
     , tick
     ) where
@@ -9,7 +9,7 @@ import Data.Maybe (fromMaybe)
 import Data.Map (Map)
 import qualified Data.Map as M
 
-import Types
+import CountVonCount.Types
 
 newtype Counter = Counter
     { unCounter :: Map Position Timestamp

@@ -1,0 +1,23 @@
+Name:                count-von-count
+Version:             0.0.0.1
+Synopsis:            Count system for running laps
+License-file:        LICENSE
+Author:              Jasper Van der Jeugt, Toon Willems
+Maintainer:          jaspervdj@gmail.com
+Stability:           Experimental
+Category:            Application
+Build-type:          Simple
+Cabal-version:       >= 1.2
+
+Executable count-von-count
+  Ghc-options:       -Wall -O2 -fno-warn-unused-do-bind -threaded
+  Main-is:           CountVonCount/Main.hs
+  Hs-source-dirs:    src
+  Other-modules:     CountVonCount.Types,
+                     CountVonCount.Parser,
+                     CountVonCount.Counter,
+                     CountVonCount.CounterWatcher
+  Build-depends:     base >= 4 && < 5,
+                     deepseq >= 1,
+                     containers >= 0.3,
+                     strict-concurrency >= 0.2

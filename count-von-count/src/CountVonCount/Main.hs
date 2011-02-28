@@ -1,11 +1,13 @@
-module Main where
+module Main
+    ( main
+    ) where
 
 import Control.Concurrent.Chan.Strict (newChan, readChan, writeChan)
 import Control.Concurrent (forkIO)
 import Control.Monad (forever)
 
-import CounterWatcher
-import Parser
+import CountVonCount.CounterWatcher
+import CountVonCount.Parser
 
 main :: IO ()
 main = do

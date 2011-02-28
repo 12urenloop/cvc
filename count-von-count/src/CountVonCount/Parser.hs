@@ -1,6 +1,8 @@
-module Parser where
+module CountVonCount.Parser
+    ( parse
+    ) where
 
-import Types
+import CountVonCount.Types
 
 parse :: String -> Measurement
 parse line =

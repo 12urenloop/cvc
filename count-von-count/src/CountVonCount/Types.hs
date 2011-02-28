@@ -1,9 +1,16 @@
-module Types where
+module CountVonCount.Types
+    ( Position
+    , Timestamp
+    , Measurement
+    , Team
+    , Lap (..)
+    ) where
 
 import Control.DeepSeq (NFData (..))
 
 type Position = Int
 type Timestamp = Int
+type Team = String
 
 type Measurement = (Position, Timestamp)
 
