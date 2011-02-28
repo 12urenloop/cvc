@@ -13,7 +13,7 @@ import Control.Monad.Reader (ReaderT, ask, runReaderT)
 import Control.Monad.State (StateT, get, evalStateT, modify)
 import Control.Monad.Trans (liftIO)
 import Control.Concurrent (forkIO)
-import Control.Concurrent.Chan.Strict
+import Control.Concurrent.Chan.Strict (Chan, writeChan, readChan, newChan)
 import Control.Applicative ((<$>))
 
 import Data.Map (Map)
