@@ -4,7 +4,7 @@ module CountVonCount.Parser
 
 import CountVonCount.Types
 
-parse :: String -> Measurement
+parse :: String -> (Team, Measurement)
 parse line =
-    let [position, timestamp] = map read $ words line
-    in (position, timestamp)
+    let [team, position, timestamp] = words line
+    in (team, (read position, read timestamp))

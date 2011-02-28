@@ -6,14 +6,14 @@ import Control.Concurrent.Chan.Strict (newChan, readChan, writeChan)
 import Control.Concurrent (forkIO)
 import Control.Monad (forever)
 
-import CountVonCount.CounterWatcher
 import CountVonCount.Parser
+import CountVonCount.Dispatcher
 
 main :: IO ()
 main = do
     inChan <- newChan
     outChan <- newChan
-    watcher <- makeCounterWatcher "some watcher" inChan outChan
+    dispatcher <- makeDispatcher inChan outChan
 
     -- Out thread
     _ <- forkIO $ forever $ do
@@ -21,7 +21,7 @@ main = do
         putStrLn $ show lap
 
     -- Watcher thread
-    _ <- forkIO $ runCounterWatcher watcher
+    _ <- forkIO $ runDispatcher dispatcher
 
     -- In thread
     forever $ do
