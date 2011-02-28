@@ -8,9 +8,15 @@ module CountVonCount.Dispatcher
 
 import qualified Data.Map as M
 import Data.Monoid (mempty)
-
+import Control.Monad (forever)
+import Control.Monad.Reader (ReaderT, ask, runReaderT)
+import Control.Monad.State (StateT, get, evalStateT, modify)
+import Control.Monad.Trans (liftIO)
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Chan.Strict
+import Control.Applicative ((<$>))
+
+import Data.Map (Map)
 
 import CountVonCount.Types
 import CountVonCount.CounterWatcher
@@ -20,26 +26,53 @@ data Dispatcher = Dispatcher
     , dispatcherOutChan :: Chan (Team, Lap)
     }
 
+type DispatcherState = Map Team (Chan Measurement)
+
+type DispatcherM a = ReaderT Dispatcher (StateT DispatcherState IO) a
+
 makeDispatcher :: Chan (Team, Measurement)  -- ^ In channel
                -> Chan (Team, Lap)          -- ^ Out channel
                -> IO Dispatcher             -- ^ New dispatcher
 makeDispatcher inChan outChan = return $ Dispatcher inChan outChan
 
+-- | Get the input channel for a team
+--
+teamChan :: Team -> DispatcherM (Chan Measurement)
+teamChan team = do
+    mchan <- M.lookup team <$> get 
+    case mchan of
+        -- Channel found
+        Just c  -> return c
+        -- Not found, add one
+        Nothing -> do
+            -- Get channels
+            teamChan' <- liftIO newChan
+            outChan <- dispatcherOutChan <$> ask
+
+            -- Create and fork watcher
+            watcher <- liftIO $ makeCounterWatcher team teamChan' outChan
+            _ <- liftIO $ forkIO $ runCounterWatcher watcher
+
+            -- Add to state and return
+            modify $ M.insert team teamChan'
+            return teamChan'
+
+-- | Main dispatcher logic
+--
+dispatcher :: DispatcherM ()
+dispatcher = forever $ do
+    -- Get the in channel and ask an element
+    inChan <- dispatcherInChan <$> ask
+    (team, measurement) <- liftIO $ readChan inChan
+
+    -- Get the channel for the team
+    teamChan' <- teamChan team
+
+    -- Write the measurement to the team channel
+    liftIO $ writeChan teamChan' measurement
+
+-- | Exposed run method, uses our monad stack internally
+--
 runDispatcher :: Dispatcher  -- ^ Dispatcher
               -> IO ()       -- ^ Blocks forever
-runDispatcher dispatcher = runDispatcher' mempty
-  where
-    addWatcher map' team = do
-        toWatcher <- newChan
-        watcher <- makeCounterWatcher team toWatcher $
-            dispatcherOutChan dispatcher
-        _ <- forkIO $ runCounterWatcher watcher
-        return $ (toWatcher, M.insert team toWatcher map')
-
-    runDispatcher' map' = do
-        (team, measurement) <- readChan $ dispatcherInChan dispatcher
-        (chan, map'') <- case M.lookup team map' of
-            Nothing -> addWatcher map' team
-            Just c  -> return (c, map')
-        writeChan chan measurement
-        runDispatcher' map''
+runDispatcher d = evalStateT (runReaderT dispatcher d) mempty
