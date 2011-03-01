@@ -5,7 +5,8 @@ module CountVonCount.Counter.Tests
 
 import Data.Monoid (Monoid, mempty, mappend)
 import Control.Monad.Writer (Writer, tell, execWriter)
-import Control.Monad.State (StateT, evalStateT, get, put)
+import Control.Monad.State (StateT, evalStateT, get, put, modify)
+import Control.Arrow (second)
 
 import Test.Framework
 import Test.Framework.Providers.HUnit (testCase)
@@ -25,21 +26,27 @@ instance Monoid Laps where
 
 -- | Monad for counter testing
 --
-type CounterTestM a = StateT Counter (Writer Laps) a
+type CounterTestM a = StateT (Counter, Int) (Writer Laps) a
 
--- | Utility function for use in testing code
+-- | Utility function for use in testing code: see the racer at a given position
 --
 see :: Int              -- ^ Position
-    -> Int              -- ^ Time
     -> CounterTestM ()  -- ^ No result
-see position time = do
-    counter <- get
+see position = do
+    (counter, time) <- get
     let (lap, counter') = tick (position, time) counter
-    put counter'
+    put (counter', time)
     case lap of
         Nothing                -> return ()
         Just Lap               -> tell $ Laps 1 0
         Just (SuspiciousLap _) -> tell $ Laps 0 1
+
+-- | Utility function for use in testing code: increment time (optionally
+-- negative)
+--
+wait :: Int              -- ^ Time to wait
+     -> CounterTestM ()  -- ^ No result
+wait increment = modify $ second (+ increment)
 
 -- | Test a counter
 --
@@ -48,21 +55,21 @@ testCounter :: String           -- ^ Test name
             -> CounterTestM ()  -- ^ Testing code
             -> Test             -- ^ Resulting test
 testCounter name laps counterTestM = testCase name $
-    laps @=? execWriter (evalStateT counterTestM mempty)
+    laps @=? execWriter (evalStateT counterTestM (mempty, 0))
 
 -- | Actual tests
 --
 tests :: [Test]
 tests =
     [ testCounter "simple example" (Laps 3 0) $ do
-        see 1  20
-        see 2  40
-        see 3  60
-        see 1  80
-        see 2 100
-        see 3 120
-        see 1 150
-        see 2 180
-        see 3 210
-        see 1 240
+        wait 10 >> see 1
+        wait 10 >> see 2
+        wait 10 >> see 3
+        wait 10 >> see 1
+        wait 10 >> see 2
+        wait 10 >> see 3
+        wait 10 >> see 1
+        wait 10 >> see 2
+        wait 10 >> see 3
+        wait 10 >> see 1
     ]
