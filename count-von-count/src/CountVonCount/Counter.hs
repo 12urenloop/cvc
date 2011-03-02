@@ -17,7 +17,7 @@ import CountVonCount.Analyzer
 data CounterEnvironment = CounterEnvironment
     { counterTeam    :: String
     , counterInChan  :: Chan Measurement
-    , counterOutChan :: Chan (Team, Lap)
+    , counterOutChan :: Chan (Team, Score)
     }
 
 data CounterState = CounterState
@@ -45,12 +45,12 @@ counter = do
     -- Analyze the dataset if necessary
     when (trigger lastPosition position) $ do
         -- Get line
-        let line = analyze dataSet'
+        let score = analyze dataSet'
 
         -- Send out
         team <- counterTeam <$> ask
         outChan <- counterOutChan <$> ask
-        liftIO $ writeChan outChan $ (team, SuspiciousLap $ show line)
+        liftIO $ writeChan outChan $ (team, score)
 
     -- Save for next iteration
     put $ CounterState dataSet' $ Just position
@@ -60,10 +60,10 @@ counter = do
 
 -- | Run a counter
 --
-runCounter :: Team               -- ^ Identifier
-           -> Chan Measurement   -- ^ In Channel
-           -> Chan (Team, Lap)   -- ^ Out Channel
-           -> IO ()              -- ^ Blocks forever
+runCounter :: Team                -- ^ Identifier
+           -> Chan Measurement    -- ^ In Channel
+           -> Chan (Team, Score)  -- ^ Out Channel
+           -> IO ()               -- ^ Blocks forever
 runCounter team inChan outChan = do
     ((), _) <- runStateT (runReaderT counter env) state
     return ()

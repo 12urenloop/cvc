@@ -2,9 +2,10 @@ module TestSuite where
 
 import Test.Framework (defaultMain, testGroup)
 
-import qualified CountVonCount.Counter.Tests
+import qualified CountVonCount.Analyzer.Tests
 
 main :: IO ()
 main = defaultMain
-    [ testGroup "CountVonCount.Counter.Tests" CountVonCount.Counter.Tests.tests
+    [ testGroup "CountVonCount.Analyzer.Tests"
+        CountVonCount.Analyzer.Tests.tests
     ]

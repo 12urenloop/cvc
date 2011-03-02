@@ -15,6 +15,7 @@ import Statistics.Types (Sample)
 
 import CountVonCount.Types
 
+-- TODO: Use Map Timestamp Position
 data DataSet = DataSet [Timestamp] [Position]
 
 instance Monoid DataSet where
@@ -29,8 +30,9 @@ addMeasurement (t, p) (DataSet ts ps) = DataSet (t : ts) (p : ps)
 
 toSamples :: DataSet           -- ^ DataSet
           -> (Sample, Sample)  -- ^ (times, positions)
-toSamples (DataSet ts ps) = (V.fromList ts, V.fromList ps)
+toSamples (DataSet ts ps) =
+    (V.reverse (V.fromList ts), V.reverse (V.fromList ps))
 
 toList :: DataSet                  -- ^ DataSet
        -> [(Timestamp, Position)]  -- ^ Simple list
-toList (DataSet ts ps) = zip ts ps
+toList (DataSet ts ps) = reverse $ zip ts ps

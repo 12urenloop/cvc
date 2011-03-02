@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module CountVonCount.Counter.Tests
+module CountVonCount.Analyzer.Tests
     ( tests
     ) where
 
@@ -7,13 +7,17 @@ import Data.Monoid (Monoid, mempty, mappend)
 import Control.Monad.Writer (Writer, tell, execWriter)
 import Control.Monad.State (StateT, evalStateT, get, put, modify)
 import Control.Arrow (second)
+import Debug.Trace (traceShow)
+import Test.QuickCheck (Arbitrary, arbitrary, shrink)
 
 import Test.Framework
 import Test.Framework.Providers.HUnit (testCase)
 import Test.HUnit hiding (Test, State)
 
+import CountVonCount.DataSet
 import CountVonCount.Types
 import CountVonCount.Counter
+import CountVonCount.Analyzer
 
 -- | Number of laps and number of suspicious laps
 --
@@ -26,25 +30,25 @@ instance Monoid Laps where
 
 -- | Monad for counter testing
 --
-type CounterTestM a = StateT (Counter, Int) (Writer Laps) a
+type CounterTestM a = StateT (DataSet, Timestamp) (Writer Laps) a
 
 -- | Utility function for use in testing code: see the racer at a given position
 --
-see :: Int              -- ^ Position
+see :: Position         -- ^ Position
     -> CounterTestM ()  -- ^ No result
 see position = do
-    (counter, time) <- get
-    let (lap, counter') = tick (position, time) counter
-    put (counter', time)
-    case lap of
-        Nothing                -> return ()
-        Just Lap               -> tell $ Laps 1 0
-        Just (SuspiciousLap _) -> tell $ Laps 0 1
+    (dataSet, time) <- get
+    let dataSet' = addMeasurement (time, position) dataSet
+        score    = analyze dataSet'
+    traceShow score $ case score of
+        Good      -> tell (Laps 1 0) >> put (mempty, time)
+        Warning _ -> tell (Laps 0 1) >> put (mempty, time)
+        Refused _ -> put (dataSet', time)
 
 -- | Utility function for use in testing code: increment time (optionally
 -- negative)
 --
-wait :: Int              -- ^ Time to wait
+wait :: Timediff         -- ^ Time to wait
      -> CounterTestM ()  -- ^ No result
 wait increment = modify $ second (+ increment)
 

@@ -23,7 +23,7 @@ import CountVonCount.Counter
 
 data Dispatcher = Dispatcher
     { dispatcherInChan  :: Chan (Team, Measurement)
-    , dispatcherOutChan :: Chan (Team, Lap)
+    , dispatcherOutChan :: Chan (Team, Score)
     }
 
 type DispatcherState = Map Team (Chan Measurement)
@@ -31,7 +31,7 @@ type DispatcherState = Map Team (Chan Measurement)
 type DispatcherM a = ReaderT Dispatcher (StateT DispatcherState IO) a
 
 makeDispatcher :: Chan (Team, Measurement)  -- ^ In channel
-               -> Chan (Team, Lap)          -- ^ Out channel
+               -> Chan (Team, Score)        -- ^ Out channel
                -> IO Dispatcher             -- ^ New dispatcher
 makeDispatcher inChan outChan = return $ Dispatcher inChan outChan
 
