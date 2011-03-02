@@ -4,6 +4,7 @@ module CountVonCount.MovingAverage
     ( MovingAverage
     , updateAverage
     , updateAverageWith
+    , isExceptional
     ) where
 
 -- | Moving average module
@@ -33,3 +34,14 @@ updateAverageWith a b x (MovingAverage avg dev) = MovingAverage avg' dev'
   where
     avg' = avg * (1 - a) + x * a
     dev' = dev * (1 - b)  + (abs $ avg - x) * b
+
+-- | Check if a sample is out of range
+--
+isExceptional :: (Floating a, Ord a)
+              => a
+              -> MovingAverage a
+              -> Bool
+isExceptional _ Empty                   = False
+isExceptional x (MovingAverage avg dev) = x < avg - d || x > avg + d
+  where
+    d = 3 * dev

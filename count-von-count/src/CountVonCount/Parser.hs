@@ -6,5 +6,5 @@ import CountVonCount.Types
 
 parse :: String -> (Team, Measurement)
 parse line =
-    let [team, position, timestamp] = words line
-    in (team, (read position, read timestamp))
+    let [team, timestamp, position] = words line
+    in (team, (read timestamp, read position))

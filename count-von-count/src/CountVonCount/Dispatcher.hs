@@ -19,7 +19,7 @@ import Control.Applicative ((<$>))
 import Data.Map (Map)
 
 import CountVonCount.Types
-import CountVonCount.CounterWatcher
+import CountVonCount.Counter
 
 data Dispatcher = Dispatcher
     { dispatcherInChan  :: Chan (Team, Measurement)
@@ -49,9 +49,8 @@ teamChan team = do
             teamChan' <- liftIO newChan
             outChan <- dispatcherOutChan <$> ask
 
-            -- Create and fork watcher
-            watcher <- liftIO $ makeCounterWatcher team teamChan' outChan
-            _ <- liftIO $ forkIO $ runCounterWatcher watcher
+            -- Create and fork counter
+            _ <- liftIO $ forkIO $ runCounter team teamChan' outChan
 
             -- Add to state and return
             modify $ M.insert team teamChan'

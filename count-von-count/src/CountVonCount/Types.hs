@@ -3,16 +3,18 @@ module CountVonCount.Types
     , Timestamp
     , Measurement
     , Team
+    , Sensor
     , Lap (..)
     ) where
 
 import Control.DeepSeq (NFData (..))
 
-type Position = Int
-type Timestamp = Int
+type Position = Double
+type Timestamp = Double
 type Team = String
+type Sensor = String
 
-type Measurement = (Position, Timestamp)
+type Measurement = (Timestamp, Position)
 
 data Lap = Lap
          | SuspiciousLap String
