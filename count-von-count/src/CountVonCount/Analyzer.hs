@@ -47,7 +47,7 @@ speedLimit max' _ _ (Line _ speed)
     | otherwise     = Refused $
         printf "Impossibly fast, %f while max is %f" speed max'
 
--- | Check that samples are consecutive
+-- | Criterium: Check that samples are consecutive
 --
 consecutive :: Criterium
 consecutive _ positions _ = isSorted positions
@@ -56,6 +56,14 @@ consecutive _ positions _ = isSorted positions
         | V.length xs < 2 = Good
         | xs ! 0 > xs ! 1 = Warning ["Unconsecutive samples"]
         | otherwise       = isSorted $ V.tail xs
+
+-- | Criterium: check that the racer didn't go too slow
+--
+speedTreshold :: Double -> Criterium
+speedTreshold min' _ _ (Line _ speed)
+    | speed >= min' = Good
+    | otherwise     = Refused $
+        printf "Too slow, %f while min is %f" speed min'
 
 -- | Criterium: not too many outliers
 --
@@ -71,6 +79,7 @@ analyze dataSet =
     criteria = [ enoughSamples 3
                , speedLimit 5
                , consecutive
+               , speedTreshold 0
                ]
 
 regression :: Sample -> Sample -> Line
