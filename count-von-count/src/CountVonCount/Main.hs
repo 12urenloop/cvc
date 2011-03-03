@@ -2,17 +2,19 @@ module Main
     ( main
     ) where
 
-import Control.Concurrent.Chan.Strict (newChan, readChan, writeChan)
+import Control.Concurrent.Chan.Strict (newChan, readChan, writeChan, dupChan)
 import Control.Concurrent (forkIO)
 import Control.Monad (forever)
 
 import CountVonCount.Parser
 import CountVonCount.Dispatcher
+import CountVonCount.Persistence
 
 main :: IO ()
 main = do
     inChan <- newChan
     outChan <- newChan
+    persistenceChan <- dupChan inChan
     dispatcher <- makeDispatcher inChan outChan
 
     -- Out thread
@@ -22,6 +24,9 @@ main = do
 
     -- Watcher thread
     _ <- forkIO $ runDispatcher dispatcher
+
+    -- Persistence thread
+    _ <- forkIO $ runPersistence persistenceChan
 
     -- In thread
     forever $ do

@@ -80,13 +80,13 @@ tests =
     , testCounter "suspicous lap" (Laps 0 1) $ do
         see 1
         wait 5
-        see 2
-        wait (-1)
         see 3
+        wait 1
+        see 2
         wait 1
         see 1
 
-    , testCounter "skips" (Laps 1 0) $ do
+    , testCounter "little results" (Laps 0 1) $ do
         see 1
         wait 10
         see 3

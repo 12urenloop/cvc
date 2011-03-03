@@ -15,7 +15,6 @@ import Statistics.Types (Sample)
 
 import CountVonCount.Types
 
--- TODO: Use Map Timestamp Position
 data DataSet = DataSet [Timestamp] [Position]
 
 instance Monoid DataSet where
