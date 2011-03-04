@@ -2,10 +2,7 @@ module CountVonCount.Counter
     ( runCounter
     ) where
 
-import Control.Monad (when, forever)
-import Control.Monad.Trans (liftIO)
-import Control.Monad.Reader (ReaderT, ask, runReaderT)
-import Control.Monad.State (StateT, get, put, execStateT)
+import Control.Monad.State (State, get, put, runState)
 import Data.Monoid (mempty)
 import Control.Applicative ((<$>))
 
@@ -14,58 +11,59 @@ import CountVonCount.FiniteChan
 import CountVonCount.DataSet
 import CountVonCount.Analyzer
 
-data CounterEnvironment = CounterEnvironment
-    { counterTeam    :: String
-    , counterInChan  :: FiniteChan Measurement
-    , counterOutChan :: FiniteChan (Team, Score)
-    }
-
 data CounterState = CounterState
     { counterDataSet      :: DataSet
     , counterLastPosition :: Maybe Position
     } deriving (Show)
 
-type CounterM = ReaderT CounterEnvironment (StateT CounterState IO)
+type CounterM = State CounterState
 
 -- | Run a counter
 --
-counter :: Measurement -> CounterM ()
+counter :: Measurement -> CounterM (Maybe Score)
 counter measurement = do
     -- Read a measurement
-    let (timestamp, position) = measurement
+    let (_, position) = measurement
 
-    -- Obtain state
-    CounterState dataSet lastPosition <- get
+    -- Obtain state and create a possible next dataset
+    dataSet <- counterDataSet <$> get
+    lastPosition <- counterLastPosition <$> get
+    let dataSet' = addMeasurement measurement dataSet
 
-    -- Add last measurement to dataset. TODO: translate
-    let dataSet' = dataSet
-    -- let dataSet' = addMeasurement measurement dataSet
-    -- Save for next iteration
-    put $ CounterState (addMeasurement measurement dataSet') $ Just position
+    -- Check if we have a possible lap
+    score <- if maybeLap lastPosition position
+                -- Maybe a lap, check for it
+                then checkLap measurement
+                -- Certainly no lap, save data and return
+                else return Nothing
+                    
+    -- Clear the dataset if we had a score
+    case score of
+        Nothing -> put $ CounterState dataSet' $ Just position
+        _       -> put $ CounterState cleared  $ Just position
 
-    liftIO $ putStrLn $ show lastPosition ++ " " ++ show position
-
-    -- Analyze the dataset if necessary
-    when (trigger lastPosition position) $ do
-    -- when True $ do
-        -- Get line
-        let score = analyze dataSet'
-
-        -- Send out
-        team <- counterTeam <$> ask
-        outChan <- counterOutChan <$> ask
-        liftIO $ writeFiniteChan outChan $ (team, score)
-
-        liftIO $ writeFile (show timestamp ++ ".plot") $ toGnuPlot dataSet'
-
-        -- Clear dataset
-        let cleared = addMeasurement measurement mempty
-        case score of
-            Refused _ -> return ()
-            _         -> put $ CounterState cleared $ Just position
+    -- Return found score
+    return score
   where
-    trigger Nothing  _                   = False
-    trigger (Just lastPosition) position = lastPosition > position
+    maybeLap Nothing  _                   = False
+    maybeLap (Just lastPosition) position = lastPosition > position
+
+    -- A cleared dataset
+    cleared = addMeasurement measurement mempty
+
+checkLap :: Measurement -> CounterM (Maybe Score)
+checkLap _ = do
+    -- Obtain current dataset
+    -- TODO: translate last position and add it?
+    dataSet <- counterDataSet <$> get
+
+    -- Run analysis
+    let score = analyze dataSet
+
+    -- Examine score
+    case score of
+        Refused _ -> return Nothing
+        x         -> return $ Just x
 
 -- | Run a counter
 --
@@ -74,9 +72,14 @@ runCounter :: Team                      -- ^ Identifier
            -> FiniteChan (Team, Score)  -- ^ Out Channel
            -> IO ()                     -- ^ Blocks forever
 runCounter team inChan outChan = do
-    _ <- runFiniteChan inChan state $ \measurement state' -> do
-        execStateT (runReaderT (counter measurement) env) state'
+    _ <- runFiniteChan inChan initial $ \measurement state -> do
+        -- Run the pure counter and optionally send the result
+        let (result, state') = runState (counter measurement) state
+        case result of Nothing -> return ()
+                       Just s  -> writeFiniteChan outChan (team, s)
+
+        -- Yield the state for the next iteration
+        return state'
     return ()
   where
-    env   = CounterEnvironment team inChan outChan
-    state = CounterState mempty Nothing
+    initial = CounterState mempty Nothing
