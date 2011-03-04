@@ -76,7 +76,7 @@ analyze dataSet =
     in (mconcat criteria) times positions line
   where
     -- Used criteria
-    criteria = [ enoughSamples 3
+    criteria = [ enoughSamples 2
                , speedLimit 5
                , consecutive
                , speedTreshold 0

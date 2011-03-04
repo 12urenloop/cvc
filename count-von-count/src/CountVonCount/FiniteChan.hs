@@ -17,12 +17,16 @@ import Control.Concurrent.Chan.Strict ( Chan, newChan, writeChan, readChan
                                       )
 import Control.Concurrent.MVar.Strict (MVar, newEmptyMVar, putMVar, takeMVar)
 import Control.DeepSeq (NFData)
+import System.IO (hPutStrLn, stderr)
 
 data FiniteChan a = FiniteChan
     { finiteName :: String
     , finiteChan :: Chan (Maybe a)
     , finiteSync :: MVar ()
     }
+
+instance Show (FiniteChan a) where
+    show fc = "FiniteChan " ++ finiteName fc
 
 newFiniteChan :: NFData a => String -> IO (FiniteChan a)
 newFiniteChan name = FiniteChan <$> pure name
@@ -39,21 +43,21 @@ writeFiniteChan chan = writeChan (finiteChan chan) . Just
 
 endFiniteChan :: NFData a => FiniteChan a -> IO ()
 endFiniteChan chan = do
-    putStrLn $ "SENDING END TO " ++ finiteName chan
     writeChan (finiteChan chan) Nothing
+    hPutStrLn stderr $ "Closing " ++ show chan
 
 waitFiniteChan :: NFData a => FiniteChan a -> IO ()
 waitFiniteChan chan = do
-    putStrLn $ "WAITING FOR END " ++ finiteName chan
+    hPutStrLn stderr $ "Waiting for end of " ++ show chan
     takeMVar $ finiteSync chan
-    putStrLn $ "FINISHED " ++ finiteName chan
+    hPutStrLn stderr $ "Cleanly closed " ++ show chan
 
 readFiniteChan :: NFData a => FiniteChan a -> IO (Maybe a)
 readFiniteChan chan = do
     mx <- readChan $ finiteChan chan
     case mx of
         Just x  -> return $ Just x
-        Nothing -> do putStrLn $ "RECEIVED END " ++ finiteName chan
+        Nothing -> do hPutStrLn stderr $ "Reached end of " ++ show chan
                       putMVar (finiteSync chan) () >> return Nothing
 
 runFiniteChan :: NFData a

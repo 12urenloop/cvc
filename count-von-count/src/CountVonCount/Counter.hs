@@ -67,16 +67,17 @@ checkLap _ = do
 
 -- | Run a counter
 --
-runCounter :: Team                      -- ^ Identifier
-           -> FiniteChan Measurement    -- ^ In Channel
-           -> FiniteChan (Team, Score)  -- ^ Out Channel
-           -> IO ()                     -- ^ Blocks forever
+runCounter :: Team                                 -- ^ Identifier
+           -> FiniteChan Measurement               -- ^ In Channel
+           -> FiniteChan (Timestamp, Team, Score)  -- ^ Out Channel
+           -> IO ()                                -- ^ Blocks forever
 runCounter team inChan outChan = do
     _ <- runFiniteChan inChan initial $ \measurement state -> do
         -- Run the pure counter and optionally send the result
-        let (result, state') = runState (counter measurement) state
+        let (timestamp, _) = measurement
+            (result, state') = runState (counter measurement) state
         case result of Nothing -> return ()
-                       Just s  -> writeFiniteChan outChan (team, s)
+                       Just s  -> writeFiniteChan outChan (timestamp, team, s)
 
         -- Yield the state for the next iteration
         return state'

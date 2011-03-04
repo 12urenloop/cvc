@@ -8,7 +8,7 @@ module CountVonCount.Dispatcher
 
 import qualified Data.Map as M
 import Data.Monoid (mempty)
-import Control.Monad (forever, forM_)
+import Control.Monad (forM_)
 import Control.Monad.Reader (ReaderT, ask, runReaderT)
 import Control.Monad.State (StateT, get, execStateT, modify)
 import Control.Monad.Trans (liftIO)
@@ -23,16 +23,16 @@ import CountVonCount.FiniteChan
 
 data Dispatcher = Dispatcher
     { dispatcherInChan  :: FiniteChan (Team, Measurement)
-    , dispatcherOutChan :: FiniteChan (Team, Score)
+    , dispatcherOutChan :: FiniteChan (Timestamp, Team, Score)
     }
 
 type DispatcherState = Map Team (FiniteChan Measurement)
 
 type DispatcherM a = ReaderT Dispatcher (StateT DispatcherState IO) a
 
-makeDispatcher :: FiniteChan (Team, Measurement)  -- ^ In channel
-               -> FiniteChan (Team, Score)        -- ^ Out channel
-               -> IO Dispatcher                   -- ^ New dispatcher
+makeDispatcher :: FiniteChan (Team, Measurement)       -- ^ In channel
+               -> FiniteChan (Timestamp, Team, Score)  -- ^ Out channel
+               -> IO Dispatcher                        -- ^ New dispatcher
 makeDispatcher inChan outChan = return $ Dispatcher inChan outChan
 
 -- | Get the input channel for a team
@@ -75,6 +75,5 @@ runDispatcher d = do
     finalState <- runFiniteChan (dispatcherInChan d) mempty $ \(t, m) state ->
         execStateT (runReaderT (dispatcher t m) d) state
     forM_ (M.toList finalState) $ \(_, chan) -> do
-        putStrLn "blah"
         endFiniteChan chan
         waitFiniteChan chan
