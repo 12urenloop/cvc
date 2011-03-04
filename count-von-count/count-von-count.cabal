@@ -19,6 +19,7 @@ Executable count-von-count
                      CountVonCount.Analyzer,
                      CountVonCount.Dispatcher,
                      CountVonCount.Persistence,
+                     CountVonCount.FiniteChan,
                      CountVonCount.Main
   Build-depends:     base >= 4 && < 5,
                      deepseq >= 1,

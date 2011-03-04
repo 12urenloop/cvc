@@ -16,6 +16,7 @@ import Statistics.Types (Sample)
 import CountVonCount.Types
 
 data DataSet = DataSet [Timestamp] [Position]
+             deriving (Show)
 
 instance Monoid DataSet where
     mempty = DataSet mempty mempty

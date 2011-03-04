@@ -2,34 +2,41 @@ module Main
     ( main
     ) where
 
-import Control.Concurrent.Chan.Strict (newChan, readChan, writeChan, dupChan)
 import Control.Concurrent (forkIO)
-import Control.Monad (forever)
+import Control.Monad (forever, forM_)
+import Control.Applicative ((<$>))
 
+import CountVonCount.FiniteChan
 import CountVonCount.Parser
 import CountVonCount.Dispatcher
 import CountVonCount.Persistence
 
 main :: IO ()
 main = do
-    inChan <- newChan
-    outChan <- newChan
-    persistenceChan <- dupChan inChan
+    inChan <- newFiniteChan "IN"
+    outChan <- newFiniteChan "OUT"
     dispatcher <- makeDispatcher inChan outChan
+    persistenceChan <- dupFiniteChan "PERSISTENCE" inChan
 
     -- Out thread
-    _ <- forkIO $ forever $ do
-        lap <- readChan outChan
-        putStrLn $ show lap
+    _ <- forkIO $ do
+        runFiniteChan outChan () $ \lap () -> putStrLn $ show lap
 
     -- Watcher thread
-    _ <- forkIO $ runDispatcher dispatcher
+    _ <- forkIO $ do
+        runDispatcher dispatcher
+        endFiniteChan outChan
 
     -- Persistence thread
     _ <- forkIO $ runPersistence persistenceChan
 
     -- In thread
-    forever $ do
-        line <- getLine
-        let measurement = parse line
-        writeChan inChan measurement
+    _ <- forkIO $ do
+        lines' <- lines <$> getContents
+        forM_ lines' $ \line -> do
+            let measurement = parse line
+            writeFiniteChan inChan measurement
+        endFiniteChan inChan
+
+    waitFiniteChan inChan
+    waitFiniteChan outChan
