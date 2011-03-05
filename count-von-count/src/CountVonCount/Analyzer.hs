@@ -65,6 +65,16 @@ speedTreshold min' _ _ (Line _ speed)
     | otherwise     = Refused $
         printf "Too slow, %f while min is %f" speed min'
 
+-- | Criterium: enough time has passed
+--
+timeTreshold :: Double -> Criterium
+timeTreshold min' times _ _
+    | V.length times < 1 || timeTaken < min' = Refused $
+        printf "Too little time taken, %f while min is %f" timeTaken min'
+    | otherwise = Good
+  where
+    timeTaken = V.last times - times ! 0
+
 -- | Criterium: not too many outliers
 --
 -- TODO
@@ -80,6 +90,7 @@ analyze dataSet =
                , speedLimit 5
                , consecutive
                , speedTreshold 0
+               , timeTreshold 20
                ]
 
 regression :: Sample -> Sample -> Line
