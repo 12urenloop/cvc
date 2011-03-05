@@ -20,6 +20,5 @@
   </ul:main>
   <ul:side>
     <ul:bonus teams="${it}"/>
-    <h3>Sponsors</h3>
   </ul:side>
 </ul:template>

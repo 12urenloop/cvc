@@ -11,28 +11,36 @@
 <c:set var="contextroot" value="${pageContext.request.contextPath}" />
 
 <html>
-  <head>
-    <title>${title}</title>
-    <link rel="stylesheet" type="text/css" href="${contextroot}/style/style.css" />
-  </head>
-  <body>
-    <div id="header-wrapper">
-      <div id="header">
-        <h1><a>12 Urenloop</a></h1>
-      </div>
+<head>
+<title>${title}</title>
+<link rel="stylesheet" type="text/css" href="${contextroot}/style/style.css" />
+</head>
+<body>
+    <div id="site-wrapper">
+    	<div id="header">
+            <div id="top">
+                <div class="left" id="logo">
+                    <a href="${contextroot}"><img src="${contextroot}/style/images/logo.gif" alt="" /></a>
+                </div>
+                <div class="left navigation" id="main-nav">
+                    <ul class="tabbed">
+                    <li class="current-tab"><a href="${contextroot}">Scorebord</a></li>
+                    <li><a href="${contextroot}/admin">Beheer</a></li>
+                    </ul>
+                </div>
+				<div class="clearer">&nbsp;</div>
+			</div>
+			<div class="clearer">&nbsp;</div> 
+		</div>
+        <div id="splash">  
+            <jsp:doBody />
+        </div>
+        <div id="footer">
+            <div class="left" id="footer-left"> 
+                <p>Deze software werd ontwikkeld door <a href="http://zeus.ugent.be">Zeus WPI</a>,
+                de werkgroep informatica.</p>
+            </div>
+        </div>
     </div>
-    <div id="main-wrapper">
-      <div id="main" class="cols">
-        <jsp:doBody />
-      </div>
-    </div>
-    <div id="footer">
-      <p><a href="http://fkgent.be">FaculteitenKonvent Gent</a> &bull;
-        De Therminal, Hoveniersberg 24 - 9000 Gent, Belgium &bull;
-        +32.9.264.70.93 &bull; info@fkserv.ugent.be</p>
-      <p>Deze software werd ontwikkeld door <a href="http://zeus.ugent.be">Zeus WPI</a>,
-        de werkgroep informatica.</p>
-    </div>
-  </body>
+</body>
 </html>
-
