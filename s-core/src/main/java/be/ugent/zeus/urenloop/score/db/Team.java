@@ -69,5 +69,8 @@ public class Team implements Serializable {
   public void increaseScore(int bonus) {
     System.err.println("BONUS: " + bonus);
     score += bonus;
+    if (score < 0) {
+      score = 0;
+    }
   }
 }
