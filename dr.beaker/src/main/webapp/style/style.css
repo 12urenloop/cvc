@@ -237,6 +237,8 @@ table.data-table tr.even td {background: #FCFCFC;}
 label {
 	cursor: pointer;
 	font-weight: bold;
+  width: 125px;
+  display: inline-block;
 }
 label.checkbox, label.radio {font-weight: normal;}
 legend {
@@ -244,20 +246,20 @@ legend {
 	font-size: 1.2em;
 }
 textarea {overflow: auto;}
-input.text, textarea, select {
+input[type=text], textarea, select {
 	background: #FCFCFC;
 	border: 1px inset #AAA;
 	margin: 0.5em 0;
-	padding: 4px 5px;
+	padding: 4px 2px;
 }
-input.text:focus, textarea:focus, select:focus {background: #FFFFF5;}
+input[type=text]:focus, textarea:focus, select:focus {background: #FFFFF5;}
 
-input.button {
+input[type=submit] {
 	background: #DDD;
 	border: 1px outset #AAA;
 	padding: 4px 5px;
 }
-input.button:active {border-style: inset;}
+input[type=submit]:active {border-style: inset;}
 
 
 /* Specific */

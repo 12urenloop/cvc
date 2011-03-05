@@ -25,7 +25,7 @@ public class SCoreAPI {
   @Path("/laps/increase/")
   public void addLap(@FormParam("mac") String macAddress) {
     Team team = teamManager.get(macAddress);
-    team.increaseScore();
+    teamManager.addTeamLap(team);
   }
 
   @GET

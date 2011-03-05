@@ -17,7 +17,9 @@
       <h3>Create new team</h3>
       <form method="POST" action="${contextroot}/manage/team/add" class="form">
         <label for="teamname">Name:</label>
-        <input type="text" name="teamname" id="teamname">
+        <input type="text" name="teamname" id="teamname"><br>
+        <label for="mac">Mac address:</label>
+        <input type="text" name="mac" id="mac"><br>
         <input type="submit" value="Create team">
       </form>
     </ul:side>
