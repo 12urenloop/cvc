@@ -3,7 +3,7 @@ module Main
     ) where
 
 import Control.Concurrent (forkIO)
-import Control.Monad (forever, forM_)
+import Control.Monad (forM_)
 import Control.Applicative ((<$>))
 
 import CountVonCount.FiniteChan
@@ -15,7 +15,6 @@ main :: IO ()
 main = do
     inChan <- newFiniteChan "IN"
     outChan <- newFiniteChan "OUT"
-    dispatcher <- makeDispatcher inChan outChan
     persistenceChan <- dupFiniteChan "PERSISTENCE" inChan
 
     -- Out thread
@@ -24,7 +23,7 @@ main = do
 
     -- Watcher thread
     _ <- forkIO $ do
-        runDispatcher dispatcher
+        runDispatcher inChan outChan
         endFiniteChan outChan
 
     -- Persistence thread

@@ -1,9 +1,7 @@
 -- | A dispatcher sends events to the right watchers
 --
 module CountVonCount.Dispatcher
-    ( Dispatcher
-    , makeDispatcher
-    , runDispatcher
+    ( runDispatcher
     ) where
 
 import qualified Data.Map as M
@@ -21,19 +19,10 @@ import CountVonCount.Types
 import CountVonCount.Counter
 import CountVonCount.FiniteChan
 
-data Dispatcher = Dispatcher
-    { dispatcherInChan  :: FiniteChan (Team, Measurement)
-    , dispatcherOutChan :: FiniteChan (Timestamp, Team, Score)
-    }
-
+type DispatcherEnvironment = FiniteChan (Timestamp, Team, Score)
 type DispatcherState = Map Team (FiniteChan Measurement)
 
-type DispatcherM a = ReaderT Dispatcher (StateT DispatcherState IO) a
-
-makeDispatcher :: FiniteChan (Team, Measurement)       -- ^ In channel
-               -> FiniteChan (Timestamp, Team, Score)  -- ^ Out channel
-               -> IO Dispatcher                        -- ^ New dispatcher
-makeDispatcher inChan outChan = return $ Dispatcher inChan outChan
+type DispatcherM a = ReaderT DispatcherEnvironment (StateT DispatcherState IO) a
 
 -- | Get the input channel for a team
 --
@@ -47,7 +36,7 @@ teamChan team = do
         Nothing -> do
             -- Get channels
             teamChan' <- liftIO $ newFiniteChan team
-            outChan <- dispatcherOutChan <$> ask
+            outChan <- ask
 
             -- Create and fork counter
             _ <- liftIO $ forkIO $ do
@@ -69,11 +58,12 @@ dispatcher team measurement = do
 
 -- | Exposed run method, uses our monad stack internally
 --
-runDispatcher :: Dispatcher  -- ^ Dispatcher
-              -> IO ()       -- ^ Blocks forever
-runDispatcher d = do
-    finalState <- runFiniteChan (dispatcherInChan d) mempty $ \(t, m) state ->
-        execStateT (runReaderT (dispatcher t m) d) state
+runDispatcher :: FiniteChan (Team, Measurement)       -- ^ In channel
+              -> FiniteChan (Timestamp, Team, Score)  -- ^ Out channel
+              -> IO ()                                -- ^ Blocks forever
+runDispatcher inChan outChan = do
+    finalState <- runFiniteChan inChan mempty $ \(t, m) state ->
+        execStateT (runReaderT (dispatcher t m) outChan) state
     forM_ (M.toList finalState) $ \(_, chan) -> do
         endFiniteChan chan
         waitFiniteChan chan
