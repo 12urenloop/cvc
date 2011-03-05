@@ -2,7 +2,7 @@
 
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<%@attribute name="teams" type="java.util.List<be.ugent.zeus.urenloop.score.db.Team>" rtexprvalue="true" %>
+<%@attribute name="teams" type="java.util.List<be.ugent.zeus.urenloop.drbeaker.db.Team>" rtexprvalue="true" %>
 
 
 <% if(request.isUserInRole("Moderator")) { %>

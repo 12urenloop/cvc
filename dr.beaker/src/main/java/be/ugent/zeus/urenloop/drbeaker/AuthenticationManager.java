@@ -1,8 +1,8 @@
 
-package be.ugent.zeus.urenloop.score;
+package be.ugent.zeus.urenloop.drbeaker;
 
-import be.ugent.zeus.urenloop.score.db.Group;
-import be.ugent.zeus.urenloop.score.db.User;
+import be.ugent.zeus.urenloop.drbeaker.db.Group;
+import be.ugent.zeus.urenloop.drbeaker.db.User;
 import java.util.List;
 
 import javax.ejb.Stateless;
@@ -59,7 +59,7 @@ public class AuthenticationManager {
   public static AuthenticationManager lookup () {
     try {
       Context c = new InitialContext();
-      return (AuthenticationManager) c.lookup("java:module/AuthenticationManager!be.ugent.zeus.urenloop.score.AuthenticationManager");
+      return (AuthenticationManager) c.lookup("java:module/AuthenticationManager!be.ugent.zeus.urenloop.drbeaker.AuthenticationManager");
     } catch (NamingException ne) {
       throw new RuntimeException(ne);
     }

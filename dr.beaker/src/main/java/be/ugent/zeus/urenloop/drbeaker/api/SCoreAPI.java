@@ -1,10 +1,10 @@
-package be.ugent.zeus.urenloop.score.api;
+package be.ugent.zeus.urenloop.drbeaker.api;
 
-import be.ugent.zeus.urenloop.score.AuthenticationManager;
-import be.ugent.zeus.urenloop.score.TeamManager;
-import be.ugent.zeus.urenloop.score.db.Group;
-import be.ugent.zeus.urenloop.score.db.Team;
-import be.ugent.zeus.urenloop.score.db.User;
+import be.ugent.zeus.urenloop.drbeaker.AuthenticationManager;
+import be.ugent.zeus.urenloop.drbeaker.TeamManager;
+import be.ugent.zeus.urenloop.drbeaker.db.Group;
+import be.ugent.zeus.urenloop.drbeaker.db.Team;
+import be.ugent.zeus.urenloop.drbeaker.db.User;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;

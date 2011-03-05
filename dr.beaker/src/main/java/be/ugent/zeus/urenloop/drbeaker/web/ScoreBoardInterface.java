@@ -1,7 +1,7 @@
 
-package be.ugent.zeus.urenloop.score.web;
+package be.ugent.zeus.urenloop.drbeaker.web;
 
-import be.ugent.zeus.urenloop.score.TeamManager;
+import be.ugent.zeus.urenloop.drbeaker.TeamManager;
 import com.sun.jersey.api.view.Viewable;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

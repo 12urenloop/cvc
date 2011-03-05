@@ -1,8 +1,8 @@
-package be.ugent.zeus.urenloop.score.web;
+package be.ugent.zeus.urenloop.drbeaker.web;
 
-import be.ugent.zeus.urenloop.score.AuthenticationManager;
-import be.ugent.zeus.urenloop.score.db.Group;
-import be.ugent.zeus.urenloop.score.db.User;
+import be.ugent.zeus.urenloop.drbeaker.AuthenticationManager;
+import be.ugent.zeus.urenloop.drbeaker.db.Group;
+import be.ugent.zeus.urenloop.drbeaker.db.User;
 import com.sun.jersey.api.view.Viewable;
 import java.net.URI;
 import java.util.List;

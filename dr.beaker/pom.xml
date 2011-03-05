@@ -2,10 +2,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>be.ugent.zeus.12urenloop</groupId>
-    <artifactId>s-core</artifactId>
+    <artifactId>dr.beaker</artifactId>
     <packaging>war</packaging>
     <version>0.1-SNAPSHOT</version>
-    <name>s-core</name>
+    <name>Dr. Beaker</name>
     <url>http://maven.apache.org</url>
     <repositories>
         <repository>
@@ -57,7 +57,7 @@
                 </configuration>
             </plugin>
         </plugins>
-        <finalName>s-core</finalName>
+        <finalName>dr.beaker</finalName>
     </build>
     <properties>
         <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>

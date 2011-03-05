@@ -1,6 +1,6 @@
-package be.ugent.zeus.urenloop.score;
+package be.ugent.zeus.urenloop.drbeaker;
 
-import be.ugent.zeus.urenloop.score.db.Team;
+import be.ugent.zeus.urenloop.drbeaker.db.Team;
 import java.awt.image.BufferedImage;
 import java.util.List;
 import javax.ejb.Stateless;
@@ -57,7 +57,7 @@ public class TeamManager {
   public static TeamManager lookup () {
     try {
       Context c = new InitialContext();
-      return (TeamManager) c.lookup("java:module/TeamManager!be.ugent.zeus.urenloop.score.TeamManager");
+      return (TeamManager) c.lookup("java:module/TeamManager!be.ugent.zeus.urenloop.drbeaker.TeamManager");
     } catch (NamingException ne) {
       throw new RuntimeException(ne);
     }

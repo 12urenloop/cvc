@@ -1,5 +1,5 @@
 
-package be.ugent.zeus.urenloop.score.db;
+package be.ugent.zeus.urenloop.drbeaker.db;
 
 import java.io.Serializable;
 import java.security.MessageDigest;
