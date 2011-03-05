@@ -80,19 +80,19 @@ tests =
         wait 10 >> see 3
         wait 10 >> see 1
 
-    , testCounter "suspicous lap" (Laps 0 1 0) $ do
+    , testCounter "suspicous lap" (Laps 0 1 1) $ do
         see 1
-        wait 5
+        wait 10
         see 3
-        wait 1
-        see 2
-        wait 1
-        see 1
+        wait 10
+        see 2    -- This lap will be refused
+        wait 10
+        see 1    -- This lap will be accepter
 
-    , testCounter "little results" (Laps 0 1 0) $ do
+    , testCounter "little results" (Laps 1 0 0) $ do
         see 1
-        wait 10
+        wait 20
         see 3
-        wait 10
+        wait 20
         see 1
     ]
