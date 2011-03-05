@@ -5,7 +5,7 @@
 
 <c:set var="contextroot" value="${pageContext.request.contextPath}" />
 
-<ul:template title="Administration interface">
+<ul:template title="Administration interface" tab="admin">
   <ul:main title="Administration interface">
     <h3>Available Users</h3>
     <ul>

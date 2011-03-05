@@ -15,7 +15,7 @@
       </c:forEach>
     </select><br>
     <label for="bonus">Aantal punten:</label>
-    <input type="text" name="bonus" size="2" style="text-align: right;">
+    <input type="text" name="bonus" size="2" style="text-align: right;"><br>
     <input type="submit" value="Bonus toekennen">
   </form>
 <% } %>

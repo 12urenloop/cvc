@@ -5,7 +5,6 @@ import be.ugent.zeus.urenloop.drbeaker.db.Group;
 import be.ugent.zeus.urenloop.drbeaker.db.User;
 import com.sun.jersey.api.view.Viewable;
 import java.net.URI;
-import java.util.List;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -24,7 +23,6 @@ public class AdminInterface {
   @GET
   @Path("/")
   public Viewable index() {
-    System.err.println("testing");
     return new Viewable("/admin/index.jsp", new Object[]{authManager.getUsers(), authManager.getGroups()});
   }
 

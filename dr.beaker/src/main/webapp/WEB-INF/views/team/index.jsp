@@ -5,7 +5,7 @@
 
 <c:set var="contextroot" value="${pageContext.request.contextPath}" />
 
-<ul:template title="Team Overview">
+<ul:template title="Team Overview" tab="teams">
   <ul:main title="Teams in contest">
     <ul>
     <c:forEach items="${it}" var="team">

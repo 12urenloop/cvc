@@ -5,7 +5,7 @@
 
 <c:set var="contextroot" value="${pageContext.request.contextPath}" />
 
-<ul:template title="12 Urenloop - Scorebord">
+<ul:template title="12 Urenloop - Scorebord" tab="index">
   <ul:main title="Scorebord">
     <table class="scoreboard">
       <tbody>
