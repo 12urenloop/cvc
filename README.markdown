@@ -9,7 +9,7 @@ count-von-count
 Backend. Receives bluetooth measurements from another component, and analyzes
 the data in order to count laps.
 
-s-core
+dr.beaker
 ------
 
 Presents the data analyzed by _count-von-count_ in a nice fashion.
