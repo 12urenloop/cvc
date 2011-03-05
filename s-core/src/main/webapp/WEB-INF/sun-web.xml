@@ -2,6 +2,15 @@
 <!DOCTYPE sun-web-app PUBLIC "-//Sun Microsystems, Inc.//DTD GlassFish Application Server 3.0 Servlet 3.0//EN" "http://www.sun.com/software/appserver/dtds/sun-web-app_3_0-0.dtd">
 <sun-web-app error-url="">
   <context-root>/s-core</context-root>
+  <security-role-mapping>
+    <role-name>Administrator</role-name>
+    <group-name>administrator</group-name>
+  </security-role-mapping>
+  <security-role-mapping>
+    <role-name>Moderator</role-name>
+    <group-name>administrator</group-name>
+    <group-name>moderator</group-name>
+  </security-role-mapping>
   <class-loader delegate="true"/>
   <jsp-config>
     <property name="keepgenerated" value="true">

@@ -1,13 +1,16 @@
 package be.ugent.zeus.urenloop.score;
 
 import be.ugent.zeus.urenloop.score.db.Team;
+import java.awt.image.BufferedImage;
+import java.util.List;
 import javax.ejb.Stateless;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceUnit;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 /**
  *
@@ -16,18 +19,39 @@ import javax.persistence.Query;
 @Stateless
 public class TeamManager {
 
-  @PersistenceUnit(name = "scorePU")
+  @PersistenceContext(unitName = "scorePU")
   private EntityManager em;
 
-  public Team getTeam(Long pk) {
+  public void add (Team team) {
+    em.persist(team);
+  }
+
+  public void addTeamBonus(long id, int bonus) {
+    Team team = get(id);
+    team.increaseScore(bonus);
+    System.err.println(team.getScore());
+    em.merge(team);
+  }
+
+  public Team get(Long pk) {
     return em.find(Team.class, pk);
   }
 
-  public Team getTeam(String mac) {
+  public Team get(String mac) {
     Query query = em.createNamedQuery("Team.findByMac");
     query.setParameter("mac", mac);
 
     return (Team) query.getSingleResult();
+  }
+
+  public List<Team> get() {
+    TypedQuery query = em.createNamedQuery("Team.all", Team.class);
+    return query.getResultList();
+  }
+
+  public List<Team> getByScore() {
+    TypedQuery query = em.createNamedQuery("Team.allByScore", Team.class);
+    return query.getResultList();
   }
 
   public static TeamManager lookup () {

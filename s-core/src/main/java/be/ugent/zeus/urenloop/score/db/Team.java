@@ -13,13 +13,18 @@ import javax.persistence.NamedQuery;
  * @author Thomas Meire
  */
 @Entity
-@NamedQueries(
-@NamedQuery(name = "Team.findByMac", query = "SELECT t from Team t where t.macAddress = :mac"))
+@NamedQueries({
+  @NamedQuery(name = "Team.findByMac", query = "SELECT t from Team t where t.macAddress = :mac"),
+  @NamedQuery(name = "Team.all", query = "SELECT t from Team t"),
+  @NamedQuery(name = "Team.allByScore", query = "SELECT t from Team t order by t.score desc")
+})
 public class Team implements Serializable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
+
+  private String name;
 
   private String macAddress;
 
@@ -41,8 +46,12 @@ public class Team implements Serializable {
     this.macAddress = mac;
   }
 
-  public void increaseScore() {
-    score++;
+  public void setName (String name) {
+    this.name = name;
+  }
+
+  public String getName () {
+    return name;
   }
 
   public int getScore() {
@@ -51,5 +60,14 @@ public class Team implements Serializable {
 
   public void setScore(int score) {
     this.score = score;
+  }
+
+  public void increaseScore() {
+    score++;
+  }
+
+  public void increaseScore(int bonus) {
+    System.err.println("BONUS: " + bonus);
+    score += bonus;
   }
 }

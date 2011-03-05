@@ -1,0 +1,376 @@
+/**
+ * CSS reset
+ *
+ * source: http://meyerweb.com/eric/tools/css/reset/
+ * v1.0 | 20080212
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  font-size: 100%;
+  vertical-align: baseline;
+  background: transparent;
+}
+body {
+  line-height: 1;
+}
+ol, ul {
+  list-style: none;
+}
+blockquote, q {
+  quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none;
+}
+
+/* remember to define focus styles! */
+:focus {
+  outline: 0;
+}
+
+/* remember to highlight inserts somehow! */
+ins {
+  text-decoration: none;
+}
+del {
+  text-decoration: line-through;
+}
+
+/* tables still need 'cellspacing="0"' in the markup */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/**
+ * Site-specific styles
+*/
+body {
+  font: 13px "trebuchet ms", helvetica, sans-serif;
+  background-color: #fff;
+  color: #383838;
+}
+
+#header-wrapper {
+  background: #184366;
+}
+
+#header {
+  margin: 0 auto;
+  width: 960px; height: 75px;
+  position: relative;
+}
+
+#header h1 {
+  font-size: 30px; font-weight: bold;
+  position: absolute;
+  height: 80px; bottom: -20px;
+  background: url('images/fk-logo.jpg') no-repeat left;
+}
+
+#header h1 a {
+  display: block;
+  text-decoration: none;
+  color: #FFF;
+  padding: 20px 0 25px 95px;
+}
+
+#main-wrapper {
+  background: url('images/main-wrapper.gif') repeat-x top;
+  min-height: 65px;
+}
+
+#main {
+  margin: 0 auto;
+  padding: 50px 0;
+  width: 960px;
+  position: relative;
+}
+
+#footer {
+  width: 960px;
+  margin: 0 auto;
+  border-top: dotted 1px #E1E1E1;
+  margin: 10px auto;
+  padding: 10px 0 0;
+}
+
+#footer p {
+  text-align: center;
+  font-size: 11px;
+  margin: 0;
+}
+
+
+/**
+ * Text styling
+ *
+ * Source: http://winston.wolfslittlestore.be/
+*/
+h1, h2, h3, h4, h5, h6 {
+  font-weight: normal;
+  letter-spacing: -0.5px;
+  color: #184366;
+}
+
+h2 {
+  border-bottom: dotted 1px #E1E1E1;
+  font-size: 24px;
+  padding-bottom: 4px;
+  margin-bottom: 15px;
+}
+
+h3 {
+  border-bottom: dotted 1px #E1E1E1;
+  font-size: 15px;
+  padding-bottom: 2px;
+  margin: 13px 0 10px;
+}
+
+a {
+  text-decoration: none;
+  color: #000;
+}
+
+a:hover { text-decoration: underline; }
+
+p {
+  line-height: 16px;
+  margin: 4px 0 10px;
+}
+
+p a, li a { color: #F16C00; }
+
+em {
+  font-weight: bold;
+  font-style: normal;
+}
+
+ul {
+  list-style: disc outside;
+  padding: 0 15px 0 20px;
+}
+
+li {
+  line-height: 16px;
+  margin: 4px 0 6px;
+}
+
+
+code {
+  font-family: Monaco, Verdana, Sans-serif;
+  font-size: 11px;
+  background-color: #f9f9f9;
+  color: #002166;
+}
+
+dt {
+  font-weight: bold;
+}
+
+dd {
+  margin: 1em 40px;
+}
+
+dd ul {
+  list-style: inside;
+  padding-left: 0;
+  margin: 0;
+}
+
+.image-left {
+  float: left;
+  padding: 0 15px 5px 0;
+}
+
+.image-right{
+  float: right;
+  padding: 0 0 5px 15px;
+}
+
+.image-center {
+  display: block;
+  margin: 0 auto;
+}
+
+.image-header-offset {
+  margin-top: 50px;
+}
+
+/**
+ * Forms
+*/
+
+textarea {
+  font-size: 12px; line-height: 1.4;
+  padding: 1px;
+  max-width: 100%;
+}
+
+select, option {
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+}
+
+label {
+  display: inline-block;
+  width: 100px;
+}
+
+dl.form {
+  padding: 12px 0 0;
+  display: inline-block;
+}
+
+.dl.form:after {
+  content: " ";
+  display: block;
+  height: 0;
+  clear: both;
+  overflow: hidden;
+  visibility: hidden;
+}
+
+.dl.form {
+  display: block;
+}
+
+.form dt {
+  float: left;
+  clear: left;
+  width: 120px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.form dd {
+  float: left;
+  margin: 0;
+  max-width: 335px;
+}
+
+.error {
+  color: #E2001A;
+  padding: 5px 0 10px 0;
+  position: relative;
+}
+
+.form-success {
+  color: #008A0D;
+  background: #CFC;
+  padding: 12px;
+  border: 1px solid #008A0D;
+  margin: 0 0 12px;
+}
+
+/**
+ * Grid system
+*/
+
+.cols {
+  display: inline-block;
+}
+
+.cols:after {
+  content: " ";
+  display: block;
+  height: 0;
+  clear: both;
+  overflow: hidden;
+  visibility: hidden;
+}
+
+.cols {
+  display: block;
+}
+
+.col { width: 72px; margin-right: 24px; float: left; }
+.col-2 { width: 168px; }
+.col-3 { width: 264px; }
+.col-4 { width: 360px; }
+.col-5 { width: 456px; }
+.col-6 { width: 552px; }
+.col-7 { width: 648px; }
+.col-8 { width: 744px; }
+.col-9 { width: 840px; }
+.col-10 { width: 936px; }
+.col-last { margin-right: 0 !important; float: right;}
+
+.cols .spacingLeft { margin-left: 24px; }
+.cols .spacingLeftHalf { margin-left: 12px; }
+.cols .spacingRight { margin-right: 24px; }
+.cols .spacingRightHalf { margin-right: 12px; }
+.cols .spacingBothHalf { margin-right: 12px; margin-left: 12px; }
+
+/**
+ * Datagrid
+*/
+table.datagrid {
+  font-family: Arial, sans-serif;
+  width: 100%;
+  margin: 0 0 12px;
+}
+
+table.datagrid td, table.datagrid th {
+  padding: 6px 12px;
+}
+
+table.datagridSmall td, table.datagridSmall th {
+  padding: 6px;
+  font-size: 11px;
+}
+
+table.datagrid th {
+  font-weight: 700;
+  color: #000;
+  line-height: 1.2;
+  text-align: left;
+  border: 1px solid #CCC;
+  background: #E9E9E9;
+}
+
+table.datagrid tr.rowOdd {
+  background: #FFF;
+}
+
+table.datagrid tr.rowEven {
+  background: #F5F5F5;
+}
+
+table.datagrid td {
+  border: 1px solid #CCC;
+}
+
+table.scoreboard {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #CCC;
+}
+table.scoreboard tr:nth-child(odd) {
+  border: 1px solid #CCC;
+  background-color:#FFF;
+}
+table.scoreboard tr:nth-child(even) {
+  border: 1px solid #CCC;
+  background-color:#F5F5F5;
+}
+table.scoreboard td {
+  padding: 6px 12px;
+}
+table.scoreboard td.score {
+  text-align: right;
+}
