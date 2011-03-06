@@ -8,6 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Temporal;
 
 /**
@@ -15,6 +17,11 @@ import javax.persistence.Temporal;
  * @author Thomas Meire
  */
 @Entity
+@NamedQueries({
+  @NamedQuery(name="History.all", query="select h from HistoryEntry h order by h.date desc"),
+  @NamedQuery(name="History.findByTeam", query="select h from HistoryEntry h where h.team=:team order by h.date desc"),
+  @NamedQuery(name="History.findByUser", query="select h from HistoryEntry h where h.user=:user order by h.date desc")
+})
 public class HistoryEntry implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -77,6 +84,22 @@ public class HistoryEntry implements Serializable {
 
   public void setTeam(Team team) {
     this.team = team;
+  }
+
+  public Date getDate() {
+    return date;
+  }
+
+  public void setDate(Date date) {
+    this.date = date;
+  }
+
+  public User getUser() {
+    return user;
+  }
+
+  public void setUser(User user) {
+    this.user = user;
   }
 
   @Override

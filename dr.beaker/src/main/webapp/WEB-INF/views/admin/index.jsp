@@ -3,8 +3,6 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="ul" tagdir="/WEB-INF/tags" %>
 
-<c:set var="contextroot" value="${pageContext.request.contextPath}" />
-
 <ul:template title="Administration interface" tab="admin">
   <ul:main title="Administration interface">
     <h3>Available Users</h3>
@@ -32,7 +30,7 @@
 
   <ul:side>
     <h3>Add a new user</h3>
-    <form action="${contextroot}/admin/users/add" method="POST">
+    <form action="<c:url value="/admin/users/add" />" method="POST">
       <label for="username">Username:</label>
       <input type="text" name="username" id="username"><br>
       <label for="password">Password:</label>
