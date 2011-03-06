@@ -14,13 +14,14 @@ Executable count-von-count
   Main-is:           CountVonCount/Main.hs
   Hs-source-dirs:    src
   Other-modules:     CountVonCount.Types,
-                     CountVonCount.Parser,
                      CountVonCount.Counter,
                      CountVonCount.Analyzer,
                      CountVonCount.Dispatcher,
                      CountVonCount.Persistence,
                      CountVonCount.FiniteChan,
-                     CountVonCount.Main
+                     CountVonCount.Main,
+                     CountVonCount.Receiver,
+                     CountVonCount.Receiver.Stdin
   Build-depends:     base >= 4 && < 5,
                      deepseq >= 1,
                      containers >= 0.3,

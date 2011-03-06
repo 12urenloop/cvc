@@ -3,13 +3,11 @@ module Main
     ) where
 
 import Control.Concurrent (forkIO)
-import Control.Monad (forM_)
-import Control.Applicative ((<$>))
 
 import CountVonCount.FiniteChan
-import CountVonCount.Parser
 import CountVonCount.Dispatcher
 import CountVonCount.Persistence
+import CountVonCount.Receiver.Stdin
 
 main :: IO ()
 main = do
@@ -30,12 +28,7 @@ main = do
     _ <- forkIO $ runPersistence persistenceChan
 
     -- In thread
-    _ <- forkIO $ do
-        lines' <- lines <$> getContents
-        forM_ lines' $ \line -> do
-            let measurement = parse line
-            writeFiniteChan inChan measurement
-        endFiniteChan inChan
+    _ <- forkIO $ stdinReceiver inChan
 
     waitFiniteChan inChan
     waitFiniteChan outChan
