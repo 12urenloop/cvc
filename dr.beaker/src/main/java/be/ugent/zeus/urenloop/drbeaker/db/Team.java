@@ -1,12 +1,14 @@
 package be.ugent.zeus.urenloop.drbeaker.db;
 
 import java.io.Serializable;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 
 /**
  *
@@ -19,7 +21,6 @@ import javax.persistence.NamedQuery;
   @NamedQuery(name = "Team.allByScore", query = "SELECT t from Team t order by t.score desc")
 })
 public class Team implements Serializable {
-
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
@@ -29,6 +30,9 @@ public class Team implements Serializable {
   private String macAddress;
 
   private int score;
+
+  @OneToMany(mappedBy = "team")
+  private List<HistoryEntry> history;
 
   public Long getId() {
     return id;
@@ -72,5 +76,13 @@ public class Team implements Serializable {
     if (score < 0) {
       score = 0;
     }
+  }
+
+  public List<HistoryEntry> getHistory() {
+    return history;
+  }
+
+  public void setHistory(List<HistoryEntry> history) {
+    this.history = history;
   }
 }

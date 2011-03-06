@@ -1,10 +1,13 @@
 package be.ugent.zeus.urenloop.drbeaker.web;
 
 import be.ugent.zeus.urenloop.drbeaker.AuthenticationManager;
+import be.ugent.zeus.urenloop.drbeaker.TeamManager;
 import be.ugent.zeus.urenloop.drbeaker.db.Group;
+import be.ugent.zeus.urenloop.drbeaker.db.HistoryEntry;
 import be.ugent.zeus.urenloop.drbeaker.db.User;
 import com.sun.jersey.api.view.Viewable;
 import java.net.URI;
+import java.util.List;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -19,11 +22,19 @@ import javax.ws.rs.core.Response;
 public class AdminInterface {
 
   private AuthenticationManager authManager = AuthenticationManager.lookup();
+  private TeamManager teamManager = TeamManager.lookup();
 
   @GET
   @Path("/")
   public Viewable index() {
     return new Viewable("/admin/index.jsp", new Object[]{authManager.getUsers(), authManager.getGroups()});
+  }
+
+  @GET
+  @Path("/history")
+  public Viewable showGlobalScoreHistory() {
+    List<HistoryEntry> history = teamManager.getHistory();
+    return new Viewable("/admin/history.jsp", history);
   }
 
   @POST

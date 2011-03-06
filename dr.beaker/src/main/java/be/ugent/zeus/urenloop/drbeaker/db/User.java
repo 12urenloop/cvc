@@ -3,15 +3,16 @@ package be.ugent.zeus.urenloop.drbeaker.db;
 
 import java.io.Serializable;
 import java.security.MessageDigest;
+import java.util.List;
 import java.util.Set;
-import javax.persistence.CascadeType;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import sun.misc.BASE64Encoder;
 
@@ -26,6 +27,8 @@ import sun.misc.BASE64Encoder;
 )
 public class User implements Serializable {
 
+  private static final Logger logger = Logger.getLogger("12UL");
+
   private static final long serialVersionUID = 1L;
 
   @Id
@@ -35,6 +38,9 @@ public class User implements Serializable {
 
   @ManyToMany(mappedBy="users")
   private Set<Group> groups;
+
+  @OneToMany(mappedBy = "user")
+  private List<HistoryEntry> actions;
 
   public String getUsername() {
     return username;
@@ -49,15 +55,13 @@ public class User implements Serializable {
       byte[] digest = MessageDigest.getInstance("SHA1").digest(password.getBytes());
       this.password = (new BASE64Encoder()).encode(digest);
     } catch (Exception e) {
+      logger.log(Level.SEVERE, "Password encryption for user {0} failed, continuing with empty username!", username);
       e.printStackTrace();
     }
   }
 
   public void addToGroup(Group group) {
-    Set<Group> groups = getGroups();
-    groups.add(group);
-
-
+    getGroups().add(group);
     group.getUsers().add(this);
   }
 
@@ -67,6 +71,14 @@ public class User implements Serializable {
 
   public Set<Group> getGroups() {
     return groups;
+  }
+
+  public List<HistoryEntry> getActions() {
+    return actions;
+  }
+
+  public void setActions(List<HistoryEntry> actions) {
+    this.actions = actions;
   }
 
   @Override

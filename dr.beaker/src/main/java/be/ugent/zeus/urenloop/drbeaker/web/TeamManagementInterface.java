@@ -1,13 +1,17 @@
 package be.ugent.zeus.urenloop.drbeaker.web;
 
+import be.ugent.zeus.urenloop.drbeaker.AuthenticationManager;
 import be.ugent.zeus.urenloop.drbeaker.TeamManager;
 import be.ugent.zeus.urenloop.drbeaker.db.Team;
+import be.ugent.zeus.urenloop.drbeaker.db.User;
 import com.sun.jersey.api.view.Viewable;
 import java.net.URI;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 /**
@@ -19,6 +23,8 @@ public class TeamManagementInterface {
 
   private TeamManager teamManager = TeamManager.lookup();
 
+  private AuthenticationManager authManager = AuthenticationManager.lookup();
+
   @GET
   @Path("/")
   public Viewable index() {
@@ -27,9 +33,10 @@ public class TeamManagementInterface {
 
   @POST
   @Path("/add")
-  public Response addNewTeam(@FormParam("teamname") String name) {
+  public Response addNewTeam(@FormParam("teamname") String name, @FormParam("mac") String mac) {
     Team team = new Team();
     team.setName(name);
+    team.setMacAddress(mac);
 
     teamManager.add(team);
 
@@ -38,8 +45,18 @@ public class TeamManagementInterface {
 
   @POST
   @Path("/bonus")
-  public Response addBonusForTeam(@FormParam("team") long id, @FormParam("bonus") int bonus) {
-    teamManager.addTeamBonus(id, bonus);
+  public Response addBonusForTeam(@Context HttpServletRequest request,
+          @FormParam("team") long id, @FormParam("bonus") int bonus,
+          @FormParam("reason") String reason) {
+
+    Team team = teamManager.get(id);
+
+    User user = null;
+    if (request != null && request.getUserPrincipal() != null) {
+      user = authManager.getUser(request.getUserPrincipal().getName());
+    }
+
+    teamManager.addTeamBonus(user, team, bonus, reason);
     return Response.seeOther(URI.create("/")).build();
   }
 }
