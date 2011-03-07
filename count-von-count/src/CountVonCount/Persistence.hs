@@ -4,7 +4,7 @@ module CountVonCount.Persistence
     ( runPersistence
     ) where
 
-import System.IO (openFile, IOMode (AppendMode), hPutStrLn)
+import System.IO (openFile, IOMode (AppendMode), hPutStrLn, hClose)
 import Text.Printf (printf)
 
 import CountVonCount.FiniteChan
@@ -19,3 +19,4 @@ runPersistence chan = do
     runFiniteChan chan () $ \x () -> do
         let (team, (time, position)) = x
         hPutStrLn handle $ printf "%s,%f,%f" team time position
+    hClose handle
