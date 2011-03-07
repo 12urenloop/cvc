@@ -75,6 +75,16 @@ timeTreshold min' times _ _
   where
     timeTaken = V.last times - times ! 0
 
+-- | Criterium: a great enough distance was travelled
+--
+distanceTreshold :: Double -> Criterium
+distanceTreshold min' _ positions _
+    | V.length positions < 1 || distance < min' = Refused $
+        printf "Too small distance, %f while min is %f" distance min'
+    | otherwise = Good
+  where
+    distance = V.last positions - positions ! 0
+
 -- | Criterium: not too many outliers
 --
 -- TODO
@@ -91,6 +101,7 @@ analyze dataSet =
                , consecutive
                , speedTreshold 0
                , timeTreshold 20
+               , distanceTreshold 200
                ]
 
 regression :: Sample -> Sample -> Line
