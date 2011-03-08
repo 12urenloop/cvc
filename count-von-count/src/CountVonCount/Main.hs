@@ -26,7 +26,7 @@ main = do
 
     -- Watcher thread
     _ <- forkIO $ do
-        runDispatcher inChan outChan
+        runDispatcher configuration inChan outChan
         endFiniteChan outChan
 
     -- Persistence thread

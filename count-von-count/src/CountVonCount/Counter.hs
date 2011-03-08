@@ -7,6 +7,7 @@ module CountVonCount.Counter
     ) where
 
 import Control.Monad.State (State, get, put, runState)
+import Control.Monad.Reader (ReaderT, ask, runReaderT)
 import Data.Monoid (mempty)
 import Control.Applicative ((<$>))
 
@@ -14,6 +15,7 @@ import CountVonCount.Types
 import CountVonCount.FiniteChan
 import CountVonCount.DataSet
 import CountVonCount.Analyzer
+import CountVonCount.Configuration
 
 data CounterState = CounterState
     { counterDataSet      :: DataSet
@@ -23,7 +25,7 @@ data CounterState = CounterState
 emptyCounterState :: CounterState
 emptyCounterState = CounterState mempty Nothing
 
-type CounterM = State CounterState
+type CounterM = ReaderT Configuration (State CounterState)
 
 -- | Run a counter
 --
@@ -35,12 +37,13 @@ counter measurement = do
     -- Obtain state and create a possible next dataset
     dataSet <- counterDataSet <$> get
     lastPosition <- counterLastPosition <$> get
+    configuration <- ask
     let dataSet' = addMeasurement measurement dataSet
 
         -- Check if we have a possible lap
         score = if maybeLap lastPosition position
                     -- Maybe a lap, check for it
-                    then Just $ analyze dataSet
+                    then Just $ analyze configuration dataSet
                     -- Certainly no lap
                     else Nothing
                     
@@ -65,15 +68,17 @@ counter measurement = do
 
 -- | Run a counter
 --
-runCounter :: Team                                 -- ^ Identifier
+runCounter :: Configuration                        -- ^ Configuration
+           -> Team                                 -- ^ Identifier
            -> FiniteChan Measurement               -- ^ In Channel
            -> FiniteChan (Timestamp, Team, Score)  -- ^ Out Channel
            -> IO ()                                -- ^ Blocks forever
-runCounter team inChan outChan = do
+runCounter configuration team inChan outChan = do
     _ <- runFiniteChan inChan emptyCounterState $ \measurement state -> do
         -- Run the pure counter and optionally send the result
         let (timestamp, _) = measurement
-            (result, state') = runState (counter measurement) state
+            counter' = runReaderT (counter measurement) configuration
+            (result, state') = runState counter' state
         case result of Nothing -> return ()
                        Just s  -> writeFiniteChan outChan (timestamp, team, s)
 
