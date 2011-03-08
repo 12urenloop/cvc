@@ -1,5 +1,6 @@
 module CountVonCount.Types
-    ( Position
+    ( Station
+    , Position
     , Timestamp
     , Timediff
     , Measurement
@@ -13,6 +14,7 @@ import Data.Monoid (Monoid, mappend, mempty)
 
 import Control.DeepSeq (NFData (..))
 
+type Station = String
 type Position = Double
 type Timestamp = Double
 type Timediff = Double
