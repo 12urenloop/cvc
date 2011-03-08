@@ -31,6 +31,10 @@ Run the tests:
 
     runghc -isrc -itests tests/TestSuite.hs
 
+### Configuration
+
+All configuration is done in the `config.yaml` file.
+
 dr.beaker
 ---------
 

@@ -22,7 +22,8 @@ Executable count-von-count
                      CountVonCount.Main,
                      CountVonCount.Receiver,
                      CountVonCount.Receiver.Stdin,
-                     CountVonCount.StationMapper
+                     CountVonCount.StationMap,
+                     CountVonCount.Configuration
   Build-depends:     base >= 4 && < 5,
                      deepseq >= 1,
                      containers >= 0.3,

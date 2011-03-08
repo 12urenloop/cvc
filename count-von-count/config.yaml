@@ -1,0 +1,9 @@
+# Example configuration file
+
+# The station map maps names of stations (these names should equal the names we
+# receive from the input channel) to positions in the circuit. The first station
+# should be at position 0.
+Station map:
+  Station-0: 0
+  Station-1: 100
+  Station-2: 200

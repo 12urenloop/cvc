@@ -1,10 +1,10 @@
 -- | Module that maps station names to actual positions
 --
 {-# LANGUAGE GeneralizedNewtypeDeriving, OverloadedStrings #-}
-module CountVonCount.StationMapper
-    ( StationMapper
+module CountVonCount.StationMap
+    ( StationMap
     , mapStation
-    , loadStationMapper
+    , loadStationMap
     ) where
 
 import Control.Monad (forM)
@@ -17,16 +17,16 @@ import Data.Object.Yaml (YamlObject, fromYamlScalar)
 
 import CountVonCount.Types
 
-newtype StationMapper = StationMapper (Map Station Position)
+newtype StationMap = StationMap (Map Station Position)
                       deriving (Show, Monoid)
 
-loadStationMapper :: YamlObject -> Maybe StationMapper
-loadStationMapper object = do
+loadStationMap :: YamlObject -> Maybe StationMap
+loadStationMap object = do
     mapping <- fromMapping object
     tuples <- forM mapping $ \(k, v) -> do
         v' <- fromScalar v
         return (fromYamlScalar k, read $ fromYamlScalar v')
-    return $ StationMapper $ M.fromList tuples
+    return $ StationMap $ M.fromList tuples
 
-mapStation :: StationMapper -> Station -> Maybe Position
-mapStation (StationMapper m) station = M.lookup station m
+mapStation :: StationMap -> Station -> Maybe Position
+mapStation (StationMap m) station = M.lookup station m
