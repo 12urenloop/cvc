@@ -18,8 +18,13 @@ import Data.Map (Map)
 import CountVonCount.Types
 import CountVonCount.Counter
 import CountVonCount.FiniteChan
+import CountVonCount.Configuration
 
-type DispatcherEnvironment = FiniteChan (Timestamp, Team, Score)
+data DispatcherEnvironment = DispatcherEnvironment
+    { dispatcherChan          :: FiniteChan (Timestamp, Team, Score)
+    , dispatcherConfiguration :: Configuration
+    }
+
 type DispatcherState = Map Team (FiniteChan Measurement)
 
 type DispatcherM a = ReaderT DispatcherEnvironment (StateT DispatcherState IO) a
@@ -36,11 +41,12 @@ teamChan team = do
         Nothing -> do
             -- Get channels
             teamChan' <- liftIO $ newFiniteChan team
-            outChan <- ask
+            outChan <- dispatcherChan <$> ask
+            configuration <- dispatcherConfiguration <$> ask
 
             -- Create and fork counter
             _ <- liftIO $ forkIO $ do
-                runCounter team teamChan' outChan
+                runCounter configuration team teamChan' outChan
 
             -- Add to state and return
             modify $ M.insert team teamChan'
@@ -58,12 +64,15 @@ dispatcher team measurement = do
 
 -- | Exposed run method, uses our monad stack internally
 --
-runDispatcher :: FiniteChan (Team, Measurement)       -- ^ In channel
+runDispatcher :: Configuration                        -- ^ Configuration
+              -> FiniteChan (Team, Measurement)       -- ^ In channel
               -> FiniteChan (Timestamp, Team, Score)  -- ^ Out channel
               -> IO ()                                -- ^ Blocks forever
-runDispatcher inChan outChan = do
+runDispatcher configuration inChan outChan = do
     finalState <- runFiniteChan inChan mempty $ \(t, m) state ->
-        execStateT (runReaderT (dispatcher t m) outChan) state
+        execStateT (runReaderT (dispatcher t m) env) state
     forM_ (M.toList finalState) $ \(_, chan) -> do
         endFiniteChan chan
         waitFiniteChan chan
+  where
+    env = DispatcherEnvironment outChan configuration

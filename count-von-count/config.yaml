@@ -11,3 +11,12 @@ Station map:
 # count-von-count will log all received input to a CSV file. The file name can
 # be configured here.
 CSV log: log.csv
+
+# The criteria used for judging laps
+Criteria:
+  Samples treshold: 3
+  Speed treshold: 5
+  Speed limit: 30
+  Consecutive: True
+  Time treshold: 20
+  Distance treshold: 100
