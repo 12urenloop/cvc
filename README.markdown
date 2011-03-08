@@ -79,3 +79,10 @@ Create the authentication realm
     + Encoding = Base64
 
 Dr. Beaker is now available at http://localhost:8080/dr.beaker/
+
+### API
+
+- `PUT /api/:mac/laps/add`: Add a lap for a mac address
+- `PUT /api/:mac/laps/add-suspicious` Add a suspicious lap
+
+Exact parameters to be specified later
