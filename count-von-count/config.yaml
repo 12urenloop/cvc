@@ -7,3 +7,7 @@ Station map:
   Station-0: 0
   Station-1: 100
   Station-2: 200
+
+# count-von-count will log all received input to a CSV file. The file name can
+# be configured here.
+CSV log: log.csv

@@ -1,7 +1,7 @@
 -- | Module that maps station names to actual positions
 --
 {-# LANGUAGE GeneralizedNewtypeDeriving, OverloadedStrings #-}
-module CountVonCount.StationMap
+module CountVonCount.Configuration.StationMap
     ( StationMap
     , mapStation
     , loadStationMap

@@ -6,14 +6,19 @@ import Control.Concurrent (forkIO)
 
 import CountVonCount.FiniteChan
 import CountVonCount.Dispatcher
-import CountVonCount.Persistence
+import CountVonCount.CsvLog
 import CountVonCount.Receiver.Stdin
+import CountVonCount.Receiver.Socket
+import CountVonCount.Configuration
 
 main :: IO ()
 main = do
     inChan <- newFiniteChan "IN"
     outChan <- newFiniteChan "OUT"
-    persistenceChan <- dupFiniteChan "PERSISTENCE" inChan
+    csvLogChan <- dupFiniteChan "PERSISTENCE" inChan
+
+    -- Ugly, ugly, ugly
+    Just configuration <- loadConfigurationFromFile "config.yaml"
 
     -- Out thread
     _ <- forkIO $ do
@@ -25,7 +30,7 @@ main = do
         endFiniteChan outChan
 
     -- Persistence thread
-    _ <- forkIO $ runPersistence persistenceChan
+    _ <- forkIO $ runCsvLog configuration csvLogChan
 
     -- In thread
     _ <- forkIO $ stdinReceiver inChan
