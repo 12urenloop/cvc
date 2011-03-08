@@ -17,7 +17,7 @@ import javax.persistence.OneToOne;
  */
 @Entity
 @NamedQueries({
-  @NamedQuery(name = "Team.all", query = "SELECT t from Team t"),
+  @NamedQuery(name = "Team.all", query = "SELECT t from Team t order by t.name asc"),
   @NamedQuery(name = "Team.allByScore", query = "SELECT t from Team t order by t.score desc")
 })
 public class Team implements Serializable {

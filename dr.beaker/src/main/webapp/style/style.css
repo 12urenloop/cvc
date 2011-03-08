@@ -235,10 +235,10 @@ table.data-table tr.even td {background: #FCFCFC;}
 ------------------------------------------------------------------- */
 
 label {
-	cursor: pointer;
-	font-weight: bold;
-  width: 125px;
-  display: inline-block;
+/*	cursor: pointer;
+/*	font-weight: bold;
+/*  width: 125px;
+/*  display: inline-block;*/
 }
 label.checkbox, label.radio {font-weight: normal;}
 legend {
@@ -516,18 +516,20 @@ img.alignright, img.right {margin: 0 0 1em 1.5em;}
 	width: 920px;
 }
 
-
 /* Header */
 #header {padding-top: 24px;}
 
 /* Top */
-#top {padding-bottom: 32px;}
-
+#top {
+  padding-bottom: 15px;
+  margin-bottom: 10px;
+}
 
 /* Logo */
 #logo {	border-right: 1px solid #DDD;
 	padding: 10px 40px 10px 0;
 	margin-right: 40px;
+  display: inline-block;
 }
 #logo img {}
 
@@ -536,51 +538,44 @@ img.alignright, img.right {margin: 0 0 1em 1.5em;}
 
 
 /* Navigation */
-.navigation a {
-	color: #888;
-	text-decoration: none;
-}
-.navigation a:hover {color: #002;}
 .navigation li.current-tab a {color: #222;}
 
 #main-nav li:first-child, #sub-nav li:first-child {margin-left: 0;}
 
 /* Main navigation */
-#main-nav {padding-top: 72px;}
-#main-nav li {margin: 0 1.5em;}
+#main-nav {
+  padding-top: 72px;
+  display: inline-block;
+}
+#main-nav li {
+  margin: 0 1.5em;
+}
 #main-nav a {
 	font-size: 1.8em;
 	line-height: 2em;
 	padding-bottom: 2px;
-}
-#main-nav li.current-tab a {color: #333;}
-#main-nav a:hover {color: #002;}
-#main-nav li.current-tab a {border-bottom: 2px solid #94CC5F;}
-
-
-/* Subnav */
-#sub-nav {
-	border-bottom: 1px solid #DDD;
-	padding: 12px 0;
-}
-#sub-nav a {
-	font-size: 1.2em;
+	color: #888;
 	text-decoration: none;
 }
-#sub-nav li {margin: 0 1em;}
-#sub-nav li.current-tab a {font-weight: bold;}
-
+#main-nav a:hover {
+  color: #002;
+}
+#main-nav li.current-tab a {color: #333;}
+#main-nav li.current-tab a {border-bottom: 2px solid #94CC5F;}
 
 /* Main */
-.main {margin: 24px 0;}
-
-.main#main-two-columns {background: url('img/main-two-columns.gif') repeat-y right top;}
-.main#main-two-columns-left {background: url('img/main-two-columns-left.gif') repeat-y left top;}
-.main#main-two-columns #main-content, .main#main-two-columns-left #main-content {width: 620px;}
+.main {
+  width: 620px;
+  float: left;
+  padding-bottom: 10px;
+}
 
 /* Sidebar */
-#sidebar {width: 255px;}
-
+.sidebar {
+  float: right;
+  padding-top: 20px;
+  padding-bottom: 10px;
+}
 
 /* Columns */
 .col3, .col3-mid {width: 31%;}
@@ -596,15 +591,18 @@ img.alignright, img.right {margin: 0 0 1em 1.5em;}
 	margin-bottom: 16px;
 	padding: 7px 10px 6px;
 }
-#sidebar .section-title {margin-bottom: 8px;}
+.sidebar .section-title {margin-bottom: 8px;}
 
 
 /* Footer */
 
 #footer {
+  clear: both;
+  text-align: center;
 	border-top: 1px solid #DDD;
 	color: #777;
 	padding: 16px 0 4px;
+  margin-top: 20px;
 }
 #footer-left {width: 459px;}
 #footer-right {

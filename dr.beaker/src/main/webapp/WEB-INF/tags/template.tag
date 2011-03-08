@@ -17,34 +17,27 @@
   </head>
   <body>
     <div id="site-wrapper">
-      <div id="header">
-        <div id="top">
-          <div class="left" id="logo">
-            <a href="${contextroot}"><img src="${contextroot}/style/images/logo.gif" alt="" /></a>
-          </div>
-          <div class="left navigation" id="main-nav">
-            <ul class="tabbed">
-              <li <c:if test="${tab == 'index'}">class="current-tab"</c:if>><a href="${contextroot}">Scorebord</a></li>
-              <% if(request.isUserInRole("Moderator")) { %>
-              <li <c:if test="${tab == 'teams'}">class="current-tab"</c:if>><a href="${contextroot}/manage/team">Teams</a></li>
-              <% } %>
-              <% if(request.isUserInRole("Administrator")) { %>
-              <li <c:if test="${tab == 'admin'}">class="current-tab"</c:if>><a href="${contextroot}/admin">Beheer</a></li>
-              <% } %>
-            </ul>
-          </div>
-          <div class="clearer">&nbsp;</div>
+      <div id="top">
+        <div id="logo">
+          <a href="<c:url value="/" />"><img src="<c:url value="/style/images/logo.gif"/>" alt="12 Urenloop" /></a>
         </div>
-        <div class="clearer">&nbsp;</div>
+        <div class="navigation" id="main-nav">
+          <ul class="tabbed">
+            <li <c:if test="${tab == 'index'}">class="current-tab"</c:if>><a href="${contextroot}">Scorebord</a></li>
+            <% if(request.isUserInRole("Moderator")) { %>
+            <li <c:if test="${tab == 'teams'}">class="current-tab"</c:if>><a href="${contextroot}/manage/team">Teams</a></li>
+            <% } %>
+            <% if(request.isUserInRole("Administrator")) { %>
+            <li <c:if test="${tab == 'admin'}">class="current-tab"</c:if>><a href="${contextroot}/admin">Beheer</a></li>
+            <% } %>
+          </ul>
+        </div>
       </div>
-      <div id="splash">
+      <div>
         <jsp:doBody />
       </div>
       <div id="footer">
-        <div class="left" id="footer-left">
-          <p>Deze software werd ontwikkeld door <a href="http://zeus.ugent.be">Zeus WPI</a>,
-            de werkgroep informatica.</p>
-        </div>
+        <p>Deze software werd ontwikkeld door <a href="http://zeus.ugent.be">Zeus WPI</a>, de werkgroep informatica.</p>
       </div>
     </div>
   </body>
