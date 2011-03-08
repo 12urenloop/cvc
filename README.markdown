@@ -82,7 +82,7 @@ Dr. Beaker is now available at http://localhost:8080/dr.beaker/
 
 ### API
 
-- `PUT /api/:mac/laps/add`: Add a lap for a mac address
-- `PUT /api/:mac/laps/add-suspicious` Add a suspicious lap
-
-Exact parameters to be specified later
+- `PUT /api/0.1/{mac}/laps/increase`: Add a lap for a mac address
+Parameters (more might be added later)
+    + speed (double): average m/s
+    + suspicious (boolean): true if the lap is suspicious
