@@ -62,15 +62,15 @@ Create the authentication realm
  * Go to http://localhost:4848
  * Navigate to "Configuration > Security > Realms"
  * Create a new realm with following specifications: (fields not mentioned are empty)
-  + Name = 12UrenLoopRealm
-  + classname = ...JDBCRealm
-  + JAAS Context = jdbcRealm
-  + JNDI = jdbc/score
-  + User Table = USERS
-  + User Name Column = USERNAME
-  + Password Column = PASSWORD
-  + Group Table = USERS_GROUPS
-  + Group Name Column = NAME
+    + Name = 12UrenLoopRealm
+    + classname = ...JDBCRealm
+    + JAAS Context = jdbcRealm
+    + JNDI = jdbc/score
+    + User Table = USERS
+    + User Name Column = USERNAME
+    + Password Column = PASSWORD
+    + Group Table = USERS_GROUPS
+    + Group Name Column = NAME
   + Digest Algorithm = SHA1
   + Encoding = Base64
 
