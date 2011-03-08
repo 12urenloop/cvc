@@ -71,7 +71,7 @@ Create the authentication realm
     + Password Column = PASSWORD
     + Group Table = USERS_GROUPS
     + Group Name Column = NAME
-  + Digest Algorithm = SHA1
-  + Encoding = Base64
+    + Digest Algorithm = SHA1
+    + Encoding = Base64
 
 Dr. Beaker is now available at http://localhost:8080/dr.beaker/
