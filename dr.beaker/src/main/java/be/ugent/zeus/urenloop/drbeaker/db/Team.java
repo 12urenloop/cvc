@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 /**
  *
@@ -16,7 +17,6 @@ import javax.persistence.OneToMany;
  */
 @Entity
 @NamedQueries({
-  @NamedQuery(name = "Team.findByMac", query = "SELECT t from Team t where t.macAddress = :mac"),
   @NamedQuery(name = "Team.all", query = "SELECT t from Team t"),
   @NamedQuery(name = "Team.allByScore", query = "SELECT t from Team t order by t.score desc")
 })
@@ -27,9 +27,10 @@ public class Team implements Serializable {
 
   private String name;
 
-  private String macAddress;
-
   private int score;
+
+  @OneToOne
+  private Stick stick;
 
   @OneToMany(mappedBy = "team")
   private List<HistoryEntry> history;
@@ -40,14 +41,6 @@ public class Team implements Serializable {
 
   public void setId(Long id) {
     this.id = id;
-  }
-
-  public String getMacAddress() {
-    return macAddress;
-  }
-
-  public void setMacAddress(String mac) {
-    this.macAddress = mac;
   }
 
   public void setName (String name) {
@@ -76,6 +69,14 @@ public class Team implements Serializable {
     if (score < 0) {
       score = 0;
     }
+  }
+
+  public Stick getStick() {
+    return stick;
+  }
+
+  public void setStick(Stick stick) {
+    this.stick = stick;
   }
 
   public List<HistoryEntry> getHistory() {

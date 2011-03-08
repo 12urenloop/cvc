@@ -1,6 +1,7 @@
 package be.ugent.zeus.urenloop.drbeaker;
 
 import be.ugent.zeus.urenloop.drbeaker.db.HistoryEntry;
+import be.ugent.zeus.urenloop.drbeaker.db.Stick;
 import be.ugent.zeus.urenloop.drbeaker.db.Team;
 import be.ugent.zeus.urenloop.drbeaker.db.User;
 import java.util.List;
@@ -59,14 +60,28 @@ public class TeamManager {
     }
   }
 
-  public Team get(Long pk) {
-    return em.find(Team.class, pk);
+  public void assign(Team team, Stick stick) {
+    if (team == null) {
+      throw new RuntimeException("No team found!");
+    }
+
+    if (stick == null && team != null) {
+      team.setStick(null);
+      em.merge(team);
+    } else {
+      if (stick.getTeam() != null) {
+        stick.getTeam().setStick(null);
+        em.merge(stick.getTeam());
+      }
+      team.setStick(stick);
+      stick.setTeam(team);
+      em.merge(team);
+      em.merge(stick);
+    }
   }
 
-  public Team get(String mac) {
-    Query query = em.createNamedQuery("Team.findByMac");
-    query.setParameter("mac", mac);
-    return (Team) query.getSingleResult();
+  public Team get(Long pk) {
+    return em.find(Team.class, pk);
   }
 
   public List<Team> get() {
