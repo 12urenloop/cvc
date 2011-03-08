@@ -21,7 +21,8 @@ Executable count-von-count
                      CountVonCount.FiniteChan,
                      CountVonCount.Main,
                      CountVonCount.Receiver,
-                     CountVonCount.Receiver.Stdin
+                     CountVonCount.Receiver.Stdin,
+                     CountVonCount.StationMapper
   Build-depends:     base >= 4 && < 5,
                      deepseq >= 1,
                      containers >= 0.3,
@@ -29,4 +30,8 @@ Executable count-von-count
                      mtl >= 2,
                      statistics >= 0.8,
                      statistics-linreg >= 0.1,
-                     vector >= 0.7
+                     vector >= 0.7,
+                     data-object >= 0.3,
+                     data-object-yaml >= 0.3,
+                     bytestring >= 0.9,
+                     network >= 2.3

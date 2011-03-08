@@ -4,26 +4,29 @@
 module CountVonCount.StationMapper
     ( StationMapper
     , mapStation
+    , loadStationMapper
     ) where
 
-import Control.Applicative ((<$>), (<*>), pure)
-import Control.Monad (mzero, forM)
+import Control.Monad (forM)
 import Data.Monoid (Monoid)
 import Data.Map (Map)
 import qualified Data.Map as M
 
-import qualified Data.Text as T
-import Data.Aeson (FromJSON (..), Value (..))
+import Data.Object (fromMapping, fromScalar)
+import Data.Object.Yaml (YamlObject, fromYamlScalar)
 
 import CountVonCount.Types
 
 newtype StationMapper = StationMapper (Map Station Position)
                       deriving (Show, Monoid)
 
-instance FromJSON StationMapper where
-    parseJSON (Object m) = fmap (StationMapper . M.fromList) $
-        forM (M.toList m) $ \(s, p) -> (,) <$> pure (T.unpack s) <*> parseJSON p
-    parseJSON _ = mzero
+loadStationMapper :: YamlObject -> Maybe StationMapper
+loadStationMapper object = do
+    mapping <- fromMapping object
+    tuples <- forM mapping $ \(k, v) -> do
+        v' <- fromScalar v
+        return (fromYamlScalar k, read $ fromYamlScalar v')
+    return $ StationMapper $ M.fromList tuples
 
 mapStation :: StationMapper -> Station -> Maybe Position
 mapStation (StationMapper m) station = M.lookup station m
