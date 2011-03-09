@@ -14,6 +14,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
 
 /**
  *
@@ -34,7 +35,7 @@ public class SCoreAPI {
 
   @PUT
   @Path("/{mac}/laps/increase/")
-  public boolean addLap(@PathParam("mac") String macAddress,
+  public Response addLap(@PathParam("mac") String macAddress,
           @FormParam("speed") double speed,
           @FormParam("suspicious") boolean suspicious) {
     logger.log(Level.SEVERE, "mac: {0}, speed: {1}, suspicious: {2}", new Object[]{macAddress, speed, suspicious});
@@ -47,7 +48,7 @@ public class SCoreAPI {
     } else {
       teamManager.addTeamLap(team);
     }
-    return true;
+    return Response.ok().build();
   }
 
   @GET
@@ -94,6 +95,8 @@ public class SCoreAPI {
     t3.setName("HILOK");
     t3.setScore(3);
     teamManager.add(t3);
+
+    teamManager.assign(t3, stickManager.get(1));
 
     Team t4 = new Team();
     t4.setName("SK");
