@@ -16,6 +16,7 @@ import CountVonCount.Configuration.Util
 data RestConfiguration = RestConfiguration
     { restHost :: String
     , restPort :: Int
+    , restPath :: String
     } deriving (Show)
 
 loadRestConfiguration :: YamlObject -> Maybe RestConfiguration
@@ -23,3 +24,4 @@ loadRestConfiguration object = do
     mapping <- fromMapping object
     RestConfiguration <$> lookupString "Host" mapping
                       <*> fmap read (lookupString "Port" mapping)
+                      <*> lookupString "Path" mapping
