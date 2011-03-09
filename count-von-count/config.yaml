@@ -1,5 +1,10 @@
 # Example configuration file
 
+# Rest API, talks to dr.beaker
+Rest API:
+  Host: 127.0.0.1
+  Port: 8080
+
 # The station map maps names of stations (these names should equal the names we
 # receive from the input channel) to positions in the circuit. The first station
 # should be at position 0.

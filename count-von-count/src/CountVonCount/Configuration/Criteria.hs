@@ -16,10 +16,11 @@ import Control.Applicative ((<$>))
 import Data.Vector.Generic ((!))
 import qualified Data.Vector.Generic as V
 import Data.Object (fromMapping, lookupScalar)
-import Data.Object.Yaml (YamlObject, fromYamlScalar, toYamlScalar)
+import Data.Object.Yaml (YamlObject, toYamlScalar)
 import Data.Maybe (catMaybes)
 
 import CountVonCount.Types
+import CountVonCount.Configuration.Util
 
 -- | Criterium: we have a significant amount of samples
 --
@@ -95,5 +96,5 @@ loadCriteria object = do
         , distanceTreshold  <$> lookup' "Distance treshold" m
         ]
   where
-    lookup' k m = read . fromYamlScalar <$> lookupScalar (toYamlScalar k) m
+    lookup' k = fmap read . lookupString k
     exists k m = const () <$> lookupScalar (toYamlScalar k) m

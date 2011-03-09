@@ -8,15 +8,18 @@ module CountVonCount.Configuration
 
 import Control.Applicative ((<$>), (<*>))
 
-import Data.Object (lookupObject, lookupScalar, fromMapping)
-import Data.Object.Yaml (YamlObject, toYamlScalar, decodeFile, fromYamlScalar)
+import Data.Object (lookupObject, fromMapping)
+import Data.Object.Yaml (YamlObject, toYamlScalar, decodeFile)
 
 import CountVonCount.Types
+import CountVonCount.Configuration.Rest
 import CountVonCount.Configuration.StationMap
 import CountVonCount.Configuration.Criteria
+import CountVonCount.Configuration.Util
 
 data Configuration = Configuration
-    { configurationStationMap :: StationMap
+    { configurationRest       :: RestConfiguration
+    , configurationStationMap :: StationMap
     , configurationCsvLog     :: FilePath
     , configurationCriteria   :: [Criterium]
     }
@@ -24,12 +27,12 @@ data Configuration = Configuration
 loadConfiguration :: YamlObject -> Maybe Configuration
 loadConfiguration object = do
     m <- fromMapping object
-    Configuration <$> load loadStationMap "Station map" m
-                  <*> lookup' "CSV log" m
+    Configuration <$> load loadRestConfiguration "Rest API" m
+                  <*> load loadStationMap "Station map" m
+                  <*> lookupString "CSV log" m
                   <*> load loadCriteria "Criteria" m
   where
     load f k m = f =<< lookupObject (toYamlScalar k) m
-    lookup' k m = fromYamlScalar <$> lookupScalar (toYamlScalar k) m
 
 loadConfigurationFromFile :: FilePath -> IO (Maybe Configuration)
 loadConfigurationFromFile path = do

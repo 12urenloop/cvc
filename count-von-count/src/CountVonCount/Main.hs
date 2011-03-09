@@ -9,6 +9,7 @@ import CountVonCount.Dispatcher
 import CountVonCount.CsvLog
 import CountVonCount.Receiver.Stdin
 import CountVonCount.Receiver.Socket
+import CountVonCount.Rest
 import CountVonCount.Configuration
 
 main :: IO ()
@@ -21,8 +22,7 @@ main = do
     Just configuration <- loadConfigurationFromFile "config.yaml"
 
     -- Out thread
-    _ <- forkIO $ do
-        runFiniteChan outChan () $ \lap () -> putStrLn $ show lap
+    _ <- forkIO $ runRest configuration outChan
 
     -- Watcher thread
     _ <- forkIO $ do
