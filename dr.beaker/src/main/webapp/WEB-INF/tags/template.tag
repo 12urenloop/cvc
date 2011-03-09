@@ -23,22 +23,25 @@
         </div>
         <div class="navigation" id="main-nav">
           <ul class="tabbed">
-            <li <c:if test="${tab == 'index'}">class="current-tab"</c:if>><a href="${contextroot}">Scorebord</a></li>
-            <% if(request.isUserInRole("Moderator")) { %>
-            <li <c:if test="${tab == 'teams'}">class="current-tab"</c:if>><a href="${contextroot}/manage/team">Teams</a></li>
-            <% } %>
-            <% if(request.isUserInRole("Administrator")) { %>
-            <li <c:if test="${tab == 'admin'}">class="current-tab"</c:if>><a href="${contextroot}/admin">Beheer</a></li>
-            <% } %>
-          </ul>
+            <li <c:if test="${tab == 'index'}">class="current-tab"</c:if>><a href="<c:url value="/" />">Scorebord</a></li>
+            <% if (request.isUserInRole("Moderator")) {%>
+            <li <c:if test="${tab == 'teams'}">class="current-tab"</c:if>><a href="<c:url value="/manage/team" />">Teams</a></li>
+            <% }%>
+            <% if (request.isUserInRole("Administrator")) {%>
+            <li <c:if test="${tab == 'admin'}">class="current-tab"</c:if>><a href="<c:url value="/admin" />">Beheer</a></li>
+            <% }%>
+            <% if (request.getUserPrincipal() == null) {%>
+            <li><a href="<c:url value="/login" />">Login</a></li>
+            <% }%>
+            </ul>
+          </div>
+        </div>
+        <div>
+          <jsp:doBody />
+        </div>
+        <div id="footer">
+          <p>Deze software werd ontwikkeld door <a href="http://zeus.ugent.be">Zeus WPI</a>, de werkgroep informatica.</p>
         </div>
       </div>
-      <div>
-        <jsp:doBody />
-      </div>
-      <div id="footer">
-        <p>Deze software werd ontwikkeld door <a href="http://zeus.ugent.be">Zeus WPI</a>, de werkgroep informatica.</p>
-      </div>
-    </div>
-  </body>
-</html>
+    </body>
+  </html>
