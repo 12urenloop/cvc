@@ -1,5 +1,7 @@
 # encoding: utf-8
 
+require 'socket'
+
 class Random
   def self.rand_between(min, max)
     min + rand * (max - min)
@@ -52,11 +54,12 @@ class Station
 end
 
 class Simulation
-  def initialize(teams, stations, circuit_length)
+  def initialize(teams, stations, circuit_length, output=$stdout)
     @teams = teams
     @stations = stations
     @circuit_length = circuit_length
     @time = 0
+    @output = output
   end
 
   def update(time_diff)
@@ -70,22 +73,37 @@ class Simulation
     @stations.each do |station|
       found = station.scan @teams, @circuit_length
       found.each do |team|
-        puts "#{team} #{@time} #{station.position}"
+        output "#{team} #{@time} #{station.position}"
       end
     end
   end
+
+  private
+
+  def output(string)
+    @output.puts string  
+  end
+
 end
 
 
-def main
+def main(args = {})
+  opts = { time: 2, real_time: false}.merge(args)
   # teams = ['wina', 'vtk', 'geologica', 'chemica'].collect { |n| Team.new n }
   teams = ['wina'].collect { |n| Team.new n }
   stations = (0 .. 3).collect { |x| Station.new x, x * 100 }
   circuit_length = stations.last.position + 100
-  simulation = Simulation.new teams, stations, circuit_length
+
+  output = $stdout
+  if args[:output] == :socket
+    output = TCPSocket.new 'localhost', 9001 
+  end
+
+  simulation = Simulation.new teams, stations, circuit_length, output
 
   1000.times do
-    simulation.update 2
+    simulation.update opts[:time]
+    sleep opts[:time] if opts[:real_time]
   end
 
   File.open 'expected.csv', 'w' do |file|
@@ -95,4 +113,32 @@ def main
   end
 end
 
-main
+require 'optparse'
+
+options = {output: :stdout}
+
+optparse = OptionParser.new do |opts|
+  
+  opts.banner = "Usage: #{__FILE__} [options]"
+
+  opts.on('-t TIME', '--time TIME', 'Set the time between output', Float) do |i|
+    options[:time] = i.to_i
+  end
+
+  opts.on('-r', '--real-time', 'Run in real_time') do
+    options[:real_time] = true
+  end
+
+  opts.on('-s', '--socket', 'Output to localhost:9001') do 
+    options[:output] = :socket
+  end
+
+end
+
+unless ARGV.empty?
+  optparse.parse!(ARGV)
+  main(options)
+else
+  puts optparse
+end
+

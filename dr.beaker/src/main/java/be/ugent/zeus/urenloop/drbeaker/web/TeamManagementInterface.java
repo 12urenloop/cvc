@@ -1,7 +1,9 @@
 package be.ugent.zeus.urenloop.drbeaker.web;
 
 import be.ugent.zeus.urenloop.drbeaker.AuthenticationManager;
+import be.ugent.zeus.urenloop.drbeaker.StickManager;
 import be.ugent.zeus.urenloop.drbeaker.TeamManager;
+import be.ugent.zeus.urenloop.drbeaker.db.Stick;
 import be.ugent.zeus.urenloop.drbeaker.db.Team;
 import be.ugent.zeus.urenloop.drbeaker.db.User;
 import com.sun.jersey.api.view.Viewable;
@@ -23,6 +25,8 @@ public class TeamManagementInterface {
 
   private TeamManager teamManager = TeamManager.lookup();
 
+  private StickManager stickManager = StickManager.lookup();
+
   private AuthenticationManager authManager = AuthenticationManager.lookup();
 
   @GET
@@ -33,12 +37,22 @@ public class TeamManagementInterface {
 
   @POST
   @Path("/add")
-  public Response addNewTeam(@FormParam("teamname") String name, @FormParam("mac") String mac) {
+  public Response addNewTeam(@FormParam("teamname") String name) {
     Team team = new Team();
     team.setName(name);
-    team.setMacAddress(mac);
 
     teamManager.add(team);
+
+    return Response.seeOther(URI.create("/manage/team/")).build();
+  }
+
+  @POST
+  @Path("/stick")
+  public Response assignStick(@FormParam("team") long teamID, @FormParam("stick") long stickID) {
+    Team team = teamManager.get(teamID);
+    Stick stick = stickManager.get(stickID);
+    System.err.println(teamID + " - " + stickID);
+    teamManager.assign(team, stick);
 
     return Response.seeOther(URI.create("/manage/team/")).build();
   }

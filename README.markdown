@@ -56,33 +56,32 @@ Download glassfish from http://glassfish.java.net/ , extract it, and start it by
 
 Install Dr. Beaker on the app-server
 
- * Go to http://localhost:4848
- * Navigate to "Applications" in the menu on the left
- * Choose "Deploy"
- * upload the dr.beaker.war file (located in ./target/ )
+- Go to http://localhost:4848
+- Navigate to "Applications" in the menu on the left
+- Choose "Deploy"
+- upload the dr.beaker.war file (located in ./target/ )
 
 Create the authentication realm
 
- * Go to http://localhost:4848
- * Navigate to "Configuration > Security > Realms"
- * Create a new realm with following specifications: (fields not mentioned are empty)
-    + Name = 12UrenLoopRealm
-    + classname = ...JDBCRealm
-    + JAAS Context = jdbcRealm
-    + JNDI = jdbc/score
-    + User Table = USERS
-    + User Name Column = USERNAME
-    + Password Column = PASSWORD
-    + Group Table = USERS_GROUPS
-    + Group Name Column = NAME
-    + Digest Algorithm = SHA1
-    + Encoding = Base64
+- Go to http://localhost:4848
+- Navigate to "Configuration > Security > Realms"
+- Create a new realm with following specifications: (fields not mentioned are empty)
+    * Name = 12UrenLoopRealm
+    * classname = ...JDBCRealm
+    * JAAS Context = jdbcRealm
+    * JNDI = jdbc/score
+    * User Table = USERS
+    * User Name Column = USERNAME
+    * Password Column = PASSWORD
+    * Group Table = USERS_GROUPS
+    * Group Name Column = NAME
+    * Digest Algorithm = SHA1
+    * Encoding = Base64
 
 Dr. Beaker is now available at http://localhost:8080/dr.beaker/
 
 ### API
 
-- `PUT /api/:mac/laps/add`: Add a lap for a mac address
-- `PUT /api/:mac/laps/add-suspicious` Add a suspicious lap
-
-Exact parameters to be specified later
+- `PUT /api/0.1/{mac}/laps/increase`: Add a lap for a mac address. Parameters (more might be added later):
+    * speed (double): average m/s
+    * suspicious (boolean): true if the lap is suspicious

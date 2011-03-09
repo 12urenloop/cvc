@@ -3,7 +3,7 @@
 
 <%@attribute name="title" %>
 
-<div class="col col-7 col-main">
+<div class="main">
   <h2>${title}</h2>
   <jsp:doBody />
 </div>
