@@ -68,19 +68,19 @@ counter measurement = do
 
 -- | Run a counter
 --
-runCounter :: Configuration                        -- ^ Configuration
-           -> Team                                 -- ^ Identifier
-           -> FiniteChan Measurement               -- ^ In Channel
-           -> FiniteChan (Timestamp, Team, Score)  -- ^ Out Channel
-           -> IO ()                                -- ^ Blocks forever
-runCounter configuration team inChan outChan = do
+runCounter :: Configuration                       -- ^ Configuration
+           -> Mac                                 -- ^ Identifier
+           -> FiniteChan Measurement              -- ^ In Channel
+           -> FiniteChan (Timestamp, Mac, Score)  -- ^ Out Channel
+           -> IO ()                               -- ^ Blocks forever
+runCounter configuration mac inChan outChan = do
     _ <- runFiniteChan inChan emptyCounterState $ \measurement state -> do
         -- Run the pure counter and optionally send the result
         let (timestamp, _) = measurement
             counter' = runReaderT (counter measurement) configuration
             (result, state') = runState counter' state
         case result of Nothing -> return ()
-                       Just s  -> writeFiniteChan outChan (timestamp, team, s)
+                       Just s  -> writeFiniteChan outChan (timestamp, mac, s)
 
         -- Yield the state for the next iteration
         return state'

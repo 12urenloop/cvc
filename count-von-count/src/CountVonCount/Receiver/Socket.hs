@@ -36,6 +36,6 @@ socketReceiver port chan = withSocketsDo $ do
   where
     receive sock = do
         bs <- recv sock 1024
-        let [team, timestamp, position] = words $ SBC.unpack bs
-        writeFiniteChan chan (team, (read timestamp, read position))
+        let [mac, timestamp, position] = words $ SBC.unpack bs
+        writeFiniteChan chan (mac, (read timestamp, read position))
         sClose sock

@@ -4,7 +4,7 @@
 Rest API:
   Host: 10.1.2.35
   Port: 8080
-  Path: /dr.beaker
+  Path: dr.beaker
 
 # The station map maps names of stations (these names should equal the names we
 # receive from the input channel) to positions in the circuit. The first station

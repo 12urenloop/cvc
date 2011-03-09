@@ -20,5 +20,5 @@ stdinReceiver chan = do
     endFiniteChan chan
   where
     parse line =
-        let [team, timestamp, position] = words line
-        in (team, (read timestamp, read position))
+        let [mac, timestamp, position] = words line
+        in (mac, (read timestamp, read position))

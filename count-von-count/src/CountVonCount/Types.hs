@@ -3,7 +3,7 @@ module CountVonCount.Types
     , Position
     , Timestamp
     , Timediff
-    , Team
+    , Mac
     , Sensor
     , Measurement
     , Line (..)
@@ -22,7 +22,7 @@ type Station = String
 type Position = Double
 type Timestamp = Double
 type Timediff = Double
-type Team = String
+type Mac = String
 type Sensor = String
 
 type Measurement = (Timestamp, Position)
