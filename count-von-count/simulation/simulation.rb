@@ -2,6 +2,7 @@
 
 require 'socket'
 
+
 class Random
   def self.rand_between(min, max)
     min + rand * (max - min)
@@ -9,10 +10,10 @@ class Random
 end
 
 class Team
-  attr_reader :position, :name, :laps
+  attr_reader :position, :mac, :laps
 
-  def initialize(name, min_speed = 2, max_speed = 10)
-    @name = name
+  def initialize(mac, min_speed = 2, max_speed = 10)
+    @mac = mac
     @min_speed = min_speed
     @max_speed = max_speed
     @position = 0
@@ -32,7 +33,7 @@ class Team
   end
 
   def to_s
-    name
+    mac
   end
 end
 
