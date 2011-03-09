@@ -77,7 +77,8 @@ class Simulation
 end
 
 
-def main
+def main(args = {})
+  opts = { time: 2, real_time: false}.merge(args)
   # teams = ['wina', 'vtk', 'geologica', 'chemica'].collect { |n| Team.new n }
   teams = ['wina'].collect { |n| Team.new n }
   stations = (0 .. 3).collect { |x| Station.new x, x * 100 }
@@ -85,7 +86,8 @@ def main
   simulation = Simulation.new teams, stations, circuit_length
 
   1000.times do
-    simulation.update 2
+    simulation.update opts[:time]
+    sleep opts[:time] if opts[:real_time]
   end
 
   File.open 'expected.csv', 'w' do |file|
@@ -95,4 +97,28 @@ def main
   end
 end
 
-main
+require 'optparse'
+
+options = {}
+
+optparse = OptionParser.new do |opts|
+  
+  opts.banner = "Usage: #{__FILE__} [options]"
+
+  opts.on('-t TIME', '--time TIME', 'Set the time between values', Float) do |i|
+    options[:time] = i.to_i
+  end
+
+  opts.on('-r', '--real-time', 'Run in real_time') do
+    options[:real_time] = true
+  end
+
+end
+
+unless ARGV.empty?
+  optparse.parse!(ARGV)
+  main(options)
+else
+  puts optparse
+end
+
