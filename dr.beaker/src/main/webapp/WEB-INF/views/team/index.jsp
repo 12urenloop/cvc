@@ -36,7 +36,6 @@
       teams = {
         init : function () {
           $("#add-team-form").submit(this.addNewTeam);
-          console.log("woot");
         },
         addNewTeam : function () {
           $.ajax({
@@ -44,6 +43,7 @@
             url:'<c:url value="/api/teams/"/>',
             data:'name=' + $(this).find("#teamname").val(),
             success : function (data) {
+              // update the table with all teams
               html = '<tr><td>' + data['name'] + '</td><td style="text-align: right">';
               if (data.sticj != null) {
                 html += '<strong>' + data.stick.id + '</strong><small>' + data.stick.mac + '</small>';
@@ -52,6 +52,10 @@
               }
               html += '</td></tr>';
               $('#scoreboard tbody tr:first').before(html);
+
+              // update the selector for the stick assignment
+              html = '<option value="' + data.id + '">' + data.name + '</option>';
+              $('#team-selector option:first').before(html);
             }
           }).error(function(){console.log("ERROR!")});
           return false;
@@ -72,7 +76,7 @@
     <h3>Assign stick to team</h3>
     <form method="POST" action="<c:url value="/manage/team/stick/" />" class="form">
       <label for="team">Team</label>
-      <select name="team">
+      <select id="team-selector" name="team">
         <c:forEach items="${it}" var="team">
           <option value="${team.id}">${team.name}</option>
         </c:forEach>
