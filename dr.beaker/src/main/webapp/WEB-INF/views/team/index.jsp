@@ -54,7 +54,7 @@
               $('#scoreboard tbody tr:first').before(html);
 
               // update the selector for the stick assignment
-              html = '<option value="' + data.id + '">' + data.name + '</option>';
+              html = '<option value="' + data.id + '" selected="selected">' + data.name + '</option>';
               $('#team-selector option:first').before(html);
             }
           }).error(function(){console.log("ERROR!")});

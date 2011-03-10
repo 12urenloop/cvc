@@ -7,12 +7,12 @@
 
 <% if (request.isUserInRole("Moderator")) {%>
 <script language="javascript">
-  $(function() {
+  /*$(function() {
     $("#bonus").submit(function () {
       alert("submitted!");
       return false;
     });
-  });
+  });*/
 </script>
 
 <h3>Bonuspunten toekennen</h3>
