@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -18,6 +20,7 @@ import javax.persistence.OneToOne;
 @NamedQueries({
   @NamedQuery(name = "Stick.findByMac", query = "SELECT s from Stick s where s.mac = :mac")
 })
+@XmlRootElement
 public class Stick implements Serializable {
   private static final long serialVersionUID = 1L;
 
@@ -46,6 +49,7 @@ public class Stick implements Serializable {
     this.mac = mac;
   }
 
+  @XmlTransient
   public Team getTeam() {
     return team;
   }

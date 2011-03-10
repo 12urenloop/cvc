@@ -13,7 +13,6 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 /**
@@ -30,6 +29,14 @@ public class TeamManager {
 
   public void add(Team team) {
     em.persist(team);
+  }
+
+  public void update(Team team) {
+    em.merge(team);
+  }
+
+  public void delete(Team team) {
+    em.remove(team);
   }
 
   public void addTeamBonus(User user, Team team, int bonus, String reason) {
