@@ -1,19 +1,14 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
   "http://www.w3.org/TR/html4/loose.dtd">
-
-<%@tag description="Global page template" pageEncoding="UTF-8"%>
-
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <%@attribute name="title"%>
 <%@attribute name="tab" %>
-
-<c:set var="contextroot" value="${pageContext.request.contextPath}" />
-
 <html>
   <head>
     <title>${title}</title>
-    <link rel="stylesheet" type="text/css" href="${contextroot}/style/style.css" />
+    <link rel="stylesheet" type="text/css" href="<c:url value="/style/style.css"/>">
+    <script src="<c:url value="/javascript/jquery.js" />" language="javascript"></script>
   </head>
   <body>
     <div id="site-wrapper">

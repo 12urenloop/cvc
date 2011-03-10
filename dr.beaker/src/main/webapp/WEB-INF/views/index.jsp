@@ -3,8 +3,6 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="ul" tagdir="/WEB-INF/tags" %>
 
-<c:set var="contextroot" value="${pageContext.request.contextPath}" />
-
 <ul:template title="12 Urenloop - Scorebord" tab="index">
   <ul:main title="Scorebord">
     <table class="scoreboard">
