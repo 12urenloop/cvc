@@ -85,3 +85,7 @@ Dr. Beaker is now available at http://localhost:8080/dr.beaker/
 - `PUT /api/0.1/{mac}/laps/increase`: Add a lap for a mac address. Parameters (more might be added later):
     * speed (double): average m/s
     * suspicious (boolean): true if the lap is suspicious
+
+macalive
+--------
+Checks if a bluetooth device is still alive using the hcitool command.
