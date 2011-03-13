@@ -92,13 +92,22 @@ public class TeamManager {
   }
 
   public List<Team> get() {
-    TypedQuery query = em.createNamedQuery("Team.all", Team.class);
-    return query.getResultList();
+    return doQuery("Team.all");
   }
 
-  public List<Team> getByScore() {
-    TypedQuery query = em.createNamedQuery("Team.allByScore", Team.class);
-    return query.getResultList();
+  public List<Team> get(String sortOrder) {
+    String query;
+    if ("score".equals(sortOrder)) {
+      query = "Team.allByScore";
+    } else {
+      query = "Team.all";
+    }
+    return doQuery(query);
+  }
+
+  private List<Team> doQuery(String query) {
+    TypedQuery q = em.createNamedQuery(query, Team.class);
+    return q.getResultList();
   }
 
   public List<HistoryEntry> getHistory() {

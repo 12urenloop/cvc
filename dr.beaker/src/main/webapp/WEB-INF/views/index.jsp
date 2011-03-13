@@ -5,7 +5,9 @@
 
 <ul:template title="12 Urenloop - Scorebord" tab="index">
   <ul:main title="Scorebord">
-    <table class="scoreboard">
+    <script type="text/javascript" src="<c:url value="/javascript/scoreboard.js"/>"></script>
+    <a id="autorefresh-toggle" href="#"> Toggle autorefresh</a>
+    <table class="scoreboard" id="scoreboard">
       <tbody>
       <c:forEach items="${it}" var="team">
         <tr>
