@@ -12,7 +12,7 @@ LASTSEEN=$STARTTIME
 MISSEDTICKS=0
 
 while [ $MISSEDTICKS -lt $2 ]; do
-	hcitool inq | awk -v mac="$1" -f contains.awk
+	hcitool inq --flush | awk -v mac="$1" -f contains.awk
 
 	if [ $? -eq 0 ]; then
 		echo "$1 is still alive"
@@ -22,7 +22,6 @@ while [ $MISSEDTICKS -lt $2 ]; do
 		let "MISSEDTICKS += 1"
 		echo "$1 missed $MISSEDTICKS tick(s)"
 	fi
-	sleep 10 # Sleep this long because hcitool doesnt refresh for another 10 seconds
 done
 
 echo
