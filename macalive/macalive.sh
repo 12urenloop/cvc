@@ -15,12 +15,12 @@ while [ $MISSEDTICKS -lt $2 ]; do
 	hcitool inq --flush | awk -v mac="$1" -f contains.awk
 
 	if [ $? -eq 0 ]; then
-		echo "$1 is still alive"
+		echo "[" `date` "] $1 is still alive"
 		LASTSEEN=`date`
 		let 'MISSEDTICKS = 0'
 	else
 		let "MISSEDTICKS += 1"
-		echo "$1 missed $MISSEDTICKS tick(s)"
+		echo "[" `date` "] $1 missed $MISSEDTICKS tick(s)"
 	fi
 done
 
