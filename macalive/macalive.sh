@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ $# -lt 2 ]; then
+	echo "Usage: ./macalive.sh <mac addy> <amount of ticks allowed to miss>"
+	exit 42
+fi
+
 echo "Checking how long $1 stays alive. Allowed to miss $2 inquiries."
 
 STARTTIME=`date`
