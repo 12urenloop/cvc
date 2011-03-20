@@ -3,10 +3,10 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="ul" tagdir="/WEB-INF/tags" %>
 
-<ul:template title="12 Urenloop - Scorebord" tab="index">
-  <ul:main title="Scorebord">
+<ul:page title="12 Urenloop - Scorebord" tab="index">
+  <ul:onecol title="Scorebord">
     <script type="text/javascript" src="<c:url value="/javascript/scoreboard.js"/>"></script>
-    <a id="autorefresh-toggle" href="#"> Toggle autorefresh</a>
+    <span style="width: 100%; display: inline-block; text-align: right;"><a id="autorefresh-toggle" href="#"> Toggle autorefresh</a></span>
     <table class="scoreboard" id="scoreboard">
       <tbody>
       <c:forEach items="${it}" var="team">
@@ -17,8 +17,5 @@
       </c:forEach>
       </tbody>
     </table>
-  </ul:main>
-  <ul:side>
-    <ul:bonus teams="${it}"/>
-  </ul:side>
-</ul:template>
+  </ul:onecol>
+</ul:page>

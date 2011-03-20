@@ -30,7 +30,7 @@
     </web-resource-collection>
     <auth-constraint>
       <description/>
-      <role-name>Administrator</role-name>
+      <role-name>Moderator</role-name>
     </auth-constraint>
     <user-data-constraint>
       <description/>
