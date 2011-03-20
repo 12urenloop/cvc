@@ -4,6 +4,7 @@
 
 <%@attribute name="title"%>
 <%@attribute name="tab" %>
+<%@attribute name="cols" %>
 <html>
   <head>
     <title>${title}</title>
@@ -46,7 +47,18 @@
         </c:if>
         <div class="clearer">&nbsp;</div>
       </div>
-      <jsp:doBody />
+      <c:choose>
+        <c:when test="${cols == 2}">
+          <div class="main" id="main-two-columns">
+            <jsp:doBody />
+          </div>
+        </c:when>
+        <c:otherwise>
+          <div class="main">
+            <jsp:doBody />
+          </div>
+        </c:otherwise>
+      </c:choose>
       <div id="footer">
         <p>Deze software werd ontwikkeld door <a href="http://zeus.ugent.be">Zeus WPI</a>, de werkgroep informatica.</p>
       </div>
