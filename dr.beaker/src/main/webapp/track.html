@@ -1,0 +1,80 @@
+<html>
+	<head>
+		<META NAME="AUTHOR" CONTENT="Jens Timmerman">
+		<title>Track</title>
+		<SCRIPT LANGUAGE="JavaScript" SRC="barchart.js"></SCRIPT>
+		<script type="text/javascript">
+			window.onresize = refresh;
+			//draws the track, this is the red and green part
+			function draw(){
+				var canvas=document.getElementById("track");
+				var ctx = canvas.getContext('2d');
+				ctx.canvas.width  = window.innerWidth;
+  				ctx.canvas.height = window.innerHeight;
+				var width=ctx.canvas.width;
+				var height=ctx.canvas.height;
+				var edgewidth=Math.min(width,height)/5;
+				ctx.beginPath();
+				ctx.arc(height/2+1,height/2+1,height/2,Math.PI/2,Math.PI/2*3,false);
+				ctx.lineTo(width-height+1,1);
+				ctx.arc(width-height/2+1,height/2+1,height/2,Math.PI/2*3,Math.PI/2,false);
+				ctx.closePath();
+				ctx.fillStyle = "red";
+				ctx.fill();
+				
+				ctx.beginPath();
+                                ctx.arc(height/2+1,height/2+1,height/2-edgewidth,Math.PI/2,Math.PI/2*3,false);
+                                ctx.lineTo(width-height+1,1+edgewidth);
+                                ctx.arc(width-height/2+1,height/2+1,height/2-edgewidth,Math.PI/2*3,Math.PI/2,false);
+                                ctx.closePath();
+                                ctx.fillStyle = "green";
+                                ctx.fill();
+				
+			}
+			//returns a random color
+			function get_random_color() {
+				return "#"+((1<<24)*Math.random()|0).toString(16)
+			}
+			//draws the bar chart in the middle of the canvas
+			function makeBarChart(){
+				var context = document.getElementById("track").getContext("2d");
+				var width=context.canvas.width;
+				var height=context.canvas.height;
+				var edgewidth=Math.min(width,height)/5;
+				
+				
+				// Bar chart data
+				  var data = new Array(5);
+				  data[0] = "apples,200";
+				  data[1] = "oranges,120";
+				  data[2] = "bananas,80";
+				  data[3] = "kiwis,230";
+				  data[4] = "tangarines,340";
+				//colors
+				var colors = new Array(5);
+				for (var i=0; i < data.length; i++) {
+					 colors[i] = get_random_color();
+				}
+				  // Draw the bar chart
+				 //drawBarChart(context, data, startX, startY,chartWidth, chartHeight, markDataIncrementsIn,border,textsize,colors)
+				  drawBarChart(context, data, edgewidth*2,height-edgewidth,(width-edgewidth*4), (height - edgewidth*2), 50,50,10,colors);
+			}
+			function refresh(){
+				draw();
+				makeBarChart();
+			}
+		</script>
+		<style type="text/css">
+			/* this is needed for auto filling full window */
+			html,body {
+			  width:  100%;
+  			  height: 100%;
+  			  margin: 0px;
+			}
+		</style> 
+	</head>
+	<body onload="draw();makeBarChart();">
+		<!-- we need a canvas element to draw upon -->
+		<canvas width=901 height=301 id="track">This page needs support for the 'canvas' element</canvas>
+	</body>
+</html>
