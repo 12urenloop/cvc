@@ -26,8 +26,8 @@ public class AdminInterface {
 
   @GET
   @Path("/")
-  public Viewable index() {
-    return new Viewable("/admin/index.jsp", new Object[]{authManager.getUsers(), authManager.getGroups()});
+  public Response index() {
+    return Response.seeOther(URI.create("/admin/laps/special")).build();
   }
 
   @GET
@@ -35,6 +35,19 @@ public class AdminInterface {
   public Viewable showGlobalScoreHistory() {
     List<HistoryEntry> history = teamManager.getHistory();
     return new Viewable("/admin/history.jsp", history);
+  }
+
+  @GET
+  @Path("/laps/special")
+  public Viewable showSpecialLaps() {
+    List<HistoryEntry> history = teamManager.getHistory();
+    return new Viewable("/admin/speciallaps.jsp", history);
+  }
+
+  @GET
+  @Path("/users")
+  public Viewable showUsers() {
+    return new Viewable("/admin/index.jsp", new Object[]{authManager.getUsers(), authManager.getGroups()});
   }
 
   @POST
@@ -65,4 +78,11 @@ public class AdminInterface {
     }
     return Response.seeOther(URI.create("/admin/")).build();
   }
+
+  @GET
+  @Path("/teams")
+  public Viewable showTeams() {
+    return new Viewable("/admin/teams.jsp", teamManager.get());
+  }
+
 }
