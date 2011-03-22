@@ -30,6 +30,10 @@ function drawBarChart(context, data, startX,startY, chartWidth, chartHeight, mar
     context.fillStyle = colors[i];
     var scaledheight=height/(maxValue)*(chartHeight-border*2);
     drawRectangle(context,startX +border + ((i+1) * barWidth) + i,startY-scaledheight-border,barWidth*.9,scaledheight-textsize,true);
+    //add black border around bar	
+    context.strokeStyle = "#000";
+    drawRectangle(context,startX +border + ((i+1) * barWidth) + i,startY-scaledheight-border,barWidth*.9,scaledheight-textsize,false);
+
 	
     // Add the column title to the x-axis
     context.textAlign = "left";
@@ -37,6 +41,7 @@ function drawBarChart(context, data, startX,startY, chartWidth, chartHeight, mar
     context.fillText(name, startX +border+ ((i+1) * barWidth) + i, startY-border , barWidth*.9);		
   }
   // Add some data markers to the y-axis
+  var markDataIncrementsIn =Math.round( (height-2*border ) / textsize*10);
   var numMarkers = Math.ceil(maxValue / markDataIncrementsIn);
   context.textAlign = "right";
   context.fillStyle = "#000";
@@ -63,5 +68,7 @@ function drawRectangle(contextO, x, y, w, h, fill) {
   contextO.rect(x, y, w, h);
   contextO.closePath();
   contextO.stroke();
-  if (fill) contextO.fill();
+  if (fill){
+     contextO.fill();
+  }
 }

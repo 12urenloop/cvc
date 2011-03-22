@@ -3,6 +3,7 @@
 		<META NAME="AUTHOR" CONTENT="Jens Timmerman">
 		<title>Track</title>
 		<SCRIPT LANGUAGE="JavaScript" SRC="barchart.js"></SCRIPT>
+		<SCRIPT LANGUAGE="JavaScript" SRC="hsv.js"></SCRIPT>
 		<script type="text/javascript">
 			window.onresize = refresh;
 			//global variables
@@ -29,7 +30,7 @@
 				ctx.lineTo(width-height+1,1);
 				ctx.arc(width-height/2+1,height/2+1,height/2,Math.PI/2*3,Math.PI/2,false);
 				ctx.closePath();
-				ctx.fillStyle = "red";
+				ctx.fillStyle = "#8c1414";
 				ctx.fill();
 				
 				ctx.beginPath();
@@ -37,7 +38,7 @@
                                 ctx.lineTo(width-height+1,1+edgewidth);
                                 ctx.arc(width-height/2+1,height/2+1,height/2-edgewidth,Math.PI/2*3,Math.PI/2,false);
                                 ctx.closePath();
-                                ctx.fillStyle = "green";
+                                ctx.fillStyle = "#567317";
                                 ctx.fill();
 				
 			}
@@ -63,7 +64,7 @@
 	 			  data[8] = "tangarines,340";
 	 			  data[9] = "tangarines,340";
 	 			  data[10] = "tangarines,340";
-	 			  data[11] = "tangarines,340";
+	 			  data[11] = "tangarines,1340";
 	 			  data[12] = "tangarines,340";
 	 			  data[13] = "tangarines,340";
 	 			  data[14] = "tangarines,340";
@@ -74,9 +75,9 @@
 				  data[19] = "kiwis,230";
 				//colors
 				//TODO: testcolors here, get a designer to come up with a nice list of colors
-				var colors = new Array(data.length);
+				var colors= new Array(data.length);
 				for (var i=0; i < data.length; i++) {
-					 colors[i] = get_random_color();
+					 colors[i] = "#" + hsv2hex(360/data.length*i,75,75); //evenly spaced out colors, not to bright
 				}
 
 				  // Draw the bar chart
