@@ -17,8 +17,8 @@ function drawBarChart(context, data, startX,startY, chartWidth, chartHeight, mar
     var height = parseInt(values[1]);
     if (parseInt(height) > parseInt(maxValue)) maxValue = height;
   }
-  //border should also scale barwidth
-  barWidth = (chartWidth-border*2)/data.length;
+  //border should also scale barwidth + 1extra bar for markerValues
+  barWidth = (chartWidth-border*2)/(data.length+1);
   for (var i=0; i < data.length; i++) {
     // Extract the data
     var values = data[i].split(",");
@@ -29,12 +29,12 @@ function drawBarChart(context, data, startX,startY, chartWidth, chartHeight, mar
     // leave 10% gap between bars
     context.fillStyle = colors[i];
     var scaledheight=height/(maxValue)*(chartHeight-border*2);
-    drawRectangle(context,startX +border + (i * barWidth) + i,startY-scaledheight-border,barWidth*.9,scaledheight-textsize,true);
+    drawRectangle(context,startX +border + ((i+1) * barWidth) + i,startY-scaledheight-border,barWidth*.9,scaledheight-textsize,true);
 	
     // Add the column title to the x-axis
     context.textAlign = "left";
     context.fillStyle = "#000";
-    context.fillText(name, startX +border+ (i * barWidth) + i, startY-border , 200);		
+    context.fillText(name, startX +border+ ((i+1) * barWidth) + i, startY-border , barWidth*.9);		
   }
   // Add some data markers to the y-axis
   var numMarkers = Math.ceil(maxValue / markDataIncrementsIn);
@@ -42,7 +42,7 @@ function drawBarChart(context, data, startX,startY, chartWidth, chartHeight, mar
   context.fillStyle = "#000";
   var markerValue = 0;
   for (var i=0; i < numMarkers; i++) {		
-    context.fillText(markerValue, (startX+border-textsize), (startY-border - markerValue/(maxValue)*(chartHeight-border*2)), 50);
+    context.fillText(markerValue, (startX+border+barWidth*.8), (startY-border - markerValue/(maxValue)*(chartHeight-border*2)), barWidth*.9);
     markerValue += markDataIncrementsIn;
   }
 }
