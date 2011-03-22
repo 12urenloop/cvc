@@ -17,7 +17,8 @@ function drawBarChart(context, data, startX,startY, chartWidth, chartHeight, mar
     var height = parseInt(values[1]);
     if (parseInt(height) > parseInt(maxValue)) maxValue = height;
   }
-  barWidth = (chartWidth-border)/data.length
+  //border should also scale barwidth
+  barWidth = (chartWidth-border*2)/data.length;
   for (var i=0; i < data.length; i++) {
     // Extract the data
     var values = data[i].split(",");

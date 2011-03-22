@@ -9,15 +9,21 @@
 			var laps; //number of laps per team
 			var totaldist = 350; //total distance around the track
 
+			var width;
+			var height;
+			var edgewidth;
 			//draws the track, this is the red and green part
 			function draw(){
 				var canvas=document.getElementById("track");
 				var ctx = canvas.getContext('2d');
 				ctx.canvas.width  = window.innerWidth;
   				ctx.canvas.height = window.innerHeight;
-				var width=ctx.canvas.width;
-				var height=ctx.canvas.height;
-				var edgewidth=Math.min(width,height)/5;
+				width=ctx.canvas.width;
+				height=ctx.canvas.height;
+				edgewidth=Math.min(width,height)/10;
+				if (width < height){
+					height = width;
+				}
 				ctx.beginPath();
 				ctx.arc(height/2+1,height/2+1,height/2,Math.PI/2,Math.PI/2*3,false);
 				ctx.lineTo(width-height+1,1);
@@ -42,29 +48,40 @@
 			//draws the bar chart in the middle of the canvas
 			function makeBarChart(){
 				var context = document.getElementById("track").getContext("2d");
-				var width=context.canvas.width;
-				var height=context.canvas.height;
-				var edgewidth=Math.min(width,height)/5;
-				
-				
+	
 				// Bar chart data
 				//TODO: testdata here, use global var laps once drawprogress is finished
-				  var data = new Array(5);
+				  var data = new Array(20);
 				  data[0] = "apples,200";
 				  data[1] = "oranges,120";
 				  data[2] = "bananas,80";
 				  data[3] = "kiwis,230";
-				  data[4] = "tangarines,340";
+	 			  data[4] = "tangarines,340";
+	 			  data[5] = "tangarines,340";
+	 			  data[6] = "tangarines,340";
+	 			  data[7] = "tangarines,340";
+	 			  data[8] = "tangarines,340";
+	 			  data[9] = "tangarines,340";
+	 			  data[10] = "tangarines,340";
+	 			  data[11] = "tangarines,340";
+	 			  data[12] = "tangarines,340";
+	 			  data[13] = "tangarines,340";
+	 			  data[14] = "tangarines,340";
+				  data[15] = "kiwis,230";
+				  data[16] = "kiwis,230";
+				  data[17] = "kiwis,230";
+				  data[18] = "kiwis,230";
+				  data[19] = "kiwis,230";
 				//colors
 				//TODO: testcolors here, get a designer to come up with a nice list of colors
-				var colors = new Array(5);
+				var colors = new Array(data.length);
 				for (var i=0; i < data.length; i++) {
 					 colors[i] = get_random_color();
 				}
 
 				  // Draw the bar chart
 				 //drawBarChart(context, data, startX, startY,chartWidth, chartHeight, markDataIncrementsIn,border,textsize,colors)
-				  drawBarChart(context, data, edgewidth*2,height-edgewidth,(width-edgewidth*4), (height - edgewidth*2), 50,50,10,colors);
+				  drawBarChart(context, data, edgewidth*2,height-edgewidth,(width-edgewidth*4), (height - edgewidth*2), 50,edgewidth,10,colors);
 			}
 			//draws the progress of runners on the track, bassed on rought estimates
 			//call this after the predicted time for the runner to complete his track
