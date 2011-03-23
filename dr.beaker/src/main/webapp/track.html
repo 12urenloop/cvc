@@ -1,0 +1,138 @@
+<html>
+	<head>
+		<META NAME="AUTHOR" CONTENT="Jens Timmerman">
+		<title>Track</title>
+		<SCRIPT LANGUAGE="JavaScript" SRC="barchart.js"></SCRIPT>
+		<SCRIPT LANGUAGE="JavaScript" SRC="hsv.js"></SCRIPT>
+		<script type="text/javascript">
+			window.onresize = refresh;
+			//global variables
+			var laps; //number of laps per team
+			var totaldist = 350; //total distance around the track
+
+			var width;
+			var height;
+			var edgewidth;
+			//draws the track, this is the red and green part
+			function draw(){
+				var canvas=document.getElementById("track");
+				var ctx = canvas.getContext('2d');
+				ctx.canvas.width  = window.innerWidth;
+  				ctx.canvas.height = window.innerHeight;
+				width=ctx.canvas.width;
+				height=ctx.canvas.height;
+				edgewidth=Math.min(width,height)/10;
+				if (width < height){
+					height = width;
+				}
+				ctx.beginPath();
+				ctx.arc(height/2+1,height/2+1,height/2,Math.PI/2,Math.PI/2*3,false);
+				ctx.lineTo(width-height+1,1);
+				ctx.arc(width-height/2+1,height/2+1,height/2,Math.PI/2*3,Math.PI/2,false);
+				ctx.closePath();
+				ctx.fillStyle = "#8c1414";
+				ctx.fill();
+				
+				ctx.beginPath();
+                                ctx.arc(height/2+1,height/2+1,height/2-edgewidth,Math.PI/2,Math.PI/2*3,false);
+                                ctx.lineTo(width-height+1,1+edgewidth);
+                                ctx.arc(width-height/2+1,height/2+1,height/2-edgewidth,Math.PI/2*3,Math.PI/2,false);
+                                ctx.closePath();
+                                ctx.fillStyle = "#567317";
+                                ctx.fill();
+				
+			}
+			//returns a random color
+			function get_random_color() {
+				return "#"+((1<<24)*Math.random()|0).toString(16)
+			}
+			//draws the bar chart in the middle of the canvas
+			function makeBarChart(){
+				var context = document.getElementById("track").getContext("2d");
+	
+				// Bar chart data
+				//TODO: testdata here, use global var laps once drawprogress is finished
+				  var data = new Array(20);
+				  data[0] = "apples,200";
+				  data[1] = "oranges,120";
+				  data[2] = "bananas,80";
+				  data[3] = "kiwis,230";
+	 			  data[4] = "tangarines,340";
+	 			  data[5] = "tangarines,340";
+	 			  data[6] = "tangarines,340";
+	 			  data[7] = "tangarines,340";
+	 			  data[8] = "tangarines,340";
+	 			  data[9] = "tangarines,340";
+	 			  data[10] = "tangarines,340";
+	 			  data[11] = "tangarines,1340";
+	 			  data[12] = "tangarines,340";
+	 			  data[13] = "tangarines,340";
+	 			  data[14] = "tangarines,340";
+				  data[15] = "kiwis,230";
+				  data[16] = "kiwis,230";
+				  data[17] = "kiwis,230";
+				  data[18] = "kiwis,230";
+				  data[19] = "kiwis,230";
+				//colors
+				//TODO: testcolors here, get a designer to come up with a nice list of colors
+				var colors= new Array(data.length);
+				for (var i=0; i < data.length; i++) {
+					 colors[i] = "#" + hsv2hex(360/data.length*i,75,75); //evenly spaced out colors, not to bright
+				}
+
+				  // Draw the bar chart
+				 //drawBarChart(context, data, startX, startY,chartWidth, chartHeight, markDataIncrementsIn,border,textsize,colors)
+				  drawBarChart(context, data, edgewidth*2,height-edgewidth,(width-edgewidth*4), (height - edgewidth*2), 50,edgewidth,10,colors);
+			}
+			//draws the progress of runners on the track, bassed on rought estimates
+			//call this after the predicted time for the runner to complete his track
+			//if a runner comes came in early, speed up the estimated speed so he arrives next round with new time aswell
+			//if a runner comes in late don't let him stop, speed down the estimated speed with 10%
+			//TODO: you'll have to refresh this page if a new team joins, make checkteams button? 
+			var laptimes; //TODO: make dictionary here
+			function drawProgress(teamid){
+				//get new laptimes
+				//var newlaps = getCurrentLaps();
+				//TODO: convert pseudocode into real javascript 
+				//if newlaps[team] > laps[team]	 //runner came in early
+					//new prediction is currentlength - 5%
+					//update new prediction
+					//laptimes[team] = laptimes[team] *.95 -1
+				//else //runner didn't come in yet, estimate next round to be 10% slower then current prediction
+					//laptimes[team] = laptimes[team]*1.1+1
+
+				//Do animation for new round
+				//TODO: do animation
+	
+				//update global variable 
+				//laps = newlaps
+				//call this function again in predicted time
+				//setTimeout(drawProgress(teamid),laptimes[team])
+			}
+			function refresh(){
+				draw();
+				makeBarChart();
+			}
+			function start(){
+				refresh();
+				setInterval(makeBarChart,30000); //update the barchart every 30sec's
+				//get teams
+				var teams = getTeams();
+				//for team in teams //set up the drawProgress function to start in 100sec's
+					setTimeout(drawProgress(team), 100000);
+			}
+		</script>
+		<style type="text/css">
+			/* this is needed for auto filling full window */
+			html,body {
+			  width:  100%;
+  			  height: 100%;
+  			  margin: 0px;
+			}
+		</style> 
+	</head>
+	<body onload="start()">
+		<!-- we need a canvas element to draw upon -->
+		<canvas width=901 height=301 id="track">This page needs support for the 'canvas' element</canvas>
+	</body>
+</html>

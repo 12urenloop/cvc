@@ -10,6 +10,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -20,7 +22,9 @@ import javax.persistence.OneToOne;
   @NamedQuery(name = "Team.all", query = "SELECT t from Team t order by t.name asc"),
   @NamedQuery(name = "Team.allByScore", query = "SELECT t from Team t order by t.score desc")
 })
+@XmlRootElement
 public class Team implements Serializable {
+
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
@@ -43,11 +47,11 @@ public class Team implements Serializable {
     this.id = id;
   }
 
-  public void setName (String name) {
+  public void setName(String name) {
     this.name = name;
   }
 
-  public String getName () {
+  public String getName() {
     return name;
   }
 

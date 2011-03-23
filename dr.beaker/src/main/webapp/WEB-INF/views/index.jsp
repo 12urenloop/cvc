@@ -3,22 +3,20 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="ul" tagdir="/WEB-INF/tags" %>
 
-<c:set var="contextroot" value="${pageContext.request.contextPath}" />
-
-<ul:template title="12 Urenloop - Scorebord" tab="index">
-  <ul:main title="Scorebord">
-    <table class="scoreboard">
+<ul:page title="12 Urenloop - Scorebord" tab="index" cols="1">
+  <div class="section-title">Scorebord</div>
+  <div class="section-content">
+    <script type="text/javascript" src="<c:url value="/javascript/scoreboard.js"/>"></script>
+    <span style="width: 100%; display: inline-block; text-align: right;"><a id="autorefresh-toggle" href="#"> Toggle autorefresh</a></span>
+    <table class="scoreboard" id="scoreboard">
       <tbody>
-      <c:forEach items="${it}" var="team">
-        <tr>
-          <td class="name">${team.name}</td>
-          <td class="score">${team.score}</td>
-        </tr>
-      </c:forEach>
+        <c:forEach items="${it}" var="team">
+          <tr>
+            <td class="name">${team.name}</td>
+            <td class="score">${team.score}</td>
+          </tr>
+        </c:forEach>
       </tbody>
     </table>
-  </ul:main>
-  <ul:side>
-    <ul:bonus teams="${it}"/>
-  </ul:side>
-</ul:template>
+  </div>
+</ul:page>

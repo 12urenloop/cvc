@@ -9,7 +9,7 @@
     </init-param>
     <init-param>
       <param-name>com.sun.jersey.config.property.WebPageContentRegex</param-name>
-      <param-value>/(style)/.*</param-value>
+      <param-value>/(style|javascript)/.*</param-value>
     </init-param>
   </filter>
   <filter-mapping>
@@ -30,7 +30,23 @@
     </web-resource-collection>
     <auth-constraint>
       <description/>
-      <role-name>Administrator</role-name>
+      <role-name>Moderator</role-name>
+    </auth-constraint>
+    <user-data-constraint>
+      <description/>
+      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+    </user-data-constraint>
+  </security-constraint>
+  <security-constraint>
+    <display-name>AdministrationInterface</display-name>
+    <web-resource-collection>
+      <web-resource-name>AdminInterface</web-resource-name>
+      <description>The administration interface</description>
+      <url-pattern>/login</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <description/>
+      <role-name>Authenticated</role-name>
     </auth-constraint>
     <user-data-constraint>
       <description/>
@@ -48,5 +64,9 @@
   <security-role>
     <description/>
     <role-name>Moderator</role-name>
+  </security-role>
+  <security-role>
+    <description/>
+    <role-name>Authenticated</role-name>
   </security-role>
 </web-app>

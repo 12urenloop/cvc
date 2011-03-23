@@ -11,6 +11,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Temporal;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -22,6 +24,7 @@ import javax.persistence.Temporal;
   @NamedQuery(name="History.findByTeam", query="select h from HistoryEntry h where h.team=:team order by h.date desc"),
   @NamedQuery(name="History.findByUser", query="select h from HistoryEntry h where h.user=:user order by h.date desc")
 })
+@XmlRootElement
 public class HistoryEntry implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -78,6 +81,7 @@ public class HistoryEntry implements Serializable {
     this.reason = reason;
   }
 
+  @XmlTransient
   public Team getTeam() {
     return team;
   }

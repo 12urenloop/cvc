@@ -13,7 +13,6 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 /**
@@ -30,6 +29,14 @@ public class TeamManager {
 
   public void add(Team team) {
     em.persist(team);
+  }
+
+  public void update(Team team) {
+    em.merge(team);
+  }
+
+  public void delete(Team team) {
+    em.remove(team);
   }
 
   public void addTeamBonus(User user, Team team, int bonus, String reason) {
@@ -85,13 +92,22 @@ public class TeamManager {
   }
 
   public List<Team> get() {
-    TypedQuery query = em.createNamedQuery("Team.all", Team.class);
-    return query.getResultList();
+    return doQuery("Team.all");
   }
 
-  public List<Team> getByScore() {
-    TypedQuery query = em.createNamedQuery("Team.allByScore", Team.class);
-    return query.getResultList();
+  public List<Team> get(String sortOrder) {
+    String query;
+    if ("score".equals(sortOrder)) {
+      query = "Team.allByScore";
+    } else {
+      query = "Team.all";
+    }
+    return doQuery(query);
+  }
+
+  private List<Team> doQuery(String query) {
+    TypedQuery q = em.createNamedQuery(query, Team.class);
+    return q.getResultList();
   }
 
   public List<HistoryEntry> getHistory() {

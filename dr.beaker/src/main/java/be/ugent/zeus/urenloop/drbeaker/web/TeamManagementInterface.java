@@ -51,7 +51,6 @@ public class TeamManagementInterface {
   public Response assignStick(@FormParam("team") long teamID, @FormParam("stick") long stickID) {
     Team team = teamManager.get(teamID);
     Stick stick = stickManager.get(stickID);
-    System.err.println(teamID + " - " + stickID);
     teamManager.assign(team, stick);
 
     return Response.seeOther(URI.create("/manage/team/")).build();
