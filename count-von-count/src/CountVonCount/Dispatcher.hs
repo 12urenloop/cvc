@@ -5,8 +5,9 @@ module CountVonCount.Dispatcher
     ) where
 
 import qualified Data.Map as M
+import qualified Data.Set as S
 import Data.Monoid (mempty)
-import Control.Monad (forM_)
+import Control.Monad (forM_, when)
 import Control.Monad.Reader (ReaderT, ask, runReaderT)
 import Control.Monad.State (StateT, get, execStateT, modify)
 import Control.Monad.Trans (liftIO)
@@ -56,11 +57,16 @@ macChan mac = do
 --
 dispatcher :: Mac -> Measurement -> DispatcherM ()
 dispatcher mac measurement = do
-    -- Get the channel for the mac
-    macChan' <- macChan mac
+    -- Set of allowed mac addresses
+    macSet <- configurationMacSet . dispatcherConfiguration <$> ask
 
-    -- Write the measurement to the mac channel
-    liftIO $ writeFiniteChan macChan' measurement
+    -- Only do something when we allow the mac address
+    when (mac `S.member` macSet) $ do
+        -- Get the channel for the mac
+        macChan' <- macChan mac
+
+        -- Write the measurement to the mac channel
+        liftIO $ writeFiniteChan macChan' measurement
 
 -- | Exposed run method, uses our monad stack internally
 --
