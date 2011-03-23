@@ -1,10 +1,11 @@
+-- | Collection of types used in count-von-count
+--
 module CountVonCount.Types
     ( Station
     , Position
     , Timestamp
     , Timediff
     , Mac
-    , Sensor
     , Measurement
     , Line (..)
     , Criterium
@@ -19,15 +20,32 @@ import Statistics.Types (Sample)
 
 import Control.DeepSeq (NFData (..))
 
+-- | A station to which receives information of runners near it
+--
 type Station = String
-type Position = Double
-type Timestamp = Double
-type Timediff = Double
-type Mac = String
-type Sensor = String
 
+-- | The position of a 'Station'
+--
+type Position = Double
+
+-- | Represents a time
+--
+type Timestamp = Double
+
+-- | A difference between two 'Timestamp's
+--
+type Timediff = Double
+
+-- | Uniquely identify a mac address
+--
+type Mac = String
+
+-- | A measurement from a station
+--
 type Measurement = (Timestamp, Position)
 
+-- | A line specified by offset and steepness
+--
 data Line = Line Double Double
           deriving (Show)
 
@@ -35,6 +53,8 @@ data Line = Line Double Double
 --
 type Criterium = Sample -> Sample -> Line -> Score
 
+-- | Description of a lap
+--
 data Lap = Lap
          | SuspiciousLap String
          deriving (Show, Eq)
@@ -43,6 +63,8 @@ instance NFData Lap where
     rnf Lap                 = ()
     rnf (SuspiciousLap str) = rnf str
 
+-- | A score given to a lap
+--
 data Score = Good
            | Warning [String]
            | Refused String
