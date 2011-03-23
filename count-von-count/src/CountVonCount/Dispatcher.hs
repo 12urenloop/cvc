@@ -24,6 +24,7 @@ import CountVonCount.Configuration
 data DispatcherEnvironment = DispatcherEnvironment
     { dispatcherChan          :: FiniteChan (Timestamp, Mac, Score)
     , dispatcherConfiguration :: Configuration
+    , dispatcherLogger        :: Logger
     }
 
 type DispatcherState = Map Mac (FiniteChan Measurement)
@@ -41,7 +42,8 @@ macChan mac = do
         -- Not found, add one
         Nothing -> do
             -- Get channels
-            macChan' <- liftIO $ newFiniteChan mac
+            logger <- dispatcherLogger <$> ask
+            macChan' <- liftIO $ newFiniteChan mac logger
             outChan <- dispatcherChan <$> ask
             configuration <- dispatcherConfiguration <$> ask
 
@@ -71,14 +73,15 @@ dispatcher mac measurement = do
 -- | Exposed run method, uses our monad stack internally
 --
 runDispatcher :: Configuration                       -- ^ Configuration
+              -> Logger                              -- ^ Logger
               -> FiniteChan (Mac, Measurement)       -- ^ In channel
               -> FiniteChan (Timestamp, Mac, Score)  -- ^ Out channel
               -> IO ()                               -- ^ Blocks forever
-runDispatcher configuration inChan outChan = do
+runDispatcher configuration logger inChan outChan = do
     finalState <- runFiniteChan inChan mempty $ \(t, m) state ->
         execStateT (runReaderT (dispatcher t m) env) state
     forM_ (M.toList finalState) $ \(_, chan) -> do
         endFiniteChan chan
         waitFiniteChan chan
   where
-    env = DispatcherEnvironment outChan configuration
+    env = DispatcherEnvironment outChan configuration logger

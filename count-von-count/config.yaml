@@ -23,7 +23,6 @@ Criteria:
   Samples treshold: 3
   Speed treshold: 5
   Speed limit: 30
-  Consecutive: True
   Time treshold: 20
   Distance treshold: 100
 
