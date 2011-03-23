@@ -5,8 +5,9 @@ module CountVonCount.Dispatcher
     ) where
 
 import qualified Data.Map as M
+import qualified Data.Set as S
 import Data.Monoid (mempty)
-import Control.Monad (forM_)
+import Control.Monad (forM_, when)
 import Control.Monad.Reader (ReaderT, ask, runReaderT)
 import Control.Monad.State (StateT, get, execStateT, modify)
 import Control.Monad.Trans (liftIO)
@@ -23,6 +24,7 @@ import CountVonCount.Configuration
 data DispatcherEnvironment = DispatcherEnvironment
     { dispatcherChan          :: FiniteChan (Timestamp, Mac, Score)
     , dispatcherConfiguration :: Configuration
+    , dispatcherLogger        :: Logger
     }
 
 type DispatcherState = Map Mac (FiniteChan Measurement)
@@ -40,7 +42,8 @@ macChan mac = do
         -- Not found, add one
         Nothing -> do
             -- Get channels
-            macChan' <- liftIO $ newFiniteChan mac
+            logger <- dispatcherLogger <$> ask
+            macChan' <- liftIO $ newFiniteChan mac logger
             outChan <- dispatcherChan <$> ask
             configuration <- dispatcherConfiguration <$> ask
 
@@ -56,23 +59,29 @@ macChan mac = do
 --
 dispatcher :: Mac -> Measurement -> DispatcherM ()
 dispatcher mac measurement = do
-    -- Get the channel for the mac
-    macChan' <- macChan mac
+    -- Set of allowed mac addresses
+    macSet <- configurationMacSet . dispatcherConfiguration <$> ask
 
-    -- Write the measurement to the mac channel
-    liftIO $ writeFiniteChan macChan' measurement
+    -- Only do something when we allow the mac address
+    when (mac `S.member` macSet) $ do
+        -- Get the channel for the mac
+        macChan' <- macChan mac
+
+        -- Write the measurement to the mac channel
+        liftIO $ writeFiniteChan macChan' measurement
 
 -- | Exposed run method, uses our monad stack internally
 --
 runDispatcher :: Configuration                       -- ^ Configuration
+              -> Logger                              -- ^ Logger
               -> FiniteChan (Mac, Measurement)       -- ^ In channel
               -> FiniteChan (Timestamp, Mac, Score)  -- ^ Out channel
               -> IO ()                               -- ^ Blocks forever
-runDispatcher configuration inChan outChan = do
+runDispatcher configuration logger inChan outChan = do
     finalState <- runFiniteChan inChan mempty $ \(t, m) state ->
         execStateT (runReaderT (dispatcher t m) env) state
     forM_ (M.toList finalState) $ \(_, chan) -> do
         endFiniteChan chan
         waitFiniteChan chan
   where
-    env = DispatcherEnvironment outChan configuration
+    env = DispatcherEnvironment outChan configuration logger

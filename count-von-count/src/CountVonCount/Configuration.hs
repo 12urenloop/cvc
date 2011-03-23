@@ -7,6 +7,7 @@ module CountVonCount.Configuration
     ) where
 
 import Control.Applicative ((<$>), (<*>))
+import Data.Set (Set)
 
 import Data.Object (lookupObject, fromMapping)
 import Data.Object.Yaml (YamlObject, toYamlScalar, decodeFile)
@@ -15,6 +16,7 @@ import CountVonCount.Types
 import CountVonCount.Configuration.Rest
 import CountVonCount.Configuration.StationMap
 import CountVonCount.Configuration.Criteria
+import CountVonCount.Configuration.MacSet
 import CountVonCount.Configuration.Util
 
 data Configuration = Configuration
@@ -22,6 +24,7 @@ data Configuration = Configuration
     , configurationStationMap :: StationMap
     , configurationCsvLog     :: FilePath
     , configurationCriteria   :: [Criterium]
+    , configurationMacSet     :: Set Mac
     }
 
 loadConfiguration :: YamlObject -> Maybe Configuration
@@ -31,6 +34,7 @@ loadConfiguration object = do
                   <*> load loadStationMap "Station map" m
                   <*> lookupString "CSV log" m
                   <*> load loadCriteria "Criteria" m
+                  <*> load loadMacSet "Mac set" m
   where
     load f k m = f =<< lookupObject (toYamlScalar k) m
 

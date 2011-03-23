@@ -25,7 +25,11 @@ Executable count-von-count
                      CountVonCount.Receiver.Socket,
                      CountVonCount.Rest,
                      CountVonCount.Configuration,
-                     CountVonCount.Configuration.StationMap
+                     CountVonCount.Configuration.Criteria,
+                     CountVonCount.Configuration.MacSet,
+                     CountVonCount.Configuration.Rest,
+                     CountVonCount.Configuration.StationMap,
+                     CountVonCount.Configuration.Util
   Build-depends:     base >= 4 && < 5,
                      deepseq >= 1,
                      containers >= 0.3,
@@ -37,4 +41,5 @@ Executable count-von-count
                      data-object >= 0.3,
                      data-object-yaml >= 0.3,
                      bytestring >= 0.9,
-                     network >= 2.3
+                     network >= 2.3,
+                     HTTP >= 4000

@@ -10,6 +10,7 @@ module CountVonCount.Types
     , Criterium
     , Lap (..)
     , Score (..)
+    , Logger
     ) where
 
 import Data.Monoid (Monoid, mappend, mempty)
@@ -60,3 +61,7 @@ instance NFData Score where
     rnf Good         = ()
     rnf (Warning ss) = rnf ss
     rnf (Refused s)  = rnf s
+
+-- | Logging structure
+--
+type Logger = String -> IO ()

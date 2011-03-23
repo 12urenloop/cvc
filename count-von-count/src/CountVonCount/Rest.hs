@@ -15,14 +15,15 @@ import CountVonCount.FiniteChan
 import CountVonCount.Types
 
 runRest :: Configuration                       -- ^ Configuration
+        -> Logger                              -- ^ Logger
         -> FiniteChan (Timestamp, Mac, Score)  -- ^ Out channel to push
         -> IO ()                               -- ^ Blocks forever
-runRest conf chan = runFiniteChan chan () $
-    \(timestamp, mac, score) () -> withMaybe (makeUrl conf mac) $ \url ->do
+runRest conf logger chan = runFiniteChan chan () $
+    \(timestamp, mac, score) () -> withMaybe (makeUrl conf mac) $ \url -> do
         let params = printf "speed=5&suspicious=false"
             request = Request url PUT [] (params :: String)
-        _ <- simpleHTTP request
-        putStrLn $ show (timestamp, mac, score)
+        -- _ <- simpleHTTP request
+        logger $ show (timestamp, mac, score)
   where
     withMaybe Nothing  _ = return ()
     withMaybe (Just x) f = f x

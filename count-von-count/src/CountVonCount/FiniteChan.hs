@@ -17,26 +17,30 @@ import Control.Concurrent.Chan.Strict ( Chan, newChan, writeChan, readChan
                                       )
 import Control.Concurrent.MVar.Strict (MVar, newEmptyMVar, putMVar, takeMVar)
 import Control.DeepSeq (NFData)
-import System.IO (hPutStrLn, stderr)
+
+import CountVonCount.Types
 
 data FiniteChan a = FiniteChan
-    { finiteName :: String
-    , finiteChan :: Chan (Maybe a)
-    , finiteSync :: MVar ()
+    { finiteName   :: String
+    , finiteLogger :: Logger
+    , finiteChan   :: Chan (Maybe a)
+    , finiteSync   :: MVar ()
     }
 
 instance Show (FiniteChan a) where
     show fc = "FiniteChan " ++ finiteName fc
 
-newFiniteChan :: NFData a => String -> IO (FiniteChan a)
-newFiniteChan name = FiniteChan <$> pure name
-                                <*> newChan
-                                <*> newEmptyMVar
+newFiniteChan :: NFData a => String -> Logger -> IO (FiniteChan a)
+newFiniteChan name logger = FiniteChan <$> pure name
+                                       <*> pure logger
+                                       <*> newChan
+                                       <*> newEmptyMVar
 
 dupFiniteChan :: NFData a => String -> FiniteChan a -> IO (FiniteChan a)
-dupFiniteChan name (FiniteChan _ c _) = FiniteChan <$> pure name
-                                                   <*> dupChan c
-                                                   <*> newEmptyMVar
+dupFiniteChan name (FiniteChan _ l c _) = FiniteChan <$> pure name
+                                                     <*> pure l
+                                                     <*> dupChan c
+                                                     <*> newEmptyMVar
 
 writeFiniteChan :: NFData a => FiniteChan a -> a -> IO ()
 writeFiniteChan chan = writeChan (finiteChan chan) . Just
@@ -44,20 +48,20 @@ writeFiniteChan chan = writeChan (finiteChan chan) . Just
 endFiniteChan :: NFData a => FiniteChan a -> IO ()
 endFiniteChan chan = do
     writeChan (finiteChan chan) Nothing
-    hPutStrLn stderr $ "Closing " ++ show chan
+    finiteLogger chan $ "Closing " ++ show chan
 
 waitFiniteChan :: NFData a => FiniteChan a -> IO ()
 waitFiniteChan chan = do
-    hPutStrLn stderr $ "Waiting for end of " ++ show chan
+    finiteLogger chan $ "Waiting for end of " ++ show chan
     takeMVar $ finiteSync chan
-    hPutStrLn stderr $ "Cleanly closed " ++ show chan
+    finiteLogger chan $ "Cleanly closed " ++ show chan
 
 readFiniteChan :: NFData a => FiniteChan a -> IO (Maybe a)
 readFiniteChan chan = do
     mx <- readChan $ finiteChan chan
     case mx of
         Just x  -> return $ Just x
-        Nothing -> do hPutStrLn stderr $ "Reached end of " ++ show chan
+        Nothing -> do finiteLogger chan $ "Reached end of " ++ show chan
                       putMVar (finiteSync chan) () >> return Nothing
 
 runFiniteChan :: NFData a

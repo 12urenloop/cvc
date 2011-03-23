@@ -1,10 +1,10 @@
 -- | Various configurable criteria
 --
+{-# LANGUAGE OverloadedStrings #-}
 module CountVonCount.Configuration.Criteria
     ( samplesTreshold
     , speedTreshold
     , speedLimit
-    , consecutive
     , timeTreshold
     , distanceTreshold
     , loadCriteria
@@ -15,8 +15,8 @@ import Text.Printf (printf)
 import Control.Applicative ((<$>))
 import Data.Vector.Generic ((!))
 import qualified Data.Vector.Generic as V
-import Data.Object (fromMapping, lookupScalar)
-import Data.Object.Yaml (YamlObject, toYamlScalar)
+import Data.Object (fromMapping)
+import Data.Object.Yaml (YamlObject)
 import Data.Maybe (catMaybes)
 
 import CountVonCount.Types
@@ -52,16 +52,6 @@ speedLimit max' _ _ (Line _ speed)
     | otherwise     = Refused $
         printf "Impossibly fast, %f while max is %f" speed max'
 
--- | Criterium: Check that samples are consecutive
---
-consecutive :: Criterium
-consecutive _ positions _ = isSorted positions
-  where
-    isSorted xs
-        | V.length xs < 2 = Good
-        | xs ! 0 > xs ! 1 = Warning ["Unconsecutive samples"]
-        | otherwise       = isSorted $ V.tail xs
-
 -- | Criterium: enough time has passed
 --
 timeTreshold :: Double -> Criterium
@@ -91,10 +81,8 @@ loadCriteria object = do
         [ samplesTreshold   <$> lookup' "Samples treshold"  m
         , speedTreshold     <$> lookup' "Speed treshold"    m
         , speedLimit        <$> lookup' "Speed limit"       m
-        , const consecutive <$> exists  "Consecutive"       m
         , timeTreshold      <$> lookup' "Time treshold"     m
         , distanceTreshold  <$> lookup' "Distance treshold" m
         ]
   where
     lookup' k = fmap read . lookupString k
-    exists k m = const () <$> lookupScalar (toYamlScalar k) m
