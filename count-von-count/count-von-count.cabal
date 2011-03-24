@@ -21,8 +21,6 @@ Executable count-von-count
                      CountVonCount.FiniteChan,
                      CountVonCount.Main,
                      CountVonCount.Receiver,
-                     CountVonCount.Receiver.Stdin,
-                     CountVonCount.Receiver.Socket,
                      CountVonCount.Rest,
                      CountVonCount.Configuration,
                      CountVonCount.Configuration.Criteria,

@@ -7,8 +7,7 @@ import Control.Concurrent (forkIO)
 import CountVonCount.FiniteChan
 import CountVonCount.Dispatcher
 import CountVonCount.CsvLog
-import CountVonCount.Receiver.Stdin
-import CountVonCount.Receiver.Socket
+import CountVonCount.Receiver
 import CountVonCount.Rest
 import CountVonCount.Configuration
 
