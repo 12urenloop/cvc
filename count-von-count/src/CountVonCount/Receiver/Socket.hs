@@ -4,7 +4,10 @@ module CountVonCount.Receiver.Socket
     ( socketReceiver
     ) where
 
+import Control.Applicative ((<$>))
 import Control.Monad (forever)
+import Data.Time (getCurrentTime, formatTime)
+import System.Locale (defaultTimeLocale)
 import Network.Socket.ByteString (recv)
 import Network.Socket ( AddrInfo (..), AddrInfoFlag (..), SocketType (..)
                       , getAddrInfo, withSocketsDo, addrFamily, addrAddress
@@ -14,6 +17,7 @@ import Network.Socket ( AddrInfo (..), AddrInfoFlag (..), SocketType (..)
 
 import qualified Data.ByteString.Char8 as SBC
 
+import CountVonCount.Types
 import CountVonCount.Receiver
 import CountVonCount.FiniteChan
 
@@ -36,6 +40,10 @@ socketReceiver port chan = withSocketsDo $ do
   where
     receive sock = do
         bs <- recv sock 1024
-        let [mac, timestamp, position] = words $ SBC.unpack bs
-        writeFiniteChan chan (mac, (read timestamp, read position))
+        let [mac, _, position] = words $ SBC.unpack bs
+        timestamp <- currentTime
+        writeFiniteChan chan (mac, (timestamp, read position))
         sClose sock
+
+    currentTime :: IO Timestamp
+    currentTime = read . formatTime defaultTimeLocale "%s" <$> getCurrentTime
