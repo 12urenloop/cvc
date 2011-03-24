@@ -43,7 +43,7 @@ main = do
     _ <- forkIO $ runCsvLog configuration csvLogChan
 
     -- In thread
-    _ <- forkIO $ stdinReceiver inChan
+    _ <- forkIO $ socketReceiver configuration logger inChan
 
     waitFiniteChan inChan
     waitFiniteChan outChan

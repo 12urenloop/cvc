@@ -20,13 +20,18 @@ import qualified Data.ByteString.Char8 as SBC
 import CountVonCount.Types
 import CountVonCount.Receiver
 import CountVonCount.FiniteChan
+import CountVonCount.Configuration
 
-socketReceiver :: Int -> Receiver
-socketReceiver port chan = withSocketsDo $ do
+socketReceiver :: Configuration -> Logger -> Receiver
+socketReceiver configuration logger chan = withSocketsDo $ do
     -- Obtain addres info structure
+    let port = show $ configurationListenPort configuration
     (serverAddr : _) <- getAddrInfo
         (Just (defaultHints {addrFlags = [AI_PASSIVE]}))
-        Nothing (Just $ show port)
+        Nothing (Just port)
+
+    -- Log port
+    logger $ "Listening on port " ++ port
 
     -- Create and bind socket
     sock <- socket (addrFamily serverAddr) Stream defaultProtocol

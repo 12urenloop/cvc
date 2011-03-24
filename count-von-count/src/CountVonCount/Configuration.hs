@@ -25,6 +25,7 @@ data Configuration = Configuration
     , configurationCsvLog     :: FilePath
     , configurationCriteria   :: [Criterium]
     , configurationMacSet     :: Set Mac
+    , configurationListenPort :: Int
     }
 
 loadConfiguration :: YamlObject -> Maybe Configuration
@@ -35,6 +36,7 @@ loadConfiguration object = do
                   <*> lookupString "CSV log" m
                   <*> load loadCriteria "Criteria" m
                   <*> load loadMacSet "Mac set" m
+                  <*> fmap read (lookupString "Listen port" m)
   where
     load f k m = f =<< lookupObject (toYamlScalar k) m
 
