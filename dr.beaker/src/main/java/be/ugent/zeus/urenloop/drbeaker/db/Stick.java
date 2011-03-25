@@ -18,6 +18,7 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @Entity
 @NamedQueries({
+  @NamedQuery(name = "Stick.findAll", query = "SELECT s from Stick s"),
   @NamedQuery(name = "Stick.findByMac", query = "SELECT s from Stick s where s.mac = :mac")
 })
 @XmlRootElement

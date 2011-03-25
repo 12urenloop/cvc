@@ -3,35 +3,37 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="ul" tagdir="/WEB-INF/tags" %>
 
-<ul:template title="Team Overview" tab="teams">
-  <ul:main title="Teams in contest">
-    <table class="scoreboard" id="scoreboard">
-      <thead>
-        <tr>
-          <th>Team name</th>
-          <th style="text-align: right;">Stick</th>
-        </tr>
-      </thead>
-      <tbody>
-        <c:forEach items="${it}" var="team">
+<ul:page title="Team Overview" tab="admin" subtab="teams" cols="2">
+  <ul:maincol>
+    <ul:section title="Teams in wedstrijd">
+      <table class="scoreboard" id="scoreboard">
+        <thead>
           <tr>
-            <td>${team.name}</td>
-            <td style="text-align: right;">
-              <c:choose>
-                <c:when test="${team.stick != null}">
-                  <strong>${team.stick.id}</strong> <small>(${team.stick.mac})</small>
-                </c:when>
-                <c:otherwise>
-                  <span style="color: red;">No stick assigned!</span>
-                </c:otherwise>
-              </c:choose>
-            </td>
+            <th>Team naam</th>
+            <th style="text-align: right;">Stok</th>
           </tr>
-        </c:forEach>
-      </tbody>
-    </table>
-  </ul:main>
-  <ul:side>
+        </thead>
+        <tbody>
+          <c:forEach items="${it}" var="team">
+            <tr>
+              <td>${team.name}</td>
+              <td style="text-align: right;">
+                <c:choose>
+                  <c:when test="${team.stick != null}">
+                    <strong>${team.stick.id}</strong> <small>(${team.stick.mac})</small>
+                  </c:when>
+                  <c:otherwise>
+                    <span style="color: red;">No stick assigned!</span>
+                  </c:otherwise>
+                </c:choose>
+              </td>
+            </tr>
+          </c:forEach>
+        </tbody>
+      </table>
+    </ul:section>
+  </ul:maincol>
+  <ul:sidecol>
     <script type="text/javascript">
       teams = {
         init : function () {
@@ -86,5 +88,5 @@
       <input type="text" name="stick" size="3" style="text-align: right"><br>
       <input type="submit" value="Assign stick">
     </form>
-  </ul:side>
-</ul:template>
+  </ul:sidecol>
+</ul:page>

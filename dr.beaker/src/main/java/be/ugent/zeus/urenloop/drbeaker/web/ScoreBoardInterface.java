@@ -26,6 +26,6 @@ public class ScoreBoardInterface {
   @GET
   @Path("/login")
   public Response login() {
-    return Response.seeOther(URI.create("/")).build();
+    return Response.seeOther(URI.create("/admin")).build();
   }
 }
