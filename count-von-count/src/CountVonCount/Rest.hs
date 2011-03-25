@@ -22,7 +22,7 @@ runRest conf logger chan = runFiniteChan chan () $
     \report () -> withMaybe (makeUrl conf $ reportMac report) $ \url -> do
         let params = printf "speed=5&suspicious=false"
             request = Request url PUT [] (params :: String)
-        -- _ <- simpleHTTP request
+        _ <- simpleHTTP request
         logger $ show ( reportTimestamp report
                       , reportTimestamp report
                       , reportTimestamp report
