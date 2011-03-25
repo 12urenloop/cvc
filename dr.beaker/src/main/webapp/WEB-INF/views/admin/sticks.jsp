@@ -3,7 +3,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="ul" tagdir="/WEB-INF/tags" %>
 
-<ul:page title="Stokken overzicht" tab="admin" subtab="teams" cols="2">
+<ul:page title="Stokken overzicht" tab="admin" subtab="sticks" cols="2">
   <ul:maincol>
     <ul:section title="Beschibare loopstokken">
       <table class="scoreboard" id="scoreboard">
