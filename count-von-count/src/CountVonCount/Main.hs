@@ -2,7 +2,10 @@ module Main
     ( main
     ) where
 
+import Control.Applicative ((<$>))
 import Control.Concurrent (forkIO)
+import Data.Time (getCurrentTime, formatTime)
+import System.Locale (defaultTimeLocale)
 
 import CountVonCount.FiniteChan
 import CountVonCount.Dispatcher
@@ -15,7 +18,9 @@ main :: IO ()
 main = do
     -- Create logger
     logChan <- newFiniteChan "LOG" putStrLn
-    let logger = writeFiniteChan logChan
+    let logger string = do
+            time <- formatTime defaultTimeLocale "%H:%M:%S" <$> getCurrentTime
+            writeFiniteChan logChan $ "[" ++ time ++ "] " ++ string
 
     inChan <- newFiniteChan "IN" logger
     outChan <- newFiniteChan "OUT" logger
