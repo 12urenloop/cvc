@@ -33,9 +33,10 @@ local function getPosition(position, radius)
   local width = love.graphics.getWidth()
   local height = love.graphics.getHeight()
   local centerX, centerY = width / 2, height / 2
+  local radiusX, radiusY = width / 2 - 80, height / 2 - 80
   local angle = position * math.pi * 2 / circuitLength
-  local x = centerX + math.cos(angle) * (circuitRadius + radius)
-  local y = centerY + math.sin(angle) * (circuitRadius + radius)
+  local x = centerX + math.cos(angle) * (radiusX + radius)
+  local y = centerY + math.sin(angle) * (radiusY + radius)
   return x, y
 end
 
@@ -65,11 +66,11 @@ function love.draw()
   love.graphics.draw(backgroundSprite)
 
   -- Draw the circuit
-  love.graphics.circle('line', centerX, centerY, circuitRadius, 50)
+  -- love.graphics.circle('line', centerX, centerY, circuitRadius, 50)
 
   -- Draw the teams
   for _, t in ipairs(teams) do
-    local x, y = getPosition(t.position, 0)
+    local x, y = getPosition(t.position, -10)
     drawCenteredImage(t.sprite, x, y)
   end
 
