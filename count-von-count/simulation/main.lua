@@ -1,7 +1,6 @@
 require 'team'
 require 'station'
 
-local circuitRadius = 220
 local circuitLength = 400
 local function makeTeam(mac, spritePath)
   return team.Team:new(mac, love.graphics.newImage(spritePath), circuitLength)
@@ -41,7 +40,6 @@ local function getPosition(position, radius)
 end
 
 function love.load()
-  -- love.graphics.toggleFullscreen()
   love.graphics.setMode(800, 600, false)
 end
 
@@ -64,9 +62,6 @@ function love.draw()
 
   -- Draw the background
   love.graphics.draw(backgroundSprite)
-
-  -- Draw the circuit
-  -- love.graphics.circle('line', centerX, centerY, circuitRadius, 50)
 
   -- Draw the teams
   for _, t in ipairs(teams) do
