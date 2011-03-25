@@ -21,8 +21,6 @@ Executable count-von-count
                      CountVonCount.FiniteChan,
                      CountVonCount.Main,
                      CountVonCount.Receiver,
-                     CountVonCount.Receiver.Stdin,
-                     CountVonCount.Receiver.Socket,
                      CountVonCount.Rest,
                      CountVonCount.Configuration,
                      CountVonCount.Configuration.Criteria,
@@ -42,4 +40,6 @@ Executable count-von-count
                      data-object-yaml >= 0.3,
                      bytestring >= 0.9,
                      network >= 2.3,
-                     HTTP >= 4000
+                     HTTP >= 4000,
+                     old-locale >= 1,
+                     time >= 1.2

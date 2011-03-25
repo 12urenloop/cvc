@@ -7,8 +7,7 @@ import Control.Concurrent (forkIO)
 import CountVonCount.FiniteChan
 import CountVonCount.Dispatcher
 import CountVonCount.CsvLog
-import CountVonCount.Receiver.Stdin
-import CountVonCount.Receiver.Socket
+import CountVonCount.Receiver
 import CountVonCount.Rest
 import CountVonCount.Configuration
 
@@ -43,7 +42,7 @@ main = do
     _ <- forkIO $ runCsvLog configuration csvLogChan
 
     -- In thread
-    _ <- forkIO $ stdinReceiver inChan
+    _ <- forkIO $ socketReceiver configuration logger inChan
 
     waitFiniteChan inChan
     waitFiniteChan outChan

@@ -13,6 +13,7 @@ Station map:
   Station-0: 0
   Station-1: 100
   Station-2: 200
+  Station-3: 300
 
 # count-von-count will log all received input to a CSV file. The file name can
 # be configured here.
@@ -20,14 +21,18 @@ CSV log: log.csv
 
 # The criteria used for judging laps
 Criteria:
-  Samples treshold: 3
-  Speed treshold: 5
-  Speed limit: 30
-  Time treshold: 20
+  Samples treshold: 1
+  Speed treshold: 1
+  Speed limit: 50
+  Time treshold: 1
   Distance treshold: 100
 
 # Set of allowed mac addresses
 Mac set:
-  - 00:11:22:33:44:55:66
-  - 00:11:22:33:44:55:67
-  - 00:11:22:33:44:55:68
+  - 00:00:00:00:00:01
+  - 00:00:00:00:00:02
+  - 00:00:00:00:00:03
+  - 00:00:00:00:00:04
+
+# Port to listen on
+Listen port: 9001
