@@ -73,12 +73,19 @@ public class SCoreAPI {
     authManager.add(moderators);
 
     // add an admin user
-    User user = new User();
-    user.setUsername("admin");
-    user.setPassword("admin");
+    User user1 = new User();
+    user1.setUsername("admin");
+    user1.setPassword("admin");
 
-    authManager.add(user);
-    authManager.addUserToGroup(user, admins);
+    authManager.add(user1);
+    authManager.addUserToGroup(user1, admins);
+
+    User user2 = new User();
+    user2.setUsername("mod");
+    user2.setPassword("mod");
+
+    authManager.add(user2);
+    authManager.addUserToGroup(user2, moderators);
 
     // add various dummy teams
     Team t1 = new Team();
