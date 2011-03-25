@@ -32,7 +32,7 @@ socketReceiver conf logger chan = withSocketsDo $ do
         Nothing (Just port)
 
     -- Log port
-    logger $ "Listening on port " ++ port
+    logger $ "CountVonCount.Receiver.socketReceiver: Listening on port " ++ port
 
     -- Create and bind socket
     sock <- socket (addrFamily serverAddr) Stream defaultProtocol
