@@ -26,6 +26,7 @@ function Team:new(mac, sprite, circuitLength)
   team.position = 0
   team.speed = MIN_SPEED
   team.acceleration = 0
+  team.laps = 0
   setmetatable(team, mt)
   return team
 end
@@ -44,9 +45,10 @@ function Team:update(dt)
   speed = bounded(speed, MIN_SPEED, MAX_SPEED)
   self.speed = speed
 
-  -- Determine position
+  -- Determine position and update laps
   local position = self.position
   position = position + speed * dt
+  self.laps = self.laps + math.floor(position / self.circuitLength)
   position = position % self.circuitLength
   self.position = position
 end

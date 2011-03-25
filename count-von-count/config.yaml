@@ -2,7 +2,7 @@
 
 # Rest API, talks to dr.beaker
 Rest API:
-  Host: 10.1.2.35
+  Host: beaker
   Port: 8080
   Path: dr.beaker
 
