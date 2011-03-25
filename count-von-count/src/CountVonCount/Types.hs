@@ -7,10 +7,12 @@ module CountVonCount.Types
     , Timediff
     , Mac
     , Measurement
+    , DataSet (..)
     , Line (..)
     , Criterium
     , Lap (..)
     , Score (..)
+    , Report (..)
     , Logger
     ) where
 
@@ -44,10 +46,26 @@ type Mac = String
 --
 type Measurement = (Timestamp, Position)
 
+-- | Dataset describing a number of measurements
+--
+data DataSet = DataSet [Timestamp] [Position]
+             deriving (Show)
+
+instance Monoid DataSet where
+    mempty = DataSet mempty mempty
+    DataSet t1 p1 `mappend` DataSet t2 p2 =
+        DataSet (mappend t1 t2) (mappend p1 p2)
+
+instance NFData DataSet where
+    rnf (DataSet t p) = rnf t `seq` rnf p
+
 -- | A line specified by offset and steepness
 --
 data Line = Line Double Double
           deriving (Show)
+
+instance NFData Line where
+    rnf (Line x y) = rnf x `seq` rnf y
 
 -- | Returns @Nothing@ if all is OK, @Just xxx@ with a descriptive error
 --
@@ -83,6 +101,20 @@ instance NFData Score where
     rnf Good         = ()
     rnf (Warning ss) = rnf ss
     rnf (Refused s)  = rnf s
+
+-- | Result of a lap, contains the score and various statistics
+--
+data Report = Report
+    { reportMac        :: Mac
+    , reportTimestamp  :: Timestamp
+    , reportScore      :: Score
+    , reportDataset    :: DataSet
+    , reportRegression :: Line
+    } deriving (Show)
+
+instance NFData Report where
+    rnf (Report m t s d r) =
+        rnf m `seq` rnf t `seq` rnf s `seq` rnf d `seq` rnf r
 
 -- | Logging structure
 --

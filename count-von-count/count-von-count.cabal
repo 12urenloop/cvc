@@ -15,7 +15,6 @@ Executable count-von-count
   Hs-source-dirs:    src
   Other-modules:     CountVonCount.Types,
                      CountVonCount.Counter,
-                     CountVonCount.Analyzer,
                      CountVonCount.Dispatcher,
                      CountVonCount.CsvLog,
                      CountVonCount.FiniteChan,

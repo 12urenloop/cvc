@@ -22,7 +22,7 @@ import CountVonCount.FiniteChan
 import CountVonCount.Configuration
 
 data DispatcherEnvironment = DispatcherEnvironment
-    { dispatcherChan          :: FiniteChan (Timestamp, Mac, Score)
+    { dispatcherChan          :: FiniteChan Report
     , dispatcherConfiguration :: Configuration
     , dispatcherLogger        :: Logger
     }
@@ -72,11 +72,11 @@ dispatcher mac measurement = do
 
 -- | Exposed run method, uses our monad stack internally
 --
-runDispatcher :: Configuration                       -- ^ Configuration
-              -> Logger                              -- ^ Logger
-              -> FiniteChan (Mac, Measurement)       -- ^ In channel
-              -> FiniteChan (Timestamp, Mac, Score)  -- ^ Out channel
-              -> IO ()                               -- ^ Blocks forever
+runDispatcher :: Configuration                  -- ^ Configuration
+              -> Logger                         -- ^ Logger
+              -> FiniteChan (Mac, Measurement)  -- ^ In channel
+              -> FiniteChan Report              -- ^ Out channel
+              -> IO ()                          -- ^ Blocks forever
 runDispatcher configuration logger inChan outChan = do
     finalState <- runFiniteChan inChan mempty $ \(t, m) state ->
         execStateT (runReaderT (dispatcher t m) env) state
