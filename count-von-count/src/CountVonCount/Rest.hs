@@ -6,8 +6,11 @@ module CountVonCount.Rest
 
 import Text.Printf (printf)
 
+import Control.Concurrent (forkIO)
 import Network.URI (URI, parseURI)
-import Network.HTTP (simpleHTTP, Request (Request), RequestMethod (PUT))
+import Network.HTTP ( simpleHTTP, Request (Request), RequestMethod (PUT)
+                    , Response (..)
+                    )
 
 import CountVonCount.Configuration
 import CountVonCount.Configuration.Rest
@@ -20,16 +23,26 @@ runRest :: Configuration      -- ^ Configuration
         -> IO ()              -- ^ Blocks forever
 runRest conf logger chan = runFiniteChan chan () $
     \report () -> withMaybe (makeUrl conf $ reportMac report) $ \url -> do
-        let params = printf "speed=5&suspicious=false"
+        let Line _ speed = reportRegression report
+            params = printf "speed=%f&suspicious=false" speed
             request = Request url PUT [] (params :: String)
-        _ <- simpleHTTP request
-        logger $ show ( reportTimestamp report
-                      , reportTimestamp report
-                      , reportTimestamp report
-                      )
+
+        -- In another thread, perform the rest call and log the result
+        _ <- forkIO $ do
+            result <- simpleHTTP request
+            case result of
+                Left connError -> logger $
+                    "CountVonCount.Rest.runRest: Could not connect to " ++
+                    "REST API: " ++ show connError
+                Right rsp -> logger $
+                    "CountVonCount.Rest.runRest: Made call to the REST API, " ++
+                    "return code: " ++ showResponseCode (rspCode rsp)
+
+        return ()
   where
     withMaybe Nothing  _ = return ()
     withMaybe (Just x) f = f x
+    showResponseCode (x, y, z) = printf "%d%d%d" x y z
 
 makeUrl :: Configuration -> String -> Maybe URI
 makeUrl conf mac = parseURI $
