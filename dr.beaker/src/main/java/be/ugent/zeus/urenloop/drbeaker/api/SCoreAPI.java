@@ -25,7 +25,7 @@ public class SCoreAPI {
 
   private static final Logger logger = Logger.getLogger("12UL");
 
-  private static final String[] macs = {"12:21:30:10:34", "12:49:49:28:37"};
+  private static final String[] macs = {"00:00:00:00:00:01", "00:00:00:00:00:02", "00:00:00:00:00:03", "00:00:00:00:00:04"};
 
   private TeamManager teamManager = TeamManager.lookup();
 
@@ -82,31 +82,28 @@ public class SCoreAPI {
 
     // add various dummy teams
     Team t1 = new Team();
-    t1.setName("WiNA");
-    t1.setScore(4);
+    t1.setName("bulbasaur");
     teamManager.add(t1);
 
+    teamManager.assign(t1, stickManager.get(1));
+
     Team t2 = new Team();
-    t2.setName("VTK");
-    t2.setScore(2);
+    t2.setName("machop");
     teamManager.add(t2);
 
+    teamManager.assign(t2, stickManager.get(2));
+
     Team t3 = new Team();
-    t3.setName("HILOK");
-    t3.setScore(3);
+    t3.setName("mankey");
     teamManager.add(t3);
 
-    teamManager.assign(t3, stickManager.get(1));
+    teamManager.assign(t3, stickManager.get(3));
 
     Team t4 = new Team();
-    t4.setName("SK");
-    t4.setScore(1);
+    t4.setName("charmander");
     teamManager.add(t4);
 
-    Team t5 = new Team();
-    t5.setName("Zeus WPI");
-    t5.setScore(42);
-    teamManager.add(t5);
+    teamManager.assign(t4, stickManager.get(4));
 
     return "OK";
   }
