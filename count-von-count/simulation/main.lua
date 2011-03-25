@@ -39,8 +39,18 @@ local function getPosition(position, radius)
   return x, y
 end
 
+local function printLaps()
+  print('LAPS')
+  print()
+  for _, t in ipairs(teams) do
+    print('  ' .. t.mac .. ': ' .. t.laps)
+  end
+  print()
+end
+
 function love.load()
   love.graphics.setMode(800, 600, false)
+  love.keyboard.setKeyRepeat(0)
 end
 
 function love.update(dt)
@@ -52,6 +62,11 @@ function love.update(dt)
   -- Update stations
   for _, s in ipairs(stations) do
     s:update(dt, teams)
+  end
+
+  -- Show laps
+  if love.keyboard.isDown(' ') then
+    printLaps()
   end
 end
 
