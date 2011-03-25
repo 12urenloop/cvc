@@ -35,7 +35,7 @@
         <c:if test="${tab == 'admin'}">
           <div class="navigation" id="sub-nav">
             <ul class="tabbed">
-              <li <c:if test="${subtab == 'speclaps'}">class="current-tab"</c:if>><a href="<c:url value="/admin/laps/special"/>">Speciale rondes</a></li>
+              <li <c:if test="${subtab == 'bonusses'}">class="current-tab"</c:if>><a href="<c:url value="/admin/bonus"/>">Bonussen</a></li>
               <li <c:if test="${subtab == 'teams'}">class="current-tab"</c:if>><a href="<c:url value="/admin/teams" />">Teams</a></li>
               <li <c:if test="${subtab == 'sticks'}">class="current-tab"</c:if>><a href="<c:url value="/admin/sticks" />">Stokken</a></li>
               <% if (request.isUserInRole("Administrator")) {%>

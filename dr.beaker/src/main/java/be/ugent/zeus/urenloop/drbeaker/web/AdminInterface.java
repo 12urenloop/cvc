@@ -4,15 +4,17 @@ import be.ugent.zeus.urenloop.drbeaker.AuthenticationManager;
 import be.ugent.zeus.urenloop.drbeaker.StickManager;
 import be.ugent.zeus.urenloop.drbeaker.TeamManager;
 import be.ugent.zeus.urenloop.drbeaker.db.Group;
-import be.ugent.zeus.urenloop.drbeaker.db.HistoryEntry;
+import be.ugent.zeus.urenloop.drbeaker.db.Team;
 import be.ugent.zeus.urenloop.drbeaker.db.User;
 import com.sun.jersey.api.view.Viewable;
 import java.net.URI;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 /**
@@ -26,24 +28,51 @@ public class AdminInterface {
   private TeamManager teamManager = TeamManager.lookup();
   private StickManager stickManager = StickManager.lookup();
 
+  @Context
+  private HttpServletRequest request;
+
   @GET
   @Path("/")
   public Response index() {
-    return Response.seeOther(URI.create("/admin/laps/special")).build();
+    return Response.seeOther(URI.create("/admin/bonus")).build();
   }
 
   @GET
   @Path("/history")
   public Viewable showGlobalScoreHistory() {
-    List<HistoryEntry> history = teamManager.getHistory();
-    return new Viewable("/admin/history.jsp", history);
+    return new Viewable("/admin/history.jsp", teamManager.getHistory());
   }
 
   @GET
-  @Path("/laps/special")
-  public Viewable showSpecialLaps() {
-    List<HistoryEntry> history = teamManager.getHistory();
-    return new Viewable("/admin/speciallaps.jsp", history);
+  @Path("/bonus")
+  public Viewable showBonusses() {
+    return new Viewable("/admin/bonusses.jsp", teamManager.get());
+  }
+
+  @POST
+  @Path("/bonus/add")
+  public Response addBonus(@FormParam("team") Long id, @FormParam("bonus") int bonus, @FormParam("reason") String reason) {
+    Team team = teamManager.get(id);
+    User user = authManager.getUser(request.getUserPrincipal().getName());
+    teamManager.addTeamBonus(user, team, bonus, reason);
+
+    return Response.seeOther(URI.create("/admin/bonus")).build();
+  }
+
+  @POST
+  @Path("/bonusses/add")
+  public Response addBonusses(@FormParam("teams") List<Long> ids, @FormParam("bonus") int bonus, @FormParam("reason") String reason) {
+    System.err.println("TEST");
+    User user = authManager.getUser(request.getUserPrincipal().getName());
+
+    System.err.println(ids);
+
+    Team team;
+    for (Long id : ids) {
+      System.err.println(id);
+      teamManager.addTeamBonus(user, teamManager.get(id), bonus, reason);
+    }
+    return Response.seeOther(URI.create("/admin/bonus")).build();
   }
 
   @GET
