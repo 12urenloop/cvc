@@ -1,6 +1,7 @@
 package be.ugent.zeus.urenloop.drbeaker.web;
 
 import be.ugent.zeus.urenloop.drbeaker.AuthenticationManager;
+import be.ugent.zeus.urenloop.drbeaker.StickManager;
 import be.ugent.zeus.urenloop.drbeaker.TeamManager;
 import be.ugent.zeus.urenloop.drbeaker.db.Group;
 import be.ugent.zeus.urenloop.drbeaker.db.HistoryEntry;
@@ -23,6 +24,7 @@ public class AdminInterface {
 
   private AuthenticationManager authManager = AuthenticationManager.lookup();
   private TeamManager teamManager = TeamManager.lookup();
+  private StickManager stickManager = StickManager.lookup();
 
   @GET
   @Path("/")
@@ -83,6 +85,13 @@ public class AdminInterface {
   @Path("/teams")
   public Viewable showTeams() {
     return new Viewable("/admin/teams.jsp", teamManager.get());
+  }
+
+
+  @GET
+  @Path("/sticks")
+  public Viewable showSticks() {
+    return new Viewable("/admin/sticks.jsp", stickManager.get());
   }
 
 }
