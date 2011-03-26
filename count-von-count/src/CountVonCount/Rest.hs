@@ -26,6 +26,12 @@ runRest conf logger chan = runFiniteChan chan () $
         let Line _ speed = reportRegression report
             params = printf "speed=%f&suspicious=false" speed
             request = Request url PUT [] (params :: String)
+        
+        -- Log about the received report
+        logger $ "CountVonCount.Rest.runRest: Received report: " ++
+           "Mac = " ++ show (reportMac report) ++ ", " ++
+           "Score = " ++ show (reportScore report) ++ ", " ++
+           "Speed = " ++ show speed
 
         -- In another thread, perform the rest call and log the result
         _ <- forkIO $ do
