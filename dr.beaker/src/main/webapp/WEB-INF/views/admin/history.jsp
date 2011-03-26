@@ -3,7 +3,7 @@
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="ul" tagdir="/WEB-INF/tags" %>
 
-<ul:page title="Score log" tab="admin" subtab="history" cols="2">
+<ul:page title="Score log" tab="admin" subtab="history">
   <ul:section title="Score log">
     <table>
       <c:forEach items="${it}" var="history">

@@ -238,6 +238,8 @@ table.data-table tr.even td {background: #FCFCFC;}
 label {
 	cursor: pointer;
 	font-weight: bold;
+  width: 100px;
+  display: inline-block;
 }
 label.checkbox, label.radio {font-weight: normal;}
 legend {
