@@ -29,10 +29,10 @@ runRest conf logger chan = runFiniteChan chan () $
         
         -- Log about the received report
         logger $ "CountVonCount.Rest.runRest: Received report: " ++
-           "Mac = " ++ show (reportMac report) ++ ", " ++
-           "Score = " ++ show (reportScore report) ++ ", " ++
-           "Speed = " ++ show speed
-
+            "Mac = " ++ show (reportMac report) ++ ", " ++
+            "Score = " ++ show (reportScore report) ++ ", " ++
+            "Speed = " ++ show speed
+ 
         -- In another thread, perform the rest call and log the result
         _ <- forkIO $ do
             result <- simpleHTTP request
