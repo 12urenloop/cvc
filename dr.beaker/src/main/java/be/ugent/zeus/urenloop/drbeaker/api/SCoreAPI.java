@@ -9,11 +9,14 @@ import be.ugent.zeus.urenloop.drbeaker.db.Team;
 import be.ugent.zeus.urenloop.drbeaker.db.User;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 /**
@@ -25,8 +28,6 @@ public class SCoreAPI {
 
   private static final Logger logger = Logger.getLogger("12UL");
 
-  private static final String[] macs = {"00:00:00:00:00:01", "00:00:00:00:00:02", "00:00:00:00:00:03", "00:00:00:00:00:04"};
-
   private TeamManager teamManager = TeamManager.lookup();
 
   private AuthenticationManager authManager = AuthenticationManager.lookup();
@@ -35,10 +36,14 @@ public class SCoreAPI {
 
   @PUT
   @Path("/{mac}/laps/increase/")
-  public Response addLap(@PathParam("mac") String macAddress,
+  public Response addLap(@Context HttpServletRequest request,
+          @PathParam("mac") String macAddress,
           @FormParam("speed") double speed,
           @FormParam("suspicious") boolean suspicious) {
-    logger.log(Level.SEVERE, "mac: {0}, speed: {1}, suspicious: {2}", new Object[]{macAddress, speed, suspicious});
+
+    String origin = request.getRemoteAddr();
+
+    logger.log(Level.SEVERE, "mac: {0}, speed: "+speed+", suspicious: {2}, origin: {3}", new Object[]{macAddress, speed, suspicious, origin});
 
     Stick stick = stickManager.get(macAddress);
 
@@ -50,6 +55,8 @@ public class SCoreAPI {
     }
     return Response.ok().build();
   }
+
+  private static final String[] macs = {"00:00:00:00:00:01", "00:00:00:00:00:02", "00:00:00:00:00:03", "00:00:00:00:00:04"};
 
   @GET
   @Path("/bootstrap")
