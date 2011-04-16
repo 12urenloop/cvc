@@ -1,20 +1,19 @@
 module CountVonCount.Counter
-    ( CounterState
+    ( CounterState (..)
+    , CounterEnvironment (..)
     , emptyCounterState
     , CounterM
     , counter
-    , runCounter
     ) where
 
-import Control.Monad.State (State, get, put, runState)
-import Control.Monad.Reader (ReaderT, ask, runReaderT)
+import Control.Monad.State (State, get, put)
+import Control.Monad.Reader (ReaderT, ask)
 import Data.Monoid (mempty, mconcat)
 import Control.Applicative ((<$>))
 
 import Statistics.LinearRegression (linearRegression)
 
 import CountVonCount.Types
-import CountVonCount.FiniteChan
 import CountVonCount.DataSet
 import CountVonCount.Configuration
 
@@ -87,27 +86,3 @@ analyze configuration dataSet =
     regression times positions =
         let (a, b) = linearRegression times positions
         in Line a b
-
--- | Run a counter
---
-runCounter :: Configuration           -- ^ Configuration
-           -> Mac                     -- ^ Identifier
-           -> FiniteChan Measurement  -- ^ In Channel
-           -> FiniteChan Report       -- ^ Out Channel
-           -> IO ()                   -- ^ Blocks forever
-runCounter configuration mac inChan outChan = do
-    _ <- runFiniteChan inChan emptyCounterState $ \measurement state -> do
-        -- Run the pure counter and optionally send the result
-        let counter' = runReaderT (counter measurement) env
-            (report, state') = runState counter' state
-        case report of Nothing -> return ()
-                       Just r  -> writeFiniteChan outChan r -- (timestamp, mac, s)
-
-        -- Yield the state for the next iteration
-        return state'
-    return ()
-  where
-    env = CounterEnvironment
-        { counterConfiguration = configuration
-        , counterMac           = mac
-        }

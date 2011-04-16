@@ -7,11 +7,11 @@ module CountVonCount.Dispatcher
 import qualified Data.Map as M
 import qualified Data.Set as S
 import Data.Monoid (mempty)
-import Control.Monad (forM_, when)
+import Control.Monad (when)
 import Control.Monad.Reader (ReaderT, ask, runReaderT)
-import Control.Monad.State (StateT, get, execStateT, modify)
+import Control.Monad.State (StateT, get, execStateT, modify, runState)
 import Control.Monad.Trans (liftIO)
-import Control.Concurrent (forkIO)
+import Control.Concurrent.MVar (MVar, newMVar, modifyMVar_)
 import Control.Applicative ((<$>))
 
 import Data.Map (Map)
@@ -27,21 +27,23 @@ data DispatcherEnvironment = DispatcherEnvironment
     , dispatcherLogger        :: Logger
     }
 
-type DispatcherState = Map Mac (FiniteChan Measurement)
+type DispatcherState = Map Mac (MVar CounterState)
 
 type DispatcherM a = ReaderT DispatcherEnvironment (StateT DispatcherState IO) a
 
--- | Get the input channel for a mac
+-- | Get the counter state for a mac
 --
-macChan :: Mac -> DispatcherM (FiniteChan Measurement)
-macChan mac = do
-    mchan <- M.lookup mac <$> get 
-    case mchan of
-        -- Channel found
-        Just c  -> return c
-        -- Not found, add one
+macCounter :: Mac -> DispatcherM (MVar CounterState)
+macCounter mac = do
+    mmvar <- M.lookup mac <$> get
+    case mmvar of
+        Just m  -> return m
         Nothing -> do
+            m <- liftIO $ newMVar emptyCounterState
+            modify $ M.insert mac m
+            return m
             -- Get channels
+    {-
             logger <- dispatcherLogger <$> ask
             macChan' <- liftIO $ newFiniteChan mac logger
             outChan <- dispatcherChan <$> ask
@@ -54,21 +56,31 @@ macChan mac = do
             -- Add to state and return
             modify $ M.insert mac macChan'
             return macChan'
+    -}
 
 -- | Main dispatcher logic
 --
 dispatcher :: Mac -> Measurement -> DispatcherM ()
 dispatcher mac measurement = do
-    -- Set of allowed mac addresses
-    macSet <- configurationMacSet . dispatcherConfiguration <$> ask
+    configuration <- dispatcherConfiguration <$> ask
+    outChan <- dispatcherChan <$> ask
 
     -- Only do something when we allow the mac address
-    when (mac `S.member` macSet) $ do
-        -- Get the channel for the mac
-        macChan' <- macChan mac
+    when (mac `S.member` configurationMacSet configuration) $ do
+        -- Get the counter for the mac address
+        mvar <- macCounter mac
 
-        -- Write the measurement to the mac channel
-        liftIO $ writeFiniteChan macChan' measurement
+        -- Optionally, this can happen in other thread (using the mvar)
+        liftIO $ modifyMVar_ mvar $ \state -> do
+            -- Run the nice, pure code
+            let env = CounterEnvironment configuration mac
+                counter' = runReaderT (counter measurement) env
+                (report, state') = runState counter' state
+
+            case report of Nothing -> return ()
+                           Just r  -> writeFiniteChan outChan r
+
+            return state'
 
 -- | Exposed run method, uses our monad stack internally
 --
@@ -78,10 +90,12 @@ runDispatcher :: Configuration                  -- ^ Configuration
               -> FiniteChan Report              -- ^ Out channel
               -> IO ()                          -- ^ Blocks forever
 runDispatcher configuration logger inChan outChan = do
-    finalState <- runFiniteChan inChan mempty $ \(t, m) state ->
+    _ <- runFiniteChan inChan mempty $ \(t, m) state ->
         execStateT (runReaderT (dispatcher t m) env) state
-    forM_ (M.toList finalState) $ \(_, chan) -> do
-        endFiniteChan chan
-        waitFiniteChan chan
+    endFiniteChan outChan
   where
-    env = DispatcherEnvironment outChan configuration logger
+    env = DispatcherEnvironment
+        { dispatcherChan = outChan
+        , dispatcherConfiguration = configuration
+        , dispatcherLogger = logger
+        }

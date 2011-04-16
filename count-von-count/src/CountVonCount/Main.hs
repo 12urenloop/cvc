@@ -28,9 +28,7 @@ countVonCount configuration logger = do
     _ <- forkIO $ runRest configuration logger outChan
 
     -- Watcher thread
-    _ <- forkIO $ do
-        runDispatcher configuration logger inChan outChan
-        endFiniteChan outChan
+    _ <- forkIO $ runDispatcher configuration logger inChan outChan
 
     -- Persistence thread
     _ <- forkIO $ runCsvLog configuration csvLogChan
