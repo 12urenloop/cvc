@@ -11,7 +11,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -19,7 +18,8 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @Entity
 @NamedQueries({
-  @NamedQuery(name = "Team.all", query = "SELECT t from Team t order by t.name asc"),
+  @NamedQuery(name = "Team.all", query = "SELECT t from Team t"),
+  @NamedQuery(name = "Team.allByName", query = "SELECT t from Team t order by t.name desc"),
   @NamedQuery(name = "Team.allByScore", query = "SELECT t from Team t order by t.score desc")
 })
 @XmlRootElement

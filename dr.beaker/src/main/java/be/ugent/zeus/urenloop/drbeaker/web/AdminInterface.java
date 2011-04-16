@@ -25,7 +25,9 @@ import javax.ws.rs.core.Response;
 public class AdminInterface {
 
   private AuthenticationManager authManager = AuthenticationManager.lookup();
+
   private TeamManager teamManager = TeamManager.lookup();
+
   private StickManager stickManager = StickManager.lookup();
 
   @Context
@@ -116,11 +118,23 @@ public class AdminInterface {
     return new Viewable("/admin/teams.jsp", teamManager.get());
   }
 
+  @GET
+  @Path("/console")
+  public Viewable showManualConsole() {
+    return new Viewable("/admin/console.jsp", teamManager.get());
+  }
+
+  @POST
+  @Path("/console")
+  public Viewable addLapViaConsole(@FormParam("team") long id) {
+    Team t = teamManager.get(id);
+    teamManager.addTeamLap(t);
+    return new Viewable("/admin/console.jsp", teamManager.get());
+  }
 
   @GET
   @Path("/sticks")
   public Viewable showSticks() {
     return new Viewable("/admin/sticks.jsp", stickManager.get());
   }
-
 }

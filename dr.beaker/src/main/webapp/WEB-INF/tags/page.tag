@@ -40,6 +40,7 @@
               <li <c:if test="${subtab == 'sticks'}">class="current-tab"</c:if>><a href="<c:url value="/admin/sticks" />">Stokken</a></li>
               <% if (request.isUserInRole("Administrator")) {%>
               <li <c:if test="${subtab == 'users'}">class="current-tab"</c:if>><a href="<c:url value="/admin/users" />">Gebruikers</a></li>
+              <li <c:if test="${subtab == 'console'}">class="current-tab"</c:if>><a href="<c:url value="/admin/console" />">Telconsole</a></li>
               <li <c:if test="${subtab == 'history'}">class="current-tab"</c:if>><a href="<c:url value="/admin/history" />">Geschiedenis</a></li>
               <% }%>
             </ul>

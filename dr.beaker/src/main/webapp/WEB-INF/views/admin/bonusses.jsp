@@ -27,8 +27,8 @@
       <input type="text" id="reason" name="reason" size="30" value="Deelname aan een speciale ronde"><br>
       <label for="team">Teams</label><br>
       <c:forEach items="${it}" var="team">
-        <input type="checkbox" name="teams" id="teams" value="${team.id}">
-        <label style="vertical-align: top; padding-left: 5px;" for="teams">${team.name}</label>
+        <input type="checkbox" name="teams" id="teams[${team.id}]" value="${team.id}">
+        <label style="vertical-align: top; padding-left: 5px;" for="teams[${team.id}]">${team.name}</label>
       </c:forEach>
       <br>
       <input type="submit" value="Toekennen">
