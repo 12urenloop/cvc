@@ -1,7 +1,8 @@
 -- | Queue IO actions
 --
 module CountVonCount.Queue
-    ( Queue
+    ( Failing
+    , Queue
     , makeQueue
     , push
     , wrapIOException
