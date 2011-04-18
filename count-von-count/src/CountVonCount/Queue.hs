@@ -4,23 +4,26 @@ module CountVonCount.Queue
     ( Queue
     , makeQueue
     , push
-    , someRequest
+    , wrapIOException
     ) where
 
 import Data.Sequence (Seq, (|>))
 import qualified Data.Sequence as S
 import Control.Monad (forever)
+import Control.Exception (try, IOException)
 import Control.Concurrent (threadDelay, forkIO)
 import Control.Concurrent.MVar (MVar, newMVar, takeMVar, putMVar, modifyMVar_)
 import Control.Applicative ((<$>))
 
-import System.Directory (doesFileExist)
+import CountVonCount.Types
 
-type Request = IO Bool
+-- | A possibly failing action
+--
+type Failing = IO Bool
 
 -- | Queue HTTP requests
 --
-newtype Queue = Queue {unQueue :: MVar (Seq Request)}
+newtype Queue = Queue {unQueue :: MVar (Seq Failing)}
 
 -- | Create an empty queue, given a delay in seconds
 --
@@ -32,7 +35,7 @@ makeQueue delay = do
 
 -- | Push a request onto the queue
 --
-push :: Queue -> Request -> IO ()
+push :: Queue -> Failing -> IO ()
 push queue request = do
     modifyMVar_ (unQueue queue) $ return . (|> request)
     pop queue
@@ -52,10 +55,13 @@ pop queue = do
     mvar = unQueue queue
     failed = not
 
--- | Debugging
+-- | Wrap the failing action to also fail on IO exceptions
 --
-someRequest :: String -> Request
-someRequest string = do
-    e <- doesFileExist "/tmp/foo"
-    if e then putStrLn string >> return True
-         else return False
+wrapIOException :: Logger -> Failing -> Failing
+wrapIOException logger failing = do
+    result <- try failing
+    case result of Left e -> failed e >> return False
+                   Right r -> return r
+  where
+    failed :: IOException -> IO ()
+    failed e = logger $ "CountVonCount.Queue.wrapIOException: " ++ show e
