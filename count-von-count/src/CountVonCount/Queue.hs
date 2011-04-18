@@ -29,7 +29,7 @@ data Retry = Done | Retry
 --
 type Retryable = IO Retry
 
--- | Queue HTTP requests
+-- | Queue IO actions
 --
 newtype Queue = Queue {unQueue :: MVar (Seq Retryable)}
 
@@ -41,14 +41,14 @@ makeQueue delay = do
     _ <- forkIO $ forever $ threadDelay (delay * 1000000) >> pop queue
     return queue
 
--- | Push a request onto the queue
+-- | Push an action onto the queue
 --
 push :: Queue -> Retryable -> IO ()
-push queue request = do
-    modifyMVar_ (unQueue queue) $ return . (|> request)
+push queue retryable = do
+    modifyMVar_ (unQueue queue) $ return . (|> retryable)
     pop queue
 
--- | Try to pop a request
+-- | Try to pop a retryable
 --
 pop :: Queue -> IO ()
 pop queue = do
