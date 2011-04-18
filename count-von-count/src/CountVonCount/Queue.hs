@@ -1,10 +1,12 @@
 -- | Queue IO actions
 --
 module CountVonCount.Queue
-    ( Failing
+    ( Retry (..)
+    , Retryable
     , Queue
     , makeQueue
     , push
+    , assumeSuccesful
     , wrapIOException
     ) where
 
@@ -18,13 +20,18 @@ import Control.Applicative ((<$>))
 
 import CountVonCount.Types
 
+-- | An action either succeeds or fails
+--
+data Retry = Done | Retry
+           deriving (Show, Eq, Ord)
+
 -- | A possibly failing action
 --
-type Failing = IO Bool
+type Retryable = IO Retry
 
 -- | Queue HTTP requests
 --
-newtype Queue = Queue {unQueue :: MVar (Seq Failing)}
+newtype Queue = Queue {unQueue :: MVar (Seq Retryable)}
 
 -- | Create an empty queue, given a delay in seconds
 --
@@ -36,7 +43,7 @@ makeQueue delay = do
 
 -- | Push a request onto the queue
 --
-push :: Queue -> Failing -> IO ()
+push :: Queue -> Retryable -> IO ()
 push queue request = do
     modifyMVar_ (unQueue queue) $ return . (|> request)
     pop queue
@@ -49,19 +56,23 @@ pop queue = do
     q <- takeMVar mvar
     if S.null q then putMVar mvar S.empty
                 else do r <- q `S.index` 0
-                        if failed r then putMVar mvar q
-                                    else do putMVar mvar (S.drop 1 q)
-                                            pop queue
+                        case r of Retry -> putMVar mvar q
+                                  Done  -> do putMVar mvar (S.drop 1 q)
+                                              pop queue
   where
     mvar = unQueue queue
-    failed = not
+
+-- | Assume that the IO action is succesful
+--
+assumeSuccesful :: IO () -> Retryable
+assumeSuccesful action = action >> return Done
 
 -- | Wrap the failing action to also fail on IO exceptions
 --
-wrapIOException :: Logger -> Failing -> Failing
+wrapIOException :: Logger -> Retryable -> Retryable
 wrapIOException logger failing = do
     result <- try failing
-    case result of Left e -> failed e >> return False
+    case result of Left e -> failed e >> return Retry
                    Right r -> return r
   where
     failed :: IOException -> IO ()

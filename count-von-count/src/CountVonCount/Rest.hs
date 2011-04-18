@@ -46,18 +46,18 @@ runRest conf logger chan = do
     withMaybe Nothing  _ = return ()
     withMaybe (Just x) f = f x
 
-wrapRequest :: Logger -> Request String -> Failing
+wrapRequest :: Logger -> Request String -> Retryable
 wrapRequest logger request = wrapIOException logger $ do
     result <- simpleHTTP request
     case result of
         Left connError -> do
             logger $ "CountVonCount.Rest.runRest: Could not connect to " ++
                      "REST API: " ++ show connError
-            return False
+            return Retry
         Right rsp -> do
             logger $ "CountVonCount.Rest.runRest: Made call to the REST " ++
                      "API, return code: " ++ showResponseCode (rspCode rsp)
-            return $ isOk $ rspCode rsp
+            return $ if isOk (rspCode rsp) then Done else Retry
   where
     showResponseCode (x, y, z) = printf "%d%d%d" x y z
     isOk (x, _, _) = x == 2
