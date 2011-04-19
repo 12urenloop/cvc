@@ -9,7 +9,7 @@ import Text.Printf (printf)
 import Control.Concurrent (forkIO)
 import Network.URI (URI, parseURI)
 import Network.HTTP ( simpleHTTP, Request (Request), RequestMethod (PUT)
-                    , Response (..)
+                    , Response (..), urlEncodeVars
                     )
 
 import CountVonCount.Configuration
@@ -30,8 +30,9 @@ runRest conf logger chan = do
     runFiniteChan chan () $
         \report () -> withMaybe (makeUrl conf $ reportMac report) $ \url -> do
             let Line _ speed = reportRegression report
-                params = printf "speed=%f&suspicious=false" speed
-                request = Request url PUT [] (params :: String)
+                params =  [ ("speed", show speed) ]
+                       ++ map ((,) "warning") (takeWarnings $ reportScore report)
+                request = Request url PUT [] (urlEncodeVars params)
 
             -- Log about the received report
             logger $ "CountVonCount.Rest.runRest: Received report: " ++
@@ -45,6 +46,8 @@ runRest conf logger chan = do
   where
     withMaybe Nothing  _ = return ()
     withMaybe (Just x) f = f x
+    takeWarnings (Warning w) = w
+    takeWarnings _           = []
 
 wrapRequest :: Logger -> Request String -> Retryable
 wrapRequest logger request = wrapIOException logger $ do
