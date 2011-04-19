@@ -59,7 +59,7 @@ counter measurement = do
                    else put $ CounterState dataSet' $ Just position
 
     -- Return found score
-    return $ if shouldReport
+    return $ if not shouldReport
         then Nothing
         else Just Report { reportMac        = mac
                          , reportTimestamp  = timestamp

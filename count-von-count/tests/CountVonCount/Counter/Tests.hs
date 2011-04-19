@@ -35,8 +35,8 @@ testCounter :: String           -- ^ Test name
 testCounter name expected measurements = testCase name $ do
     Just config <- loadConfigurationFromFile "config.yaml"
     let env = CounterEnvironment config "00:00:00:00:00:00"
-        (reports, _) = foldr step ([], emptyCounterState) measurements
-        step m (rs, s) =
+        (reports, _) = foldl step ([], emptyCounterState) measurements
+        step (rs, s) m =
             let (r, s') = runState (runReaderT (counter m) env) s
             in (r : rs, s')
         laps = mconcat $ map toLaps $ catMaybes reports
@@ -52,24 +52,23 @@ testCounter name expected measurements = testCase name $ do
 --
 tests :: [Test]
 tests =
-    [ testCounter "simple example" (Laps 3 0 0)
-        [ ( 10, 1)
-        , ( 20, 2)
-        , ( 30, 3)
-        , ( 40, 1)
-        , ( 50, 2)
-        , ( 60, 3)
-        , ( 70, 1)
-        , ( 80, 2)
-        , ( 90, 3)
-        , (100, 1)
+    [ testCounter "simple example" (Laps 2 0 0)
+        [ (  0,   0)
+        , ( 20, 100)
+        , ( 30, 200)
+        , ( 40, 300)
+        , ( 50,   0)
+        , ( 60, 100)
+        , ( 70, 200)
+        , ( 80, 300)
+        , ( 90,   0)
         ]
 
     , testCounter "suspicous lap" (Laps 0 1 1)
-        [ ( 0, 1)
-        , (10, 3)
-        , (20, 2)
-        , (10, 1)
+        [ ( 0,   0)
+        , (10, 300)
+        , (20, 200)
+        , (10, 100)
         ]
 
     , testCounter "little results" (Laps 1 0 0)
