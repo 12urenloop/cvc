@@ -42,21 +42,6 @@ macCounter mac = do
             m <- liftIO $ newMVar emptyCounterState
             modify $ M.insert mac m
             return m
-            -- Get channels
-    {-
-            logger <- dispatcherLogger <$> ask
-            macChan' <- liftIO $ newFiniteChan mac logger
-            outChan <- dispatcherChan <$> ask
-            configuration <- dispatcherConfiguration <$> ask
-
-            -- Create and fork counter
-            _ <- liftIO $ forkIO $ do
-                runCounter configuration mac macChan' outChan
-
-            -- Add to state and return
-            modify $ M.insert mac macChan'
-            return macChan'
-    -}
 
 -- | Main dispatcher logic
 --
@@ -77,8 +62,10 @@ dispatcher mac measurement = do
                 counter' = runReaderT (counter measurement) env
                 (report, state') = runState counter' state
 
-            case report of Nothing -> return ()
-                           Just r  -> writeFiniteChan outChan r
+            -- Check and validate the report
+            case report of
+                Nothing -> return ()
+                Just r  -> when (validateReport r) $ writeFiniteChan outChan r
 
             return state'
 

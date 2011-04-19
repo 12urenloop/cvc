@@ -12,7 +12,9 @@ module CountVonCount.Types
     , Criterium
     , Lap (..)
     , Score (..)
+    , validateScore
     , Report (..)
+    , validateReport
     , Logger
     ) where
 
@@ -85,6 +87,12 @@ instance Monoid Score where
     mappend _           (Warning y) = Warning y
     mappend Good        Good        = Good
 
+-- | Validate a lap
+--
+validateScore :: Score -> Bool
+validateScore (Refused _) = False
+validateScore _           = True
+
 -- | Result of a lap, contains the score and various statistics
 --
 data Report = Report
@@ -94,6 +102,11 @@ data Report = Report
     , reportDataset    :: DataSet
     , reportRegression :: Line
     } deriving (Show)
+
+-- | Validate a report
+--
+validateReport :: Report -> Bool
+validateReport = validateScore . reportScore
 
 -- | Logging structure
 --

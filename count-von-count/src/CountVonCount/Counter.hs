@@ -1,3 +1,4 @@
+{-# LANGUAGE BangPatterns #-}
 module CountVonCount.Counter
     ( CounterState (..)
     , CounterEnvironment (..)
@@ -47,31 +48,28 @@ counter measurement = do
     let dataSet' = addMeasurement measurement dataSet
 
         -- Not always executed
-        (score, line) = analyze configuration dataSet
+        (!score, line) = analyze configuration dataSet
                     
         -- First do a quick check using maybeLap, then verify it using isLap
-        haveLap = maybeLap lastPosition position && isLap score
+        shouldReport = maybeLap lastPosition position
+        shouldClear = shouldReport && validateScore score
 
     -- Clear the dataset if necessary
-    if haveLap then put $ CounterState cleared  $ Just position
-               else put $ CounterState dataSet' $ Just position
+    if shouldClear then put $ CounterState cleared  $ Just position
+                   else put $ CounterState dataSet' $ Just position
 
     -- Return found score
-    if not haveLap
-        then return Nothing
-        else return $ Just Report { reportMac        = mac
-                                  , reportTimestamp  = timestamp
-                                  , reportScore      = score
-                                  , reportDataset    = dataSet
-                                  , reportRegression = line
-                                  }
+    return $ if shouldReport
+        then Nothing
+        else Just Report { reportMac        = mac
+                         , reportTimestamp  = timestamp
+                         , reportScore      = score
+                         , reportDataset    = dataSet
+                         , reportRegression = line
+                         }
   where
     maybeLap Nothing  _                   = False
     maybeLap (Just lastPosition) position = lastPosition > position
-
-    -- Check if a score is a lap
-    isLap (Refused _) = False
-    isLap _           = True
 
     -- A cleared dataset
     cleared = addMeasurement measurement mempty
