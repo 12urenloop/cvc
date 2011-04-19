@@ -4,8 +4,10 @@ module Main
 
 import Control.Applicative ((<$>))
 import Control.Concurrent (forkIO)
+import Data.Maybe (listToMaybe, fromMaybe)
 import Data.Time (getCurrentTime, formatTime)
 import System.Locale (defaultTimeLocale)
+import System.Environment (getArgs)
 
 import CountVonCount.FiniteChan
 import CountVonCount.Dispatcher
@@ -50,11 +52,10 @@ main = do
     _ <- forkIO $ runFiniteChan logChan () $ \str () ->
         putStrLn str
 
-    -- Load the configuration
-    logger "CountVonCount.Main.main: Loading configuration..."
-
-    -- Fetch yaml config
-    mconf <- loadConfigurationFromFile "config.yaml"
+    -- Get Configuration file name and load the configuration
+    configFile <- fromMaybe "config.yaml" . listToMaybe <$> getArgs
+    logger $ "CountVonCount.Main.main: Loading configuration: " ++ configFile
+    mconf <- loadConfigurationFromFile configFile
 
     case mconf of
         Just conf -> do

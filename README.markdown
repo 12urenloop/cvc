@@ -27,6 +27,12 @@ Installation is not strictly necessary, you can also run it as
 
     ./dist/build/count-von-count/count-von-count
 
+By default, it assumes the config file is called `config.yaml` and located in
+the current directory. You can override the default by passing another file as
+argument:
+
+    ./dist/build/count-von-count/count-von-count myconf.yaml
+
 Run the tests:
 
     runghc -isrc -itests tests/TestSuite.hs
