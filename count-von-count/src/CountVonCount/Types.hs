@@ -20,8 +20,6 @@ import Data.Monoid (Monoid, mappend, mempty)
 
 import Statistics.Types (Sample)
 
-import Control.DeepSeq (NFData (..))
-
 -- | A station to which receives information of runners near it
 --
 type Station = String
@@ -56,16 +54,10 @@ instance Monoid DataSet where
     DataSet t1 p1 `mappend` DataSet t2 p2 =
         DataSet (mappend t1 t2) (mappend p1 p2)
 
-instance NFData DataSet where
-    rnf (DataSet t p) = rnf t `seq` rnf p
-
 -- | A line specified by offset and steepness
 --
 data Line = Line Double Double
           deriving (Show)
-
-instance NFData Line where
-    rnf (Line x y) = rnf x `seq` rnf y
 
 -- | Returns @Nothing@ if all is OK, @Just xxx@ with a descriptive error
 --
@@ -76,10 +68,6 @@ type Criterium = Sample -> Sample -> Line -> Score
 data Lap = Lap
          | SuspiciousLap String
          deriving (Show, Eq)
-
-instance NFData Lap where
-    rnf Lap                 = ()
-    rnf (SuspiciousLap str) = rnf str
 
 -- | A score given to a lap
 --
@@ -97,11 +85,6 @@ instance Monoid Score where
     mappend _           (Warning y) = Warning y
     mappend Good        Good        = Good
 
-instance NFData Score where
-    rnf Good         = ()
-    rnf (Warning ss) = rnf ss
-    rnf (Refused s)  = rnf s
-
 -- | Result of a lap, contains the score and various statistics
 --
 data Report = Report
@@ -111,10 +94,6 @@ data Report = Report
     , reportDataset    :: DataSet
     , reportRegression :: Line
     } deriving (Show)
-
-instance NFData Report where
-    rnf (Report m t s d r) =
-        rnf m `seq` rnf t `seq` rnf s `seq` rnf d `seq` rnf r
 
 -- | Logging structure
 --

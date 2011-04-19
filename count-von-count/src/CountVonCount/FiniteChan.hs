@@ -12,11 +12,8 @@ module CountVonCount.FiniteChan
 
 import Control.Applicative ((<$>), (<*>), pure)
 
-import Control.Concurrent.Chan.Strict ( Chan, newChan, writeChan, readChan
-                                      , dupChan
-                                      )
-import Control.Concurrent.MVar.Strict (MVar, newEmptyMVar, putMVar, takeMVar)
-import Control.DeepSeq (NFData)
+import Control.Concurrent.Chan (Chan, newChan, writeChan, readChan , dupChan)
+import Control.Concurrent.MVar (MVar, newEmptyMVar, putMVar, takeMVar)
 
 import CountVonCount.Types
 
@@ -30,28 +27,28 @@ data FiniteChan a = FiniteChan
 instance Show (FiniteChan a) where
     show fc = "FiniteChan " ++ finiteName fc
 
-newFiniteChan :: NFData a => String -> Logger -> IO (FiniteChan a)
+newFiniteChan :: String -> Logger -> IO (FiniteChan a)
 newFiniteChan name logger = FiniteChan <$> pure name
                                        <*> pure logger
                                        <*> newChan
                                        <*> newEmptyMVar
 
-dupFiniteChan :: NFData a => String -> FiniteChan a -> IO (FiniteChan a)
+dupFiniteChan :: String -> FiniteChan a -> IO (FiniteChan a)
 dupFiniteChan name (FiniteChan _ l c _) = FiniteChan <$> pure name
                                                      <*> pure l
                                                      <*> dupChan c
                                                      <*> newEmptyMVar
 
-writeFiniteChan :: NFData a => FiniteChan a -> a -> IO ()
+writeFiniteChan :: FiniteChan a -> a -> IO ()
 writeFiniteChan chan = writeChan (finiteChan chan) . Just
 
-endFiniteChan :: NFData a => FiniteChan a -> IO ()
+endFiniteChan :: FiniteChan a -> IO ()
 endFiniteChan chan = do
     writeChan (finiteChan chan) Nothing
     finiteLogger chan $
         "CountVonCount.FiniteChan.endFiniteChan: Closing " ++ show chan
 
-waitFiniteChan :: NFData a => FiniteChan a -> IO ()
+waitFiniteChan :: FiniteChan a -> IO ()
 waitFiniteChan chan = do
     finiteLogger chan $  "CountVonCount.FiniteChan.waitFiniteChan: "
                       ++ "Waiting for end of " ++ show chan
@@ -59,7 +56,7 @@ waitFiniteChan chan = do
     finiteLogger chan $  "CountVonCount.FiniteChan.waitFiniteChan: "
                       ++ "Cleanly closed " ++ show chan
 
-readFiniteChan :: NFData a => FiniteChan a -> IO (Maybe a)
+readFiniteChan :: FiniteChan a -> IO (Maybe a)
 readFiniteChan chan = do
     mx <- readChan $ finiteChan chan
     case mx of
@@ -69,8 +66,7 @@ readFiniteChan chan = do
                               ++ "Reached end of " ++ show chan
             putMVar (finiteSync chan) () >> return Nothing
 
-runFiniteChan :: NFData a
-              => FiniteChan a
+runFiniteChan :: FiniteChan a
               -> s
               -> (a -> s -> IO s)
               -> IO s
