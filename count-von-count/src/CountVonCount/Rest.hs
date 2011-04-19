@@ -1,16 +1,25 @@
 -- | Rest API connectivity
 --
+{-# LANGUAGE OverloadedStrings #-}
 module CountVonCount.Rest
     ( runRest
     ) where
 
 import Text.Printf (printf)
 
+import Control.Arrow (second)
 import Control.Concurrent (forkIO)
+{-
 import Network.URI (URI, parseURI)
 import Network.HTTP ( simpleHTTP, Request (Request), RequestMethod (PUT)
                     , Response (..), urlEncodeVars
                     )
+-}
+
+import Network.HTTP.Types (methodPut, renderSimpleQuery)
+import Network.HTTP.Enumerator
+
+import qualified Data.ByteString.Char8 as SBC
 
 import CountVonCount.Configuration
 import CountVonCount.Configuration.Rest
@@ -23,52 +32,53 @@ runRest :: Configuration      -- ^ Configuration
         -> FiniteChan Report  -- ^ Out channel to push
         -> IO ()              -- ^ Blocks forever
 runRest conf logger chan = do
-    -- Create a queue for the requests
+    -- Create a queue for the requests and a HTTP connection manager
     queue <- makeQueue 2
+    manager <- newManager
 
     -- Infinitely...
-    runFiniteChan chan () $
-        \report () -> withMaybe (makeUrl conf $ reportMac report) $ \url -> do
-            let Line _ speed = reportRegression report
-                params =  [ ("speed", show speed) ]
-                       ++ map ((,) "warning") (takeWarnings $ reportScore report)
-                request = Request url PUT [] (urlEncodeVars params)
+    runFiniteChan chan () $ \report () -> do
+        -- Log about the received report
+        logger $ "CountVonCount.Rest.runRest: Received report: " ++
+            "Mac = " ++ show (reportMac report) ++ ", " ++
+            "Score = " ++ show (reportScore report)
 
-            -- Log about the received report
-            logger $ "CountVonCount.Rest.runRest: Received report: " ++
-                "Mac = " ++ show (reportMac report) ++ ", " ++
-                "Score = " ++ show (reportScore report) ++ ", " ++
-                "Speed = " ++ show speed
+        -- In another thread, perform the rest call and log the result
+        let request = makeRequest conf report
+        _ <- forkIO $ push queue $ wrapRequest logger manager request
+        return ()
 
-            -- In another thread, perform the rest call and log the result
-            _ <- forkIO $ push queue $ wrapRequest logger request
-            return ()
+    closeManager manager
+
+makeRequest :: Configuration -> Report -> Request IO
+makeRequest configuration report = Request
+    { method = methodPut
+    , secure = False
+    , checkCerts = const (return True)
+    , host = SBC.pack $ restHost rest
+    , port = restPort rest
+    , path = SBC.pack path'
+    , queryString = []
+    , requestHeaders = []
+    , requestBody = RequestBodyBS (renderSimpleQuery False params)
+    }
   where
-    withMaybe Nothing  _ = return ()
-    withMaybe (Just x) f = f x
+    rest = configurationRest configuration
+    Line _ speed = reportRegression report
+    params = map (second SBC.pack) $
+        ("speed", show speed) :
+        map ((,) "warning") (takeWarnings $ reportScore report)
     takeWarnings (Warning w) = w
     takeWarnings _           = []
+    path' =
+        printf "/%s/api/0.1/%s/laps/increase" (restPath rest) (reportMac report)
 
-wrapRequest :: Logger -> Request String -> Retryable
-wrapRequest logger request = wrapIOException logger $ do
-    result <- simpleHTTP request
-    case result of
-        Left connError -> do
-            logger $ "CountVonCount.Rest.runRest: Could not connect to " ++
-                     "REST API: " ++ show connError
-            return Retry
-        Right rsp -> do
-            logger $ "CountVonCount.Rest.runRest: Made call to the REST " ++
-                     "API, return code: " ++ showResponseCode (rspCode rsp)
-            return $ if isOk (rspCode rsp) then Done else Retry
+wrapRequest :: Logger -> Manager -> Request IO -> Retryable
+wrapRequest logger manager request = wrapIOException logger $ do
+    response <- httpLbs request manager
+    let code = statusCode response
+    logger $ "CountVonCount.Rest.runRest: Made call to the REST " ++
+             "API, return code: " ++ show code
+    return $ if isOk code then Done else Retry
   where
-    showResponseCode (x, y, z) = printf "%d%d%d" x y z
-    isOk (x, _, _) = x == 2
-
-makeUrl :: Configuration -> String -> Maybe URI
-makeUrl conf mac = parseURI $
-    printf "http://%s:%d/%s/api/0.1/%s/laps/increase"
-        (restHost $ configurationRest conf)
-        (restPort $ configurationRest conf)
-        (restPath $ configurationRest conf)
-        mac
+    isOk code = code >= 200 && code < 300
