@@ -47,7 +47,7 @@ makeRequest configuration report = Request
     { method = methodPut
     , secure = False
     , checkCerts = const (return True)
-    , host = SBC.pack $ restHost rest
+    , host = restHost rest
     , port = restPort rest
     , path = path'
     , queryString = []
@@ -62,8 +62,8 @@ makeRequest configuration report = Request
         map ((,) "warning") (takeWarnings $ reportScore report)
     takeWarnings (Warning w) = w
     takeWarnings _           = []
-    path' = "/" `mappend` "/api/0.1/" `mappend` reportMac report
-                `mappend` "/laps/increase"
+    path' = "/" `mappend` restPath rest `mappend` "/api/0.1/"
+                `mappend` reportMac report `mappend` "/laps/increase"
 
 wrapRequest :: Logger -> Manager -> Request IO -> Retryable
 wrapRequest logger manager request = wrapIOException logger $ do

@@ -7,9 +7,10 @@ module CountVonCount.Configuration.Util
 import Control.Applicative ((<$>))
 
 import Data.Object (Object, lookupScalar)
-import Data.Object.Yaml (YamlScalar, toYamlScalar, fromYamlScalar)
+import Data.Object.Yaml (YamlScalar, toYamlScalar, fromYamlScalar, IsYamlScalar)
 
-lookupString :: String                                        -- ^ Key
+lookupString :: IsYamlScalar a
+             => String                                        -- ^ Key
              -> [(YamlScalar, Object YamlScalar YamlScalar)]  -- ^ Mapping
-             -> Maybe String                                  -- ^ Result
+             -> Maybe a                                       -- ^ Result
 lookupString k m = fromYamlScalar <$> lookupScalar (toYamlScalar k) m

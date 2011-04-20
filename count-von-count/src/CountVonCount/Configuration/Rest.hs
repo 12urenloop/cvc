@@ -10,13 +10,14 @@ import Control.Applicative ((<$>), (<*>))
 
 import Data.Object (fromMapping)
 import Data.Object.Yaml (YamlObject)
+import Data.ByteString (ByteString)
 
 import CountVonCount.Configuration.Util
 
 data RestConfiguration = RestConfiguration
-    { restHost :: String
+    { restHost :: ByteString
     , restPort :: Int
-    , restPath :: String
+    , restPath :: ByteString
     } deriving (Show)
 
 loadRestConfiguration :: YamlObject -> Maybe RestConfiguration
