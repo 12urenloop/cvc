@@ -53,12 +53,13 @@ socketReceiver conf logger chan = withSocketsDo $ do
 
     consumer line = case SBC.words line of
         [station, mac] -> do
-            timestamp <- currentTime
+            !timestamp <- currentTime
             case mapStation stationMap station of
-                Just pos -> writeFiniteChan chan (mac, (timestamp, pos))
-                Nothing  -> return ()
+                Just !pos -> writeFiniteChan chan (mac, (timestamp, pos))
+                Nothing   -> return ()
         _ -> logger $  "CountVonCount.Receiver.socketReceiver: Could not "
                     ++ "parse: " ++ show line
+    {-# INLINE consumer #-}
 
     currentTime :: IO Timestamp
     currentTime = read . formatTime defaultTimeLocale "%s" <$> getCurrentTime
