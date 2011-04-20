@@ -20,11 +20,13 @@ module CountVonCount.Types
 
 import Data.Monoid (Monoid, mappend, mempty)
 
+import Data.ByteString (ByteString)
+
 import Statistics.Types (Sample)
 
 -- | A station to which receives information of runners near it
 --
-type Station = String
+type Station = ByteString
 
 -- | The position of a 'Station'
 --
@@ -40,7 +42,7 @@ type Timediff = Double
 
 -- | Uniquely identify a mac address
 --
-type Mac = String
+type Mac = ByteString
 
 -- | A measurement from a station
 --

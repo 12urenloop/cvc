@@ -20,7 +20,7 @@ runCsvLog configuration chan = do
     handle <- openFile filePath AppendMode
     runFiniteChan chan () $ \x () -> do
         let (mac, (time, position)) = x
-        hPutStrLn handle $ printf "%s,%f,%f" mac time position
+        hPutStrLn handle $ printf "%s,%f,%f" (show mac) time position
     hClose handle
   where
     filePath = configurationCsvLog configuration

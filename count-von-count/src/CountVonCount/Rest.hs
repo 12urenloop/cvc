@@ -5,20 +5,12 @@ module CountVonCount.Rest
     ( runRest
     ) where
 
-import Text.Printf (printf)
-
 import Control.Arrow (second)
 import Control.Concurrent (forkIO)
-{-
-import Network.URI (URI, parseURI)
-import Network.HTTP ( simpleHTTP, Request (Request), RequestMethod (PUT)
-                    , Response (..), urlEncodeVars
-                    )
--}
+import Data.Monoid (mappend)
 
 import Network.HTTP.Types (methodPut, renderSimpleQuery)
 import Network.HTTP.Enumerator
-
 import qualified Data.ByteString.Char8 as SBC
 
 import CountVonCount.Configuration
@@ -57,7 +49,7 @@ makeRequest configuration report = Request
     , checkCerts = const (return True)
     , host = SBC.pack $ restHost rest
     , port = restPort rest
-    , path = SBC.pack path'
+    , path = path'
     , queryString = []
     , requestHeaders = []
     , requestBody = RequestBodyBS (renderSimpleQuery False params)
@@ -70,8 +62,8 @@ makeRequest configuration report = Request
         map ((,) "warning") (takeWarnings $ reportScore report)
     takeWarnings (Warning w) = w
     takeWarnings _           = []
-    path' =
-        printf "/%s/api/0.1/%s/laps/increase" (restPath rest) (reportMac report)
+    path' = "/" `mappend` "/api/0.1/" `mappend` reportMac report
+                `mappend` "/laps/increase"
 
 wrapRequest :: Logger -> Manager -> Request IO -> Retryable
 wrapRequest logger manager request = wrapIOException logger $ do

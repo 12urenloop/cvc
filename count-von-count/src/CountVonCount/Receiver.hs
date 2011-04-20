@@ -1,6 +1,6 @@
 -- | Listens on a certain port to receive the input
 --
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, BangPatterns #-}
 module CountVonCount.Receiver
     ( socketReceiver
     ) where
@@ -51,7 +51,7 @@ socketReceiver conf logger chan = withSocketsDo $ do
   where
     stationMap = configurationStationMap conf
 
-    consumer line = case words (SBC.unpack line) of
+    consumer line = case SBC.words line of
         [station, mac] -> do
             timestamp <- currentTime
             case mapStation stationMap station of
@@ -85,4 +85,6 @@ receiveLines sock consumer = receive mempty
     -- one. When we run out of data, we call receive to get more of it.
     consume chunk = case SBC.break (== '\n') chunk of
         (chunk', "") -> receive chunk'
-        (line, rest) -> consumer line >> consume (SB.drop 1 rest)
+        (line, rest) -> do
+            consumer line
+            consume (SB.drop 1 rest)
