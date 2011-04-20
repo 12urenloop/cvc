@@ -1,23 +1,25 @@
 package be.ugent.zeus.urenloop.drbeaker.api;
 
 import be.ugent.zeus.urenloop.drbeaker.AuthenticationManager;
+import be.ugent.zeus.urenloop.drbeaker.ScoreManager;
 import be.ugent.zeus.urenloop.drbeaker.StickManager;
 import be.ugent.zeus.urenloop.drbeaker.TeamManager;
 import be.ugent.zeus.urenloop.drbeaker.db.Group;
 import be.ugent.zeus.urenloop.drbeaker.db.Stick;
 import be.ugent.zeus.urenloop.drbeaker.db.Team;
 import be.ugent.zeus.urenloop.drbeaker.db.User;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 /**
  *
@@ -28,32 +30,46 @@ public class SCoreAPI {
 
   private static final Logger logger = Logger.getLogger("12UL");
 
-  private TeamManager teamManager = TeamManager.lookup();
+  private TeamManager teams = TeamManager.lookup();
 
   private AuthenticationManager authManager = AuthenticationManager.lookup();
 
   private StickManager stickManager = StickManager.lookup();
+  private ScoreManager scoreManager = ScoreManager.lookup();
+
+  private Response error (String message) {
+    return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
+  }
 
   @PUT
   @Path("/{mac}/laps/increase/")
   public Response addLap(@Context HttpServletRequest request,
           @PathParam("mac") String macAddress,
           @FormParam("speed") double speed,
-          @FormParam("suspicious") boolean suspicious) {
+          @FormParam("warning") List<String> warnings) {
 
-    String origin = request.getRemoteAddr();
+    String source = request.getRemoteAddr();
 
-    logger.log(Level.SEVERE, "mac: {0}, speed: "+speed+", suspicious: {2}, origin: {3}", new Object[]{macAddress, speed, suspicious, origin});
+    logger.log(Level.SEVERE, "mac: {0}, speed: " + speed + ", warnings: {2}, origin: {3}", new Object[]{macAddress, speed, warnings, source});
 
+    // fetch the stick for the mac address
     Stick stick = stickManager.get(macAddress);
-
-    Team team = stick.getTeam();
-    if (!suspicious) {
-      teamManager.addTeamLap(team);
-    } else {
-      teamManager.addTeamLap(team);
+    if (stick == null) {
+      return error("The mac address is not known.");
     }
-    return Response.ok().build();
+
+    // fetch the team for the mac address
+    Team team = stick.getTeam();
+    if (team == null) {
+      return error("The mac address was not assigned to a team.");
+    }
+
+    try {
+      scoreManager.addLap(source, team, speed, warnings);
+    } catch (Exception e) {
+      return error(e.getMessage());
+    }
+    return Response.status(Status.NO_CONTENT).build();
   }
 
   private static final String[] macs = {"00:00:00:00:00:01", "00:00:00:00:00:02", "00:00:00:00:00:03", "00:00:00:00:00:04"};
@@ -97,27 +113,27 @@ public class SCoreAPI {
     // add various dummy teams
     Team t1 = new Team();
     t1.setName("bulbasaur");
-    teamManager.add(t1);
+    teams.add(t1);
 
-    teamManager.assign(t1, stickManager.get(1));
+    teams.assign(t1, stickManager.get(1));
 
     Team t2 = new Team();
     t2.setName("machop");
-    teamManager.add(t2);
+    teams.add(t2);
 
-    teamManager.assign(t2, stickManager.get(2));
+    teams.assign(t2, stickManager.get(2));
 
     Team t3 = new Team();
     t3.setName("mankey");
-    teamManager.add(t3);
+    teams.add(t3);
 
-    teamManager.assign(t3, stickManager.get(3));
+    teams.assign(t3, stickManager.get(3));
 
     Team t4 = new Team();
     t4.setName("charmander");
-    teamManager.add(t4);
+    teams.add(t4);
 
-    teamManager.assign(t4, stickManager.get(4));
+    teams.assign(t4, stickManager.get(4));
 
     return "OK";
   }

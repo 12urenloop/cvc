@@ -4,6 +4,7 @@ import be.ugent.zeus.urenloop.drbeaker.db.HistoryEntry;
 import be.ugent.zeus.urenloop.drbeaker.db.Stick;
 import be.ugent.zeus.urenloop.drbeaker.db.Team;
 import be.ugent.zeus.urenloop.drbeaker.db.User;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,34 +38,6 @@ public class TeamManager {
 
   public void delete(Team team) {
     em.remove(team);
-  }
-
-  public void addTeamBonus(User user, Team team, int bonus, String reason) {
-    if (team != null) {
-      team.increaseScore(bonus);
-
-      // Add new history entry
-      HistoryEntry entry = new HistoryEntry(user, team, bonus, reason);
-      em.persist(entry);
-
-      em.merge(team);
-    } else {
-      logger.log(Level.WARNING, "Trying to do add a bonus to a null team!");
-    }
-  }
-
-  public void addTeamLap(Team team) {
-    if (team != null) {
-      team.increaseScore();
-
-      // Add new history entry
-      HistoryEntry entry = new HistoryEntry(null, team, 1, "Lap completed");
-      em.persist(entry);
-
-      em.merge(team);
-    } else {
-      logger.log(Level.WARNING, "Trying to do add a lap to a null team!");
-    }
   }
 
   public void assign(Team team, Stick stick) {

@@ -1,7 +1,9 @@
 package be.ugent.zeus.urenloop.drbeaker.db;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -33,6 +35,10 @@ public class Team implements Serializable {
 
   private int score;
 
+  private double speed;
+
+  private transient Queue<Double> lapspeeds = new LinkedList<Double>();
+
   @OneToOne
   private Stick stick;
 
@@ -63,16 +69,32 @@ public class Team implements Serializable {
     this.score = score;
   }
 
-  public void increaseScore() {
-    score++;
-  }
-
-  public void increaseScore(int bonus) {
-    System.err.println("BONUS: " + bonus);
-    score += bonus;
+  public void update(int amount) {
+    score += amount;
     if (score < 0) {
       score = 0;
     }
+  }
+
+  public double getAverageSpeed () {
+    return speed;
+  }
+
+  private double calculateMovingAverageSpeed () {
+    double tmp = 0.;
+    for (Double d : lapspeeds) {
+      tmp += d;
+    }
+    return tmp / lapspeeds.size();
+  }
+
+  public void updateAverageSpeed(double speed) {
+    if (lapspeeds.size() >= 5) {
+      lapspeeds.poll();
+    }
+    lapspeeds.offer(speed);
+
+    this.speed = calculateMovingAverageSpeed();
   }
 
   public Stick getStick() {

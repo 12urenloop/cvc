@@ -41,6 +41,8 @@ public class HistoryEntry implements Serializable {
 
   private int amount;
 
+  private double speed;
+
   private String reason;
 
   @Temporal(javax.persistence.TemporalType.TIMESTAMP)

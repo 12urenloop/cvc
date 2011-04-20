@@ -1,6 +1,7 @@
 package be.ugent.zeus.urenloop.drbeaker.web;
 
 import be.ugent.zeus.urenloop.drbeaker.AuthenticationManager;
+import be.ugent.zeus.urenloop.drbeaker.ScoreManager;
 import be.ugent.zeus.urenloop.drbeaker.StickManager;
 import be.ugent.zeus.urenloop.drbeaker.TeamManager;
 import be.ugent.zeus.urenloop.drbeaker.db.Group;
@@ -29,6 +30,7 @@ public class AdminInterface {
   private TeamManager teamManager = TeamManager.lookup();
 
   private StickManager stickManager = StickManager.lookup();
+  private ScoreManager scoreManager = ScoreManager.lookup();
 
   @Context
   private HttpServletRequest request;
@@ -56,7 +58,7 @@ public class AdminInterface {
   public Response addBonus(@FormParam("team") Long id, @FormParam("bonus") int bonus, @FormParam("reason") String reason) {
     Team team = teamManager.get(id);
     User user = authManager.getUser(request.getUserPrincipal().getName());
-    teamManager.addTeamBonus(user, team, bonus, reason);
+    scoreManager.addBonus(user, team, bonus, reason);
 
     return Response.seeOther(URI.create("/admin/bonus")).build();
   }
@@ -64,15 +66,10 @@ public class AdminInterface {
   @POST
   @Path("/bonusses/add")
   public Response addBonusses(@FormParam("teams") List<Long> ids, @FormParam("bonus") int bonus, @FormParam("reason") String reason) {
-    System.err.println("TEST");
     User user = authManager.getUser(request.getUserPrincipal().getName());
 
-    System.err.println(ids);
-
-    Team team;
     for (Long id : ids) {
-      System.err.println(id);
-      teamManager.addTeamBonus(user, teamManager.get(id), bonus, reason);
+      scoreManager.addBonus(user, teamManager.get(id), bonus, reason);
     }
     return Response.seeOther(URI.create("/admin/bonus")).build();
   }
@@ -121,15 +118,28 @@ public class AdminInterface {
   @GET
   @Path("/console")
   public Viewable showManualConsole() {
-    return new Viewable("/admin/console.jsp", teamManager.get());
+    return new Viewable("/admin/console.jsp", new Object[]{scoreManager, teamManager.get()});
   }
 
   @POST
   @Path("/console")
   public Viewable addLapViaConsole(@FormParam("team") long id) {
-    Team t = teamManager.get(id);
-    teamManager.addTeamLap(t);
-    return new Viewable("/admin/console.jsp", teamManager.get());
+    Team team = teamManager.get(id);
+    scoreManager.addLap("console", team, 0, null);
+    return new Viewable("/admin/console.jsp", new Object[]{scoreManager, teamManager.get()});
+  }
+
+  @GET
+  @Path("/system")
+  public Viewable showCounterSwitch() {
+    return new Viewable("/admin/system.jsp", null);
+  }
+
+  @POST
+  @Path("/system")
+  public Response showCounterSwitch(@FormParam("name") String name) {
+    scoreManager.setCurrentSource(name);
+    return Response.seeOther(URI.create("/admin/system")).build();
   }
 
   @GET
