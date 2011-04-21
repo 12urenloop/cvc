@@ -23,7 +23,7 @@
                     <strong>${team.stick.id}</strong> <small>(${team.stick.mac})</small>
                   </c:when>
                   <c:otherwise>
-                    <span style="color: red;">No stick assigned!</span>
+                    <span style="color: red;">Geen stok toegekend!</span>
                   </c:otherwise>
                 </c:choose>
               </td>
@@ -34,59 +34,27 @@
     </ul:section>
   </ul:maincol>
   <ul:sidecol>
-    <script type="text/javascript">
-      teams = {
-        init : function () {
-          $("#add-team-form").submit(this.addNewTeam);
-        },
-        addNewTeam : function () {
-          $.ajax({
-            type:'POST',
-            url:'<c:url value="/api/teams/"/>',
-            data:'name=' + $(this).find("#teamname").val(),
-            success : function (data) {
-              // update the table with all teams
-              html = '<tr><td>' + data['name'] + '</td><td style="text-align: right">';
-              if (data.sticj != null) {
-                html += '<strong>' + data.stick.id + '</strong><small>' + data.stick.mac + '</small>';
-              } else {
-                html += '<span style="color: red">No stick assigned!</span>';
-              }
-              html += '</td></tr>';
-              $('#scoreboard tbody tr:first').before(html);
+    <ul:section title="Nieuw team aanmaken">
+      <form method="POST" action="<c:url value="/admin/teams/add" />">
+        <label for="teamname">Naam</label>
+        <input type="text" name="teamname" id="teamname"><br>
+        <input type="submit" value="Team aanmaken">
+      </form>
+    </ul:section>
 
-              // update the selector for the stick assignment
-              html = '<option value="' + data.id + '" selected="selected">' + data.name + '</option>';
-              $('#team-selector option:first').before(html);
-            }
-          }).error(function(){console.log("ERROR!")});
-          return false;
-        }
-      }
-
-      $(function() {
-        teams.init();
-      });
-    </script>
-    <h3>Create new team</h3>
-    <form id="add-team-form" method="POST" action="<c:url value="/manage/team/add" />" class="form">
-      <label for="teamname">Name:</label>
-      <input type="text" name="teamname" id="teamname"><br>
-      <input type="submit" value="Create team">
-    </form>
-
-    <h3>Assign stick to team</h3>
-    <form method="POST" action="<c:url value="/manage/team/stick/" />" class="form">
-      <label for="team">Team</label>
-      <select id="team-selector" name="team">
-        <c:forEach items="${it}" var="team">
-          <option value="${team.id}">${team.name}</option>
-        </c:forEach>
-      </select><br>
-      <%-- TODO: perhaps just show a select from 1 to MAX_STICK_ID? --%>
-      <label for="stick">Stick id</label>
-      <input type="text" name="stick" size="3" style="text-align: right"><br>
-      <input type="submit" value="Assign stick">
-    </form>
+    <ul:section title="Stok toekennen aan team">
+      <form method="POST" action="<c:url value="/admin/teams/stick/" />" class="form">
+        <label for="team">Team</label>
+        <select id="team-selector" name="team">
+          <c:forEach items="${it}" var="team">
+            <option value="${team.id}">${team.name}</option>
+          </c:forEach>
+        </select><br>
+        <%-- TODO: perhaps just show a select from 1 to MAX_STICK_ID? --%>
+        <label for="stick">Stok id</label>
+        <input type="text" name="stick" size="3" style="text-align: right"><br>
+        <input type="submit" value="Stok toekennen">
+      </form>
+    </ul:section>
   </ul:sidecol>
 </ul:page>
