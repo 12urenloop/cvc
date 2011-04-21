@@ -24,7 +24,7 @@
       <label for="bonusses">Bonus</label>
       <input type="text" id="bonusses" name="bonus" size="2" maxlength="2" value="5"><br>
       <label for="reason">Reden</label>
-      <input type="text" id="reason" name="reason" size="30" value="Deelname aan een speciale ronde"><br>
+      <input type="text" id="reason" name="reason" size="50" value="Deelname aan een speciale ronde"><br>
       <label for="team">Teams</label><br>
       <c:forEach items="${it}" var="team">
         <input type="checkbox" name="teams" id="teams[${team.id}]" value="${team.id}">

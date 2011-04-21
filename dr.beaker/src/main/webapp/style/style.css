@@ -85,6 +85,7 @@ a.more {
 	font-weight: bold;
 }
 a.more:hover {color: #234;}
+a img {border: none;}
 
 
 /* Text elements */
@@ -259,6 +260,7 @@ input[type="submit"] {
 	background: #DDD;
 	border: 1px outset #AAA;
 	padding: 4px 5px;
+  margin: 5px;
 }
 input[type="submit"]:active {border-style: inset;}
 
@@ -593,6 +595,9 @@ img.alignright, img.right {margin: 0 0 1em 1.5em;}
 	font: bold 1.2em sans-serif;
 	margin-bottom: 16px;
 	padding: 7px 10px 6px;
+}
+.section-content {
+   margin: 5px 20px 0px 20px;
 }
 #sidebar .section-title {margin-bottom: 8px;}
 
