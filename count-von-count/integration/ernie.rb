@@ -16,15 +16,14 @@ class Team
   end
 
   def step
-    if rand() > 0.8 then
-      @position += 1
+    @position += 1
 
-      # Lap
-      if @position >= @stations.length then
-        @position = 0
-        @laps += 1
-      end
+    # Lap
+    if @position == @stations.length then
+      @position = 0
+      @laps += 1
     end
+
   end
 
   def station
@@ -57,14 +56,17 @@ def main
   loop do
     teams.each do |team|
       team.step
-      socket.puts "#{team.station} #{team.mac}\n"
+      if rand() < 0.8 then
+        socket.puts "#{team.station} #{team.mac}\n"
+      end
     end
+    sleep 1
 
     # Check time!
-    if steps % 10000 == 0 then
+    if steps % 50 == 0 then
       puts "Checking"
 
-      sleep 2
+      sleep 0.5
       response = Net::HTTP.get URI.parse(overwiew_url)
       overview = JSON.parse response
 
@@ -76,7 +78,7 @@ def main
       puts
     end
 
-    sleep 0.001
+    sleep 0.01
     steps += 1
   end
 
