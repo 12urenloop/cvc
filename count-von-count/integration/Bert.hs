@@ -3,10 +3,7 @@
 {-# LANGUAGE OverloadedStrings, GeneralizedNewtypeDeriving, BangPatterns #-}
 module Main where
 
--- import Control.Monad (MonadPlus)
 import Control.Monad.CatchIO (MonadCatchIO)
-import Control.Monad.CatchIO (MonadCatchIO)
-import Control.Monad.Trans (MonadIO, liftIO)
 import Control.Applicative (Applicative, Alternative, (<$>))
 import System.Environment (getArgs)
 import Control.Monad.Reader
@@ -17,12 +14,14 @@ import Control.Concurrent.MVar
 
 import Data.ByteString (ByteString)
 
-import Snap.Types -- (Snap, modifyResponse, setResponseCode, route)
 import Snap.Http.Server (httpServe, emptyConfig, addListen, ConfigListen (..))
-import Text.Blaze.Renderer.Utf8 (renderHtml)
+import Snap.Types ( MonadSnap (..), Snap, modifyResponse, setResponseCode, route
+                  , getParam, setHeader, writeLBS
+                  )
 
-import Types
-import qualified Views as Views
+import Data.Aeson (toJSON, encode)
+
+type Count = Map ByteString Int
 
 newtype App a = App {unApp :: ReaderT (MVar Count) Snap a}
               deriving ( Functor, Monad, Applicative
@@ -45,8 +44,8 @@ lapsIncrease = do
 overview :: App ()
 overview = do
     count <- liftIO . readMVar =<< ask
-    modifyResponse $ setHeader "Content-Type" "text/html; charset=UTF-8"
-    writeLBS $ renderHtml $ Views.overview count
+    modifyResponse $ setHeader "Content-Type" "application/json"
+    writeLBS $ encode $ toJSON count
 
 app :: App ()
 app = route
