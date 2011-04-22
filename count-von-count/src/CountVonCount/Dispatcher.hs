@@ -48,6 +48,7 @@ macCounter mac = do
 dispatcher :: Mac -> Measurement -> DispatcherM ()
 dispatcher mac measurement = do
     configuration <- dispatcherConfiguration <$> ask
+    logger <- dispatcherLogger <$> ask
     outChan <- dispatcherChan <$> ask
 
     -- Only do something when we allow the mac address
@@ -65,7 +66,10 @@ dispatcher mac measurement = do
             -- Check and validate the report
             case report of
                 Nothing -> return ()
-                Just r  -> when (validateReport r) $ writeFiniteChan outChan r
+                Just r  -> if (validateReport r)
+                    then writeFiniteChan outChan r
+                    else logger $  "CountVonCount.Dispatcher.dispatcher: "
+                                ++ "invalid: " ++ show (reportScore r)
 
             return state'
 
