@@ -1,6 +1,5 @@
-package be.ugent.zeus.urenloop.drbeaker.web;
+package be.ugent.zeus.urenloop.drbeaker.web.admin;
 
-import be.ugent.zeus.urenloop.drbeaker.AuthenticationManager;
 import be.ugent.zeus.urenloop.drbeaker.StickManager;
 import be.ugent.zeus.urenloop.drbeaker.TeamManager;
 import be.ugent.zeus.urenloop.drbeaker.db.Stick;
@@ -17,19 +16,17 @@ import javax.ws.rs.core.Response;
  *
  * @author Thomas Meire
  */
-@Path("/manage/team")
-public class TeamManagementInterface {
+@Path("/admin/teams")
+public class TeamInterface {
 
   private TeamManager teamManager = TeamManager.lookup();
 
   private StickManager stickManager = StickManager.lookup();
 
-  private AuthenticationManager authManager = AuthenticationManager.lookup();
-
   @GET
   @Path("/")
-  public Viewable index() {
-    return new Viewable("/team/index.jsp", teamManager.get());
+  public Viewable showTeams() {
+    return new Viewable("/admin/teams.jsp", teamManager.get());
   }
 
   @POST
@@ -40,7 +37,7 @@ public class TeamManagementInterface {
 
     teamManager.add(team);
 
-    return Response.seeOther(URI.create("/manage/team/")).build();
+    return Response.seeOther(URI.create("/admin/teams/")).build();
   }
 
   @POST
@@ -50,6 +47,6 @@ public class TeamManagementInterface {
     Stick stick = stickManager.get(stickID);
     teamManager.assign(team, stick);
 
-    return Response.seeOther(URI.create("/manage/team/")).build();
+    return Response.seeOther(URI.create("/admin/teams/")).build();
   }
 }

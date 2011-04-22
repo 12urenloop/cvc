@@ -29,11 +29,12 @@
     </ul:section>
   </ul:maincol>
   <ul:sidecol>
-    <h3>Nieuwe stok toevoegen</h3>
-    <form id="add-team-form" method="POST" action="<c:url value="/manage/team/add" />" class="form">
-      <label for="mac">Mac adres:</label>
-      <input type="text" name="mac" id="mac"><br>
-      <input type="submit" value="Toevoegen">
-    </form>
+    <ul:section title="Nieuwe stok toevoegen">
+      <form id="add-team-form" method="POST" action="<c:url value="/admin/sticks" />" class="form">
+        <label for="mac">Mac adres:</label>
+        <input type="text" name="mac" id="mac"><br>
+        <input type="submit" value="Toevoegen">
+      </form>
+    </ul:section>
   </ul:sidecol>
 </ul:page>
