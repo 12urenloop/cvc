@@ -1,9 +1,9 @@
 -- | A web server that happily consumes every request
 --
-{-# LANGUAGE OverloadedStrings, GeneralizedNewtypeDeriving, BangPatterns, PackageImports #-}
+{-# LANGUAGE OverloadedStrings, GeneralizedNewtypeDeriving, BangPatterns #-}
 module Main where
 
-import "MonadCatchIO-transformers" Control.Monad.CatchIO (MonadCatchIO)
+import Control.Monad.CatchIO (MonadCatchIO)
 import Control.Applicative (Applicative, Alternative, (<$>))
 import System.Environment (getArgs)
 import Control.Monad.Reader
