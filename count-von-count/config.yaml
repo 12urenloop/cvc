@@ -10,10 +10,10 @@ Rest API:
 # receive from the input channel) to positions in the circuit. The first station
 # should be at position 0.
 Station map:
-  Station-0: 0
-  Station-1: 100
-  Station-2: 200
-  Station-3: 300
+  "01:00:00:00:00:01": 0
+  "01:00:00:00:00:02": 100
+  "01:00:00:00:00:03": 200
+  "01:00:00:00:00:04": 300
 
 # count-von-count will log all received input to a CSV file. The file name can
 # be configured here.

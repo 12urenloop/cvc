@@ -25,6 +25,7 @@ import CountVonCount.Types
 import CountVonCount.FiniteChan
 import CountVonCount.Configuration
 import CountVonCount.Configuration.StationMap
+import CountVonCount.Receiver.Gyrid
 
 socketReceiver :: Configuration -> Logger
                -> FiniteChan (Mac, Measurement) -> IO ()
@@ -51,8 +52,8 @@ socketReceiver conf logger chan = withSocketsDo $ do
   where
     stationMap = configurationStationMap conf
 
-    consumer line = case SBC.words line of
-        [station, mac] -> do
+    consumer line = case parseGyrid line of
+        Just (station, mac) -> do
             !timestamp <- currentTime
             case mapStation stationMap station of
                 Just !pos -> writeFiniteChan chan (mac, (timestamp, pos))

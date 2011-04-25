@@ -21,6 +21,7 @@ Executable count-von-count
                      CountVonCount.FiniteChan,
                      CountVonCount.Main,
                      CountVonCount.Receiver,
+                     CountVonCount.Receiver.Gyrid,
                      CountVonCount.Rest,
                      CountVonCount.Configuration,
                      CountVonCount.Configuration.Criteria,
