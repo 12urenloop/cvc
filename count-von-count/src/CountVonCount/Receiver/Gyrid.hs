@@ -21,6 +21,8 @@ parseGyrid bs = case SBC.split ',' bs of
 -- | Transform a mac without @:@ delimiters to one a mac with @:@ delimiters
 --
 addColons :: ByteString -> ByteString
-addColons bs = case SB.splitAt 2 bs of
-    (h, "")   -> h
-    (h, rest) -> h `mappend` ":" `mappend` addColons rest
+addColons bs = if ':' `SBC.elem` bs then bs else addColons' bs
+  where
+    addColons' bs' = case SB.splitAt 2 bs' of
+        (h, "")   -> h
+        (h, rest) -> h `mappend` ":" `mappend` addColons rest
