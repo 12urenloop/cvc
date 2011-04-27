@@ -38,7 +38,10 @@ newtype Queue = Queue {unQueue :: MVar (Seq Retryable)}
 makeQueue :: Int -> IO Queue
 makeQueue delay = do
     queue <- Queue <$> newMVar S.empty
-    _ <- forkIO $ forever $ threadDelay (delay * 1000000) >> pop queue
+    _ <- forkIO $ forever $ do
+        threadDelay (delay * 1000000)
+        _ <- forkIO $ pop queue
+        return ()
     return queue
 
 -- | Push an action onto the queue
