@@ -26,7 +26,6 @@ runRest :: Configuration      -- ^ Configuration
 runRest conf logger chan = do
     -- Create a queue for the requests and a HTTP connection manager
     queue <- makeQueue 2
-    manager <- newManager
 
     -- Infinitely...
     runFiniteChan chan () $ \report () -> do
@@ -37,10 +36,13 @@ runRest conf logger chan = do
 
         -- In another thread, perform the rest call and log the result
         let request = makeRequest conf report
-        _ <- forkIO $ push queue $ wrapRequest logger manager request
+        _ <- forkIO $ push queue $ do
+            manager <- newManager
+            r <- wrapRequest logger manager request
+            closeManager manager
+            return r
         return ()
 
-    closeManager manager
 
 makeRequest :: Configuration -> Report -> Request IO
 makeRequest configuration report = Request
