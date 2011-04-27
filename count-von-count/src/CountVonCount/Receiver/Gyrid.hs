@@ -17,7 +17,7 @@ import qualified Data.ByteString.Char8 as SBC
 initGyrid :: [ByteString]
 initGyrid =
     [ "MSG,enable_rssi,true"
-    , "MSG,cache,clear"
+    , "MSG,enable_cache,false"
     ]
 
 -- | Parse a line of gyrid output
