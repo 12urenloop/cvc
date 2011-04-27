@@ -2,7 +2,8 @@
 --
 {-# LANGUAGE OverloadedStrings #-}
 module CountVonCount.Receiver.Gyrid
-    ( parseGyrid
+    ( initGyrid
+    , parseGyrid
     ) where
 
 import Data.Monoid (mappend)
@@ -10,6 +11,14 @@ import Data.Monoid (mappend)
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as SB
 import qualified Data.ByteString.Char8 as SBC
+
+-- | Lines of data that should be sent upon connect
+--
+initGyrid :: [ByteString]
+initGyrid =
+    [ "MSG,enable_rssi,true"
+    , "MSG,cache,clear"
+    ]
 
 -- | Parse a line of gyrid output
 --

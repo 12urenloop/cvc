@@ -6,11 +6,11 @@ module CountVonCount.Receiver
     ) where
 
 import Control.Applicative ((<$>))
-import Control.Monad (forever, unless)
+import Control.Monad (forever, unless, forM_)
 import Data.Time (getCurrentTime, formatTime)
 import Data.Monoid (mempty, mappend)
 import System.Locale (defaultTimeLocale)
-import Network.Socket.ByteString (recv)
+import Network.Socket.ByteString (recv, sendAll)
 import Network.Socket ( AddrInfo (..), AddrInfoFlag (..), SocketType (..)
                       , getAddrInfo, withSocketsDo, addrFamily, addrAddress
                       , defaultHints, defaultProtocol, listen, bindSocket
@@ -47,6 +47,7 @@ socketReceiver conf logger chan = withSocketsDo $ do
     -- Server loop
     forever $ do
         (conn, _) <- accept sock
+        forM_ initGyrid $ sendAll conn . (`mappend` "\r\n")
         receiveLines conn consumer
         sClose conn
   where
