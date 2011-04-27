@@ -60,9 +60,9 @@ class Ernie
       end
 
       # Check time!
-      check if @steps % 10000 == 0
+      check if @steps % 100 == 0
 
-      sleep 0.001
+      sleep 0.1
       @steps += 1
     end
   end

@@ -38,4 +38,4 @@ Mac set:
 Listen port: 9001
 
 # Verbosity. Should be either: Debug, Info, Warn, Error
-Verbosity: Debug
+Verbosity: Info
