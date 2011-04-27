@@ -35,9 +35,10 @@ public class SCoreAPI {
   private AuthenticationManager authManager = AuthenticationManager.lookup();
 
   private StickManager stickManager = StickManager.lookup();
+
   private ScoreManager scoreManager = ScoreManager.lookup();
 
-  private Response error (String message) {
+  private Response error(String message) {
     return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
   }
 
@@ -71,20 +72,11 @@ public class SCoreAPI {
     }
     return Response.status(Status.NO_CONTENT).build();
   }
-
   private static final String[] macs = {"00:00:00:00:00:01", "00:00:00:00:00:02", "00:00:00:00:00:03", "00:00:00:00:00:04"};
 
   @GET
   @Path("/bootstrap")
   public String bootstrap() {
-    // add all sticks to the system
-    Stick stick;
-    for (String mac : macs) {
-      stick = new Stick();
-      stick.setMac(mac);
-      stickManager.add(stick);
-    }
-
     // add the user groups
     Group admins = new Group();
     admins.setName("administrator");
@@ -112,32 +104,41 @@ public class SCoreAPI {
 
     // add test machine @ zeus as current source
     scoreManager.setCurrentSource("10.1.2.43");
-    
-    // add various dummy teams
-    Team t1 = new Team();
-    t1.setName("bulbasaur");
-    teams.add(t1);
 
-    teams.assign(t1, stickManager.get(1));
+    if (false) {
+      // add all sticks to the system
+      Stick stick;
+      for (String mac : macs) {
+        stick = new Stick();
+        stick.setMac(mac);
+        stickManager.add(stick);
+      }
 
-    Team t2 = new Team();
-    t2.setName("machop");
-    teams.add(t2);
+      // add various dummy teams
+      Team t1 = new Team();
+      t1.setName("bulbasaur");
+      teams.add(t1);
 
-    teams.assign(t2, stickManager.get(2));
+      teams.assign(t1, stickManager.get(1));
 
-    Team t3 = new Team();
-    t3.setName("mankey");
-    teams.add(t3);
+      Team t2 = new Team();
+      t2.setName("machop");
+      teams.add(t2);
 
-    teams.assign(t3, stickManager.get(3));
+      teams.assign(t2, stickManager.get(2));
 
-    Team t4 = new Team();
-    t4.setName("charmander");
-    teams.add(t4);
+      Team t3 = new Team();
+      t3.setName("mankey");
+      teams.add(t3);
 
-    teams.assign(t4, stickManager.get(4));
+      teams.assign(t3, stickManager.get(3));
 
+      Team t4 = new Team();
+      t4.setName("charmander");
+      teams.add(t4);
+
+      teams.assign(t4, stickManager.get(4));
+    }
     return "OK";
   }
 }
