@@ -16,7 +16,7 @@ import javax.ws.rs.core.Response;
  *
  * @author Thomas Meire
  */
-@Path("/admin/user/")
+@Path("/admin/users/")
 public class UserInterface {
   
   private AuthenticationManager authManager = AuthenticationManager.lookup();
