@@ -24,7 +24,13 @@ initGyrid =
 --
 parseGyrid :: ByteString -> Maybe (ByteString, ByteString)
 parseGyrid bs = case SBC.split ',' bs of
+    -- Ignore msg & info stuff
+    ("MSG" : _)                -> Nothing
+    ("INFO" : _)               -> Nothing
+    -- In data
     [station, _, mac, _, "in"] -> Just (addColons station, addColons mac)
+    -- RSSI data
+    [station, _, mac, _]       -> Just (addColons station, addColons mac)
     _                          -> Nothing
 
 -- | Transform a mac without @:@ delimiters to one a mac with @:@ delimiters
