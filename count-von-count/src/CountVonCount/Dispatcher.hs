@@ -68,8 +68,8 @@ dispatcher mac measurement = do
                 Nothing -> return ()
                 Just r  -> if (validateReport r)
                     then writeFiniteChan outChan r
-                    else logger $  "CountVonCount.Dispatcher.dispatcher: "
-                                ++ "invalid: " ++ show (reportScore r)
+                    else logger Info $  "CountVonCount.Dispatcher.dispatcher: "
+                                     ++ "invalid: " ++ show (reportScore r)
 
             return state'
 

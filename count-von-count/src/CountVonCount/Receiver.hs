@@ -37,7 +37,8 @@ socketReceiver conf logger chan = withSocketsDo $ do
         Nothing (Just port)
 
     -- Log port
-    logger $ "CountVonCount.Receiver.socketReceiver: Listening on port " ++ port
+    logger Info $  "CountVonCount.Receiver.socketReceiver: "
+                ++ "Listening on port " ++ port
 
     -- Create and bind socket
     sock <- socket (addrFamily serverAddr) Stream defaultProtocol
@@ -56,11 +57,13 @@ socketReceiver conf logger chan = withSocketsDo $ do
     consumer line = case parseGyrid line of
         Just (station, mac) -> do
             !timestamp <- currentTime
+            logger Debug $  "CountVonCount.Receiver.socketReceiver: Parsed "
+                         ++ show line
             case mapStation stationMap station of
                 Just !pos -> writeFiniteChan chan (mac, (timestamp, pos))
                 Nothing   -> return ()
-        _ -> logger $  "CountVonCount.Receiver.socketReceiver: Could not "
-                    ++ "parse: " ++ show line
+        _ -> logger Error $  "CountVonCount.Receiver.socketReceiver: Could not "
+                          ++ "parse: " ++ show line
     {-# INLINE consumer #-}
 
     currentTime :: IO Timestamp

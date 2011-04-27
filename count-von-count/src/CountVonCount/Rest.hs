@@ -31,7 +31,7 @@ runRest conf logger chan = do
     -- Infinitely...
     runFiniteChan chan () $ \report () -> do
         -- Log about the received report
-        logger $ "CountVonCount.Rest.runRest: Received report: " ++
+        logger Info $ "CountVonCount.Rest.runRest: Received report: " ++
             "Mac = " ++ show (reportMac report) ++ ", " ++
             "Score = " ++ show (reportScore report)
 
@@ -69,8 +69,8 @@ wrapRequest :: Logger -> Manager -> Request IO -> Retryable
 wrapRequest logger manager request = wrapIOException logger $ do
     response <- httpLbs request manager
     let code = statusCode response
-    logger $ "CountVonCount.Rest.runRest: Made call to the REST " ++
-             "API, return code: " ++ show code
+    logger Info $  "CountVonCount.Rest.runRest: Made call to the REST "
+                ++ "API, return code: " ++ show code
     return $ if isOk code then Done else Retry
   where
     isOk code = code >= 200 && code < 300

@@ -45,16 +45,16 @@ writeFiniteChan chan = writeChan (finiteChan chan) . Just
 endFiniteChan :: FiniteChan a -> IO ()
 endFiniteChan chan = do
     writeChan (finiteChan chan) Nothing
-    finiteLogger chan $
+    finiteLogger chan Info $
         "CountVonCount.FiniteChan.endFiniteChan: Closing " ++ show chan
 
 waitFiniteChan :: FiniteChan a -> IO ()
 waitFiniteChan chan = do
-    finiteLogger chan $  "CountVonCount.FiniteChan.waitFiniteChan: "
-                      ++ "Waiting for end of " ++ show chan
+    finiteLogger chan Info $  "CountVonCount.FiniteChan.waitFiniteChan: "
+                           ++ "Waiting for end of " ++ show chan
     takeMVar $ finiteSync chan
-    finiteLogger chan $  "CountVonCount.FiniteChan.waitFiniteChan: "
-                      ++ "Cleanly closed " ++ show chan
+    finiteLogger chan Info $  "CountVonCount.FiniteChan.waitFiniteChan: "
+                           ++ "Cleanly closed " ++ show chan
 
 readFiniteChan :: FiniteChan a -> IO (Maybe a)
 readFiniteChan chan = do
@@ -62,8 +62,9 @@ readFiniteChan chan = do
     case mx of
         Just x  -> return $ Just x
         Nothing -> do
-            finiteLogger chan $  "CountVonCount.FiniteChan.readFiniteChan: "
-                              ++ "Reached end of " ++ show chan
+            finiteLogger chan Info $
+                "CountVonCount.FiniteChan.readFiniteChan: Reached end of " ++
+                show chan
             putMVar (finiteSync chan) () >> return Nothing
 
 runFiniteChan :: FiniteChan a

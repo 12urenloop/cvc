@@ -76,4 +76,4 @@ wrapIOException logger failing = do
                    Right r -> return r
   where
     failed :: IOException -> IO ()
-    failed e = logger $ "CountVonCount.Queue.wrapIOException: " ++ show e
+    failed e = logger Error $ "CountVonCount.Queue.wrapIOException: " ++ show e

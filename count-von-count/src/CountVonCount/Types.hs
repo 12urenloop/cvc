@@ -15,6 +15,7 @@ module CountVonCount.Types
     , validateScore
     , Report (..)
     , validateReport
+    , Verbosity (..)
     , Logger
     ) where
 
@@ -110,6 +111,11 @@ data Report = Report
 validateReport :: Report -> Bool
 validateReport = validateScore . reportScore
 
+-- | Log priority
+--
+data Verbosity = Debug | Info | Warn | Error
+               deriving (Show, Eq, Ord, Read)
+
 -- | Logging structure
 --
-type Logger = String -> IO ()
+type Logger = Verbosity -> String -> IO ()
