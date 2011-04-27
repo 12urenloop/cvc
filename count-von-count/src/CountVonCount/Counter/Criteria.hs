@@ -34,7 +34,7 @@ samplesTreshold min' times _ _
 speedTreshold :: Double -> Criterium
 speedTreshold min' _ _ (Line _ speed)
     | speed >= min' = Good
-    | otherwise     = Refused $
+    | otherwise     = Warning $ return $
         printf "Too slow, %f while min is %f" speed min'
 
 -- | Criterium: the racer didn't go too fast
