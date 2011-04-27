@@ -40,7 +40,8 @@ public class ScoreManager {
   public void addLap (String source, Team team, double speed, List<String> warnings) {
     // only accept from the current source
     if (!source.equals(this.source)) {
-      logger.log(Level.WARNING, "Expected counting source {0}, got {1}", new Object[]{source, this.source});
+      logger.log(Level.WARNING, "Expected counting source {0}, got {1}", new Object[]{this.source, source});
+      em.persist(new HistoryEntry(null, team, 1, "Rejected a lap for team " + team.getName() + " from wrong counter (" + source + ")"));
       return;
     }
 
@@ -63,6 +64,20 @@ public class ScoreManager {
 
     em.merge(team);
     em.persist(new HistoryEntry(null, team, 1, "Completed a lap from " + source + "."));
+  }
+  
+  public void addLapFromConsole (User user, Team team) {
+    if (!source.equals("console")) {
+      em.persist(new HistoryEntry(user, team, 1, "Rejected a lap from console (current source: " + source + ")"));
+      return;
+    }
+
+    logger.log(Level.INFO, "Adding a lap for team {0} from source console.",new Object[]{team.getName()});
+
+    team.update(1);
+    em.merge(team);
+
+    em.persist(new HistoryEntry(user, team, 1, "Completed a lap from console."));
   }
 
   public void addBonus (User user, Team team, int amount, String reason) {
