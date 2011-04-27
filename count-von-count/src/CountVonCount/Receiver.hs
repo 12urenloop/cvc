@@ -89,5 +89,5 @@ receiveLines sock consumer = receive mempty
     consume chunk = case SBC.break (== '\n') chunk of
         (chunk', "") -> receive chunk'
         (line, rest) -> do
-            consumer line
+            consumer $ SBC.filter (`notElem` "\r\n") line
             consume (SB.drop 1 rest)
