@@ -40,6 +40,7 @@ public class ScoreManager {
   public void addLap (String source, Team team, double speed, List<String> warnings) {
     // only accept from the current source
     if (!source.equals(this.source)) {
+      logger.log(Level.WARNING, "Expected counting source {0}, got {1}", new Object[]{source, this.source});
       return;
     }
 
@@ -53,6 +54,7 @@ public class ScoreManager {
     team.update(1);
     if (speed != 0) {
       team.updateAverageSpeed(speed);
+      logger.log(Level.INFO, "New average speed {0}", new Object[]{team.getAverageSpeed()});
     }
 
     // store a message for the warning log

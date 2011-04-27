@@ -50,7 +50,7 @@ public class SCoreAPI {
 
     String source = request.getRemoteAddr();
 
-    logger.log(Level.SEVERE, "mac: {0}, speed: " + speed + ", warnings: {2}, origin: {3}", new Object[]{macAddress, speed, warnings, source});
+    logger.log(Level.INFO, "mac: {0}, speed: " + speed + ", warnings: {2}, origin: {3}", new Object[]{macAddress, speed, warnings, source});
 
     // fetch the stick for the mac address
     Stick stick = stickManager.get(macAddress);
@@ -110,6 +110,9 @@ public class SCoreAPI {
     authManager.add(user2);
     authManager.addUserToGroup(user2, moderators);
 
+    // add test machine @ zeus as current source
+    scoreManager.setCurrentSource("10.1.2.43");
+    
     // add various dummy teams
     Team t1 = new Team();
     t1.setName("bulbasaur");
