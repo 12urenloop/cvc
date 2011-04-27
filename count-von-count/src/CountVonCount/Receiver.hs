@@ -7,6 +7,7 @@ module CountVonCount.Receiver
 
 import Control.Applicative ((<$>))
 import Control.Monad (forever, unless, forM_)
+import Control.Concurrent (forkIO)
 import Data.Time (getCurrentTime, formatTime)
 import Data.Monoid (mempty, mappend)
 import System.Locale (defaultTimeLocale)
@@ -48,9 +49,11 @@ socketReceiver conf logger chan = withSocketsDo $ do
     -- Server loop
     forever $ do
         (conn, _) <- accept sock
-        forM_ initGyrid $ sendAll conn . (`mappend` "\r\n")
-        receiveLines conn consumer
-        sClose conn
+        _ <- forkIO $ do
+            forM_ initGyrid $ sendAll conn . (`mappend` "\r\n")
+            receiveLines conn consumer
+            sClose conn
+        return ()
   where
     stationMap = configurationStationMap conf
 
