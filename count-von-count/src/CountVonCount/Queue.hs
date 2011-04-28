@@ -7,13 +7,13 @@ module CountVonCount.Queue
     , makeQueue
     , push
     , assumeSuccesful
-    , wrapIOException
+    , wrapSomeException
     ) where
 
 import Data.Sequence (Seq, (|>))
 import qualified Data.Sequence as S
 import Control.Monad (forever)
-import Control.Exception (try, IOException)
+import Control.Exception (try, SomeException)
 import Control.Concurrent (threadDelay, forkIO)
 import Control.Concurrent.MVar (MVar, newMVar, takeMVar, putMVar, modifyMVar_)
 import Control.Applicative ((<$>))
@@ -72,11 +72,11 @@ assumeSuccesful action = action >> return Done
 
 -- | Wrap the failing action to also fail on IO exceptions
 --
-wrapIOException :: Logger -> Retryable -> Retryable
-wrapIOException logger failing = do
+wrapSomeException :: Logger -> Retryable -> Retryable
+wrapSomeException logger failing = do
     result <- try failing
     case result of Left e -> failed e >> return Retry
                    Right r -> return r
   where
-    failed :: IOException -> IO ()
+    failed :: SomeException -> IO ()
     failed e = logger Error $ "CountVonCount.Queue.wrapIOException: " ++ show e
