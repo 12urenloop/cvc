@@ -79,4 +79,5 @@ wrapSomeException logger failing = do
                    Right r -> return r
   where
     failed :: SomeException -> IO ()
-    failed e = logger Error $ "CountVonCount.Queue.wrapSomeException: " ++ show e
+    failed e = logger Error $
+        "CountVonCount.Queue.wrapSomeException: " ++ show e
