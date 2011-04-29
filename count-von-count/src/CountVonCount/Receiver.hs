@@ -25,11 +25,10 @@ import qualified Data.ByteString.Char8 as SBC
 import CountVonCount.Types
 import CountVonCount.FiniteChan
 import CountVonCount.Configuration
-import CountVonCount.Configuration.StationMap
 import CountVonCount.Receiver.Gyrid
 
 socketReceiver :: Configuration -> Logger
-               -> FiniteChan (Mac, Measurement) -> IO ()
+               -> FiniteChan Command -> IO ()
 socketReceiver conf logger chan = withSocketsDo $ do
     -- Obtain addres info structure
     let port = show $ configurationListenPort conf
@@ -50,23 +49,25 @@ socketReceiver conf logger chan = withSocketsDo $ do
     forever $ do
         (conn, _) <- accept sock
         _ <- forkIO $ do
-            forM_ initGyrid $ sendAll conn . (`mappend` "\r\n")
+            -- Send our init data in another thread, since the connecting client
+            -- might disconnect immediately after sending some stuff, and we
+            -- don't want to miss the data.
+            _ <- forkIO $ forM_ initGyrid $ sendAll conn . (`mappend` "\r\n")
             receiveLines conn consumer
             sClose conn
         return ()
   where
     stationMap = configurationStationMap conf
 
-    consumer line = case parseGyrid line of
-        Just (station, mac) -> do
-            !timestamp <- currentTime
-            logger Debug $  "CountVonCount.Receiver.socketReceiver: Parsed "
-                         ++ show line
-            case mapStation stationMap station of
-                Just !pos -> writeFiniteChan chan (mac, (timestamp, pos))
-                Nothing   -> return ()
-        _ -> logger Error $  "CountVonCount.Receiver.socketReceiver: Could not "
-                          ++ "parse: " ++ show line
+    consumer line = do
+        !timestamp <- currentTime
+        case parseGyrid stationMap timestamp line of
+            Just !command -> do
+                logger Debug $  "CountVonCount.Receiver.socketReceiver: Parsed "
+                             ++ show command
+                writeFiniteChan chan command
+            _ -> logger Error $  "CountVonCount.Receiver.socketReceiver: Could "
+                              ++ "not parse: " ++ show line
     {-# INLINE consumer #-}
 
     currentTime :: IO Timestamp

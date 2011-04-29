@@ -16,15 +16,16 @@ import CountVonCount.Configuration
 
 -- | Run a persistence thread that saves values to a CSV file
 --
-runCsvLog :: Configuration                  -- ^ Global configuration
-          -> FiniteChan (Mac, Measurement)  -- ^ Channel to read from
-          -> IO ()                          -- ^ Blocks forever
+runCsvLog :: Configuration       -- ^ Global configuration
+          -> FiniteChan Command  -- ^ Channel to read from
+          -> IO ()               -- ^ Blocks forever
 runCsvLog configuration chan = do
     handle <- openFile filePath AppendMode
-    runFiniteChan chan () $ \x () -> do
-        let (mac, (time, position)) = x
-        when (mac `S.member` configurationMacSet configuration) $
-            hPutStrLn handle $ printf "%s,%f,%f" (show mac) time position
+    runFiniteChan chan () $ \x () -> case x of
+        Measurement (mac, (time, position)) ->
+            when (mac `S.member` configurationMacSet configuration) $
+                hPutStrLn handle $ printf "%s,%f,%f" (show mac) time position
+        _ -> return ()
     hClose handle
   where
     filePath = configurationCsvLog configuration

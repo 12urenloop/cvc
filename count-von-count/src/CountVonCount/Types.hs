@@ -7,6 +7,7 @@ module CountVonCount.Types
     , Timediff
     , Mac
     , Measurement
+    , Command (..)
     , DataSet (..)
     , Line (..)
     , Criterium
@@ -48,6 +49,12 @@ type Mac = ByteString
 -- | A measurement from a station
 --
 type Measurement = (Timestamp, Position)
+
+-- | A Command received on the socket
+--
+data Command = Measurement (Mac, Measurement)
+             | Reset Mac
+             deriving (Show, Eq)
 
 -- | Dataset describing a number of measurements
 --
