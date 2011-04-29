@@ -43,7 +43,8 @@ public class SystemInterface {
     data.split("\n");
     for (String line : data.split("\n")) {
       System.err.println(line);
-      String[] x = line.trim().split(" ");
+      String[] x = line.trim().split(" ", 3);
+      System.err.println(x.length);
 
       long id = Long.parseLong(x[0]);
       
@@ -53,11 +54,13 @@ public class SystemInterface {
       
       stickManager.add(stick);
       
-      Team team = new Team();
-      team.setName(x[2]);
-      teamManager.add(team);
-      
-      teamManager.assign(team, stickManager.get(id));
+      if (x.length == 3) {
+        Team team = new Team();
+        team.setName(x[2]);
+        teamManager.add(team);
+
+        teamManager.assign(team, stickManager.get(id));
+      }
     }
     return Response.seeOther(URI.create("/admin")).build();
   }
