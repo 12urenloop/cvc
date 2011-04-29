@@ -45,8 +45,8 @@ macCounter mac = do
 
 -- | Main dispatcher logic
 --
-dispatcher :: Mac -> Measurement -> DispatcherM ()
-dispatcher mac measurement = do
+dispatcherMeasurement :: Mac -> Measurement -> DispatcherM ()
+dispatcherMeasurement mac measurement = do
     configuration <- dispatcherConfiguration <$> ask
     logger <- dispatcherLogger <$> ask
     outChan <- dispatcherChan <$> ask
@@ -68,21 +68,39 @@ dispatcher mac measurement = do
                 Nothing -> return ()
                 Just r  -> if (validateReport r)
                     then writeFiniteChan outChan r
-                    else logger Info $  "CountVonCount.Dispatcher.dispatcher: "
-                                     ++ "invalid: " ++ show (reportScore r)
+                    else logger Info $
+                            "CountVonCount.Dispatcher.dispatcherMeasurement: "
+                            ++ "invalid: " ++ show (reportScore r)
 
             return state'
 
+-- | Reset a mac address
+--
+dispatcherReset :: Mac -> DispatcherM ()
+dispatcherReset mac = do
+    configuration <- dispatcherConfiguration <$> ask
+    logger <- dispatcherLogger <$> ask
+
+    when (mac `S.member` configurationMacSet configuration) $ do
+        mvar <- macCounter mac
+        liftIO $ do
+            modifyMVar_ mvar (return . const emptyCounterState)
+            logger Info $  "CountVonCount.Dispatcher.dispatcherReset: "
+                        ++ "succesfully reset " ++ show mac
+
 -- | Exposed run method, uses our monad stack internally
 --
-runDispatcher :: Configuration                  -- ^ Configuration
-              -> Logger                         -- ^ Logger
-              -> FiniteChan (Mac, Measurement)  -- ^ In channel
-              -> FiniteChan Report              -- ^ Out channel
-              -> IO ()                          -- ^ Blocks forever
+runDispatcher :: Configuration       -- ^ Configuration
+              -> Logger              -- ^ Logger
+              -> FiniteChan Command  -- ^ In channel
+              -> FiniteChan Report   -- ^ Out channel
+              -> IO ()               -- ^ Blocks forever
 runDispatcher configuration logger inChan outChan = do
-    _ <- runFiniteChan inChan mempty $ \(t, m) state ->
-        execStateT (runReaderT (dispatcher t m) env) state
+    _ <- runFiniteChan inChan mempty $ \command state -> case command of
+            Measurement (t, m) ->
+                execStateT (runReaderT (dispatcherMeasurement t m) env) state
+            Reset m ->
+                execStateT (runReaderT (dispatcherReset m) env) state
     endFiniteChan outChan
   where
     env = DispatcherEnvironment

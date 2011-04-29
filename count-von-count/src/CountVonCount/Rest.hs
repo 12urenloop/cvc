@@ -68,7 +68,7 @@ makeRequest configuration report = Request
                 `mappend` reportMac report `mappend` "/laps/increase"
 
 wrapRequest :: Logger -> Manager -> Request IO -> Retryable
-wrapRequest logger manager request = wrapIOException logger $ do
+wrapRequest logger manager request = wrapSomeException logger $ do
     response <- httpLbs request manager
     let code = statusCode response
     logger Info $  "CountVonCount.Rest.runRest: Made call to the REST "
