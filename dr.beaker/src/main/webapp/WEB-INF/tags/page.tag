@@ -38,6 +38,7 @@
               <li <c:if test="${subtab == 'bonusses'}">class="current-tab"</c:if>><a href="<c:url value="/admin/bonus"/>">Bonussen</a></li>
               <li <c:if test="${subtab == 'teams'}">class="current-tab"</c:if>><a href="<c:url value="/admin/teams" />">Teams</a></li>
               <li <c:if test="${subtab == 'sticks'}">class="current-tab"</c:if>><a href="<c:url value="/admin/sticks" />">Stokken</a></li>
+              <li <c:if test="${subtab == 'warnings'}">class="current-tab"</c:if>><a href="<c:url value="/admin/warnings" />">Warnings</a></li>
               <% if (request.isUserInRole("Administrator")) {%>
               <li <c:if test="${subtab == 'users'}">class="current-tab"</c:if>><a href="<c:url value="/admin/users" />">Gebruikers</a></li>
               <li <c:if test="${subtab == 'console'}">class="current-tab"</c:if>><a href="<c:url value="/admin/console" />">Telconsole</a></li>
@@ -63,7 +64,7 @@
         </c:otherwise>
       </c:choose>
       <div id="footer">
-        <p>Deze software werd ontwikkeld door <a href="http://zeus.ugent.be">Zeus WPI</a>, de werkgroep informatica.</p>
+        <p>Powered by <br><a href="http://zeus.ugent.be/"><img src="<c:url value="/style/images/zeus.png"/>"></a> <a href="http://geoweb.ugent.be/cartogis"><img src="<c:url value="/style/images/cartogis.png" />"></a></p>
       </div>
     </div>
   </body>

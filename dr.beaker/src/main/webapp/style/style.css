@@ -609,6 +609,7 @@ img.alignright, img.right {margin: 0 0 1em 1.5em;}
 	border-top: 1px solid #DDD;
 	color: #777;
 	padding: 16px 0 4px;
+  vertical-align: middle;
 }
 #footer-left {width: 459px;}
 #footer-right {
@@ -621,9 +622,10 @@ img.alignright, img.right {margin: 0 0 1em 1.5em;}
 	color: #BBB;
 }
 #footer a:hover {color: #000;}
-
-
-
+#footer a img {
+  height: 60px;
+  margin-right: 20px;
+}
 /* 
    Misc overriding classes
 ------------------------------------------------------------------- */
