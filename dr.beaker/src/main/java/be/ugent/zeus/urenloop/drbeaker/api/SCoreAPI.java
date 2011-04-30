@@ -53,20 +53,8 @@ public class SCoreAPI {
 
     logger.log(Level.INFO, "mac: {0}, speed: " + speed + ", warnings: {2}, origin: {3}", new Object[]{macAddress, speed, warnings, source});
 
-    // fetch the stick for the mac address
-    Stick stick = stickManager.get(macAddress);
-    if (stick == null) {
-      return error("The mac address is not known.");
-    }
-
-    // fetch the team for the mac address
-    Team team = stick.getTeam();
-    if (team == null) {
-      return error("The mac address was not assigned to a team.");
-    }
-
     try {
-      scoreManager.addLap(source, team, speed, warnings);
+      scoreManager.addLap(source, macAddress, speed, warnings);
     } catch (Exception e) {
       return error(e.getMessage());
     }

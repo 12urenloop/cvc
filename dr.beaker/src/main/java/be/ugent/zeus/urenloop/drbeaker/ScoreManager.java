@@ -2,12 +2,14 @@
 package be.ugent.zeus.urenloop.drbeaker;
 
 import be.ugent.zeus.urenloop.drbeaker.db.HistoryEntry;
+import be.ugent.zeus.urenloop.drbeaker.db.Stick;
 import be.ugent.zeus.urenloop.drbeaker.db.Team;
 import be.ugent.zeus.urenloop.drbeaker.db.User;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -27,21 +29,47 @@ public class ScoreManager {
   @PersistenceContext(unitName = "scorePU")
   private EntityManager em;
 
+  @EJB
+  private StickManager stickManager;
+  
   private String source;
 
   public String getSource () {
+    if (source == null) {
+      // Use the system property as default source. If no property is set, use the console as default.
+      source = System.getProperty("counter-source", "console");
+    }
     return source;
   }
 
   public void setCurrentSource (String source) {
+    System.setProperty("counter-source", source);
     this.source = source;
+  }
+
+  public void addLap (String source, String macAddress, double speed, List<String> warnings) throws Exception {
+    // fetch the stick for the mac address
+    Stick stick = stickManager.get(macAddress);
+    if (stick == null) {
+      // TODO: store this somewhere in the database
+      throw new Exception("The mac address is not known.");
+    }
+
+    // fetch the team for the mac address
+    Team team = stick.getTeam();
+    if (team == null) {
+      // TODO: store this somewhere in the database
+      throw new Exception("The mac address was not assigned to a team.");
+    }
+
+    addLap(source, team, speed, warnings);
   }
 
   public void addLap (String source, Team team, double speed, List<String> warnings) {
     // only accept from the current source
     if (!source.equals(this.source)) {
       logger.log(Level.WARNING, "Expected counting source {0}, got {1}", new Object[]{this.source, source});
-      em.persist(new HistoryEntry(null, team, 1, "Rejected a lap for team " + team.getName() + " from wrong counter (" + source + ")"));
+      em.persist(new HistoryEntry(null, team, 0, "Rejected a lap for team " + team.getName() + " from wrong counter (" + source + ")"));
       return;
     }
 
