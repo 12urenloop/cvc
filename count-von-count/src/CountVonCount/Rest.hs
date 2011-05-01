@@ -7,6 +7,7 @@ module CountVonCount.Rest
 
 import Control.Arrow (second)
 import Control.Concurrent (forkIO)
+import Control.Concurrent.Chan (Chan)
 import Data.Monoid (mappend)
 
 import Network.HTTP.Types (methodPut, renderSimpleQuery)
@@ -15,20 +16,20 @@ import qualified Data.ByteString.Char8 as SBC
 
 import CountVonCount.Configuration
 import CountVonCount.Configuration.Rest
-import CountVonCount.FiniteChan
+import CountVonCount.Chan
 import CountVonCount.Types
 import CountVonCount.Queue
 
-runRest :: Configuration      -- ^ Configuration
-        -> Logger             -- ^ Logger
-        -> FiniteChan Report  -- ^ Out channel to push
-        -> IO ()              -- ^ Blocks forever
+runRest :: Configuration  -- ^ Configuration
+        -> Logger         -- ^ Logger
+        -> Chan Report    -- ^ Out channel to push
+        -> IO ()          -- ^ Blocks forever
 runRest conf logger chan = do
     -- Create a queue for the requests and a HTTP connection manager
     queue <- makeQueue 2
 
     -- Infinitely...
-    runFiniteChan chan () $ \report () -> do
+    readChanLoop chan $ \report -> do
         -- Log about the received report
         logger Info $ "CountVonCount.Rest.runRest: Received report: " ++
             "Mac = " ++ show (reportMac report) ++ ", " ++

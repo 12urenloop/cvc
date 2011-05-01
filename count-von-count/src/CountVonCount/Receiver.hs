@@ -8,6 +8,7 @@ module CountVonCount.Receiver
 import Control.Applicative ((<$>))
 import Control.Monad (forever, unless, forM_)
 import Control.Concurrent (forkIO)
+import Control.Concurrent.Chan (Chan, writeChan)
 import Data.Time (getCurrentTime, formatTime)
 import Data.Monoid (mempty, mappend)
 import System.Locale (defaultTimeLocale)
@@ -23,12 +24,11 @@ import qualified Data.ByteString as SB
 import qualified Data.ByteString.Char8 as SBC
 
 import CountVonCount.Types
-import CountVonCount.FiniteChan
 import CountVonCount.Configuration
 import CountVonCount.Receiver.Gyrid
 
 socketReceiver :: Configuration -> Logger
-               -> FiniteChan Command -> IO ()
+               -> Chan Command -> IO ()
 socketReceiver conf logger chan = withSocketsDo $ do
     -- Obtain addres info structure
     let port = show $ configurationListenPort conf
@@ -65,7 +65,7 @@ socketReceiver conf logger chan = withSocketsDo $ do
             Just !command -> do
                 logger Debug $  "CountVonCount.Receiver.socketReceiver: Parsed "
                              ++ show command
-                writeFiniteChan chan command
+                writeChan chan command
             _ -> logger Error $  "CountVonCount.Receiver.socketReceiver: Could "
                               ++ "not parse: " ++ show line
     {-# INLINE consumer #-}

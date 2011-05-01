@@ -18,7 +18,7 @@ Executable count-von-count
                      CountVonCount.Counter.Criteria,
                      CountVonCount.Dispatcher,
                      CountVonCount.CsvLog,
-                     CountVonCount.FiniteChan,
+                     CountVonCount.Chan,
                      CountVonCount.Main,
                      CountVonCount.Receiver,
                      CountVonCount.Receiver.Gyrid,

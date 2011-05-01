@@ -12,17 +12,18 @@ import Control.Monad.Reader (ReaderT, ask, runReaderT)
 import Control.Monad.State (StateT, get, execStateT, modify, runState)
 import Control.Monad.Trans (liftIO)
 import Control.Concurrent.MVar (MVar, newMVar, modifyMVar_)
+import Control.Concurrent.Chan (Chan, writeChan)
 import Control.Applicative ((<$>))
 
 import Data.Map (Map)
 
 import CountVonCount.Types
 import CountVonCount.Counter
-import CountVonCount.FiniteChan
+import CountVonCount.Chan
 import CountVonCount.Configuration
 
 data DispatcherEnvironment = DispatcherEnvironment
-    { dispatcherChan          :: FiniteChan Report
+    { dispatcherChan          :: Chan Report
     , dispatcherConfiguration :: Configuration
     , dispatcherLogger        :: Logger
     }
@@ -67,7 +68,7 @@ dispatcherMeasurement mac measurement = do
             case report of
                 Nothing -> return ()
                 Just r  -> if (validateReport r)
-                    then writeFiniteChan outChan r
+                    then writeChan outChan r
                     else logger Info $
                             "CountVonCount.Dispatcher.dispatcherMeasurement: "
                             ++ "invalid: " ++ show (reportScore r)
@@ -90,18 +91,17 @@ dispatcherReset mac = do
 
 -- | Exposed run method, uses our monad stack internally
 --
-runDispatcher :: Configuration       -- ^ Configuration
-              -> Logger              -- ^ Logger
-              -> FiniteChan Command  -- ^ In channel
-              -> FiniteChan Report   -- ^ Out channel
+runDispatcher :: Configuration  -- ^ Configuration
+              -> Logger         -- ^ Logger
+              -> Chan Command   -- ^ In channel
+              -> Chan Report    -- ^ Out channel
               -> IO ()               -- ^ Blocks forever
 runDispatcher configuration logger inChan outChan = do
-    _ <- runFiniteChan inChan mempty $ \command state -> case command of
-            Measurement (t, m) ->
-                execStateT (runReaderT (dispatcherMeasurement t m) env) state
-            Reset m ->
-                execStateT (runReaderT (dispatcherReset m) env) state
-    endFiniteChan outChan
+    statefulReadChanLoop inChan mempty $ \command state -> case command of
+        Measurement (t, m) ->
+            execStateT (runReaderT (dispatcherMeasurement t m) env) state
+        Reset m ->
+            execStateT (runReaderT (dispatcherReset m) env) state
   where
     env = DispatcherEnvironment
         { dispatcherChan = outChan
