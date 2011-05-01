@@ -22,6 +22,7 @@ CSV log: log.csv
 # The criteria used for judging laps
 Criteria:
   Samples treshold: 0
+  Stations treshold: 3
   Speed treshold: 0
   # Speed limit: 10000000
   Time treshold: 0

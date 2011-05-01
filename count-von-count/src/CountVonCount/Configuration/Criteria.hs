@@ -20,6 +20,7 @@ loadCriteria object = do
     m <- fromMapping object
     return $ catMaybes
         [ samplesTreshold   <$> lookup' "Samples treshold"  m
+        , stationsTreshold  <$> lookup' "Stations treshold" m
         , speedTreshold     <$> lookup' "Speed treshold"    m
         , speedLimit        <$> lookup' "Speed limit"       m
         , timeTreshold      <$> lookup' "Time treshold"     m

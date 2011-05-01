@@ -2,6 +2,7 @@
 --
 module CountVonCount.Counter.Criteria
     ( samplesTreshold
+    , stationsTreshold
     , speedTreshold
     , speedLimit
     , timeTreshold
@@ -10,6 +11,7 @@ module CountVonCount.Counter.Criteria
 
 import Text.Printf (printf)
 
+import qualified Data.Set as S
 import Data.Vector.Generic ((!))
 import qualified Data.Vector.Generic as V
 
@@ -27,7 +29,13 @@ samplesTreshold min' times _ _
 
 -- | Criterium: the racer was noticed at enough positions
 --
--- TODO
+stationsTreshold :: Int -> Criterium
+stationsTreshold min' _ positions _
+    | stations >= min' = Good
+    | otherwise        = Refused $
+        printf "Not enough stations, got %d, want %d" stations min'
+  where
+    stations = S.size $ S.fromList $ V.toList positions
 
 -- | Criterium: check that the racer didn't go too slow
 --
