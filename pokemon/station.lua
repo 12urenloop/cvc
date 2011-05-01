@@ -22,7 +22,7 @@ end
 function Station:signal(team)
   local s = socket.tcp()
   s:connect('localhost', 9001)
-  s:send(self.name .. ' ' .. team.mac .. '\n')
+  s:send(self.name .. ',-,' .. team.mac .. ',-,in\n')
   s:close()
 end
 
