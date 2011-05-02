@@ -11,7 +11,6 @@ module CountVonCount.Types
     , DataSet (..)
     , Line (..)
     , Criterium
-    , Lap (..)
     , Score (..)
     , validateScore
     , Report (..)
@@ -74,12 +73,6 @@ data Line = Line Double Double
 -- | Returns @Nothing@ if all is OK, @Just xxx@ with a descriptive error
 --
 type Criterium = Sample -> Sample -> Line -> Score
-
--- | Description of a lap
---
-data Lap = Lap
-         | SuspiciousLap String
-         deriving (Show, Eq)
 
 -- | A score given to a lap
 --
