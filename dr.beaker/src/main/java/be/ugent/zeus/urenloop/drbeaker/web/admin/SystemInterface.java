@@ -40,11 +40,7 @@ public class SystemInterface {
 
   @POST
   public Response showCounterSwitch(@FormParam("name") String name) {
-    try {
-      scoreManager.setCurrentSource(name);
-    } catch (Exception e) {
-      System.err.println(e);
-    }
+    scoreManager.setCurrentSource(name);
     return Response.seeOther(URI.create("/admin/system")).build();
   }
 

@@ -90,11 +90,8 @@ public class SCoreAPI {
     authManager.add(user2);
     authManager.addUserToGroup(user2, moderators);
 
-    // add cvc-a machine as current source
-    try {
-      scoreManager.setCurrentSource("cvc-a");
-    } catch (Exception e) {
-    }
+    // add test machine @ zeus as current source
+    scoreManager.setCurrentSource("10.1.2.43");
 
     if (false) {
       // add all sticks to the system
