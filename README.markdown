@@ -27,6 +27,12 @@ Installation is not strictly necessary, you can also run it as
 
     ./dist/build/count-von-count/count-von-count
 
+By default, it assumes the config file is called `config.yaml` and located in
+the current directory. You can override the default by passing another file as
+argument:
+
+    ./dist/build/count-von-count/count-von-count myconf.yaml
+
 Run the tests:
 
     runghc -isrc -itests tests/TestSuite.hs
@@ -54,13 +60,6 @@ Download glassfish from http://glassfish.java.net/ , extract it, and start it by
 
     $GLASSFISH_HOME/bin/asadmin start-domain domain1
 
-Install Dr. Beaker on the app-server
-
-- Go to http://localhost:4848
-- Navigate to "Applications" in the menu on the left
-- Choose "Deploy"
-- upload the dr.beaker.war file (located in ./target/ )
-
 Create the authentication realm
 
 - Go to http://localhost:4848
@@ -77,6 +76,17 @@ Create the authentication realm
     * Group Name Column = NAME
     * Digest Algorithm = SHA1
     * Encoding = Base64
+
+Add the `jdbc/score` resource (from the `dr.beaker` directory):
+
+    $GLASSFISH_HOME/bin/asadmin add-resources src/main/setup/sun-resources.xml
+
+Install Dr. Beaker on the app-server
+
+- Go to http://localhost:4848
+- Navigate to "Applications" in the menu on the left
+- Choose "Deploy"
+- upload the dr.beaker.war file (located in ./target/ )
 
 Dr. Beaker is now available at http://localhost:8080/dr.beaker/
 

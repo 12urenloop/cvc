@@ -2,17 +2,17 @@
 
 # Rest API, talks to dr.beaker
 Rest API:
-  Host: 10.1.2.35
+  Host: localhost
   Port: 8080
   Path: dr.beaker
 
 # The station map maps names of stations (these names should equal the names we
 # receive from the input channel) to positions in the circuit. The first station
 # should be at position 0.
-Station map:
-  Station-0: 0
-  Station-1: 100
-  Station-2: 200
+Stations:
+  "00:1C:F0:F1:F8:25": 0
+  "00:21:91:F1:F1:31": 134
+  "00:22:B0:D0:61:26": 184
 
 # count-von-count will log all received input to a CSV file. The file name can
 # be configured here.
@@ -20,9 +20,46 @@ CSV log: log.csv
 
 # The criteria used for judging laps
 Criteria:
-  Samples treshold: 3
-  Speed treshold: 5
-  Speed limit: 30
-  Consecutive: True
+  Samples treshold: 8
+  Stations treshold: 3
+  Speed treshold: 0
+  # Speed limit: 10000000
   Time treshold: 20
-  Distance treshold: 100
+  Distance treshold: 30
+  Drop treshold: 100
+
+# Set of allowed mac addresses
+Macs:
+  "20:11:02:15:01:34": Stick 1
+  "20:11:02:15:01:50": Stick 2
+  "20:11:02:15:01:51": Stick 3
+  "20:11:02:15:01:67": Stick 4
+  "20:11:02:15:01:87": Stick 5
+  "20:11:02:15:01:80": Stick 6
+  "20:11:02:15:01:77": Stick 7
+  "20:11:02:15:01:90": Stick 8
+  "20:11:02:15:01:56": Stick 9
+  "20:11:02:15:01:73": Stick 10
+  "00:11:72:14:01:98": Stick 11
+  "20:11:02:15:01:75": Stick 12
+  "20:11:02:15:01:83": Stick 13
+  "20:11:02:15:02:00": Stick 14
+  "20:11:02:15:01:19": Stick 15
+  "20:11:02:15:01:42": Stick 16
+  "20:11:02:15:01:79": Stick 17
+  "20:11:02:15:01:15": Stick 18
+  "20:11:02:15:01:93": Stick 19
+  "20:11:02:15:01:17": Stick 20
+  "00:00:00:00:00:01": Foo
+  "00:00:00:00:00:02": Bar
+  "00:00:00:00:00:03": Qux
+  "00:00:00:00:00:04": Woo
+
+# Port to listen on
+Listen port: 9001
+
+# Port for admin interface
+Admin port: 9002
+
+# Verbosity. Should be either: Debug, Info, Warn, Error
+Verbosity: Info

@@ -1,13 +1,11 @@
-package be.ugent.zeus.urenloop.drbeaker.web;
+
+package be.ugent.zeus.urenloop.drbeaker.web.admin;
 
 import be.ugent.zeus.urenloop.drbeaker.AuthenticationManager;
-import be.ugent.zeus.urenloop.drbeaker.TeamManager;
 import be.ugent.zeus.urenloop.drbeaker.db.Group;
-import be.ugent.zeus.urenloop.drbeaker.db.HistoryEntry;
 import be.ugent.zeus.urenloop.drbeaker.db.User;
 import com.sun.jersey.api.view.Viewable;
 import java.net.URI;
-import java.util.List;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -18,27 +16,19 @@ import javax.ws.rs.core.Response;
  *
  * @author Thomas Meire
  */
-@Path("/admin")
-public class AdminInterface {
-
+@Path("/admin/users/")
+public class UserInterface {
+  
   private AuthenticationManager authManager = AuthenticationManager.lookup();
-  private TeamManager teamManager = TeamManager.lookup();
 
   @GET
   @Path("/")
-  public Viewable index() {
+  public Viewable showUsers() {
     return new Viewable("/admin/index.jsp", new Object[]{authManager.getUsers(), authManager.getGroups()});
   }
 
-  @GET
-  @Path("/history")
-  public Viewable showGlobalScoreHistory() {
-    List<HistoryEntry> history = teamManager.getHistory();
-    return new Viewable("/admin/history.jsp", history);
-  }
-
   @POST
-  @Path("/users/add")
+  @Path("/add")
   public Response addUser(@FormParam("username") String username,
           @FormParam("password") String password,
           @FormParam("group") String groupName) throws Exception {

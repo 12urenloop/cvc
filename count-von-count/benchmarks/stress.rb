@@ -1,27 +1,55 @@
 #!/usr/bin/ruby
 
-TEAMS = ['wina', 'geologica', 'chemica', 'vtk']
-POSITIONS = 10
+require 'yaml'
+require 'socket'
 
-class Array
-  def pick
-    self[rand(length)]
+class Team
+  attr_accessor :mac
+
+  def initialize(mac, stations)
+    @mac = mac
+    @stations = stations
+    @position = 0
   end
-end
 
-def rand_in(min, max)
-  min + rand(max - min)
+  def step
+    if rand() > 0.8 then
+      @position += 1
+      @position %= @stations.length
+    end
+  end
+
+  def station
+    @stations[@position]
+  end
 end
 
 def main
-  time = 0
-  positions = Hash.new 0
+  # Load configuration
+  config = YAML::load_file 'config.yaml'
+
+  # Open a socket
+  socket = TCPSocket.new('localhost', config['Listen port'])
+
+  # Load stations
+  station_map = config['Station map']
+  stations = station_map.keys.sort_by { |station| station_map[station] }
+
+  # Create teams
+  teams = config['Mac set'].collect { |mac| Team.new(mac, stations) }
+
+  # Forever...
   loop do
-    team = TEAMS.pick
-    positions[team] = (positions[team] + rand_in(-1, POSITIONS / 2)) % POSITIONS
-    puts "#{team} #{positions[team]} #{time}" 
-    time = time + rand_in(-10, 30)
+    teams.each do |team|
+      team.step
+      socket.puts "#{team.station} #{team.mac}\n"
+    end
+
+    sleep 0.01
   end
+
+  # Cleanup
+  socket.close
 end
 
 main

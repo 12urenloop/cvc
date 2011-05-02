@@ -1,78 +1,68 @@
 -- | A dispatcher sends events to the right watchers
 --
 module CountVonCount.Dispatcher
-    ( runDispatcher
+    ( DispatcherState
+    , emptyDispatcherState
+    , resetCounter
+    , runDispatcher
     ) where
 
 import qualified Data.Map as M
-import Data.Monoid (mempty)
-import Control.Monad (forM_)
-import Control.Monad.Reader (ReaderT, ask, runReaderT)
-import Control.Monad.State (StateT, get, execStateT, modify)
-import Control.Monad.Trans (liftIO)
-import Control.Concurrent (forkIO)
-import Control.Applicative ((<$>))
+import Data.Maybe (fromMaybe)
+import Control.Monad.Reader (runReaderT)
+import Control.Monad.State (runState)
+import Control.Concurrent.Chan (Chan, writeChan)
+import Control.Concurrent.MVar (MVar, takeMVar, putMVar)
 
 import Data.Map (Map)
 
 import CountVonCount.Types
 import CountVonCount.Counter
-import CountVonCount.FiniteChan
+import CountVonCount.Chan
 import CountVonCount.Configuration
 
-data DispatcherEnvironment = DispatcherEnvironment
-    { dispatcherChan          :: FiniteChan (Timestamp, Mac, Score)
-    , dispatcherConfiguration :: Configuration
-    }
+type DispatcherState = Map Mac CounterState
 
-type DispatcherState = Map Mac (FiniteChan Measurement)
+emptyDispatcherState :: DispatcherState
+emptyDispatcherState = M.empty
 
-type DispatcherM a = ReaderT DispatcherEnvironment (StateT DispatcherState IO) a
+addMeasurement :: Configuration
+               -> Mac -> Measurement -> DispatcherState
+               -> (Maybe Report, DispatcherState)
+addMeasurement conf mac measurement state =
+    if allowedMac mac conf then updated else (Nothing, state)
+  where
+    cstate = fromMaybe emptyCounterState $ M.lookup mac state
+    env = CounterEnvironment conf mac
+    (report, cstate') = runState (runReaderT (counter measurement) env) cstate
+    updated = (report, M.insert mac cstate' state)
 
--- | Get the input channel for a mac
---
-macChan :: Mac -> DispatcherM (FiniteChan Measurement)
-macChan mac = do
-    mchan <- M.lookup mac <$> get 
-    case mchan of
-        -- Channel found
-        Just c  -> return c
-        -- Not found, add one
-        Nothing -> do
-            -- Get channels
-            macChan' <- liftIO $ newFiniteChan mac
-            outChan <- dispatcherChan <$> ask
-            configuration <- dispatcherConfiguration <$> ask
-
-            -- Create and fork counter
-            _ <- liftIO $ forkIO $ do
-                runCounter configuration mac macChan' outChan
-
-            -- Add to state and return
-            modify $ M.insert mac macChan'
-            return macChan'
-
--- | Main dispatcher logic
---
-dispatcher :: Mac -> Measurement -> DispatcherM ()
-dispatcher mac measurement = do
-    -- Get the channel for the mac
-    macChan' <- macChan mac
-
-    -- Write the measurement to the mac channel
-    liftIO $ writeFiniteChan macChan' measurement
+resetCounter :: Mac -> DispatcherState -> DispatcherState
+resetCounter mac = M.insert mac emptyCounterState
 
 -- | Exposed run method, uses our monad stack internally
 --
-runDispatcher :: Configuration                       -- ^ Configuration
-              -> FiniteChan (Mac, Measurement)       -- ^ In channel
-              -> FiniteChan (Timestamp, Mac, Score)  -- ^ Out channel
-              -> IO ()                               -- ^ Blocks forever
-runDispatcher configuration inChan outChan = do
-    finalState <- runFiniteChan inChan mempty $ \(t, m) state ->
-        execStateT (runReaderT (dispatcher t m) env) state
-    forM_ (M.toList finalState) $ \(_, chan) -> do
-        endFiniteChan chan
-        waitFiniteChan chan
-  where
-    env = DispatcherEnvironment outChan configuration
+runDispatcher :: Configuration         -- ^ Configuration
+              -> Logger                -- ^ Logger
+              -> MVar DispatcherState  -- ^ Dispatcher state
+              -> Chan Command          -- ^ In channel
+              -> Chan Report           -- ^ Out channel
+              -> IO ()                 -- ^ Blocks forever
+runDispatcher conf logger mstate inChan outChan = do
+    readChanLoop inChan $ \command -> case command of
+        -- Add a measurement
+        Measurement (t, m) -> do
+            state <- takeMVar mstate
+            let (report, state') = addMeasurement conf t m state
+
+            -- Check and validate the report
+            case report of
+                Nothing -> return ()
+                Just r  -> if (validateReport r)
+                    then writeChan outChan r
+                    else logger Info $
+                            "CountVonCount.Dispatcher.dispatcherMeasurement: "
+                            ++ "invalid: " ++ show (reportScore r)
+
+            -- Write back the state
+            putMVar mstate state'

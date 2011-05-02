@@ -1,87 +1,84 @@
+{-# LANGUAGE BangPatterns #-}
 module CountVonCount.Counter
-    ( CounterState
+    ( CounterState (..)
+    , CounterEnvironment (..)
     , emptyCounterState
     , CounterM
     , counter
-    , runCounter
     ) where
 
-import Control.Monad.State (State, get, put, runState)
-import Control.Monad.Reader (ReaderT, ask, runReaderT)
-import Data.Monoid (mempty)
+import Control.Monad.State (State, get, put)
+import Control.Monad.Reader (ReaderT, ask)
+import Data.Monoid (mconcat)
 import Control.Applicative ((<$>))
 
+import Statistics.LinearRegression (linearRegression)
+
 import CountVonCount.Types
-import CountVonCount.FiniteChan
 import CountVonCount.DataSet
-import CountVonCount.Analyzer
 import CountVonCount.Configuration
 
 data CounterState = CounterState
     { counterDataSet      :: DataSet
-    , counterLastPosition :: Maybe Position
     } deriving (Show)
 
-emptyCounterState :: CounterState
-emptyCounterState = CounterState mempty Nothing
+data CounterEnvironment = CounterEnvironment
+    { counterConfiguration :: Configuration
+    , counterMac           :: Mac
+    }
 
-type CounterM = ReaderT Configuration (State CounterState)
+emptyCounterState :: CounterState
+emptyCounterState = CounterState emptyDataSet
+
+type CounterM = ReaderT CounterEnvironment (State CounterState)
 
 -- | Run a counter
 --
-counter :: Measurement -> CounterM (Maybe Score)
+counter :: Measurement -> CounterM (Maybe Report)
 counter measurement = do
     -- Read a measurement
-    let (_, position) = measurement
+    let (timestamp, position) = measurement
 
     -- Obtain state and create a possible next dataset
     dataSet <- counterDataSet <$> get
-    lastPosition <- counterLastPosition <$> get
-    configuration <- ask
+    configuration <- counterConfiguration <$> ask
+    mac <- counterMac <$> ask
     let dataSet' = addMeasurement measurement dataSet
 
-        -- Check if we have a possible lap
-        score = if maybeLap lastPosition position
-                    -- Maybe a lap, check for it
-                    then Just $ analyze configuration dataSet
-                    -- Certainly no lap
-                    else Nothing
+        -- Not always executed
+        (!score, line) = analyze configuration measurement dataSet
                     
+        -- First do a quick check using maybeLap, then verify it using isLap
+        shouldReport = maybeLap (dataMaxPositon dataSet) position
+        shouldClear = shouldReport && validateScore score
+
     -- Clear the dataset if necessary
-    if isLap score
-        then put $ CounterState cleared  $ Just position
-        else put $ CounterState dataSet' $ Just position
+    if shouldClear then put $ CounterState cleared
+                   else put $ CounterState dataSet'
 
     -- Return found score
-    return score
+    return $ if not shouldReport
+        then Nothing
+        else Just Report { reportMac        = mac
+                         , reportTimestamp  = timestamp
+                         , reportScore      = score
+                         , reportDataset    = dataSet
+                         , reportRegression = line
+                         }
   where
-    maybeLap Nothing  _                   = False
-    maybeLap (Just lastPosition) position = lastPosition > position
-
-    -- Check if a score is a lap
-    isLap Nothing            = False
-    isLap (Just (Refused _)) = False
-    isLap _                  = True
+    maybeLap Nothing   _        = False
+    maybeLap (Just mp) position = mp > position
 
     -- A cleared dataset
-    cleared = addMeasurement measurement mempty
+    cleared = addMeasurement measurement emptyDataSet
 
--- | Run a counter
---
-runCounter :: Configuration                       -- ^ Configuration
-           -> Mac                                 -- ^ Identifier
-           -> FiniteChan Measurement              -- ^ In Channel
-           -> FiniteChan (Timestamp, Mac, Score)  -- ^ Out Channel
-           -> IO ()                               -- ^ Blocks forever
-runCounter configuration mac inChan outChan = do
-    _ <- runFiniteChan inChan emptyCounterState $ \measurement state -> do
-        -- Run the pure counter and optionally send the result
-        let (timestamp, _) = measurement
-            counter' = runReaderT (counter measurement) configuration
-            (result, state') = runState counter' state
-        case result of Nothing -> return ()
-                       Just s  -> writeFiniteChan outChan (timestamp, mac, s)
-
-        -- Yield the state for the next iteration
-        return state'
-    return ()
+analyze :: Configuration -> Measurement -> DataSet -> (Score, Line)
+analyze configuration measurement dataSet =
+    let (times, positions) = toSamples dataSet
+        line = regression times positions
+    in (criteria measurement times positions line, line)
+  where
+    criteria = mconcat $ configurationCriteria configuration
+    regression times positions =
+        let (a, b) = linearRegression times positions
+        in Line a b

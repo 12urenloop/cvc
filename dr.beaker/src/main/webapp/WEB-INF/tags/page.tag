@@ -4,6 +4,7 @@
 
 <%@attribute name="title"%>
 <%@attribute name="tab" %>
+<%@attribute name="subtab" %>
 <%@attribute name="cols" %>
 <html>
   <head>
@@ -34,15 +35,17 @@
         <c:if test="${tab == 'admin'}">
           <div class="navigation" id="sub-nav">
             <ul class="tabbed">
-              <li class="current-tab"><a href="index.html">Speciale rondes</a></li>
+              <li <c:if test="${subtab == 'bonusses'}">class="current-tab"</c:if>><a href="<c:url value="/admin/bonus"/>">Bonussen</a></li>
+              <li <c:if test="${subtab == 'teams'}">class="current-tab"</c:if>><a href="<c:url value="/admin/teams" />">Teams</a></li>
+              <li <c:if test="${subtab == 'sticks'}">class="current-tab"</c:if>><a href="<c:url value="/admin/sticks" />">Stokken</a></li>
               <% if (request.isUserInRole("Administrator")) {%>
-              <li><a href="style-demo.html">Teams</a></li>
-              <li><a href="archives.html">Stokken</a></li>
-              <li><a href="comments.html">Gebruikers</a></li>
+              <li <c:if test="${subtab == 'users'}">class="current-tab"</c:if>><a href="<c:url value="/admin/users" />">Gebruikers</a></li>
+              <li <c:if test="${subtab == 'console'}">class="current-tab"</c:if>><a href="<c:url value="/admin/console" />">Telconsole</a></li>
+              <li <c:if test="${subtab == 'system'}">class="current-tab"</c:if>><a href="<c:url value="/admin/system" />">Systeem</a></li>
+              <li <c:if test="${subtab == 'history'}">class="current-tab"</c:if>><a href="<c:url value="/admin/history" />">Geschiedenis</a></li>
               <% }%>
             </ul>
             <div class="clearer">&nbsp;</div>
-
           </div>
         </c:if>
         <div class="clearer">&nbsp;</div>
@@ -60,7 +63,7 @@
         </c:otherwise>
       </c:choose>
       <div id="footer">
-        <p>Deze software werd ontwikkeld door <a href="http://zeus.ugent.be">Zeus WPI</a>, de werkgroep informatica.</p>
+        <p>Powered by <br><a href="http://zeus.ugent.be/"><img src="<c:url value="/style/images/zeus.png"/>"></a> <a href="http://geoweb.ugent.be/cartogis"><img src="<c:url value="/style/images/cartogis.png" />"></a></p>
       </div>
     </div>
   </body>

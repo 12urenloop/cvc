@@ -2,37 +2,34 @@
 --
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 module CountVonCount.DataSet
-    ( DataSet
+    ( emptyDataSet
     , addMeasurement
     , toSamples
     , toList
     ) where
 
-import Data.Monoid (Monoid, mempty, mappend)
 import qualified Data.Vector.Generic as V
 
 import Statistics.Types (Sample)
 
 import CountVonCount.Types
 
-data DataSet = DataSet [Timestamp] [Position]
-             deriving (Show)
-
-instance Monoid DataSet where
-    mempty = DataSet mempty mempty
-    DataSet t1 p1 `mappend` DataSet t2 p2 =
-        DataSet (mappend t1 t2) (mappend p1 p2)
+emptyDataSet :: DataSet
+emptyDataSet = DataSet [] [] Nothing
 
 addMeasurement :: Measurement
                -> DataSet
                -> DataSet
-addMeasurement (t, p) (DataSet ts ps) = DataSet (t : ts) (p : ps)
+addMeasurement (t, p) (DataSet ts ps m) = DataSet (t : ts) (p : ps) max'
+  where
+    max' = Just $ case m of Nothing  -> p
+                            Just  m' -> max m' p
 
 toSamples :: DataSet           -- ^ DataSet
           -> (Sample, Sample)  -- ^ (times, positions)
-toSamples (DataSet ts ps) =
+toSamples (DataSet ts ps _) =
     (V.reverse (V.fromList ts), V.reverse (V.fromList ps))
 
 toList :: DataSet                  -- ^ DataSet
        -> [(Timestamp, Position)]  -- ^ Simple list
-toList (DataSet ts ps) = reverse $ zip ts ps
+toList (DataSet ts ps _) = reverse $ zip ts ps

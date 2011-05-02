@@ -85,6 +85,7 @@ a.more {
 	font-weight: bold;
 }
 a.more:hover {color: #234;}
+a img {border: none;}
 
 
 /* Text elements */
@@ -238,6 +239,8 @@ table.data-table tr.even td {background: #FCFCFC;}
 label {
 	cursor: pointer;
 	font-weight: bold;
+  width: 100px;
+  display: inline-block;
 }
 label.checkbox, label.radio {font-weight: normal;}
 legend {
@@ -245,20 +248,21 @@ legend {
 	font-size: 1.2em;
 }
 textarea {overflow: auto;}
-input.text, textarea, select {
+input[type="text"], input[type="password"], textarea, select {
 	background: #FCFCFC;
 	border: 1px inset #AAA;
 	margin: 0.5em 0;
 	padding: 4px 5px;
 }
-input.text:focus, textarea:focus, select:focus {background: #FFFFF5;}
+input[type="text"]:focus, input[type="password"]:focus, textarea:focus, select:focus {background: #FFFFF5;}
 
-input.button {
+input[type="submit"] {
 	background: #DDD;
 	border: 1px outset #AAA;
 	padding: 4px 5px;
+  margin: 5px;
 }
-input.button:active {border-style: inset;}
+input[type="submit"]:active {border-style: inset;}
 
 
 /* Specific */
@@ -500,7 +504,6 @@ img.alignright, img.right {margin: 0 0 1em 1.5em;}
 	width: 100%;
 }
 
-
 /* 
    Layout 
 ------------------------------------------------------------------- */
@@ -512,16 +515,14 @@ img.alignright, img.right {margin: 0 0 1em 1.5em;}
 /* Wrapper */
 #site-wrapper {
 	margin: 0 auto;
-	width: 920px;
+	width: 950px;
 }
 
-
 /* Header */
-#header {padding-top: 24px;}
+#header {padding-top: 10px;}
 
 /* Top */
-#top {padding-bottom: 32px;}
-
+#top {padding-bottom: 10px;}
 
 /* Logo */
 #logo {	border-right: 1px solid #DDD;
@@ -595,6 +596,9 @@ img.alignright, img.right {margin: 0 0 1em 1.5em;}
 	margin-bottom: 16px;
 	padding: 7px 10px 6px;
 }
+.section-content {
+   margin: 5px 20px 0px 20px;
+}
 #sidebar .section-title {margin-bottom: 8px;}
 
 
@@ -605,6 +609,7 @@ img.alignright, img.right {margin: 0 0 1em 1.5em;}
 	border-top: 1px solid #DDD;
 	color: #777;
 	padding: 16px 0 4px;
+  vertical-align: middle;
 }
 #footer-left {width: 459px;}
 #footer-right {
@@ -617,9 +622,10 @@ img.alignright, img.right {margin: 0 0 1em 1.5em;}
 	color: #BBB;
 }
 #footer a:hover {color: #000;}
-
-
-
+#footer a img {
+  height: 60px;
+  margin-right: 20px;
+}
 /* 
    Misc overriding classes
 ------------------------------------------------------------------- */

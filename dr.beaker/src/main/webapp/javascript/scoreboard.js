@@ -1,6 +1,6 @@
 
-// refresh timeout is 5 minutes
-REFRESH_TIMEOUT = 5 * 60 * 1000
+// refresh timeout is 5 seconds
+REFRESH_TIMEOUT = 5 * 1000
 
 function ScoreBoard () {
 
@@ -15,16 +15,6 @@ function ScoreBoard () {
     this.toggleAutoRefresh();
   }
 
-  this.toggleAutoRefresh = function () {
-    if (!autoRefresh) {
-      // set the scoreboard to refresh every REFRESH_TIMEOUT milliseconds
-      interval = setInterval(function() {that.refresh()}, REFRESH_TIMEOUT / 60);
-    } else {
-      clearInterval(interval);
-    }
-    autoRefresh = !autoRefresh;
-  }
-
   this.update = function () {
     // fetch the new data
     $.ajax({
@@ -32,7 +22,21 @@ function ScoreBoard () {
       url:'/dr.beaker/api/teams/',
       data:'order=score',
       success:function (data) {
-        // remove the old data
+	      var rows = $('tr', scoreboard);
+  	    for (i = 0, j = 0; i < data.team.length; i++) {
+          var row = $(rows[j]);
+		      if ("team-" + data.team[i].id != row.attr('id')) {
+            console.log("removing team " + data.team[i].id);
+            $("#team-" + data.team[i].id).remove();
+            rows.insertBefore("<tr id=\"team-"+data.team[i].id+"\"><td>"+data.team[i].name+'</td><td class="score">'+data.team[i].score+"</td></tr>")
+          }
+          else {
+            j++;
+          }
+
+        }
+          	
+        /*// remove the old data
         scoreboard.find('tbody tr').remove();
 
         body = $('#scoreboard tbody')
@@ -43,14 +47,19 @@ function ScoreBoard () {
         }
 
         // set the scoreboard visible again
-        scoreboard.show();
+        scoreboard.show();*/
       }
     });
   }
 
-  this.refresh = function () {
-    // hide the scoreboard, update when hide animation is done
-    scoreboard.hide(this.update);
+  this.toggleAutoRefresh = function () {
+    if (!autoRefresh) {
+      // set the scoreboard to refresh every REFRESH_TIMEOUT milliseconds
+      interval = setInterval(this.update, REFRESH_TIMEOUT);
+    } else {
+      clearInterval(interval);
+    }
+    autoRefresh = !autoRefresh;
   }
 }
 

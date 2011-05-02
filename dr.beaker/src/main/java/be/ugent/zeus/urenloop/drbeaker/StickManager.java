@@ -2,6 +2,7 @@
 package be.ugent.zeus.urenloop.drbeaker;
 
 import be.ugent.zeus.urenloop.drbeaker.db.Stick;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
@@ -29,6 +30,10 @@ public class StickManager {
     logger.log(Level.FINE, "Added stick with mac {0}", stick.getMac());
   }
 
+  public List<Stick> get() {
+    return em.createNamedQuery("Stick.findAll", Stick.class).getResultList();
+  }
+
   public Stick get (long id) {
     return em.find(Stick.class, id);
   }
@@ -37,6 +42,10 @@ public class StickManager {
     TypedQuery<Stick> query = em.createNamedQuery("Stick.findByMac", Stick.class);
     query.setParameter("mac", mac);
     return query.getSingleResult();
+  }
+
+  public void delete(Stick stick) {
+    em.remove(stick);
   }
 
   public static StickManager lookup() {

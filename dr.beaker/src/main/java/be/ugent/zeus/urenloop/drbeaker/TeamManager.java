@@ -4,6 +4,7 @@ import be.ugent.zeus.urenloop.drbeaker.db.HistoryEntry;
 import be.ugent.zeus.urenloop.drbeaker.db.Stick;
 import be.ugent.zeus.urenloop.drbeaker.db.Team;
 import be.ugent.zeus.urenloop.drbeaker.db.User;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,6 +13,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
@@ -39,34 +41,6 @@ public class TeamManager {
     em.remove(team);
   }
 
-  public void addTeamBonus(User user, Team team, int bonus, String reason) {
-    if (team != null) {
-      team.increaseScore(bonus);
-
-      // Add new history entry
-      HistoryEntry entry = new HistoryEntry(user, team, bonus, reason);
-      em.persist(entry);
-
-      em.merge(team);
-    } else {
-      logger.log(Level.WARNING, "Trying to do add a bonus to a null team!");
-    }
-  }
-
-  public void addTeamLap(Team team) {
-    if (team != null) {
-      team.increaseScore();
-
-      // Add new history entry
-      HistoryEntry entry = new HistoryEntry(null, team, 1, "Lap completed");
-      em.persist(entry);
-
-      em.merge(team);
-    } else {
-      logger.log(Level.WARNING, "Trying to do add a lap to a null team!");
-    }
-  }
-
   public void assign(Team team, Stick stick) {
     if (team == null) {
       throw new RuntimeException("No team found!");
@@ -87,15 +61,37 @@ public class TeamManager {
     }
   }
 
+  public void removeByName(String name) {
+    TypedQuery<Team> q = em.createNamedQuery("Team.findByName", Team.class);
+    q.setParameter("name", name);
+
+    try {
+      Team team = q.getSingleResult();
+      em.remove(team);
+    } catch (NoResultException e) {
+    }
+  }
+
   public Team get(Long pk) {
     return em.find(Team.class, pk);
   }
 
-  public List<Team> get() {
+  public Team get(String name) {
+    TypedQuery<Team> q = em.createNamedQuery("Team.findByName", Team.class);
+    q.setParameter("name", name);
+
+    try {
+      return q.getSingleResult();
+    } catch (NoResultException e) {
+      return null;
+    }
+  }
+
+  public List<Team> getAll() {
     return doQuery("Team.all");
   }
 
-  public List<Team> get(String sortOrder) {
+  public List<Team> getAll(String sortOrder) {
     String query;
     if ("score".equals(sortOrder)) {
       query = "Team.allByScore";
@@ -108,11 +104,6 @@ public class TeamManager {
   private List<Team> doQuery(String query) {
     TypedQuery q = em.createNamedQuery(query, Team.class);
     return q.getResultList();
-  }
-
-  public List<HistoryEntry> getHistory() {
-    TypedQuery query = em.createNamedQuery("History.all", HistoryEntry.class);
-    return query.getResultList();
   }
 
   public static TeamManager lookup() {

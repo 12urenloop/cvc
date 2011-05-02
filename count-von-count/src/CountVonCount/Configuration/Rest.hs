@@ -1,25 +1,28 @@
 -- | Rest service configuration
 --
-{-# LANGUAGE GeneralizedNewtypeDeriving, OverloadedStrings #-}
+{-# LANGUAGE GeneralizedNewtypeDeriving, OverloadedStrings, FlexibleContexts #-}
 module CountVonCount.Configuration.Rest
     ( RestConfiguration (..)
     , loadRestConfiguration
     ) where
 
-import Control.Applicative ((<$>), (<*>))
+import Control.Applicative (Applicative, (<$>), (<*>))
 
-import Data.Object (fromMapping)
+import Control.Failure (Failure)
+import Data.Object (fromMapping, ObjectExtractError)
 import Data.Object.Yaml (YamlObject)
+import Data.ByteString (ByteString)
 
 import CountVonCount.Configuration.Util
 
 data RestConfiguration = RestConfiguration
-    { restHost :: String
+    { restHost :: ByteString
     , restPort :: Int
-    , restPath :: String
+    , restPath :: ByteString
     } deriving (Show)
 
-loadRestConfiguration :: YamlObject -> Maybe RestConfiguration
+loadRestConfiguration :: (Applicative m, Failure ObjectExtractError m)
+                      => YamlObject -> m RestConfiguration
 loadRestConfiguration object = do
     mapping <- fromMapping object
     RestConfiguration <$> lookupString "Host" mapping

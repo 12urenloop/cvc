@@ -20,12 +20,12 @@ public class ScoreBoardInterface {
   @GET
   @Path("/")
   public Viewable index () {
-    return new Viewable("/index.jsp", teamManager.get("score"));
+    return new Viewable("/index.jsp", teamManager.getAll("score"));
   }
 
   @GET
   @Path("/login")
   public Response login() {
-    return Response.seeOther(URI.create("/")).build();
+    return Response.seeOther(URI.create("/admin")).build();
   }
 }
