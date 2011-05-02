@@ -31,7 +31,7 @@ samplesTreshold min' _ times _ _
 -- | Criterium: the racer was noticed at enough positions
 --
 stationsTreshold :: Int -> Criterium
-stationsTreshold min' (_, last') _ positions _
+stationsTreshold min' (_, last', _) _ positions _
     | stations >= min' = Good
     | otherwise        = Refused $
         printf "Not enough stations, got %d, want %d" stations min'
@@ -78,7 +78,7 @@ distanceTreshold min' _ _ positions _
 -- | Criterium: the position makes a drop in the last measurement
 --
 dropTreshold :: Double -> Criterium
-dropTreshold min' (_, position) _ positions _
+dropTreshold min' (_, position, _) _ positions _
     | V.length positions < 1 || drop' < min' = Refused $
         printf "Too small drop, %f while min is %f" drop' min'
     | otherwise = Good

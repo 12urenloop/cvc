@@ -20,7 +20,7 @@ emptyDataSet = DataSet [] [] Nothing
 addMeasurement :: Measurement
                -> DataSet
                -> DataSet
-addMeasurement (t, p) (DataSet ts ps m) = DataSet (t : ts) (p : ps) max'
+addMeasurement (t, p, _) (DataSet ts ps m) = DataSet (t : ts) (p : ps) max'
   where
     max' = Just $ case m of Nothing  -> p
                             Just  m' -> max m' p

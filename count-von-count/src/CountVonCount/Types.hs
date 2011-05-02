@@ -45,9 +45,13 @@ type Timediff = Double
 --
 type Mac = ByteString
 
+-- | RSSI value
+--
+type Rssi = Int
+
 -- | A measurement from a station
 --
-type Measurement = (Timestamp, Position)
+type Measurement = (Timestamp, Position, Rssi)
 
 -- | A Command received on the socket
 --
