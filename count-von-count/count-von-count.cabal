@@ -25,9 +25,7 @@ Executable count-von-count
                      CountVonCount.Rest,
                      CountVonCount.Configuration,
                      CountVonCount.Configuration.Criteria,
-                     CountVonCount.Configuration.MacSet,
                      CountVonCount.Configuration.Rest,
-                     CountVonCount.Configuration.StationMap,
                      CountVonCount.Configuration.Util,
                      CountVonCount.Queue
   Build-depends:     base >= 4 && < 5,

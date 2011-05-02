@@ -26,7 +26,6 @@ runCsvLog configuration chan = do
         Measurement (mac, (time, position)) ->
             when (mac `S.member` configurationMacSet configuration) $
                 hPutStrLn handle $ printf "%s,%f,%f" (show mac) time position
-        _ -> return ()
     hClose handle
   where
     filePath = configurationCsvLog configuration

@@ -54,7 +54,7 @@ makeRequest configuration report = Request
     , port = restPort rest
     , path = path'
     , queryString = []
-    , requestHeaders = []
+    , requestHeaders = [("Connection", "close")]
     , requestBody = RequestBodyBS (renderSimpleQuery False params)
     }
   where

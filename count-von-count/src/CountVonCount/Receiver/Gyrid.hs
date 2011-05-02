@@ -13,7 +13,7 @@ import qualified Data.ByteString as SB
 import qualified Data.ByteString.Char8 as SBC
 
 import CountVonCount.Types
-import CountVonCount.Configuration.StationMap
+import CountVonCount.Configuration
 
 -- | Lines of data that should be sent upon connect
 --
@@ -25,8 +25,8 @@ initGyrid =
 
 -- | Parse a line of gyrid output
 --
-parseGyrid :: StationMap -> Timestamp -> ByteString -> Maybe Command
-parseGyrid stationMap timestamp bs = case SBC.split ',' bs of
+parseGyrid :: Configuration -> Timestamp -> ByteString -> Maybe Command
+parseGyrid conf timestamp bs = case SBC.split ',' bs of
     -- Ignore msg & info stuff
     ("MSG" : _)  -> Nothing
     ("INFO" : _) -> Nothing
@@ -39,7 +39,7 @@ parseGyrid stationMap timestamp bs = case SBC.split ',' bs of
   where
     measurement :: ByteString -> ByteString -> Maybe Command
     measurement station mac = do
-        !pos <- mapStation stationMap $ addColons station
+        !pos <- stationPosition (addColons station) conf
         return $ Measurement $ (addColons mac, (timestamp, pos))
 
 -- | Transform a mac without @:@ delimiters to one a mac with @:@ delimiters
