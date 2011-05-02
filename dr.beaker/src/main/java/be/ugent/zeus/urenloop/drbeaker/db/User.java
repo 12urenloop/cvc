@@ -14,6 +14,8 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import sun.misc.BASE64Encoder;
 
 /**
@@ -25,6 +27,7 @@ import sun.misc.BASE64Encoder;
 @NamedQueries(
   @NamedQuery(name="User.all", query="SELECT u from User u")
 )
+@XmlRootElement
 public class User implements Serializable {
 
   private static final Logger logger = Logger.getLogger("12UL");
@@ -73,6 +76,7 @@ public class User implements Serializable {
     return groups;
   }
 
+  @XmlTransient
   public List<HistoryEntry> getActions() {
     return actions;
   }
