@@ -5,6 +5,7 @@ module Main
 import Control.Applicative ((<$>))
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Chan (newChan, dupChan, writeChan)
+import Control.Concurrent.MVar (newMVar)
 import Control.Monad (when)
 import Data.Maybe (listToMaybe, fromMaybe)
 import Data.Time (getCurrentTime, formatTime)
@@ -32,7 +33,9 @@ countVonCount configuration logger = do
     _ <- forkIO $ runRest configuration logger outChan
 
     -- Watcher thread
-    _ <- forkIO $ runDispatcher configuration logger inChan outChan
+    dispatcherState <- newMVar emptyDispatcherState
+    _ <- forkIO $
+        runDispatcher configuration logger dispatcherState inChan outChan
 
     -- Persistence thread
     _ <- forkIO $ runCsvLog configuration csvLogChan

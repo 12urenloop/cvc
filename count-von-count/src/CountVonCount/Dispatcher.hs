@@ -2,18 +2,16 @@
 --
 module CountVonCount.Dispatcher
     ( runDispatcher
+    , emptyDispatcherState
     ) where
 
 import qualified Data.Map as M
 import qualified Data.Set as S
-import Data.Monoid (mempty)
 import Data.Maybe (fromMaybe)
-import Control.Monad (when)
-import Control.Monad.Reader (ReaderT, ask, runReaderT)
-import Control.Monad.State (StateT, get, execStateT, modify, runState)
-import Control.Monad.Trans (liftIO)
+import Control.Monad.Reader (runReaderT)
+import Control.Monad.State (runState)
 import Control.Concurrent.Chan (Chan, writeChan)
-import Control.Applicative ((<$>))
+import Control.Concurrent.MVar (MVar, modifyMVar_, takeMVar, putMVar)
 
 import Data.Map (Map)
 
@@ -22,75 +20,57 @@ import CountVonCount.Counter
 import CountVonCount.Chan
 import CountVonCount.Configuration
 
-data DispatcherEnvironment = DispatcherEnvironment
-    { dispatcherChan          :: Chan Report
-    , dispatcherConfiguration :: Configuration
-    , dispatcherLogger        :: Logger
-    }
-
 type DispatcherState = Map Mac CounterState
 
-type DispatcherM a = ReaderT DispatcherEnvironment (StateT DispatcherState IO) a
+emptyDispatcherState :: DispatcherState
+emptyDispatcherState = M.empty
 
--- | Main dispatcher logic
---
-dispatcherMeasurement :: Mac -> Measurement -> DispatcherM ()
-dispatcherMeasurement mac measurement = do
-    configuration <- dispatcherConfiguration <$> ask
-    logger <- dispatcherLogger <$> ask
-    outChan <- dispatcherChan <$> ask
+addMeasurement :: Configuration
+               -> Mac -> Measurement -> DispatcherState
+               -> (Maybe Report, DispatcherState)
+addMeasurement conf mac measurement state =
+    if mac `S.member` macSet then updated else (Nothing, state)
+  where
+    macSet = configurationMacSet conf
+    cstate = fromMaybe emptyCounterState $ M.lookup mac state
+    env = CounterEnvironment conf mac
+    counter' = runReaderT (counter measurement) env
+    (report, cstate') = runState counter' cstate
+    updated = (report, M.insert mac cstate' state)
 
-    -- Only do something when we allow the mac address
-    when (mac `S.member` configurationMacSet configuration) $ do
-        -- Get the counter for the mac address
-        state <- fromMaybe emptyCounterState . M.lookup mac <$> get
-
-        -- Run the nice, pure code
-        let env = CounterEnvironment configuration mac
-            counter' = runReaderT (counter measurement) env
-            (report, state') = runState counter' state
-
-        -- Write back the state
-        modify $ M.insert mac state'
-
-        -- Check and validate the report
-        liftIO $ case report of
-            Nothing -> return ()
-            Just r  -> if (validateReport r)
-                then writeChan outChan r
-                else logger Info $
-                        "CountVonCount.Dispatcher.dispatcherMeasurement: "
-                        ++ "invalid: " ++ show (reportScore r)
-
--- | Reset a mac address
---
-dispatcherReset :: Mac -> DispatcherM ()
-dispatcherReset mac = do
-    configuration <- dispatcherConfiguration <$> ask
-    logger <- dispatcherLogger <$> ask
-
-    when (mac `S.member` configurationMacSet configuration) $ do
-        modify $ M.insert mac emptyCounterState
-        liftIO $ logger Info $ 
-            "CountVonCount.Dispatcher.dispatcherReset: " ++
-            "succesfully reset " ++ show mac
+resetCounter :: Mac -> DispatcherState -> DispatcherState
+resetCounter mac = M.insert mac emptyCounterState
 
 -- | Exposed run method, uses our monad stack internally
 --
-runDispatcher :: Configuration  -- ^ Configuration
-              -> Logger         -- ^ Logger
-              -> Chan Command   -- ^ In channel
-              -> Chan Report    -- ^ Out channel
-              -> IO ()          -- ^ Blocks forever
-runDispatcher configuration logger inChan outChan = do
-    statefulReadChanLoop inChan mempty $ \command state -> case command of
-        Measurement (t, m) ->
-            execStateT (runReaderT (dispatcherMeasurement t m) env) state
-        Reset m ->
-            execStateT (runReaderT (dispatcherReset m) env) state
-  where
-    env = DispatcherEnvironment
-        { dispatcherChan = outChan
-        , dispatcherConfiguration = configuration
-        , dispatcherLogger = logger
-        }
+runDispatcher :: Configuration         -- ^ Configuration
+              -> Logger                -- ^ Logger
+              -> MVar DispatcherState  -- ^ Dispatcher state
+              -> Chan Command          -- ^ In channel
+              -> Chan Report           -- ^ Out channel
+              -> IO ()                 -- ^ Blocks forever
+runDispatcher conf logger mstate inChan outChan = do
+    readChanLoop inChan $ \command -> case command of
+        -- Add a measurement
+        Measurement (t, m) -> do
+            state <- takeMVar mstate
+            let (report, state') = addMeasurement conf t m state
+
+            -- Check and validate the report
+            case report of
+                Nothing -> return ()
+                Just r  -> if (validateReport r)
+                    then writeChan outChan r
+                    else logger Info $
+                            "CountVonCount.Dispatcher.dispatcherMeasurement: "
+                            ++ "invalid: " ++ show (reportScore r)
+
+            -- Write back the state
+            putMVar mstate state'
+
+        -- Reset
+        Reset m -> do
+            modifyMVar_ mstate $ return . resetCounter m
+            logger Info $ 
+                "CountVonCount.Dispatcher.dispatcherReset: " ++
+                "succesfully reset " ++ show m
