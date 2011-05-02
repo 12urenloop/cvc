@@ -42,7 +42,7 @@ stationsTreshold min' _ positions _
 speedTreshold :: Double -> Criterium
 speedTreshold min' _ _ (Line _ speed)
     | speed >= min' = Good
-    | otherwise     = Warning $ return $
+    | otherwise     = Refused $
         printf "Too slow, %f while min is %f" speed min'
 
 -- | Criterium: the racer didn't go too fast
