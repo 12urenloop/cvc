@@ -1,16 +1,18 @@
 -- | Configuration utilities
 --
+{-# LANGUAGE FlexibleContexts #-}
 module CountVonCount.Configuration.Util
     ( lookupString
     ) where
 
 import Control.Applicative ((<$>))
 
-import Data.Object (Object, lookupScalar)
+import Control.Failure (Failure)
+import Data.Object (Object, lookupScalar, ObjectExtractError)
 import Data.Object.Yaml (YamlScalar, toYamlScalar, fromYamlScalar, IsYamlScalar)
 
-lookupString :: IsYamlScalar a
+lookupString :: (Functor m, Failure ObjectExtractError m, IsYamlScalar a)
              => String                                        -- ^ Key
              -> [(YamlScalar, Object YamlScalar YamlScalar)]  -- ^ Mapping
-             -> Maybe a                                       -- ^ Result
+             -> m a                                           -- ^ Result
 lookupString k m = fromYamlScalar <$> lookupScalar (toYamlScalar k) m

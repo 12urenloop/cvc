@@ -1,13 +1,16 @@
 -- | Various configurable criteria
 --
+{-# LANGUAGE FlexibleContexts #-}
 module CountVonCount.Configuration.Criteria
     ( loadCriteria
     ) where
 
 import Control.Applicative ((<$>))
-import Data.Object (fromMapping)
-import Data.Object.Yaml (YamlObject)
 import Data.Maybe (catMaybes)
+
+import Control.Failure (Failure)
+import Data.Object (fromMapping, ObjectExtractError)
+import Data.Object.Yaml (YamlObject)
 
 import CountVonCount.Types
 import CountVonCount.Configuration.Util
@@ -15,7 +18,8 @@ import CountVonCount.Counter.Criteria
 
 -- | Load the criteria
 --
-loadCriteria :: YamlObject -> Maybe [Criterium]
+loadCriteria :: Failure ObjectExtractError m
+             => YamlObject -> m [Criterium]
 loadCriteria object = do
     m <- fromMapping object
     return $ catMaybes

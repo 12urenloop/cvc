@@ -1,15 +1,17 @@
 -- | Global configuration
 --
+{-# LANGUAGE FlexibleContexts #-}
 module CountVonCount.Configuration
     ( Configuration (..)
     , loadConfiguration
     , loadConfigurationFromFile
     ) where
 
-import Control.Applicative ((<$>), (<*>))
+import Control.Applicative (Applicative, (<$>), (<*>))
 import Data.Set (Set)
 
-import Data.Object (lookupObject, fromMapping)
+import Control.Failure (Failure)
+import Data.Object (lookupObject, fromMapping, ObjectExtractError)
 import Data.Object.Yaml (YamlObject, toYamlScalar, decodeFile)
 
 import CountVonCount.Types
@@ -29,7 +31,8 @@ data Configuration = Configuration
     , configurationVerbosity  :: Verbosity
     }
 
-loadConfiguration :: YamlObject -> Maybe Configuration
+loadConfiguration :: (Applicative m, Failure ObjectExtractError m)
+                  => YamlObject -> m Configuration
 loadConfiguration object = do
     m <- fromMapping object
     Configuration <$> load loadRestConfiguration "Rest API" m
@@ -42,7 +45,7 @@ loadConfiguration object = do
   where
     load f k m = f =<< lookupObject (toYamlScalar k) m
 
-loadConfigurationFromFile :: FilePath -> IO (Maybe Configuration)
+loadConfigurationFromFile :: FilePath -> IO Configuration
 loadConfigurationFromFile path = do
     yaml <- decodeFile path 
-    return $ loadConfiguration =<< yaml
+    loadConfiguration =<< yaml

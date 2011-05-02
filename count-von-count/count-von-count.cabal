@@ -44,4 +44,5 @@ Executable count-von-count
                      http-enumerator >= 0.6,
                      http-types >= 0.6,
                      old-locale >= 1,
-                     time >= 1.2
+                     time >= 1.2,
+                     failure >= 0.1

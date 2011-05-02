@@ -52,16 +52,11 @@ main = do
     -- Get Configuration file name and load the configuration
     configFile <- fromMaybe "config.yaml" . listToMaybe <$> getArgs
     initialLogger Info $ "CountVonCount.Main.main: Loading: " ++ configFile
-    mconf <- loadConfigurationFromFile configFile
+    conf <- loadConfigurationFromFile configFile
 
-    case mconf of
-        Just conf -> do
-            let logger = logger' logChan (configurationVerbosity conf)
-            countVonCount conf logger
-            logger Info "CountVonCount.Main.main: Bye!"
-        Nothing   -> initialLogger Error $
-            "CountVonCount.Main.main: Could not load config file, " ++
-            "bailing out"
+    let logger = logger' logChan (configurationVerbosity conf)
+    countVonCount conf logger
+    logger Info "CountVonCount.Main.main: Bye!"
   where
     -- Logger thread
     logger' chan treshold verbosity string = when (verbosity >= treshold) $ do
