@@ -19,8 +19,6 @@ import javax.ws.rs.core.Response;
 @Path("/admin")
 public class AdminInterface {
 
-  private TeamManager teamManager = TeamManager.lookup();
-
   private StickManager stickManager = StickManager.lookup();
   private ScoreManager scoreManager = ScoreManager.lookup();
 
