@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @NamedQueries({
   @NamedQuery(name = "Team.all", query = "SELECT t from Team t"),
   @NamedQuery(name = "Team.allByName", query = "SELECT t from Team t order by t.name desc"),
-  @NamedQuery(name = "Team.allByScore", query = "SELECT t from Team t order by t.score, t.name desc"),
+  @NamedQuery(name = "Team.allByScore", query = "SELECT t from Team t order by t.score desc, t.name desc"),
   @NamedQuery(name = "Team.findByName", query = "SELECT t from Team t where t.name = :name")
 })
 @XmlRootElement
