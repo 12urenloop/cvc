@@ -112,4 +112,10 @@ public class Team implements Serializable {
   public void setHistory(List<HistoryEntry> history) {
     this.history = history;
   }
+
+  public void reset() {
+    speed = 0;
+    score = 0;
+    lapspeeds.clear();
+  }
 }

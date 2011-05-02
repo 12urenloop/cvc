@@ -1,5 +1,6 @@
 package be.ugent.zeus.urenloop.drbeaker.web.admin;
 
+import be.ugent.zeus.urenloop.drbeaker.ScoreManager;
 import be.ugent.zeus.urenloop.drbeaker.StickManager;
 import be.ugent.zeus.urenloop.drbeaker.TeamManager;
 import be.ugent.zeus.urenloop.drbeaker.db.Stick;
@@ -21,6 +22,7 @@ public class AdminInterface {
   private TeamManager teamManager = TeamManager.lookup();
 
   private StickManager stickManager = StickManager.lookup();
+  private ScoreManager scoreManager = ScoreManager.lookup();
 
   @GET
   @Path("/")
@@ -31,7 +33,7 @@ public class AdminInterface {
   @GET
   @Path("/history")
   public Viewable showGlobalScoreHistory() {
-    return new Viewable("/admin/history.jsp", teamManager.getHistory());
+    return new Viewable("/admin/history.jsp", scoreManager.getHistory());
   }
 
   @GET

@@ -16,6 +16,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
 /**
  *
@@ -31,6 +32,9 @@ public class ScoreManager {
 
   @EJB
   private StickManager stickManager;
+  
+  @EJB
+  private TeamManager teamManager;
   
   private String source;
 
@@ -115,6 +119,22 @@ public class ScoreManager {
 
     em.merge(team);
     em.persist(new HistoryEntry(user, team, amount, reason));
+  }
+
+  public List<HistoryEntry> getHistory() {
+    TypedQuery query = em.createNamedQuery("History.all", HistoryEntry.class);
+    return query.getResultList();
+  }
+
+  public void reset() {
+    for (HistoryEntry entry : getHistory()) {
+      em.remove(entry);
+    }
+    
+    for (Team team : teamManager.get()) {
+      team.reset();
+      em.merge(team);
+    }
   }
 
   public static ScoreManager lookup() {

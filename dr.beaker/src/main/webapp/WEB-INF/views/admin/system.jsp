@@ -20,8 +20,15 @@
   <ul:section title="Mass bootstrap field">
     Paste a space-seperated list of "stick id - mac - teamname" to mass insert.
     <form action="<c:url value="/admin/system/bootstrap" />" method="post">
-      <textarea name="data"></textarea>
+      <textarea name="data" style="width: 100%;"></textarea>
       <input type="submit" value="bootstrap">
+    </form>
+  </ul:section>
+  <ul:section title="Reset het systeem">
+    Reset heel het systeem: verwijder alle getelde rondjes en alle geschiedenis.<br>
+    <strong>Klik hier niet tenzij je heeeeeeel zeker bent dat je het systeem wil resetten!</strong>
+    <form action="<c:url value="/admin/system/reset" />" method="post">
+      <input type="submit" value="Reset het systeem">
     </form>
   </ul:section>
 </ul:page>

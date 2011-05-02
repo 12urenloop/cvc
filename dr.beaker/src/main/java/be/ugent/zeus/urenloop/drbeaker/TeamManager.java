@@ -83,11 +83,6 @@ public class TeamManager {
     return q.getResultList();
   }
 
-  public List<HistoryEntry> getHistory() {
-    TypedQuery query = em.createNamedQuery("History.all", HistoryEntry.class);
-    return query.getResultList();
-  }
-
   public static TeamManager lookup() {
     try {
       Context c = new InitialContext();
