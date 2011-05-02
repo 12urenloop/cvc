@@ -9,7 +9,7 @@ Rest API:
 # The station map maps names of stations (these names should equal the names we
 # receive from the input channel) to positions in the circuit. The first station
 # should be at position 0.
-Station map:
+Stations:
   "01:00:00:00:00:01": 0
   "01:00:00:00:00:02": 100
   "01:00:00:00:00:03": 200
@@ -29,11 +29,31 @@ Criteria:
   Distance treshold: 100
 
 # Set of allowed mac addresses
-Mac set:
-  - "00:00:00:00:00:01"
-  - "00:00:00:00:00:02"
-  - "00:00:00:00:00:03"
-  - "00:00:00:00:00:04"
+Macs:
+  "20:11:02:15:01:34": Stick 1
+  "20:11:02:15:01:50": Stick 2
+  "20:11:02:15:01:51": Stick 3
+  "20:11:02:15:01:67": Stick 4
+  "20:11:02:15:01:87": Stick 5
+  "20:11:02:15:01:80": Stick 6
+  "20:11:02:15:01:77": Stick 7
+  "20:11:02:15:01:90": Stick 8
+  "20:11:02:15:01:56": Stick 9
+  "20:11:02:15:01:73": Stick 10
+  "00:11:72:14:01:98": Stick 11
+  "20:11:02:15:01:75": Stick 12
+  "20:11:02:15:01:83": Stick 13
+  "20:11:02:15:02:00": Stick 14
+  "20:11:02:15:01:19": Stick 15
+  "20:11:02:15:01:42": Stick 16
+  "20:11:02:15:01:79": Stick 17
+  "20:11:02:15:01:15": Stick 18
+  "20:11:02:15:01:93": Stick 19
+  "20:11:02:15:01:17": Stick 20
+  "00:00:00:00:00:01": Foo
+  "00:00:00:00:00:02": Bar
+  "00:00:00:00:00:03": Qux
+  "00:00:00:00:00:04": Woo
 
 # Port to listen on
 Listen port: 9001

@@ -8,7 +8,6 @@ module CountVonCount.Dispatcher
     ) where
 
 import qualified Data.Map as M
-import qualified Data.Set as S
 import Data.Maybe (fromMaybe)
 import Control.Monad.Reader (runReaderT)
 import Control.Monad.State (runState)
@@ -31,9 +30,8 @@ addMeasurement :: Configuration
                -> Mac -> Measurement -> DispatcherState
                -> (Maybe Report, DispatcherState)
 addMeasurement conf mac measurement state =
-    if mac `S.member` macSet then updated else (Nothing, state)
+    if allowedMac mac conf then updated else (Nothing, state)
   where
-    macSet = configurationMacSet conf
     cstate = fromMaybe emptyCounterState $ M.lookup mac state
     env = CounterEnvironment conf mac
     counter' = runReaderT (counter measurement) env

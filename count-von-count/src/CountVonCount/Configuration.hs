@@ -4,23 +4,21 @@
 module CountVonCount.Configuration
     ( Configuration (..)
     , stationPosition
+    , allowedMac
+    , prettifyMac
     , loadConfiguration
     , loadConfigurationFromFile
     ) where
 
 import Control.Applicative (Applicative, (<$>), (<*>))
-import Control.Monad (forM)
-import Data.Set (Set)
-import qualified Data.Set as S
+import Data.Maybe (fromMaybe)
 import Data.Map (Map)
 import qualified Data.Map as M
 
+import Data.ByteString (ByteString)
 import Control.Failure (Failure)
-import Data.Object ( lookupObject, fromMapping, ObjectExtractError, fromScalar
-                   , fromSequence
-                   )
-import Data.Object.Yaml ( YamlObject, toYamlScalar, decodeFile, fromYamlScalar
-                        )
+import Data.Object (lookupObject, fromMapping, ObjectExtractError)
+import Data.Object.Yaml (YamlObject, toYamlScalar, decodeFile, IsYamlScalar)
 
 import CountVonCount.Types
 import CountVonCount.Configuration.Rest
@@ -29,47 +27,38 @@ import CountVonCount.Configuration.Util
 
 data Configuration = Configuration
     { configurationRest       :: RestConfiguration
-    , configurationStationMap :: Map Station Position
+    , configurationStations   :: Map Station Position
     , configurationCsvLog     :: FilePath
     , configurationCriteria   :: [Criterium]
-    , configurationMacSet     :: Set Mac
+    , configurationMacs       :: Map Mac ByteString
     , configurationListenPort :: Int
     , configurationAdminPort  :: Int
     , configurationVerbosity  :: Verbosity
     }
 
 stationPosition :: Station -> Configuration -> Maybe Position
-stationPosition station = M.lookup station . configurationStationMap
+stationPosition station = M.lookup station . configurationStations
+
+allowedMac :: Mac -> Configuration -> Bool
+allowedMac mac = M.member mac . configurationMacs
+
+prettifyMac :: Mac -> Configuration -> ByteString
+prettifyMac mac = fromMaybe mac . M.lookup mac . configurationMacs
 
 loadConfiguration :: (Applicative m, Failure ObjectExtractError m)
                   => YamlObject -> m Configuration
 loadConfiguration object = do
     m <- fromMapping object
     Configuration <$> load loadRestConfiguration "Rest API" m
-                  <*> load loadStations "Station map" m
+                  <*> fmap (M.map read) (load loadMap "Stations" m)
                   <*> lookupString "CSV log" m
                   <*> load loadCriteria "Criteria" m
-                  <*> load loadMacs "Mac set" m
+                  <*> load loadMap "Macs" m
                   <*> fmap read (lookupString "Listen port" m)
                   <*> fmap read (lookupString "Admin port" m)
                   <*> fmap read (lookupString "Verbosity" m)
   where
     load f k m = f =<< lookupObject (toYamlScalar k) m
-
-loadMacs :: Failure ObjectExtractError m
-           => YamlObject -> m (Set Mac)
-loadMacs object = do
-    scalars <- mapM fromScalar =<< fromSequence object
-    return $ S.fromList $ map fromYamlScalar scalars 
-
-loadStations :: Failure ObjectExtractError m
-             => YamlObject -> m (Map Station Position)
-loadStations object = do
-    mapping <- fromMapping object
-    tuples <- forM mapping $ \(k, v) -> do
-        v' <- fromScalar v
-        return (fromYamlScalar k, read $ fromYamlScalar v')
-    return $ M.fromList tuples
 
 loadConfigurationFromFile :: FilePath -> IO Configuration
 loadConfigurationFromFile path = do

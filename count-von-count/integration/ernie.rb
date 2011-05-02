@@ -41,11 +41,11 @@ class Ernie
     @socket = TCPSocket.new('localhost', @config['Listen port'])
 
     # Load stations
-    station_map = @config['Station map']
+    station_map = @config['Stations']
     @stations = station_map.keys.sort_by { |station| station_map[station] }
 
     # Create teams
-    @teams = @config['Mac set'].collect { |mac| Team.new(mac, @stations) }
+    @teams = @config['Macs'].keys.collect { |mac| Team.new(mac, @stations) }
 
     # Keep steps
     @steps = 1
