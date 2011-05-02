@@ -6,6 +6,7 @@ module CountVonCount.Types
     , Timestamp
     , Timediff
     , Mac
+    , Rssi
     , Measurement
     , Command (..)
     , DataSet (..)

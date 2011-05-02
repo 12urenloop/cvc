@@ -5,6 +5,8 @@ module CountVonCount.Configuration
     ( Configuration (..)
     , stationPosition
     , allowedMac
+    , aboveRssiTreshold
+    , noticeMeasurement
     , prettifyMac
     , loadConfiguration
     , loadConfigurationFromFile
@@ -45,6 +47,15 @@ allowedMac mac = M.member mac . configurationMacs
 
 prettifyMac :: Mac -> Configuration -> ByteString
 prettifyMac mac = fromMaybe mac . M.lookup mac . configurationMacs
+
+aboveRssiTreshold :: Rssi -> Configuration -> Bool
+aboveRssiTreshold rssi = (<= rssi) . configurationRssiTreshold
+
+-- | Should we take this measurement into account?
+--
+noticeMeasurement :: Mac -> Measurement -> Configuration -> Bool
+noticeMeasurement mac (_, _, rssi) conf =
+    allowedMac mac conf && aboveRssiTreshold rssi conf
 
 loadConfiguration :: (Applicative m, Failure ObjectExtractError m)
                   => YamlObject -> m Configuration
