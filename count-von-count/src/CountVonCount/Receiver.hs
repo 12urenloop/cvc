@@ -66,7 +66,7 @@ socketReceiver conf logger chan = withSocketsDo $ do
                 logger Debug $  "CountVonCount.Receiver.socketReceiver: Parsed "
                              ++ show command
                 writeChan chan command
-            _ -> logger Error $  "CountVonCount.Receiver.socketReceiver: Could "
+            _ -> logger Debug $  "CountVonCount.Receiver.socketReceiver: Could "
                               ++ "not parse: " ++ show line
     {-# INLINE consumer #-}
 
