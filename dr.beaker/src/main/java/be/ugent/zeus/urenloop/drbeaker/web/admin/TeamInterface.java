@@ -26,7 +26,7 @@ public class TeamInterface {
   @GET
   @Path("/")
   public Viewable showTeams() {
-    return new Viewable("/admin/teams.jsp", teamManager.get());
+    return new Viewable("/admin/teams.jsp", teamManager.getAll());
   }
 
   @POST
@@ -40,6 +40,13 @@ public class TeamInterface {
     return Response.seeOther(URI.create("/admin/teams/")).build();
   }
 
+  @POST
+  @Path("/delete")
+  public Response removeTeam (@FormParam("teamname") String name) {
+    teamManager.removeByName(name);
+    return Response.seeOther(URI.create("/admin/teams")).build();
+  }
+  
   @POST
   @Path("/stick")
   public Response assignStick(@FormParam("team") long teamID, @FormParam("stick") long stickID) {

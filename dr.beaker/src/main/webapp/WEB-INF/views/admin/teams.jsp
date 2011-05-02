@@ -56,5 +56,12 @@
         <input type="submit" value="Stok toekennen">
       </form>
     </ul:section>
+    <ul:section title="Team verwijderen">
+      <form method="POST" action="<c:url value="/admin/teams/delete"/>">
+        <label for="team">Team naam:</label>
+        <input type="text" name="teamname">
+        <input type="submit" value="Verwijderen">
+      </form>
+    </ul:section>
   </ul:sidecol>
 </ul:page>

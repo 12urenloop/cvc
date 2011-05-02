@@ -131,7 +131,7 @@ public class ScoreManager {
       em.remove(entry);
     }
     
-    for (Team team : teamManager.get()) {
+    for (Team team : teamManager.getAll()) {
       team.reset();
       em.merge(team);
     }

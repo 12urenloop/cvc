@@ -22,6 +22,6 @@ public class TeamAPI {
   @GET
   @Path("/")
   public List<Team> list (@QueryParam("order") String sortOrder) {
-    return teamManager.get(sortOrder);
+    return teamManager.getAll(sortOrder);
   }
 }

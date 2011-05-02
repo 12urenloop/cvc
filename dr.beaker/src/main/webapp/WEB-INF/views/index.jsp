@@ -11,7 +11,7 @@
     <table class="scoreboard" id="scoreboard">
       <tbody>
         <c:forEach items="${it}" var="team">
-          <tr>
+          <tr id="team-${team.id}">
             <td class="name">${team.name}</td>
             <td class="score">${team.score}</td>
           </tr>

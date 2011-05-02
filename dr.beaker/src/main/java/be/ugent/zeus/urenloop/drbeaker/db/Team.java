@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,6 +14,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -22,7 +24,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @NamedQueries({
   @NamedQuery(name = "Team.all", query = "SELECT t from Team t"),
   @NamedQuery(name = "Team.allByName", query = "SELECT t from Team t order by t.name desc"),
-  @NamedQuery(name = "Team.allByScore", query = "SELECT t from Team t order by t.score desc")
+  @NamedQuery(name = "Team.allByScore", query = "SELECT t from Team t order by t.score, t.name desc"),
+  @NamedQuery(name = "Team.findByName", query = "SELECT t from Team t where t.name = :name")
 })
 @XmlRootElement
 public class Team implements Serializable {
@@ -31,6 +34,7 @@ public class Team implements Serializable {
   @GeneratedValue(strategy = GenerationType.AUTO)
   private Long id;
 
+  @Column(unique=true, nullable=false)
   private String name;
 
   private int score;
@@ -42,6 +46,7 @@ public class Team implements Serializable {
   @OneToOne
   private Stick stick;
 
+  @XmlTransient
   @OneToMany(mappedBy = "team")
   private List<HistoryEntry> history;
 

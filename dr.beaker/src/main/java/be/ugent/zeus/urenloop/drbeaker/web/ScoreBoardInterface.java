@@ -20,7 +20,7 @@ public class ScoreBoardInterface {
   @GET
   @Path("/")
   public Viewable index () {
-    return new Viewable("/index.jsp", teamManager.get("score"));
+    return new Viewable("/index.jsp", teamManager.getAll("score"));
   }
 
   @GET

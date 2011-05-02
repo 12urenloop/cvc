@@ -35,7 +35,7 @@ public class ConsoleInterface {
 
   @GET
   public Viewable showManualConsole() {
-    return new Viewable("/admin/console.jsp", new Object[]{scoreManager, teamManager.get()});
+    return new Viewable("/admin/console.jsp", new Object[]{scoreManager, teamManager.getAll()});
   }
 
   @POST
@@ -43,6 +43,6 @@ public class ConsoleInterface {
     User user = authenticationManager.getUser(request.getUserPrincipal().getName());
     Team team = teamManager.get(id);
     scoreManager.addLapFromConsole(user, team);
-    return new Viewable("/admin/console.jsp", new Object[]{scoreManager, teamManager.get()});
+    return new Viewable("/admin/console.jsp", new Object[]{scoreManager, teamManager.getAll()});
   }
 }

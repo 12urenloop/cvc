@@ -13,6 +13,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
@@ -60,15 +61,37 @@ public class TeamManager {
     }
   }
 
+  public void removeByName(String name) {
+    TypedQuery<Team> q = em.createNamedQuery("Team.findByName", Team.class);
+    q.setParameter("name", name);
+
+    try {
+      Team team = q.getSingleResult();
+      em.remove(team);
+    } catch (NoResultException e) {
+    }
+  }
+
   public Team get(Long pk) {
     return em.find(Team.class, pk);
   }
 
-  public List<Team> get() {
+  public Team get(String name) {
+    TypedQuery<Team> q = em.createNamedQuery("Team.findByName", Team.class);
+    q.setParameter("name", name);
+
+    try {
+      return q.getSingleResult();
+    } catch (NoResultException e) {
+      return null;
+    }
+  }
+
+  public List<Team> getAll() {
     return doQuery("Team.all");
   }
 
-  public List<Team> get(String sortOrder) {
+  public List<Team> getAll(String sortOrder) {
     String query;
     if ("score".equals(sortOrder)) {
       query = "Team.allByScore";

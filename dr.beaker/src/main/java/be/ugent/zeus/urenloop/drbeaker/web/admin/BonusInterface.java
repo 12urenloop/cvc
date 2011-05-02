@@ -34,7 +34,7 @@ public class BonusInterface {
   @GET
   @Path("/")
   public Viewable showBonusses() {
-    return new Viewable("/admin/bonusses.jsp", teamManager.get());
+    return new Viewable("/admin/bonusses.jsp", teamManager.getAll());
   }
 
   @POST
