@@ -17,6 +17,7 @@
           <th>Team</th>
           <th>Gebruikersnaam</th>
           <th>Punten</th>
+          <th>Snelheid</th>
           <th>Reden</th>
         </tr>
       </thead>
@@ -27,6 +28,7 @@
             <td>${history.team.name}</td>
             <td>${history.user.username}</td>
             <td>${history.amount}</td>
+            <td>${history.speed}</td>
             <td>${history.reason}</td>
           </tr>
         </c:forEach>

@@ -46,7 +46,6 @@ public class Team implements Serializable {
   @OneToOne
   private Stick stick;
 
-  @XmlTransient
   @OneToMany(mappedBy = "team")
   private List<HistoryEntry> history;
 
@@ -110,6 +109,7 @@ public class Team implements Serializable {
     this.stick = stick;
   }
 
+  @XmlTransient
   public List<HistoryEntry> getHistory() {
     return history;
   }

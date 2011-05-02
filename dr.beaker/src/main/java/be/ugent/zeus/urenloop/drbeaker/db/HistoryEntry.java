@@ -51,7 +51,7 @@ public class HistoryEntry implements Serializable {
   public HistoryEntry() {
   }
 
-  public HistoryEntry(User user, Team team, int amount, String reason) {
+  public HistoryEntry(User user, Team team, int amount, double speed, String reason) {
     this.user = user;
     this.team = team;
     this.amount = amount;
@@ -75,6 +75,14 @@ public class HistoryEntry implements Serializable {
     this.amount = amount;
   }
 
+  public void setSpeed (double speed) {
+    this.speed = speed;
+  }
+
+  public double getSpeed () {
+    return speed;
+  }
+  
   public String getReason() {
     return reason;
   }
