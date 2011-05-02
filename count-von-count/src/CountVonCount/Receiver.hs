@@ -57,11 +57,9 @@ socketReceiver conf logger chan = withSocketsDo $ do
             sClose conn
         return ()
   where
-    stationMap = configurationStationMap conf
-
     consumer line = do
         !timestamp <- currentTime
-        case parseGyrid stationMap timestamp line of
+        case parseGyrid conf timestamp line of
             Just !command -> do
                 logger Debug $  "CountVonCount.Receiver.socketReceiver: Parsed "
                              ++ show command
