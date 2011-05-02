@@ -39,7 +39,7 @@ Mac set:
 Listen port: 9001
 
 # Port for admin interface
-Admin port: 80
+Admin port: 9002
 
 # Verbosity. Should be either: Debug, Info, Warn, Error
 Verbosity: Info

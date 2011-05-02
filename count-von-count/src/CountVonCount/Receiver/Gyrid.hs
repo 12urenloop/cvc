@@ -31,9 +31,6 @@ parseGyrid stationMap timestamp bs = case SBC.split ',' bs of
     ("MSG" : _)  -> Nothing
     ("INFO" : _) -> Nothing
 
-    -- Custom: reset command
-    ["RESET", !mac] -> Just $ Reset $ addColons mac
-
     -- In/RSSI data
     [!station, _, !mac, _, "in"] -> measurement station mac
     [!station, _, !mac, _]       -> measurement station mac

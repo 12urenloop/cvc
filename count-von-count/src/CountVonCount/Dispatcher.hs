@@ -13,7 +13,7 @@ import Data.Maybe (fromMaybe)
 import Control.Monad.Reader (runReaderT)
 import Control.Monad.State (runState)
 import Control.Concurrent.Chan (Chan, writeChan)
-import Control.Concurrent.MVar (MVar, modifyMVar_, takeMVar, putMVar)
+import Control.Concurrent.MVar (MVar, takeMVar, putMVar)
 
 import Data.Map (Map)
 
@@ -69,10 +69,3 @@ runDispatcher conf logger mstate inChan outChan = do
 
             -- Write back the state
             putMVar mstate state'
-
-        -- Reset
-        Reset m -> do
-            modifyMVar_ mstate $ return . resetCounter m
-            logger Info $ 
-                "CountVonCount.Dispatcher.dispatcherReset: " ++
-                "succesfully reset " ++ show m
