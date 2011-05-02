@@ -33,7 +33,7 @@ public class AdminInterface {
   @GET
   @Path("/history")
   public Viewable showGlobalScoreHistory() {
-    return new Viewable("/admin/history.jsp", scoreManager.getHistory());
+    return new Viewable("/admin/history.jsp", scoreManager.getHistory(0));
   }
 
   @GET

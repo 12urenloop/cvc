@@ -21,6 +21,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Entity
 @NamedQueries({
   @NamedQuery(name="History.all", query="select h from HistoryEntry h order by h.date desc"),
+  @NamedQuery(name="History.allSinceTime", query="select h from HistoryEntry h where h.date >= :since order by h.date desc"),
   @NamedQuery(name="History.findByTeam", query="select h from HistoryEntry h where h.team=:team order by h.date desc"),
   @NamedQuery(name="History.findByUser", query="select h from HistoryEntry h where h.user=:user order by h.date desc")
 })
@@ -91,7 +92,6 @@ public class HistoryEntry implements Serializable {
     this.reason = reason;
   }
 
-  @XmlTransient
   public Team getTeam() {
     return team;
   }

@@ -1,4 +1,3 @@
-
 package be.ugent.zeus.urenloop.drbeaker.api;
 
 import be.ugent.zeus.urenloop.drbeaker.ScoreManager;
@@ -7,6 +6,7 @@ import java.util.List;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -18,9 +18,12 @@ import javax.ws.rs.core.MediaType;
 public class HistoryAPI {
 
   private ScoreManager scoreManager = ScoreManager.lookup();
-  
+
   @GET
-  public List<HistoryEntry> getHistoryEntries () {
-    return scoreManager.getHistory();
+  public List<HistoryEntry> getHistoryEntries(@QueryParam("since") Long since) {
+    if (since == null) {
+      since = 0l;
+    }
+    return scoreManager.getHistory(since * 1000);
   }
 }
