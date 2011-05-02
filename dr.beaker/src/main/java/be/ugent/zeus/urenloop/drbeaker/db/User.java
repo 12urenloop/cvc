@@ -71,7 +71,8 @@ public class User implements Serializable {
   public void setGroups(Set<Group> groups) {
     this.groups = groups;
   }
-
+  
+  @XmlTransient
   public Set<Group> getGroups() {
     return groups;
   }
