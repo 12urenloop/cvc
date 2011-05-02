@@ -7,6 +7,7 @@ module CountVonCount.Counter.Criteria
     , speedLimit
     , timeTreshold
     , distanceTreshold
+    , dropTreshold
     ) where
 
 import Text.Printf (printf)
@@ -20,7 +21,7 @@ import CountVonCount.Types
 -- | Criterium: we have a significant amount of samples
 --
 samplesTreshold :: Int -> Criterium
-samplesTreshold min' times _ _
+samplesTreshold min' _ times _ _
     | samples >= min' = Good
     | otherwise       = Refused $
         printf "Not enough samples, got %d, want %d" samples min'
@@ -30,17 +31,18 @@ samplesTreshold min' times _ _
 -- | Criterium: the racer was noticed at enough positions
 --
 stationsTreshold :: Int -> Criterium
-stationsTreshold min' _ positions _
+stationsTreshold min' (_, last') _ positions _
     | stations >= min' = Good
     | otherwise        = Refused $
         printf "Not enough stations, got %d, want %d" stations min'
   where
-    stations = S.size $ S.fromList $ V.toList positions
+    set = S.fromList $ last' : V.toList positions
+    stations = S.size set
 
 -- | Criterium: check that the racer didn't go too slow
 --
 speedTreshold :: Double -> Criterium
-speedTreshold min' _ _ (Line _ speed)
+speedTreshold min' _ _ _ (Line _ speed)
     | speed >= min' = Good
     | otherwise     = Refused $
         printf "Too slow, %f while min is %f" speed min'
@@ -48,7 +50,7 @@ speedTreshold min' _ _ (Line _ speed)
 -- | Criterium: the racer didn't go too fast
 --
 speedLimit :: Double -> Criterium
-speedLimit max' _ _ (Line _ speed)
+speedLimit max' _ _ _ (Line _ speed)
     | speed <= max' = Good
     | otherwise     = Refused $
         printf "Impossibly fast, %f while max is %f" speed max'
@@ -56,7 +58,7 @@ speedLimit max' _ _ (Line _ speed)
 -- | Criterium: enough time has passed
 --
 timeTreshold :: Double -> Criterium
-timeTreshold min' times _ _
+timeTreshold min' _ times _ _
     | V.length times < 1 || timeTaken < min' = Refused $
         printf "Too little time taken, %f while min is %f" timeTaken min'
     | otherwise = Good
@@ -66,9 +68,19 @@ timeTreshold min' times _ _
 -- | Criterium: a great enough distance was travelled
 --
 distanceTreshold :: Double -> Criterium
-distanceTreshold min' _ positions _
+distanceTreshold min' _ _ positions _
     | V.length positions < 1 || distance < min' = Refused $
         printf "Too small distance, %f while min is %f" distance min'
     | otherwise = Good
   where
     distance = V.maximum positions - V.minimum positions
+
+-- | Criterium: the position makes a drop in the last measurement
+--
+dropTreshold :: Double -> Criterium
+dropTreshold min' (_, position) _ positions _
+    | V.length positions < 1 || drop' < min' = Refused $
+        printf "Too small drop, %f while min is %f" drop' min'
+    | otherwise = Good
+  where
+    drop' = V.last positions - position

@@ -9,7 +9,7 @@ module CountVonCount.Counter
 
 import Control.Monad.State (State, get, put)
 import Control.Monad.Reader (ReaderT, ask)
-import Data.Monoid (mempty, mconcat)
+import Data.Monoid (mconcat)
 import Control.Applicative ((<$>))
 
 import Statistics.LinearRegression (linearRegression)
@@ -20,7 +20,6 @@ import CountVonCount.Configuration
 
 data CounterState = CounterState
     { counterDataSet      :: DataSet
-    , counterLastPosition :: Maybe Position
     } deriving (Show)
 
 data CounterEnvironment = CounterEnvironment
@@ -29,7 +28,7 @@ data CounterEnvironment = CounterEnvironment
     }
 
 emptyCounterState :: CounterState
-emptyCounterState = CounterState mempty Nothing
+emptyCounterState = CounterState emptyDataSet
 
 type CounterM = ReaderT CounterEnvironment (State CounterState)
 
@@ -42,21 +41,20 @@ counter measurement = do
 
     -- Obtain state and create a possible next dataset
     dataSet <- counterDataSet <$> get
-    lastPosition <- counterLastPosition <$> get
     configuration <- counterConfiguration <$> ask
     mac <- counterMac <$> ask
     let dataSet' = addMeasurement measurement dataSet
 
         -- Not always executed
-        (!score, line) = analyze configuration dataSet
+        (!score, line) = analyze configuration measurement dataSet
                     
         -- First do a quick check using maybeLap, then verify it using isLap
-        shouldReport = maybeLap lastPosition position
+        shouldReport = maybeLap (dataMaxPositon dataSet) position
         shouldClear = shouldReport && validateScore score
 
     -- Clear the dataset if necessary
-    if shouldClear then put $ CounterState cleared  $ Just position
-                   else put $ CounterState dataSet' $ Just position
+    if shouldClear then put $ CounterState cleared
+                   else put $ CounterState dataSet'
 
     -- Return found score
     return $ if not shouldReport
@@ -68,17 +66,17 @@ counter measurement = do
                          , reportRegression = line
                          }
   where
-    maybeLap Nothing  _                   = False
-    maybeLap (Just lastPosition) position = lastPosition > position
+    maybeLap Nothing   _        = False
+    maybeLap (Just mp) position = mp > position
 
     -- A cleared dataset
-    cleared = addMeasurement measurement mempty
+    cleared = addMeasurement measurement emptyDataSet
 
-analyze :: Configuration -> DataSet -> (Score, Line)
-analyze configuration dataSet =
+analyze :: Configuration -> Measurement -> DataSet -> (Score, Line)
+analyze configuration measurement dataSet =
     let (times, positions) = toSamples dataSet
         line = regression times positions
-    in (criteria times positions line, line)
+    in (criteria measurement times positions line, line)
   where
     criteria = mconcat $ configurationCriteria configuration
     regression times positions =

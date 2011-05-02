@@ -10,10 +10,9 @@ Rest API:
 # receive from the input channel) to positions in the circuit. The first station
 # should be at position 0.
 Stations:
-  "01:00:00:00:00:01": 0
-  "01:00:00:00:00:02": 100
-  "01:00:00:00:00:03": 200
-  "01:00:00:00:00:04": 300
+  "00:1C:F0:F1:F8:25": 0
+  "00:21:91:F1:F1:31": 134
+  "00:22:B0:D0:61:26": 184
 
 # count-von-count will log all received input to a CSV file. The file name can
 # be configured here.
@@ -21,12 +20,13 @@ CSV log: log.csv
 
 # The criteria used for judging laps
 Criteria:
-  Samples treshold: 0
+  Samples treshold: 8
   Stations treshold: 3
   Speed treshold: 0
   # Speed limit: 10000000
-  Time treshold: 0
-  Distance treshold: 100
+  Time treshold: 20
+  Distance treshold: 30
+  Drop treshold: 100
 
 # Set of allowed mac addresses
 Macs:
