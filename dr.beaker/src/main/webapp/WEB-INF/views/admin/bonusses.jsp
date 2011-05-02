@@ -4,8 +4,31 @@
 <%@taglib prefix="ul" tagdir="/WEB-INF/tags" %>
 
 <ul:page title="Bonus management" tab="admin" subtab="bonusses">
+  <script>
+
+    function submit (event) {
+      event.preventDefault();
+      $.ajax({
+        type : "POST",
+        url : $(this).attr('action'),
+        data : $(this).serialize(),
+        success : function (response) {
+          var message = $('#message');
+          message.text(response);
+          message.show();
+          setTimeout(function() {message.slideUp(500);}, 1000);
+        }
+      });
+    }
+    
+    $(function(){
+      $("#single-bonus").submit(submit);
+      $("#multi-bonus").submit(submit);      
+    });
+  </script>
+  <div class="success" id="message" style="display:none;"></div>
   <ul:section title="Bonus voor een enkel team">
-    <form action="<c:url value="/admin/bonus/add" />" method="POST">
+    <form id="single-bonus" action="<c:url value="/admin/bonus/add" />" method="POST">
       <label for="reason">Reden</label>
       <input type="text" id="reason" name="reason"><br>
       <label for="team">Team</label>
@@ -20,7 +43,7 @@
     </form>
   </ul:section>
   <ul:section title="Bonus voor meerdere teams">
-    <form action="<c:url value="/admin/bonus/multi-add" />" method="POST">
+    <form id="multi-bonus" action="<c:url value="/admin/bonus/multi-add" />" method="POST">
       <label for="bonusses">Bonus</label>
       <input type="text" id="bonusses" name="bonus" size="2" maxlength="2" value="5"><br>
       <label for="reason">Reden</label>
