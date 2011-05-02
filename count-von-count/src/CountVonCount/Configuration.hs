@@ -28,6 +28,7 @@ data Configuration = Configuration
     , configurationCriteria   :: [Criterium]
     , configurationMacSet     :: Set Mac
     , configurationListenPort :: Int
+    , configurationAdminPort  :: Int
     , configurationVerbosity  :: Verbosity
     }
 
@@ -41,6 +42,7 @@ loadConfiguration object = do
                   <*> load loadCriteria "Criteria" m
                   <*> load loadMacSet "Mac set" m
                   <*> fmap read (lookupString "Listen port" m)
+                  <*> fmap read (lookupString "Admin port" m)
                   <*> fmap read (lookupString "Verbosity" m)
   where
     load f k m = f =<< lookupObject (toYamlScalar k) m

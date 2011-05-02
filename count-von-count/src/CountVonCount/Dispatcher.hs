@@ -1,8 +1,10 @@
 -- | A dispatcher sends events to the right watchers
 --
 module CountVonCount.Dispatcher
-    ( runDispatcher
+    ( DispatcherState
     , emptyDispatcherState
+    , resetCounter
+    , runDispatcher
     ) where
 
 import qualified Data.Map as M

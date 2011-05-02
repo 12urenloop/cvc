@@ -45,4 +45,8 @@ Executable count-von-count
                      http-types >= 0.6,
                      old-locale >= 1,
                      time >= 1.2,
-                     failure >= 0.1
+                     failure >= 0.1,
+                     blaze-html >= 0.4,
+                     snap-core >= 0.3,
+                     snap-server >= 0.3,
+                     MonadCatchIO-transformers >= 0.1

@@ -19,6 +19,7 @@ import CountVonCount.Receiver
 import CountVonCount.Rest
 import CountVonCount.Configuration
 import CountVonCount.Types
+import CountVonCount.Admin
 
 countVonCount :: Configuration
               -> Logger
@@ -36,6 +37,9 @@ countVonCount configuration logger = do
     dispatcherState <- newMVar emptyDispatcherState
     _ <- forkIO $
         runDispatcher configuration logger dispatcherState inChan outChan
+
+    -- Admin interface
+    _ <- forkIO $ runAdmin configuration dispatcherState
 
     -- Persistence thread
     _ <- forkIO $ runCsvLog configuration csvLogChan
