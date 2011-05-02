@@ -10,6 +10,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
@@ -41,7 +42,11 @@ public class StickManager {
   public Stick get (String mac) {
     TypedQuery<Stick> query = em.createNamedQuery("Stick.findByMac", Stick.class);
     query.setParameter("mac", mac);
-    return query.getSingleResult();
+    try {
+      return query.getSingleResult();
+    } catch (NoResultException nre) {
+      return null;
+    }
   }
 
   public void delete(Stick stick) {

@@ -5,6 +5,8 @@ import be.ugent.zeus.urenloop.drbeaker.db.HistoryEntry;
 import be.ugent.zeus.urenloop.drbeaker.db.Stick;
 import be.ugent.zeus.urenloop.drbeaker.db.Team;
 import be.ugent.zeus.urenloop.drbeaker.db.User;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -46,7 +48,11 @@ public class ScoreManager {
     return source;
   }
 
-  public void setCurrentSource (String source) {
+  public void setCurrentSource (String source) throws UnknownHostException {
+    if (!source.equals("console")) {
+      InetAddress address = InetAddress.getByName(source);
+      source = address.getHostAddress();
+    }
     System.setProperty("counter-source", source);
     this.source = source;
   }
