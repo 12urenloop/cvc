@@ -56,13 +56,11 @@ data Command = Measurement (Mac, Measurement)
 
 -- | Dataset describing a number of measurements
 --
-data DataSet = DataSet [Timestamp] [Position]
-             deriving (Show)
-
-instance Monoid DataSet where
-    mempty = DataSet mempty mempty
-    DataSet t1 p1 `mappend` DataSet t2 p2 =
-        DataSet (mappend t1 t2) (mappend p1 p2)
+data DataSet = DataSet
+    { dataTimes      :: [Timestamp]
+    , dataPositions  :: [Position]
+    , dataMaxPositon :: Maybe Position
+    } deriving (Show)
 
 -- | A line specified by offset and steepness
 --
@@ -71,7 +69,7 @@ data Line = Line Double Double
 
 -- | Returns @Nothing@ if all is OK, @Just xxx@ with a descriptive error
 --
-type Criterium = Sample -> Sample -> Line -> Score
+type Criterium = Measurement -> Sample -> Sample -> Line -> Score
 
 -- | A score given to a lap
 --

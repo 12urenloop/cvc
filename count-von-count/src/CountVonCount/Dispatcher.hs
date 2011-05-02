@@ -34,8 +34,7 @@ addMeasurement conf mac measurement state =
   where
     cstate = fromMaybe emptyCounterState $ M.lookup mac state
     env = CounterEnvironment conf mac
-    counter' = runReaderT (counter measurement) env
-    (report, cstate') = runState counter' cstate
+    (report, cstate') = runState (runReaderT (counter measurement) env) cstate
     updated = (report, M.insert mac cstate' state)
 
 resetCounter :: Mac -> DispatcherState -> DispatcherState

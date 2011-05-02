@@ -44,5 +44,5 @@ mac conf mac' state = do
                 H.td $ toHtml time
                 H.td $ toHtml position
   where
-    DataSet times positions = counterDataSet state
+    DataSet times positions _ = counterDataSet state
     reset = "/" `mappend` unsafeByteStringValue mac' `mappend` "/reset"

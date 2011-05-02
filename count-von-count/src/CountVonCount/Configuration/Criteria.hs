@@ -29,6 +29,7 @@ loadCriteria object = do
         , speedLimit        <$> lookup' "Speed limit"       m
         , timeTreshold      <$> lookup' "Time treshold"     m
         , distanceTreshold  <$> lookup' "Distance treshold" m
+        , dropTreshold      <$> lookup' "Drop treshold"     m
         ]
   where
     lookup' k = fmap read . lookupString k
