@@ -56,7 +56,7 @@ class Ernie
     loop do
       @teams.each do |team|
         team.step
-        @socket.puts "#{team.station},-,#{team.mac},-,in\n"
+        @socket.puts "#{team.station},-,#{team.mac},0\n"
       end
 
       # Check time!
