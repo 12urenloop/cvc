@@ -33,11 +33,10 @@ loop do
           end
         end
       end
+    rescue SignalException => e
+      raise e
     rescue Exception => e
       error(host, e)
     end
-    sleep 2
-
   end
-  sleep 10
 end
