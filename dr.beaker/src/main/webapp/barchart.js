@@ -12,6 +12,7 @@ function drawBarChart(context, data, startX,startY, chartWidth, chartHeight, mar
   context.lineWidth = "0.0";
   context.font = "20px";
   var maxValue = 0;
+
   for (var i=0; i < data.length; i++) {
     var values = data[i].split(",");
     var height = parseInt(values[1]);
@@ -24,7 +25,8 @@ function drawBarChart(context, data, startX,startY, chartWidth, chartHeight, mar
     var values = data[i].split(",");
     var name = values[0];
     var height = parseInt(values[1]);
-	
+    //alert(values);
+
     // Write the data to the chart
     // leave 10% gap between bars
     context.fillStyle = colors[i];

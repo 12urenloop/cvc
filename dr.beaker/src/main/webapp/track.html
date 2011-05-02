@@ -3,6 +3,7 @@
 		<META NAME="AUTHOR" CONTENT="Jens Timmerman">
 		<title>Track</title>
 		<SCRIPT LANGUAGE="JavaScript" SRC="barchart.js"></SCRIPT>
+		<SCRIPT LANGUAGE="JavaScript" SRC="javascript/jquery-1.5.1.min.js"></SCRIPT>
 		<SCRIPT LANGUAGE="JavaScript" SRC="hsv.js"></SCRIPT>
 		<script type="text/javascript">
 			window.onresize = refresh;
@@ -46,39 +47,40 @@
 			function get_random_color() {
 				return "#"+((1<<24)*Math.random()|0).toString(16)
 			}
+			//getdata
+			var tdata;
+			function getdata(){
+                                var url = 'dr.beaker/api/teams/?order=score';
+                                $.get(url, function(data) {
+                                        // can use 'data' in here...
+					var teams = data.team;
+					var score = new Array(teams.length);
+					tdata = new Array(teams.length);
+					//make list of colors
+        	                        var colors= new Array(teams.length);
+                	                var colors2= new Array(teams.length);
+					//TODO: testcolors here, get a designer to come up with a nice list of colors
+                        	        for (var i=0; i < teams.length; i++) {
+                                	         colors[i] = "#" + hsv2hex(360/data.length*i,75,75); //evenly spaced out colors, not to bright
+                           	     	}
+					//parse data
+					//reogranize colors so the same team always has the same
+                                	for (var i =0;i < teams.length;i++){ 
+						tdata[i] = ''+ teams[i].name + "," + teams[i].score; 
+						colors2[i] = colors[teams[i].id];
+					}	
+					makeBarChart(tdata,colors2);		
+                		});
+
+			}
 			//draws the bar chart in the middle of the canvas
-			function makeBarChart(){
+			function makeBarChart(data,colors){
+				tdata=data;
+			//	alert(data);
 				var context = document.getElementById("track").getContext("2d");
 	
 				// Bar chart data
 				//TODO: testdata here, use global var laps once drawprogress is finished
-				  var data = new Array(20);
-				  data[0] = "apples,200";
-				  data[1] = "oranges,120";
-				  data[2] = "bananas,80";
-				  data[3] = "kiwis,230";
-	 			  data[4] = "tangarines,340";
-	 			  data[5] = "tangarines,340";
-	 			  data[6] = "tangarines,340";
-	 			  data[7] = "tangarines,340";
-	 			  data[8] = "tangarines,340";
-	 			  data[9] = "tangarines,340";
-	 			  data[10] = "tangarines,340";
-	 			  data[11] = "tangarines,1340";
-	 			  data[12] = "tangarines,340";
-	 			  data[13] = "tangarines,340";
-	 			  data[14] = "tangarines,340";
-				  data[15] = "kiwis,230";
-				  data[16] = "kiwis,230";
-				  data[17] = "kiwis,230";
-				  data[18] = "kiwis,230";
-				  data[19] = "kiwis,230";
-				//colors
-				//TODO: testcolors here, get a designer to come up with a nice list of colors
-				var colors= new Array(data.length);
-				for (var i=0; i < data.length; i++) {
-					 colors[i] = "#" + hsv2hex(360/data.length*i,75,75); //evenly spaced out colors, not to bright
-				}
 
 				  // Draw the bar chart
 				 //drawBarChart(context, data, startX, startY,chartWidth, chartHeight, markDataIncrementsIn,border,textsize,colors)
@@ -110,16 +112,17 @@
 				//setTimeout(drawProgress(teamid),laptimes[team])
 			}
 			function refresh(){
-				draw();
-				makeBarChart();
+				//draw();
+				//makeBarChart();
+				getdata();
 			}
 			function start(){
 				refresh();
-				setInterval(makeBarChart,30000); //update the barchart every 30sec's
+				setInterval(getdata,30000); //update the barchart every 30sec's
 				//get teams
-				var teams = getTeams();
+				//var teams = getTeams();
 				//for team in teams //set up the drawProgress function to start in 100sec's
-					setTimeout(drawProgress(team), 100000);
+				//	setTimeout(drawProgress(team), 100000);
 			}
 		</script>
 		<style type="text/css">
