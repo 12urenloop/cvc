@@ -23,7 +23,8 @@ runCsvLog configuration chan = do
     readChanLoop chan $ \x -> case x of
         Measurement (mac, (time, position)) ->
             when (allowedMac mac configuration) $
-                hPutStrLn handle $ printf "%s,%f,%f" (show mac) time position
+                hPutStrLn handle $ printf "%s,%f,%f" (pmac mac) time position
     hClose handle
   where
+    pmac = show . flip prettifyMac configuration
     filePath = configurationCsvLog configuration

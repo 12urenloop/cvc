@@ -16,17 +16,19 @@ import qualified Text.Blaze.Html5.Attributes as A
 import CountVonCount.Dispatcher
 import CountVonCount.Types
 import CountVonCount.Counter
+import CountVonCount.Configuration
 
-root :: DispatcherState -> Html
-root state = do
+root :: Configuration -> DispatcherState -> Html
+root conf state = do
     H.h1 "Admin interface"
     H.ul $ forM_ (M.toList state) $ \(mac', _) -> H.li $ do
         H.a ! A.href ("/" `mappend` unsafeByteStringValue mac')
-            $ unsafeByteString mac'
+            $ unsafeByteString $ prettifyMac mac' conf
 
-mac :: Mac -> CounterState -> Html
-mac mac' state = do
-    H.h1 $ unsafeByteString mac'
+mac :: Configuration -> Mac -> CounterState -> Html
+mac conf mac' state = do
+    H.h1 $ unsafeByteString $ prettifyMac mac' conf
+    H.p $ unsafeByteString mac'
     H.p $ H.a ! A.href "/" $ "Back to overview"
     H.form ! A.action reset ! A.method "POST" $ do
         H.input ! A.type_ "submit" ! A.value "Reset"

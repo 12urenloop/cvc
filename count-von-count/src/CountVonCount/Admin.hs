@@ -3,7 +3,7 @@
 {-# LANGUAGE OverloadedStrings, GeneralizedNewtypeDeriving, BangPatterns #-}
 module CountVonCount.Admin where
 
-import Control.Applicative (Applicative, Alternative)
+import Control.Applicative (Applicative, Alternative, (<$>))
 import Control.Concurrent.MVar
 import Control.Monad.CatchIO (MonadCatchIO)
 import Control.Monad.Reader
@@ -25,10 +25,15 @@ import qualified CountVonCount.Admin.Views as Views
 
 type Count = Map ByteString Int
 
-newtype App a = App {unApp :: ReaderT (MVar DispatcherState) Snap a}
+data AppEnvironment = AppEnvironment
+    { appDispatcherState :: MVar DispatcherState
+    , appConfiguration   :: Configuration
+    }
+
+newtype App a = App {unApp :: ReaderT AppEnvironment Snap a}
               deriving ( Functor, Monad, Applicative
                        , Alternative, MonadIO, MonadCatchIO
-                       , MonadPlus, MonadReader (MVar DispatcherState)
+                       , MonadPlus, MonadReader AppEnvironment
                        )
 
 instance MonadSnap App where
@@ -41,18 +46,20 @@ respondBlaze html = do
 
 root :: App ()
 root = do
-    state <- liftIO . readMVar =<< ask
-    respondBlaze $ Views.root state
+    state <- liftIO . readMVar . appDispatcherState =<< ask
+    conf <- appConfiguration <$> ask
+    respondBlaze $ Views.root conf state
 
 mac :: App ()
 mac = do
-    state <- liftIO . readMVar =<< ask
+    state <- liftIO . readMVar . appDispatcherState =<< ask
+    conf <- appConfiguration <$> ask
     Just mac' <- getParam "mac"
-    respondBlaze $ Views.mac mac' $ state M.! mac'
+    respondBlaze $ Views.mac conf mac' $ state M.! mac'
 
 macReset :: App ()
 macReset = do
-    state <- ask
+    state <- appDispatcherState <$> ask
     Just mac' <- getParam "mac"
     sure <- getParam "sure"
     when (sure == Just "on") $ liftIO $
@@ -68,7 +75,8 @@ app = route
 
 runAdmin :: Configuration -> MVar DispatcherState -> IO ()
 runAdmin conf dispatcherState = do
-    httpServe config $ runReaderT (unApp app) dispatcherState
+    httpServe config $ runReaderT (unApp app) env
   where
     port = configurationAdminPort conf
     config = addListen (ListenHttp "0.0.0.0" port) emptyConfig
+    env = AppEnvironment dispatcherState conf
