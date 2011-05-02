@@ -39,12 +39,9 @@ public class SystemInterface {
   @POST
   @Path("bootstrap")
   public Response bootstrap (@FormParam("data") String data) {
-    System.err.println(data);
     data.split("\n");
     for (String line : data.split("\n")) {
-      System.err.println(line);
       String[] x = line.trim().split(" ", 3);
-      System.err.println(x.length);
 
       long id = Long.parseLong(x[0]);
       
