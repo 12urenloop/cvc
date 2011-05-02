@@ -5,7 +5,9 @@ import be.ugent.zeus.urenloop.drbeaker.db.HistoryEntry;
 import be.ugent.zeus.urenloop.drbeaker.db.Stick;
 import be.ugent.zeus.urenloop.drbeaker.db.Team;
 import be.ugent.zeus.urenloop.drbeaker.db.User;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -122,12 +124,22 @@ public class ScoreManager {
   }
 
   public List<HistoryEntry> getHistory() {
-    TypedQuery query = em.createNamedQuery("History.all", HistoryEntry.class);
+    return getHistory(0);
+  }
+
+  /**
+   * @param since the timestamp in milliseconds
+   * @return 
+   */
+  public List<HistoryEntry> getHistory(long since) {
+    TypedQuery query = em.createNamedQuery("History.allSinceTime", HistoryEntry.class);
+
+    query.setParameter("since", new Date(since));
     return query.getResultList();
   }
 
   public void reset() {
-    for (HistoryEntry entry : getHistory()) {
+    for (HistoryEntry entry : getHistory(0)) {
       em.remove(entry);
     }
     

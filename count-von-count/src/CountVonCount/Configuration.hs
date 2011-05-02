@@ -5,6 +5,8 @@ module CountVonCount.Configuration
     ( Configuration (..)
     , stationPosition
     , allowedMac
+    , aboveRssiTreshold
+    , noticeMeasurement
     , prettifyMac
     , loadConfiguration
     , loadConfigurationFromFile
@@ -26,14 +28,15 @@ import CountVonCount.Configuration.Criteria
 import CountVonCount.Configuration.Util
 
 data Configuration = Configuration
-    { configurationRest       :: RestConfiguration
-    , configurationStations   :: Map Station Position
-    , configurationCsvLog     :: FilePath
-    , configurationCriteria   :: [Criterium]
-    , configurationMacs       :: Map Mac ByteString
-    , configurationListenPort :: Int
-    , configurationAdminPort  :: Int
-    , configurationVerbosity  :: Verbosity
+    { configurationRest         :: RestConfiguration
+    , configurationStations     :: Map Station Position
+    , configurationCsvLog       :: FilePath
+    , configurationCriteria     :: [Criterium]
+    , configurationMacs         :: Map Mac ByteString
+    , configurationListenPort   :: Int
+    , configurationRssiTreshold :: Int
+    , configurationAdminPort    :: Int
+    , configurationVerbosity    :: Verbosity
     }
 
 stationPosition :: Station -> Configuration -> Maybe Position
@@ -45,6 +48,15 @@ allowedMac mac = M.member mac . configurationMacs
 prettifyMac :: Mac -> Configuration -> ByteString
 prettifyMac mac = fromMaybe mac . M.lookup mac . configurationMacs
 
+aboveRssiTreshold :: Rssi -> Configuration -> Bool
+aboveRssiTreshold rssi = (<= rssi) . configurationRssiTreshold
+
+-- | Should we take this measurement into account?
+--
+noticeMeasurement :: Mac -> Measurement -> Configuration -> Bool
+noticeMeasurement mac (_, _, rssi) conf =
+    allowedMac mac conf && aboveRssiTreshold rssi conf
+
 loadConfiguration :: (Applicative m, Failure ObjectExtractError m)
                   => YamlObject -> m Configuration
 loadConfiguration object = do
@@ -55,6 +67,7 @@ loadConfiguration object = do
                   <*> load loadCriteria "Criteria" m
                   <*> load loadMap "Macs" m
                   <*> fmap read (lookupString "Listen port" m)
+                  <*> fmap read (lookupString "RSSI treshold" m)
                   <*> fmap read (lookupString "Admin port" m)
                   <*> fmap read (lookupString "Verbosity" m)
   where

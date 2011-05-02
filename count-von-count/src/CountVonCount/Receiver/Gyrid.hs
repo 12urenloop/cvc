@@ -31,16 +31,17 @@ parseGyrid conf timestamp bs = case SBC.split ',' bs of
     ("MSG" : _)  -> Nothing
     ("INFO" : _) -> Nothing
 
-    -- In/RSSI data
-    [!station, _, !mac, _, "in"] -> measurement station mac
-    [!station, _, !mac, _]       -> measurement station mac
+    -- RSSI data
+    [!station, _, !mac, !rssi] -> measurement station mac rssi
 
     _ -> Nothing
   where
-    measurement :: ByteString -> ByteString -> Maybe Command
-    measurement station mac = do
+    measurement :: ByteString -> ByteString -> ByteString -> Maybe Command
+    measurement station mac rssi = do
         !pos <- stationPosition (addColons station) conf
-        return $ Measurement $ (addColons mac, (timestamp, pos))
+        return $ Measurement $ (addColons mac, (timestamp, pos, readBS rssi))
+
+    readBS = read . SBC.unpack
 
 -- | Transform a mac without @:@ delimiters to one a mac with @:@ delimiters
 --

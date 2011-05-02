@@ -1,12 +1,8 @@
 package be.ugent.zeus.urenloop.drbeaker;
 
-import be.ugent.zeus.urenloop.drbeaker.db.HistoryEntry;
 import be.ugent.zeus.urenloop.drbeaker.db.Stick;
 import be.ugent.zeus.urenloop.drbeaker.db.Team;
-import be.ugent.zeus.urenloop.drbeaker.db.User;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.naming.Context;

@@ -20,10 +20,10 @@ runCsvLog :: Configuration  -- ^ Global configuration
           -> IO ()          -- ^ Blocks forever
 runCsvLog configuration chan = do
     handle <- openFile filePath AppendMode
-    readChanLoop chan $ \x -> case x of
-        Measurement (mac, (time, position)) ->
-            when (allowedMac mac configuration) $
-                hPutStrLn handle $ printf "%s,%f,%f" (pmac mac) time position
+    readChanLoop chan $ \(Measurement (mac, (time, position, rssi))) ->
+        when (allowedMac mac configuration) $
+            hPutStrLn handle $
+                printf "%s,%f,%f,%d" (pmac mac) time position rssi
     hClose handle
   where
     pmac = show . flip prettifyMac configuration

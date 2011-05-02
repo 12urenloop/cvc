@@ -37,7 +37,7 @@ type CounterM = ReaderT CounterEnvironment (State CounterState)
 counter :: Measurement -> CounterM (Maybe Report)
 counter measurement = do
     -- Read a measurement
-    let (timestamp, position) = measurement
+    let (timestamp, position, _) = measurement
 
     -- Obtain state and create a possible next dataset
     dataSet <- counterDataSet <$> get
