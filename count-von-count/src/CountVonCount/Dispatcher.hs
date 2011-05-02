@@ -30,7 +30,7 @@ addMeasurement :: Configuration
                -> Mac -> Measurement -> DispatcherState
                -> (Maybe Report, DispatcherState)
 addMeasurement conf mac measurement state =
-    if allowedMac mac conf then updated else (Nothing, state)
+    if noticeMeasurement mac measurement conf then updated else (Nothing, state)
   where
     cstate = fromMaybe emptyCounterState $ M.lookup mac state
     env = CounterEnvironment conf mac

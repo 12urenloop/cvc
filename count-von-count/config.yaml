@@ -58,6 +58,9 @@ Macs:
 # Port to listen on
 Listen port: 9001
 
+# Minimum value for RSSI data: lower values are ignored
+RSSI treshold: -75
+
 # Port for admin interface
 Admin port: 9002
 
