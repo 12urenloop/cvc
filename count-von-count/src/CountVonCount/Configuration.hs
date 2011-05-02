@@ -26,14 +26,15 @@ import CountVonCount.Configuration.Criteria
 import CountVonCount.Configuration.Util
 
 data Configuration = Configuration
-    { configurationRest       :: RestConfiguration
-    , configurationStations   :: Map Station Position
-    , configurationCsvLog     :: FilePath
-    , configurationCriteria   :: [Criterium]
-    , configurationMacs       :: Map Mac ByteString
-    , configurationListenPort :: Int
-    , configurationAdminPort  :: Int
-    , configurationVerbosity  :: Verbosity
+    { configurationRest         :: RestConfiguration
+    , configurationStations     :: Map Station Position
+    , configurationCsvLog       :: FilePath
+    , configurationCriteria     :: [Criterium]
+    , configurationMacs         :: Map Mac ByteString
+    , configurationListenPort   :: Int
+    , configurationRssiTreshold :: Int
+    , configurationAdminPort    :: Int
+    , configurationVerbosity    :: Verbosity
     }
 
 stationPosition :: Station -> Configuration -> Maybe Position
@@ -55,6 +56,7 @@ loadConfiguration object = do
                   <*> load loadCriteria "Criteria" m
                   <*> load loadMap "Macs" m
                   <*> fmap read (lookupString "Listen port" m)
+                  <*> fmap read (lookupString "RSSI treshold" m)
                   <*> fmap read (lookupString "Admin port" m)
                   <*> fmap read (lookupString "Verbosity" m)
   where
