@@ -42,7 +42,7 @@
     </form>
   </ul:section>
   <ul:section title="Bonus voor meerdere teams">
-    <form id="multi-bonus" action="<c:url value="/admin/bonus/multi-add" />" method="POST">
+    <form id="multi-bonus" action="<c:url value="/admin/bonus/multi-add" />" method="POST" style="width:850px;">
       <label for="bonusses">Bonus</label>
       <input type="text" id="bonusses" name="bonus" size="2" maxlength="2" value="5"><br>
       <label for="reason">Reden</label>
@@ -50,7 +50,7 @@
       <label for="team">Teams</label><br>
       <c:forEach items="${it}" var="team">
         <input type="checkbox" name="teams" id="teams[${team.id}]" value="${team.id}">
-        <label style="width: 200px; vertical-align: top; padding-left: 5px;" for="teams[${team.id}]">${team.name}</label>
+        <label style="width: 185px; vertical-align: top; padding-left: 5px;" for="teams[${team.id}]">${team.name}</label>
       </c:forEach>
       <br>
       <input type="submit" value="Toekennen">
