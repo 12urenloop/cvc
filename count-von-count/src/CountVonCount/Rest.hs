@@ -32,6 +32,7 @@ runRest conf logger chan = do
     readChanLoop chan $ \report -> do
         -- Log about the received report
         logger Info $ "CountVonCount.Rest.runRest: Received report: " ++
+            "Name = " ++ SBC.unpack (prettifyMac (reportMac report) conf) ++
             "Mac = " ++ show (reportMac report) ++ ", " ++
             "Score = " ++ show (reportScore report)
 

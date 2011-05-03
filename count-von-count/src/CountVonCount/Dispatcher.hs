@@ -15,6 +15,7 @@ import Control.Concurrent.Chan (Chan, writeChan)
 import Control.Concurrent.MVar (MVar, takeMVar, putMVar)
 
 import Data.Map (Map)
+import qualified Data.ByteString.Char8 as SBC
 
 import CountVonCount.Types
 import CountVonCount.Counter
@@ -62,7 +63,8 @@ runDispatcher conf logger mstate inChan outChan = do
                     then writeChan outChan r
                     else logger Info $
                             "CountVonCount.Dispatcher.dispatcherMeasurement: "
-                            ++ "invalid: " ++ show (reportScore r)
+                            ++ "invalid: " ++ SBC.unpack (prettifyMac t conf)
+                            ++ " " ++ show (reportScore r)
 
             -- Write back the state
             putMVar mstate state'
