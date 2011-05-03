@@ -6,7 +6,7 @@ module CountVonCount.Receiver
     ) where
 
 import Control.Applicative ((<$>))
-import Control.Monad (forever, unless, forM_)
+import Control.Monad (forever, unless, forM_, when)
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Chan (Chan, writeChan)
 import Data.Time (getCurrentTime, formatTime)
@@ -62,11 +62,16 @@ socketReceiver conf logger chan replayChan = withSocketsDo $ do
     consumer line = do
         !timestamp <- currentTime
         case parseGyrid conf timestamp line of
-            Just !command -> do
+            Just !command@(Measurement (mac, _)) -> do
                 logger Debug $  "CountVonCount.Receiver.socketReceiver: Parsed "
                              ++ show command
+
+                -- Write the command to the channel, and to the replay log when
+                -- allowed
                 writeChan chan command
-                writeChan replayChan (timestamp, line)
+                when (allowedMac mac conf) $
+                    writeChan replayChan (timestamp, line)
+
             _ -> logger Debug $  "CountVonCount.Receiver.socketReceiver: Could "
                               ++ "not parse: " ++ show line
     {-# INLINE consumer #-}
