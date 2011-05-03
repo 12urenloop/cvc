@@ -22,11 +22,11 @@
   				ctx.canvas.height = window.innerHeight;
 				width=ctx.canvas.width;
 				height=ctx.canvas.height;
-				edgewidth=Math.min(width,height)/10;
+				edgewidth=Math.min(width,height)/30;
 				if (width < height){
 					height = width;
 				}
-				ctx.beginPath();
+				/*ctx.beginPath();
 				ctx.arc(height/2+1,height/2+1,height/2,Math.PI/2,Math.PI/2*3,false);
 				ctx.lineTo(width-height+1,1);
 				ctx.arc(width-height/2+1,height/2+1,height/2,Math.PI/2*3,Math.PI/2,false);
@@ -40,7 +40,7 @@
                                 ctx.arc(width-height/2+1,height/2+1,height/2-edgewidth,Math.PI/2*3,Math.PI/2,false);
                                 ctx.closePath();
                                 ctx.fillStyle = "#567317";
-                                ctx.fill();
+                                ctx.fill();*/
 				
 			}
 			//returns a random color
@@ -48,20 +48,21 @@
 				return "#"+((1<<24)*Math.random()|0).toString(16)
 			}
 			//getdata
-			var tdata;
+			var tdata2;
+			var tcolors;
 			function getdata(){
                                 var url = 'api/teams/?order=score';
                                 $.get(url, function(data) {
                                         // can use 'data' in here...
 					var teams = data.team;
 					var score = new Array(teams.length);
-					tdata = new Array(teams.length);
+					var tdata = new Array(teams.length);
 					//make list of colors
         	                        var colors= new Array(teams.length);
                 	                var colors2= new Array(teams.length);
 					//TODO: testcolors here, get a designer to come up with a nice list of colors
                         	        for (var i=0; i < teams.length; i++) {
-                                	         colors[i] = "#" + hsv2hex(360/data.length*i,75,75); //evenly spaced out colors, not to bright
+                                	         colors[i] = "#" + hsv2hex(360/teams.length*i,75,75); //evenly spaced out colors, not to bright
                            	     	}
 					//parse data
 					//reogranize colors so the same team always has the same
@@ -69,6 +70,7 @@
 						tdata[i] = ''+ teams[i].name + "," + teams[i].score; 
 						colors2[i] = colors[teams[i].id];
 					}	
+					tcolors = colors2;
 					makeBarChart(tdata,colors2);		
                 		});
 
@@ -112,7 +114,7 @@
 				//setTimeout(drawProgress(teamid),laptimes[team])
 			}
 			function refresh(){
-				//draw();
+				draw();
 				//makeBarChart();
 				getdata();
 			}
