@@ -5,7 +5,6 @@
 
 <ul:page title="Bonus management" tab="admin" subtab="bonusses">
   <script>
-
     function submit (event) {
       event.preventDefault();
       $.ajax({
@@ -16,7 +15,7 @@
           var message = $('#message');
           message.text(response);
           message.show();
-          setTimeout(function() {message.slideUp(500);}, 1000);
+          setTimeout(function() {message.slideUp(500);}, 2000);
         }
       });
     }

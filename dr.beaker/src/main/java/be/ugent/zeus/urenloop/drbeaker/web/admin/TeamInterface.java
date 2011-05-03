@@ -6,6 +6,7 @@ import be.ugent.zeus.urenloop.drbeaker.db.Stick;
 import be.ugent.zeus.urenloop.drbeaker.db.Team;
 import com.sun.jersey.api.view.Viewable;
 import java.net.URI;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -49,10 +50,15 @@ public class TeamInterface {
   
   @POST
   @Path("/stick")
-  public Response assignStick(@FormParam("team") long teamID, @FormParam("stick") long stickID) {
-    Team team = teamManager.get(teamID);
-    Stick stick = stickManager.get(stickID);
-    teamManager.assign(team, stick);
+  public Response assignStick(@FormParam("team") long teamID, @FormParam("stick") long stickID, @FormParam("confirmation") @DefaultValue(value="false") boolean confirmation) {
+
+    if (!confirmation) {
+      Stick stick = stickManager.get(stickID);
+      Team team = teamManager.get(teamID);
+      return Response.ok(new Viewable("/admin/confirmation.jsp", new Object[]{team, stick})).build();
+    }
+    
+    teamManager.assign(teamID, stickID);
 
     return Response.seeOther(URI.create("/admin/teams/")).build();
   }

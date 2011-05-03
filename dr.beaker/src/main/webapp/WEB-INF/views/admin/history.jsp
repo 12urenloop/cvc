@@ -8,8 +8,11 @@
 <ul:page title="Score log" tab="admin" subtab="history">
   <ul:section title="Score log">
     <script>
-      $(function () { setTimeout(location.reload, 5000); });
+      $(function () { setTimeout(location.reload, 10000); });
     </script>
+    <form method="GET">
+      <label for="teamname">Team</label><input type="text" name="teamname"><input type="submit" value="Filter">
+    </form>
     <table>
       <thead>
         <tr>

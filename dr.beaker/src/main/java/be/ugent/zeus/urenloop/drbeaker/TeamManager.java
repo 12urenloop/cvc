@@ -36,25 +36,29 @@ public class TeamManager {
   public void delete(Team team) {
     em.remove(team);
   }
+  
+  public void assign(Long teamID, Long stickID) {
+    Team team = get(teamID);
+    Stick stick = em.find(Stick.class, stickID);
 
-  public void assign(Team team, Stick stick) {
+    assign(team, stick);
+  }
+
+  public void assign (Team team, Stick stick) {
     if (team == null) {
       throw new RuntimeException("No team found!");
     }
 
-    if (stick == null && team != null) {
-      team.setStick(null);
-      em.merge(team);
-    } else {
-      if (stick.getTeam() != null) {
-        stick.getTeam().setStick(null);
-        em.merge(stick.getTeam());
-      }
-      team.setStick(stick);
-      stick.setTeam(team);
-      em.merge(team);
-      em.merge(stick);
+    if (team.getStick() != null) {
+      team.getStick().setTeam(null);
+    }    
+    if (stick.getTeam() != null) {
+      stick.getTeam().setStick(null);
     }
+    team.setStick(stick);
+    stick.setTeam(team);
+    em.merge(team);
+    em.merge(stick);
   }
 
   public void removeByName(String name) {
