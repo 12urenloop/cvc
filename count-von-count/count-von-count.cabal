@@ -1,7 +1,7 @@
 Name:                count-von-count
 Version:             0.0.0.1
 Synopsis:            Count system for running laps
-License-file:        LICENSE
+License:             AllRightsReserved
 Author:              Jasper Van der Jeugt, Toon Willems
 Maintainer:          jaspervdj@gmail.com
 Stability:           Experimental
