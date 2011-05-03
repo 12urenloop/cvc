@@ -41,8 +41,9 @@ mac conf mac' state = do
         forM_ (zip times positions) $ \(time, position) ->
             H.tr ! A.style "text-align: right"
                  $ do
-                H.td $ toHtml time
+                H.td $ toHtml (time - firstTime)
                 H.td $ toHtml position
   where
     DataSet times positions _ = counterDataSet state
     reset = "/" `mappend` unsafeByteStringValue mac' `mappend` "/reset"
+    firstTime = if null times then 0 else last times
