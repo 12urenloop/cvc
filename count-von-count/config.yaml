@@ -11,7 +11,7 @@ Rest API:
 # should be at position 0.
 Stations:
   "00:21:91:F1:EA:0A":   0 # Our booth         (a0)
-  "00:00:00:00:00:00":  80 # First bridge      (a1)
+  "00:21:91:F1:F1:31":  80 # First bridge      (a1)
   "00:22:B0:D0:61:1F": 170 # First ING banner  (a2)
   "00:1C:F0:F1:F8:25": 250 # Second bridge     (a3)
   "00:22:B0:D0:61:26": 300 # Second ING banner (a4)
