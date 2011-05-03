@@ -39,7 +39,7 @@ public class SCoreAPI {
   private ScoreManager scoreManager = ScoreManager.lookup();
 
   private Response error(String message) {
-    return Response.status(Status.INTERNAL_SERVER_ERROR).entity(message).build();
+    return Response.status(Status.ACCEPTED).entity(message).build();
   }
 
   @PUT
@@ -60,7 +60,6 @@ public class SCoreAPI {
     }
     return Response.status(Status.NO_CONTENT).build();
   }
-  private static final String[] macs = {"00:00:00:00:00:01", "00:00:00:00:00:02", "00:00:00:00:00:03", "00:00:00:00:00:04"};
 
   @GET
   @Path("/bootstrap")
@@ -91,42 +90,8 @@ public class SCoreAPI {
     authManager.addUserToGroup(user2, moderators);
 
     // add test machine @ zeus as current source
-    scoreManager.setCurrentSource("10.1.2.43");
+    scoreManager.setCurrentSource("192.168.1.115");
 
-    if (false) {
-      // add all sticks to the system
-      Stick stick;
-      for (String mac : macs) {
-        stick = new Stick();
-        stick.setMac(mac);
-        stickManager.add(stick);
-      }
-
-      // add various dummy teams
-      Team t1 = new Team();
-      t1.setName("bulbasaur");
-      teams.add(t1);
-
-      teams.assign(t1, stickManager.get(1));
-
-      Team t2 = new Team();
-      t2.setName("machop");
-      teams.add(t2);
-
-      teams.assign(t2, stickManager.get(2));
-
-      Team t3 = new Team();
-      t3.setName("mankey");
-      teams.add(t3);
-
-      teams.assign(t3, stickManager.get(3));
-
-      Team t4 = new Team();
-      t4.setName("charmander");
-      teams.add(t4);
-
-      teams.assign(t4, stickManager.get(4));
-    }
     return "OK";
   }
 }

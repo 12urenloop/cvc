@@ -67,6 +67,10 @@ public class TeamManager {
 
     try {
       Team team = q.getSingleResult();
+      if (team.getStick() != null) {
+        team.getStick().setTeam(null);
+        em.merge(team.getStick());
+      }
       em.remove(team);
     } catch (NoResultException e) {
     }
