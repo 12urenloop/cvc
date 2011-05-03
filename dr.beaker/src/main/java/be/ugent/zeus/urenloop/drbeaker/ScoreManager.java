@@ -58,13 +58,14 @@ public class ScoreManager {
     Stick stick = stickManager.get(macAddress);
     if (stick == null) {
       // TODO: store this somewhere in the database
+      logger.log(Level.WARNING, "The stick {0} was not known to the system!", macAddress);
       throw new Exception("The mac address is not known.");
     }
-
     // fetch the team for the mac address
     Team team = stick.getTeam();
     if (team == null) {
       // TODO: store this somewhere in the database
+      logger.log(Level.WARNING, "The stick {0} was not assigned to a team!", stick.getId());
       throw new Exception("The mac address was not assigned to a team.");
     }
 
