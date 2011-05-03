@@ -28,8 +28,10 @@ import CountVonCount.Configuration
 import CountVonCount.Receiver.Gyrid
 
 socketReceiver :: Configuration -> Logger
-               -> Chan Command -> IO ()
-socketReceiver conf logger chan = withSocketsDo $ do
+               -> Chan Command
+               -> Chan (Timestamp, ByteString)
+               -> IO ()
+socketReceiver conf logger chan replayChan = withSocketsDo $ do
     -- Obtain addres info structure
     let port = show $ configurationListenPort conf
     (serverAddr : _) <- getAddrInfo
@@ -64,6 +66,7 @@ socketReceiver conf logger chan = withSocketsDo $ do
                 logger Debug $  "CountVonCount.Receiver.socketReceiver: Parsed "
                              ++ show command
                 writeChan chan command
+                writeChan replayChan (timestamp, line)
             _ -> logger Debug $  "CountVonCount.Receiver.socketReceiver: Could "
                               ++ "not parse: " ++ show line
     {-# INLINE consumer #-}

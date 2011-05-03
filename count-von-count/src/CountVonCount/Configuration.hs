@@ -30,7 +30,7 @@ import CountVonCount.Configuration.Util
 data Configuration = Configuration
     { configurationRest         :: RestConfiguration
     , configurationStations     :: Map Station Position
-    , configurationCsvLog       :: FilePath
+    , configurationReplayLog    :: FilePath
     , configurationCriteria     :: [Criterium]
     , configurationMacs         :: Map Mac ByteString
     , configurationListenPort   :: Int
@@ -63,7 +63,7 @@ loadConfiguration object = do
     m <- fromMapping object
     Configuration <$> load loadRestConfiguration "Rest API" m
                   <*> fmap (M.map read) (load loadMap "Stations" m)
-                  <*> lookupString "CSV log" m
+                  <*> lookupString "Replay log" m
                   <*> load loadCriteria "Criteria" m
                   <*> load loadMap "Macs" m
                   <*> fmap read (lookupString "Listen port" m)

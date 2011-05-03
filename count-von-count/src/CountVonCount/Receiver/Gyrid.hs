@@ -34,6 +34,10 @@ parseGyrid conf timestamp bs = case SBC.split ',' bs of
     -- RSSI data
     [!station, _, !mac, !rssi] -> measurement station mac rssi
 
+    -- Replay
+    ["REPLAY", !timestamp', !station, _, !mac, !rssi] ->
+        replay timestamp' station mac rssi
+
     _ -> Nothing
   where
     measurement :: ByteString -> ByteString -> ByteString -> Maybe Command
@@ -41,6 +45,12 @@ parseGyrid conf timestamp bs = case SBC.split ',' bs of
         !pos <- stationPosition (addColons station) conf
         return $ Measurement $ (addColons mac, (timestamp, pos, readBS rssi))
 
+    -- Replay: replace timestamp
+    replay timestamp' s m r = do
+        Measurement (mac, (_, pos, rssi)) <- measurement s m r
+        return $ Measurement (mac, (readBS timestamp', pos, rssi))
+
+    readBS :: Read a => ByteString -> a
     readBS = read . SBC.unpack
 
 -- | Transform a mac without @:@ delimiters to one a mac with @:@ delimiters

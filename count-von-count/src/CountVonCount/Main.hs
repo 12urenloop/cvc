@@ -4,7 +4,7 @@ module Main
 
 import Control.Applicative ((<$>))
 import Control.Concurrent (forkIO)
-import Control.Concurrent.Chan (newChan, dupChan, writeChan)
+import Control.Concurrent.Chan (newChan, writeChan)
 import Control.Concurrent.MVar (newMVar)
 import Control.Monad (when)
 import Data.Maybe (listToMaybe, fromMaybe)
@@ -14,7 +14,7 @@ import System.Environment (getArgs)
 
 import CountVonCount.Chan
 import CountVonCount.Dispatcher
-import CountVonCount.CsvLog
+import CountVonCount.ReplayLog
 import CountVonCount.Receiver
 import CountVonCount.Rest
 import CountVonCount.Configuration
@@ -28,7 +28,7 @@ countVonCount configuration logger = do
     -- Create channels
     inChan <- newChan
     outChan <- newChan
-    csvLogChan <- dupChan inChan
+    replayLogChan <- newChan
 
     -- Out thread
     _ <- forkIO $ runRest configuration logger outChan
@@ -42,10 +42,10 @@ countVonCount configuration logger = do
     _ <- forkIO $ runAdmin configuration dispatcherState
 
     -- Persistence thread
-    _ <- forkIO $ runCsvLog configuration csvLogChan
+    _ <- forkIO $ runReplayLog configuration replayLogChan
 
     -- In thread
-    socketReceiver configuration logger inChan
+    socketReceiver configuration logger inChan replayLogChan
 
 main :: IO ()
 main = do

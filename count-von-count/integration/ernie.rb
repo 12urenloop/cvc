@@ -62,7 +62,7 @@ class Ernie
       # Check time!
       check if @steps % 100 == 0
 
-      sleep 0.1
+      sleep 1
       @steps += 1
     end
   end
