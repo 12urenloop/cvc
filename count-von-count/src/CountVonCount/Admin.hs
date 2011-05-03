@@ -12,10 +12,11 @@ import Data.Monoid (mappend)
 import qualified Data.Map as M
 
 import Data.ByteString (ByteString)
+import qualified Data.ByteString.Char8 as SBC
 import Text.Blaze (Html)
 import Text.Blaze.Renderer.Utf8 (renderHtml)
 import Snap.Http.Server (httpServe, emptyConfig, addListen, ConfigListen (..))
-import Snap.Types ( MonadSnap (..), Snap, modifyResponse, route
+import Snap.Types ( MonadSnap (..), Snap, modifyResponse, route, setHeader
                   , getParam, writeLBS, addHeader, ifTop, redirect
                   )
 
@@ -39,6 +40,11 @@ newtype App a = App {unApp :: ReaderT AppEnvironment Snap a}
 instance MonadSnap App where
     liftSnap = App . lift
 
+-- | Set page refresh in seconds
+--
+setRefresh :: Int -> App ()
+setRefresh = modifyResponse . setHeader "Refresh" . SBC.pack . show
+
 respondBlaze :: Html -> App ()
 respondBlaze html = do
     modifyResponse $ addHeader "Content-Type" "text/html; charset=UTF-8"
@@ -55,6 +61,7 @@ mac = do
     state <- liftIO . readMVar . appDispatcherState =<< ask
     conf <- appConfiguration <$> ask
     Just mac' <- getParam "mac"
+    setRefresh 5
     respondBlaze $ Views.mac conf mac' $ state M.! mac'
 
 macReset :: App ()
