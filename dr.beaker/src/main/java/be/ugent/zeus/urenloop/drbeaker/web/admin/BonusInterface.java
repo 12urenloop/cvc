@@ -7,7 +7,6 @@ import be.ugent.zeus.urenloop.drbeaker.TeamManager;
 import be.ugent.zeus.urenloop.drbeaker.db.Team;
 import be.ugent.zeus.urenloop.drbeaker.db.User;
 import com.sun.jersey.api.view.Viewable;
-import java.net.URI;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.FormParam;
@@ -15,7 +14,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
 
 /**
  *
@@ -30,7 +28,7 @@ public class BonusInterface {
 
   @Context
   private HttpServletRequest request;
-
+  
   @GET
   @Path("/")
   public Viewable showBonusses() {
@@ -39,22 +37,23 @@ public class BonusInterface {
 
   @POST
   @Path("/add")
-  public Response addBonus(@FormParam("team") Long id, @FormParam("bonus") int bonus, @FormParam("reason") String reason) {
+  public String addBonus(@FormParam("team") Long id, @FormParam("bonus") int bonus, @FormParam("reason") String reason) {
     Team team = teamManager.get(id);
     User user = authManager.getUser(request.getUserPrincipal().getName());
     scoreManager.addBonus(user, team, bonus, reason);
 
-    return Response.seeOther(URI.create("/admin/bonus")).build();
+    return "De bonus is succesvol toegekend.";
   }
 
   @POST
   @Path("/multi-add")
-  public Response addBonusses(@FormParam("teams") List<Long> ids, @FormParam("bonus") int bonus, @FormParam("reason") String reason) {
+  public String addBonusses(@FormParam("teams") List<Long> ids, @FormParam("bonus") int bonus, @FormParam("reason") String reason) {
     User user = authManager.getUser(request.getUserPrincipal().getName());
 
     for (Long id : ids) {
       scoreManager.addBonus(user, teamManager.get(id), bonus, reason);
     }
-    return Response.seeOther(URI.create("/admin/bonus")).build();
+
+    return "De bonussen zijn succesvol toegekend.";
   }
 }
