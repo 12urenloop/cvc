@@ -1,4 +1,3 @@
-
 package be.ugent.zeus.urenloop.drbeaker.web.admin;
 
 import be.ugent.zeus.urenloop.drbeaker.AuthenticationManager;
@@ -18,7 +17,7 @@ import javax.ws.rs.core.Response;
  */
 @Path("/admin/users/")
 public class UserInterface {
-  
+
   private AuthenticationManager authManager = AuthenticationManager.lookup();
 
   @GET
@@ -53,6 +52,15 @@ public class UserInterface {
     if (group != null) {
       authManager.addUserToGroup(user, group);
     }
-    return Response.seeOther(URI.create("/admin/")).build();
+    return Response.seeOther(URI.create("/admin/users")).build();
+  }
+
+  @POST
+  @Path("/delete")
+  public Response deleteUser(@FormParam("username") String username) {
+    if (username != null) {
+      authManager.delete(username);
+    }
+    return Response.seeOther(URI.create("/admin/users")).build();
   }
 }

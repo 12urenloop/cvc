@@ -1,4 +1,3 @@
-
 package be.ugent.zeus.urenloop.drbeaker;
 
 import be.ugent.zeus.urenloop.drbeaker.db.Group;
@@ -24,11 +23,18 @@ public class AuthenticationManager {
   @PersistenceContext(unitName = "scorePU")
   private EntityManager em;
 
-  public void add (User user) {
+  public void add(User user) {
     em.persist(user);
   }
 
-  public void add (Group group) {
+  public void delete(String username) {
+    User user = em.find(User.class, username);
+    if (user != null) {
+      em.remove(user);
+    } 
+  }
+
+  public void add(Group group) {
     em.persist(group);
   }
 
@@ -56,7 +62,7 @@ public class AuthenticationManager {
     return query.getResultList();
   }
 
-  public static AuthenticationManager lookup () {
+  public static AuthenticationManager lookup() {
     try {
       Context c = new InitialContext();
       return (AuthenticationManager) c.lookup("java:module/AuthenticationManager!be.ugent.zeus.urenloop.drbeaker.AuthenticationManager");
