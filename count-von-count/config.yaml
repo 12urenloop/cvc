@@ -2,17 +2,19 @@
 
 # Rest API, talks to dr.beaker
 Rest API:
-  Host: localhost
-  Port: 8080
+  Host: drb
+  Port: 80
   Path: dr.beaker
 
 # The station map maps names of stations (these names should equal the names we
 # receive from the input channel) to positions in the circuit. The first station
 # should be at position 0.
 Stations:
-  "00:1C:F0:F1:F8:25": 0
-  "00:21:91:F1:F1:31": 134
-  "00:22:B0:D0:61:26": 184
+  "00:21:91:F1:EA:0A":   0 # Our booth         (a0)
+  "00:00:00:00:00:00":  80 # First bridge      (a1)
+  "00:22:B0:D0:61:1F": 170 # First ING banner  (a2)
+  "00:1C:F0:F1:F8:25": 250 # Second bridge     (a3)
+  "00:22:B0:D0:61:26": 300 # Second ING banner (a4)
 
 # count-von-count will log all received input to a CSV file. The file name can
 # be configured here.
@@ -20,12 +22,25 @@ Replay log: log.csv
 
 # The criteria used for judging laps
 Criteria:
+  # Minimum amount of samples
   Samples treshold: 8
+
+  # See at least 3 of 8 stations
   Stations treshold: 3
+
+  # Speed must be positive
   Speed treshold: 0
+
+  # No speed limit
   # Speed limit: 10000000
-  Time treshold: 20
-  Distance treshold: 30
+
+  # Determined by rigorous experiments involving Jens and a bike
+  Time treshold: 40
+
+  # Distance seen: 200m
+  Distance treshold: 200
+
+  # Drop at least two stations when deciding on a lap
   Drop treshold: 100
 
 # Set of allowed mac addresses
@@ -50,19 +65,15 @@ Macs:
   "20:11:02:15:01:15": Stick 18
   "20:11:02:15:01:93": Stick 19
   "20:11:02:15:01:17": Stick 20
-  "00:00:00:00:00:01": Foo
-  "00:00:00:00:00:02": Bar
-  "00:00:00:00:00:03": Qux
-  "00:00:00:00:00:04": Woo
 
 # Port to listen on
 Listen port: 9001
 
 # Minimum value for RSSI data: lower values are ignored
-RSSI treshold: -75
+RSSI treshold: -81
 
 # Port for admin interface
-Admin port: 9002
+Admin port: 80
 
 # Verbosity. Should be either: Debug, Info, Warn, Error
 Verbosity: Info
