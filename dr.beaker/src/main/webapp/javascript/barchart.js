@@ -4,7 +4,7 @@
  * This code is free to use, modify and distribute
  * No Warranty whatsoever 
  */ 
-function drawBarChart(context, data, startX,startY, chartHeight, chartWidth, markDataIncrementsIn,border,textsize,colors) {
+function drawBarChart(context, labels,data, startX,startY, chartHeight, chartWidth, markDataIncrementsIn,border,textsize,colors) {
   // Draw the x and y axes
   //context.lineWidth = "1.0";
   startX = border;
@@ -15,17 +15,15 @@ function drawBarChart(context, data, startX,startY, chartHeight, chartWidth, mar
   var maxValue = 0;
 
   for (var i=0; i < data.length; i++) {
-    var values = data[i].split(",");
-    var height = parseInt(values[1]);
+    var height = parseInt(data[i]);
     if (parseInt(height) > parseInt(maxValue)) maxValue = height;
   }
   //border should also scale barwidth + 1extra bar for markerValues
   barWidth = (chartWidth-border*2)/(data.length+1);
   for (var i=0; i < data.length; i++) {
     // Extract the data
-    var values = data[i].split(",");
-    var name = values[0];
-    var height = parseInt(values[1]);
+    var name = labels[i];
+    var height = parseInt(data[i]);
     //alert(values);
 
     // Write the data to the chart
@@ -37,12 +35,12 @@ function drawBarChart(context, data, startX,startY, chartHeight, chartWidth, mar
     context.strokeStyle = "#000";
     drawRectangle(context,border + ((i+1) * barWidth) + i,border,barWidth*.9,scaledheight-textsize,false);
 
-   context.font= barWidth*.7 +  "pt Arial";
+   context.font= barWidth*.5 +  "pt Arial";
 	
     // Add the column title to the x-axis
     context.textAlign = "left";
     context.fillStyle = "#000";
-    context.fillText(name,border,2*border+ ((i+1) * barWidth) + i,chartHeight);		
+    context.fillText(name,1.2* border,2*border+ ((i+1) * barWidth) + i,chartHeight);		
   }
   // Add some data markers to the y-axis
   var numMarkers = 10;

@@ -57,6 +57,7 @@
 					var teams = data.team;
 					var score = new Array(teams.length);
 					var tdata = new Array(teams.length);
+					var tlabels = new Array(teams.length);
 					//make list of colors
         	                        var colors= new Array(teams.length);
                 	                var colors2= new Array(teams.length);
@@ -67,16 +68,17 @@
 					//parse data
 					//reogranize colors so the same team always has the same
                                 	for (var i =0;i < teams.length;i++){ 
-						tdata[i] = ''+ teams[i].name + "," + teams[i].score; 
+						tlabels[i] = teams[i].name
+						tdata[i] =  teams[i].score; 
 						colors2[i] = colors[teams[i].id];
 					}	
 					tcolors = colors2;
-					makeBarChart(tdata,colors2);		
+					makeBarChart(tdata,tlabels,colors2);		
                 		});
 
 			}
 			//draws the bar chart in the middle of the canvas
-			function makeBarChart(data,colors){
+			function makeBarChart(data,labels,colors){
 				tdata=data;
 			//	alert(data);
 				var context = document.getElementById("track").getContext("2d");
@@ -86,7 +88,7 @@
 
 				  // Draw the bar chart
 				 //drawBarChart(context, data, startX, startY,chartWidth, chartHeight, markDataIncrementsIn,border,textsize,colors)
-				  drawBarChart(context, data, edgewidth*2,height-edgewidth,(width-edgewidth*4), (height - edgewidth*2), 50,edgewidth,10,colors);
+				  drawBarChart(context, labels,data, edgewidth*2,height-edgewidth,(width-edgewidth*4), (height - edgewidth*2), 50,edgewidth,10,colors);
 			}
 			//draws the progress of runners on the track, bassed on rought estimates
 			//call this after the predicted time for the runner to complete his track
