@@ -7,15 +7,17 @@
   <script>
     function submit (event) {
       event.preventDefault();
+      form = $(this);
       $.ajax({
         type : "POST",
-        url : $(this).attr('action'),
-        data : $(this).serialize(),
+        url : form.attr('action'),
+        data : form.serialize(),
         success : function (response) {
           var message = $('#message');
           message.text(response);
           message.show();
           setTimeout(function() {message.slideUp(500);}, 2000);
+          form[0].reset();
         }
       });
     }
