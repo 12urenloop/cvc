@@ -21,6 +21,10 @@ import CountVonCount.Configuration
 root :: Configuration -> DispatcherState -> Html
 root conf state = do
     H.h1 "Admin interface"
+    H.form ! A.action "/reset" ! A.method "POST" $ do
+        H.input ! A.type_ "submit" ! A.value "Reset all"
+        H.input ! A.type_ "checkbox" ! A.name "sure" ! A.id "sure"
+        H.label ! A.for "sure" $ "I am sure"
     H.ul $ forM_ (M.toList state) $ \(mac', _) -> H.li $ do
         H.a ! A.href ("/" `mappend` unsafeByteStringValue mac')
             $ unsafeByteString $ prettifyMac mac' conf

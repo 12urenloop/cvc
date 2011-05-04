@@ -56,6 +56,14 @@ root = do
     conf <- appConfiguration <$> ask
     respondBlaze $ Views.root conf state
 
+reset :: App ()
+reset = do
+    state <- appDispatcherState <$> ask
+    sure <- getParam "sure"
+    when (sure == Just "on") $ liftIO $
+        modifyMVar_ state $ return . resetAllCounters
+    redirect "/"
+
 mac :: App ()
 mac = do
     state <- liftIO . readMVar . appDispatcherState =<< ask
@@ -76,6 +84,7 @@ macReset = do
 app :: App ()
 app = route
     [ ("/",           ifTop root)
+    , ("/reset",      reset)
     , ("/:mac",       mac)
     , ("/:mac/reset", macReset)
     ]

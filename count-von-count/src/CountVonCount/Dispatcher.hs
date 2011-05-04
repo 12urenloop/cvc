@@ -4,6 +4,7 @@ module CountVonCount.Dispatcher
     ( DispatcherState
     , emptyDispatcherState
     , resetCounter
+    , resetAllCounters
     , runDispatcher
     ) where
 
@@ -40,6 +41,9 @@ addMeasurement conf mac measurement state =
 
 resetCounter :: Mac -> DispatcherState -> DispatcherState
 resetCounter mac = M.insert mac emptyCounterState
+
+resetAllCounters :: DispatcherState -> DispatcherState
+resetAllCounters = const emptyDispatcherState
 
 -- | Exposed run method, uses our monad stack internally
 --
