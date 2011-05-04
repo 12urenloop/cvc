@@ -74,8 +74,8 @@ public class ScoreManager {
 
   public void addLap (String source, Team team, double speed, List<String> warnings) {
     // only accept from the current source
-    if (!source.equals(this.source)) {
-      logger.log(Level.WARNING, "Expected counting source {0}, got {1}", new Object[]{this.source, source});
+    if (!source.equals(getSource())) {
+      logger.log(Level.WARNING, "Expected counting source {0}, got {1}", new Object[]{getSource(), source});
       em.persist(new HistoryEntry(null, team, 0, 0.0, "Rejected a lap for team " + team.getName() + " from wrong counter (" + source + ")"));
       return;
     }
