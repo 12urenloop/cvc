@@ -33,8 +33,8 @@ runRest conf logger chan = do
         -- Log about the received report
         logger Info $ "CountVonCount.Rest.runRest: Received report: " ++
             "Name = " ++ SBC.unpack (prettifyMac (reportMac report) conf) ++
-            "Mac = " ++ show (reportMac report) ++ ", " ++
-            "Score = " ++ show (reportScore report)
+            ", Mac = " ++ show (reportMac report) ++
+            ", Score = " ++ show (reportScore report)
 
         -- In another thread, perform the rest call and log the result
         let request = makeRequest conf report
