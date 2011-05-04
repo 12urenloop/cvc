@@ -54,6 +54,7 @@ root :: App ()
 root = do
     state <- liftIO . readMVar . appDispatcherState =<< ask
     conf <- appConfiguration <$> ask
+    setRefresh 5
     respondBlaze $ Views.root conf state
 
 reset :: App ()
