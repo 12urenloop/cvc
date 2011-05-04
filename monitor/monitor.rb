@@ -50,7 +50,8 @@ loop do
       error(host, e)
       errors = 1
     end
-    if errors == 0
+    if errors == 0 && $error_state == 1
+      puts "=" * 20
       $error_state = 0
     end
   end
