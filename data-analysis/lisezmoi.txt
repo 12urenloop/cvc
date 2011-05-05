@@ -1,0 +1,5 @@
+uitvoeren met "python laps.py"
+
+Instelbaar: 
+* Update rate, lekker hard gecodeerd in laps.py, laatste argument van de constructor (standaard 10)
+* Het minimale aantal standaardafwijkingen dat een warning genereert, eveneens hard gecodeerd in laps.py in de klasse History bovenaan
