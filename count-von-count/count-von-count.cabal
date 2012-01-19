@@ -1,0 +1,21 @@
+Name:          count-von-count
+Version:       0.0.0.1
+Synopsis:      Count laps
+Homepage:      http://github.com/ZeusWPI/12UrenLoop
+Author:        Jasper Van der Jeugt <m@jaspervdj.be>
+Maintainer:    Jasper Van der Jeugt <m@jaspervdj.be>
+Category:      Application
+Build-type:    Simple
+Cabal-version: >= 1.2
+
+Executable count-von-count
+  Hs-source-dirs: src
+  Main-is:        CountVonCount/Main.hs
+
+  Other-modules:
+    CountVonCount.Analyze
+
+  Build-depends:
+    base       >= 4   && < 5,
+    bytestring >= 0.9 && < 0.10,
+    time       >= 1.2 && < 1.3
