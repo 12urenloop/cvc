@@ -8,6 +8,28 @@
   <version>0.1-SNAPSHOT</version>
   <name>Dr. Beaker</name>
   <url>http://maven.apache.org</url>
+  <organization>
+    <name>Zeus WPI</name>
+    <url>http://zeus.ugent.be/</url>
+  </organization>
+  <developers>
+    <developer>
+      <id>thomas</id>
+      <name>Thomas</name>
+      <email>blackskad@zeus.ugent.be</email>
+      <url>http://zeus.ugent.be/~blackskad/blog/</url>
+    </developer>
+  </developers>
+  <licenses>
+    <license>
+      <name>AllRightsReserved</name>
+      <comments>All rights reserved.</comments>
+    </license>
+  </licenses>
+  <issueManagement>
+    <system>Github</system>
+    <url>https://github.com/ZeusWPI/12UrenLoop/issues</url>
+  </issueManagement>
   <repositories>
     <repository>
       <id>java.net2</id>

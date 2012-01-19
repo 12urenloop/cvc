@@ -25,7 +25,7 @@
         </tr>
       </thead>
       <tbody>
-        <c:forEach items="${it}" var="history">
+        <c:forEach items="${it}" var="history" end="100">
           <tr>
             <td><fmt:formatDate value="${history.date}" type="time" /></td>
             <td>${history.team.name}</td>

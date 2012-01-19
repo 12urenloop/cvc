@@ -4,9 +4,6 @@ require 'net/ssh'
 hosts = File.open('hosts').readlines.map(&:strip)
 
 def error(host, message)
-  if $error_state == 0
-    puts "=" * 20
-  end
   puts "#{Time.now}: #{host}: #{message}"
   $error_state = 1
 end
