@@ -3,6 +3,10 @@ module Main
     ) where
 
 import CountVonCount.Analyze ()
+import CountVonCount.Persistence ()
+import qualified CountVonCount.Web as Web
 
 main :: IO ()
-main = putStrLn "Hello world"
+main = do
+    putStrLn "Hello world"
+    Web.serve
