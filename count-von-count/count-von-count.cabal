@@ -11,12 +11,14 @@ Cabal-version: >= 1.2
 Executable count-von-count
   Hs-source-dirs: src
   Main-is:        CountVonCount/Main.hs
+  Ghc-options:    -Wall
 
   Other-modules:
     CountVonCount.Analyze
     CountVonCount.Persistence
     CountVonCount.Web
     CountVonCount.Web.Views
+    CountVonCount.Web.Util
 
   Build-depends:
     base        >= 4   && < 5,

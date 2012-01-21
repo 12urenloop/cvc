@@ -39,17 +39,21 @@ management teams batons = template "Teams" $ do
     H.div ! A.id "secondary" $ do
         H.h1 "Free batons"
         forM_ batons $ \(_, baton) -> H.div ! A.class_ "baton" $ do
-            "Baton "
-            H.toHtml $ batonNr baton
+            H.toHtml $ batonName baton
             " ("
             H.toHtml $ batonMac baton
             ")"
 
     H.h1 "Teams"
     forM_ teams $ \(ref, team) -> H.div ! A.class_ "team" $ do
-        "("
-        H.toHtml $ show ref
-        ") "
+        let assignUri = "/team/" ++ refToString ref ++ "/assign"
+
         H.toHtml $ teamName team
-        " laps: "
-        H.toHtml $ teamLaps team
+        
+        H.form ! A.action (H.toValue assignUri) ! A.method "post" $ do
+            H.select ! A.name "baton" $
+                forM_ batons $ \(bref, baton) ->
+                    H.option ! A.value (H.toValue (refToString bref)) $
+                        H.toHtml (batonName baton)
+                
+            H.input ! A.type_ "submit" ! A.value "Save"

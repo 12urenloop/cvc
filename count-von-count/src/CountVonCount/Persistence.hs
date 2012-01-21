@@ -4,6 +4,9 @@ module CountVonCount.Persistence
     , runPersistence
 
     , Ref
+    , refToString
+    , refFromString
+
     , IsDocument (..)
     , put
     , get
@@ -12,6 +15,7 @@ module CountVonCount.Persistence
 
     , Team (..)
     , Baton (..)
+    , batonName
     ) where
 
 import Control.Applicative ((<$>))
@@ -31,6 +35,12 @@ runPersistence p = liftIO $ do
     return $ either (error . show) id x
 
 type Ref a = MDB.Value
+
+refToString :: Ref a -> String
+refToString = show
+
+refFromString :: String -> Ref a
+refFromString = MDB.ObjId . read
 
 class IsDocument a where
     collection   :: a -> MDB.Collection
@@ -92,3 +102,6 @@ instance IsDocument Baton where
         (MDB.at "nr" doc)
         (MDB.at "mac" doc)
         (MDB.at "team" doc)
+
+batonName :: Baton -> String
+batonName = ("Baton " ++) . show . batonNr

@@ -1,14 +1,14 @@
-#!/usr/bin/mongo count-von-count
+#!/usr/bin/mongo
 
 db.teams.drop();
 db.batons.drop();
 
-for(var i = 0; i < 20; i++) {
-    team = {"name": "Team " + i, "laps": 0};
+for(var i = 0; i < 5; i++) {
+    team = {"name": "Team " + i, "laps": 0, "baton": null};
     db.teams.save(team);
 }
 
-for(var i = 0; i < 30; i++) {
-    baton = {"nr": i, "mac": "00:00:00:" + i};
+for(var i = 0; i < 10; i++) {
+    baton = {"nr": i, "mac": "00:00:00:" + i, "team": null};
     db.batons.save(baton);
 }
