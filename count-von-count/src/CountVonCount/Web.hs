@@ -4,6 +4,7 @@ module CountVonCount.Web
     ) where
 
 import Control.Applicative ((<$>), (<|>))
+import Control.Monad (forM)
 import Data.Foldable (forM_)
 import Data.List (sortBy)
 import Data.Maybe (isNothing)
@@ -23,11 +24,22 @@ index = Snap.blaze Views.index
 
 management :: Snap.Snap ()
 management = do
-    (teams, batons) <- runPersistence $ do
-        teams  <- sortBy (comparing (teamName . snd))  <$> getAll
-        batons <- filter (isNothing . batonTeam . snd) <$> getAll
-        return (teams, batons)
-    Snap.blaze $ Views.management teams batons
+    (teams, freeBatons) <- runPersistence $ do
+        -- Find all teams, find corresponding batons
+        teams      <- sortBy (comparing (teamName . snd))  <$> getAll
+        withBatons <- forM teams $ \(ref, team) ->
+            case teamBaton team of
+                Nothing -> return (ref, team, Nothing)
+                Just br -> do
+                    b <- get br
+                    return (ref, team, Just b)
+
+        -- Find free batons
+        freeBatons <- filter (isNothing . batonTeam . snd) <$> getAll
+
+        return (withBatons, freeBatons)
+
+    Snap.blaze $ Views.management teams freeBatons
 
 assign :: Snap.Snap ()
 assign = do

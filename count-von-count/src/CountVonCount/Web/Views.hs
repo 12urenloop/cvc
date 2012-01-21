@@ -34,7 +34,7 @@ template title content = H.docTypeHtml $ do
 index :: Html
 index = template "Home" "Hello world"
 
-management :: [(Ref Team, Team)] -> [(Ref Baton, Baton)] -> Html
+management :: [(Ref Team, Team, Maybe Baton)] -> [(Ref Baton, Baton)] -> Html
 management teams batons = template "Teams" $ do
     H.div ! A.id "secondary" $ do
         H.h1 "Free batons"
@@ -45,10 +45,14 @@ management teams batons = template "Teams" $ do
             ")"
 
     H.h1 "Teams"
-    forM_ teams $ \(ref, team) -> H.div ! A.class_ "team" $ do
+    forM_ teams $ \(ref, team, assigned) -> H.div ! A.class_ "team" $ do
         let assignUri = "/team/" ++ refToString ref ++ "/assign"
 
         H.toHtml $ teamName team
+
+        " ("
+        maybe "No baton assigned" (H.toHtml . batonName) assigned
+        ")"
         
         H.form ! A.action (H.toValue assignUri) ! A.method "post" $ do
             H.select ! A.name "baton" $
