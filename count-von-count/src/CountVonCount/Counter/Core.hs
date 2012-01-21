@@ -1,40 +1,41 @@
 -- | This module is responsible for analyzing and filtering stick events
-module CountVonCount.Analyze
+module CountVonCount.Counter.Core
     ( Station (..)
-    , AnalyzerEvent (..)
-    , emptyAnalyzerState
-    , stepAnalyzer
+    , CounterEvent (..)
+    , Counter
+    , emptyCounter
+    , stepCounter
     ) where
 
 import Data.Time (UTCTime, diffUTCTime)
 
 import CountVonCount.Types
 
-data AnalyzerEvent
+data CounterEvent
     = Progression UTCTime Station Double
     | Lap UTCTime
     deriving (Show)
 
-data AnalyzerState = AnalyzerState
-    { analyzerEvents :: [SensorEvent]
+data Counter = Counter
+    { counterEvents :: [SensorEvent]
     } deriving (Show)
 
-emptyAnalyzerState :: AnalyzerState
-emptyAnalyzerState = AnalyzerState {analyzerEvents = []}
+emptyCounter :: Counter
+emptyCounter = Counter {counterEvents = []}
 
-stepAnalyzer :: SensorEvent
-             -> AnalyzerState
-             -> ([AnalyzerEvent], AnalyzerState)
-stepAnalyzer event state
+stepCounter :: SensorEvent
+            -> Counter
+            -> ([CounterEvent], Counter)
+stepCounter event state
     -- First event received
     | null events             =
-        ([], AnalyzerState [event])
+        ([], Counter [event])
     -- Still at the same station. Do nothing.
     | station == lastStation  =
         ([], state)
     -- Advanced at least one station, update.
     | position > lastPosition =
-        ([Progression time station speed], AnalyzerState (event : events))
+        ([Progression time station speed], Counter (event : events))
     -- At a lower position. Either a lap was made, or the sensor event was
     -- foobar. For a lap to be made, we consider a minimum number of stations
     -- and a minimum timespan.
@@ -43,9 +44,9 @@ stepAnalyzer event state
     -- We have an actual lap!
     -- TODO: Return progression event as well
     | otherwise               =
-        ([Lap time], AnalyzerState [event])
+        ([Lap time], Counter [event])
   where
-    AnalyzerState events                   = state
+    Counter events                         = state
     SensorEvent time station               = event
     (SensorEvent lastTime lastStation : _) = events
     Station _ position                     = station

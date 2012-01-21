@@ -4,7 +4,7 @@ module Main
 
 import Control.Concurrent (forkIO)
 
-import CountVonCount.Analyze ()
+import CountVonCount.Counter ()
 import CountVonCount.Persistence ()
 import qualified CountVonCount.Sensor as Sensor
 import qualified CountVonCount.Web as Web

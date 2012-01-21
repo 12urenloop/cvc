@@ -14,7 +14,9 @@ Executable count-von-count
   Ghc-options:    -Wall
 
   Other-modules:
-    CountVonCount.Analyze
+    CountVonCount.Counter
+    CountVonCount.Counter.Core
+    CountVonCount.Counter.Map
     CountVonCount.Persistence
     CountVonCount.Persistence.Core
     CountVonCount.Sensor
@@ -26,6 +28,7 @@ Executable count-von-count
     base                  >= 4   && < 5,
     blaze-html            >= 0.4 && < 0.5,
     bytestring            >= 0.9 && < 0.10,
+    containers            >= 0.3 && < 0.5,
     mongoDB               >= 1.1 && < 1.2,
     mtl                   >= 2.0 && < 2.1,
     snap-blaze            >= 0.0 && < 0.1,
