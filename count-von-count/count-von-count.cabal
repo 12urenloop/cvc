@@ -15,6 +15,8 @@ Executable count-von-count
   Other-modules:
     CountVonCount.Analyze
     CountVonCount.Persistence
+    CountVonCount.Web
+    CountVonCount.Web.Views
 
   Build-depends:
     base        >= 4   && < 5,
