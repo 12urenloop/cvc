@@ -17,17 +17,24 @@ Executable count-von-count
     CountVonCount.Analyze
     CountVonCount.Persistence
     CountVonCount.Persistence.Core
+    CountVonCount.Sensor
     CountVonCount.Web
-    CountVonCount.Web.Views
     CountVonCount.Web.Util
+    CountVonCount.Web.Views
 
   Build-depends:
-    base        >= 4   && < 5,
-    blaze-html  >= 0.4 && < 0.5,
-    bytestring  >= 0.9 && < 0.10,
-    mongoDB     >= 1.1 && < 1.2,
-    mtl         >= 2.0 && < 2.1,
-    snap-blaze  >= 0.0 && < 0.1,
-    snap-core   >= 0.7 && < 0.8,
-    snap-server >= 0.7 && < 0.8,
-    time        >= 1.2 && < 1.3
+    base                  >= 4   && < 5,
+    blaze-html            >= 0.4 && < 0.5,
+    bytestring            >= 0.9 && < 0.10,
+    mongoDB               >= 1.1 && < 1.2,
+    mtl                   >= 2.0 && < 2.1,
+    snap-blaze            >= 0.0 && < 0.1,
+    snap-core             >= 0.7 && < 0.8,
+    snap-server           >= 0.7 && < 0.8,
+    time                  >= 1.2 && < 1.3,
+    network-enumerator    >= 0.1 && < 0.2,
+    network               >= 2.3 && < 2.4,
+    enumerator            >= 0.4 && < 0.5,
+    attoparsec-enumerator >= 0.2 && < 0.4,
+    attoparsec            >= 0.9 && < 0.11,
+    old-locale            >= 1.0 && < 1.1

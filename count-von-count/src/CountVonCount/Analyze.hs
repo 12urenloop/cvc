@@ -1,7 +1,6 @@
 -- | This module is responsible for analyzing and filtering stick events
 module CountVonCount.Analyze
     ( Station (..)
-    , SensorEvent (..)
     , AnalyzerEvent (..)
     , emptyAnalyzerState
     , stepAnalyzer
@@ -9,18 +8,7 @@ module CountVonCount.Analyze
 
 import Data.Time (UTCTime, diffUTCTime)
 
-import qualified Data.ByteString as B
-
-data Station = Station
-    { stationName     :: B.ByteString
-    , stationPosition :: Double
-    } deriving (Show)
-
-instance Eq Station where
-    s1 == s2 = stationName s1 == stationName s2
-
-data SensorEvent = SensorEvent UTCTime Station
-    deriving (Show)
+import CountVonCount.Types
 
 data AnalyzerEvent
     = Progression UTCTime Station Double

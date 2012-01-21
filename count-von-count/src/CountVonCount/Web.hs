@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 module CountVonCount.Web
-    ( serve
+    ( listen
     ) where
 
 import Control.Applicative ((<$>), (<|>))
@@ -68,5 +68,5 @@ site = Snap.route
     , ("/team/:id/assign", assign)
     ] <|> Snap.serveDirectory "static"
 
-serve :: IO ()
-serve = Snap.httpServe Snap.defaultConfig site
+listen :: IO ()
+listen = Snap.httpServe Snap.defaultConfig site
