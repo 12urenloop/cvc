@@ -4,12 +4,13 @@ module CountVonCount.Web
     ) where
 
 import Control.Applicative ((<$>), (<|>))
-import Control.Monad (forM)
+import Control.Monad (forM, unless)
 import Data.Foldable (forM_)
 import Data.List (sortBy)
 import Data.Maybe (isNothing)
 import Data.Ord (comparing)
 
+import qualified Data.ByteString as B
 import qualified Snap.Blaze as Snap
 import qualified Snap.Core as Snap
 import qualified Snap.Http.Server as Snap
@@ -43,19 +44,21 @@ management = do
 
 assign :: Snap.Snap ()
 assign = do
-    teamRef  <- refFromParam "id"
-    batonRef <- refFromParam "baton"
-    runPersistence $ do
-        team  <- get teamRef
-        baton <- get batonRef
+    Just hasBaton <- Snap.getParam "baton"
+    unless (B.null hasBaton) $ do
+        Just teamRef  <- refFromParam "id"
+        Just batonRef <- refFromParam "baton"
+        runPersistence $ do
+            team  <- get teamRef
+            baton <- get batonRef
 
-        -- Unassign old baton
-        forM_ (teamBaton team) $ \oldBatonRef -> do
-            oldBaton <- get oldBatonRef
-            put oldBatonRef $ oldBaton {batonTeam = Nothing}
-            
-        put teamRef  $ team {teamBaton = Just batonRef}
-        put batonRef $ baton {batonTeam = Just teamRef}
+            -- Unassign old baton if necessary
+            forM_ (teamBaton team) $ \oldBatonRef -> do
+                oldBaton <- get oldBatonRef
+                put oldBatonRef $ oldBaton {batonTeam = Nothing}
+
+            put teamRef  $ team {teamBaton = Just batonRef}
+            put batonRef $ baton {batonTeam = Just teamRef}
     Snap.redirect "/management"
 
 site :: Snap.Snap ()

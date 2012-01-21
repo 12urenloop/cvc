@@ -50,14 +50,18 @@ management teams batons = template "Teams" $ do
 
         H.toHtml $ teamName team
 
-        " ("
-        maybe "No baton assigned" (H.toHtml . batonName) assigned
-        ")"
-        
         H.form ! A.action (H.toValue assignUri) ! A.method "post" $ do
-            H.select ! A.name "baton" $
+            H.select ! A.name "baton" $ do
+                case (teamBaton team, assigned) of
+                    (Just bref, Just baton) ->
+                        H.option ! A.value (H.toValue (refToString bref))
+                                 ! A.selected "selected" $
+                            H.toHtml (batonName baton)
+                    _                       ->
+                        H.option ! A.value "" ! A.selected "selected" $ ""
+
                 forM_ batons $ \(bref, baton) ->
                     H.option ! A.value (H.toValue (refToString bref)) $
                         H.toHtml (batonName baton)
                 
-            H.input ! A.type_ "submit" ! A.value "Save"
+            H.input ! A.type_ "submit" ! A.value "Assign"
