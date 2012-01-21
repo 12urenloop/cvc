@@ -2,7 +2,7 @@
 {-# OPTIONS_GHC -fno-warn-unused-do-bind #-}
 module CountVonCount.Web.Views
     ( index
-    , teams
+    , management
     ) where
 
 import Control.Monad (forM_)
@@ -20,19 +20,33 @@ template title content = H.docTypeHtml $ do
         H.link ! A.rel "stylesheet" ! A.type_ "text/css"
             ! A.href "/css/screen.css"
     H.body $ do
-        H.div ! A.id "navigation" $ do
-            H.a ! A.href "/monitor" $ "Monitor"
-            H.a ! A.href "/teams"   $ "Teams"
-            H.a ! A.href "/bonus"   $ "Bonus"
+        H.div ! A.id "header" $
+            H.div ! A.id "navigation" $ do
+                H.a ! A.href "/monitor"    $ "Monitor"
+                H.a ! A.href "/management" $ "Management"
+                H.a ! A.href "/bonus"      $ "Bonus"
+
         H.div ! A.id "content" $
             content
+
+        H.div ! A.id "footer" $ ""
 
 index :: Html
 index = template "Home" "Hello world"
 
-teams :: [(Ref Team, Team)] -> Html
-teams ts = template "Teams" $
-    forM_ ts $ \(ref, team) -> H.div ! A.class_ "team" $ do
+management :: [(Ref Team, Team)] -> [(Ref Baton, Baton)] -> Html
+management teams batons = template "Teams" $ do
+    H.div ! A.id "secondary" $ do
+        H.h1 "Free batons"
+        forM_ batons $ \(_, baton) -> H.div ! A.class_ "baton" $ do
+            "Baton "
+            H.toHtml $ batonNr baton
+            " ("
+            H.toHtml $ batonMac baton
+            ")"
+
+    H.h1 "Teams"
+    forM_ teams $ \(ref, team) -> H.div ! A.class_ "team" $ do
         "("
         H.toHtml $ show ref
         ") "

@@ -4,6 +4,7 @@ module CountVonCount.Web
     ) where
 
 import Control.Applicative ((<|>))
+import Control.Monad (liftM2)
 
 import qualified Snap.Blaze as Snap
 import qualified Snap.Core as Snap
@@ -16,15 +17,15 @@ import qualified CountVonCount.Web.Views as Views
 index :: Snap.Snap ()
 index = Snap.blaze Views.index
 
-teams :: Snap.Snap ()
-teams = do
-    ts <- runPersistence getAll
-    Snap.blaze $ Views.teams ts
+management :: Snap.Snap ()
+management = do
+    (teams, batons) <- runPersistence $ liftM2 (,) getAll getAll
+    Snap.blaze $ Views.management teams batons
 
 site :: Snap.Snap ()
 site = Snap.route
-    [ ("",       Snap.ifTop index)
-    , ("/teams", teams)
+    [ ("",            Snap.ifTop index)
+    , ("/management", management)
     ] <|> Snap.serveDirectory "static"
 
 serve :: IO ()
