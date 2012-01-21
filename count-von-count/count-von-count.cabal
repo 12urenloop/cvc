@@ -16,6 +16,7 @@ Executable count-von-count
   Other-modules:
     CountVonCount.Analyze
     CountVonCount.Persistence
+    CountVonCount.Persistence.Core
     CountVonCount.Web
     CountVonCount.Web.Views
     CountVonCount.Web.Util
