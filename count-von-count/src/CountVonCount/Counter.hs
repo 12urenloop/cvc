@@ -6,21 +6,40 @@
 --
 -- 3. Calling the analyzer to process these events
 -- 
--- TODO: Filter mac addresses
 module CountVonCount.Counter
-    (
+    ( counter
     ) where
 
-import Data.Map (Map)
+import Control.Arrow ((&&&))
+import Control.Monad (forM_)
+import Data.Time (UTCTime)
 import qualified Data.Map as M
 
+import CountVonCount.Config
 import CountVonCount.Counter.Core
 import CountVonCount.Counter.Map
 import CountVonCount.Types
 
 counter :: Monad m
-        => (Mac -> CounterEvent -> m ())
+        => Config
+        -> (Mac -> CounterEvent -> m ())  -- TODO: should be: Team -> ...
+        -> UTCTime
+        -> Mac
+        -> Mac
         -> CounterMap
-        -> SensorEvent
         -> m CounterMap
-counter handler cmap event = undefined
+counter conf handler = loop
+  where
+    loop time smac bmac cmap
+        | ignoreMac bmac = return cmap
+        | otherwise      = do
+            case M.lookup smac stationMap of
+                Nothing      -> return cmap
+                Just station -> do
+                    let sensorEvent     = SensorEvent time station
+                        (events, cmap') = stepCounterMap bmac sensorEvent cmap
+                    forM_ events $ handler smac 
+                    return cmap'
+
+    ignoreMac  = const False  -- TODO
+    stationMap = M.fromList $ map (stationMac &&& id) $ configStations conf
