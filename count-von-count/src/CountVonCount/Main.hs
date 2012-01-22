@@ -6,6 +6,7 @@ import Control.Concurrent (forkIO)
 
 import CountVonCount.Counter ()
 import CountVonCount.Persistence ()
+import CountVonCount.Config ()
 import qualified CountVonCount.Sensor as Sensor
 import qualified CountVonCount.Web as Web
 
