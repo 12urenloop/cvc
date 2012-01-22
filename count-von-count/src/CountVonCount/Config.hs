@@ -15,11 +15,13 @@ import CountVonCount.Types
 
 data Config = Config
     { configStations :: [Station]
+    , configBatons   :: [Baton]
     } deriving (Show)
 
 defaultConfig :: Config
 defaultConfig = Config
     { configStations = []
+    , configBatons   = []
     }
 
 readConfigFile :: FilePath -> IO Config
@@ -28,12 +30,15 @@ readConfigFile filePath = do
     root <- Yaml.fromMapping file
 
     stations <- map makeStation <$> fromMapping "Stations" root
+    batons   <- map makeBaton   <$> fromMapping "Batons"   root
 
     return Config
         { configStations = stations
+        , configBatons   = batons
         }
   where
     makeStation (k, v) = Station (BC.pack k) (read v)
+    makeBaton   (k, v) = Baton (BC.pack k) (read v)
 
 fromMapping :: (Yaml.IsYamlScalar v)
             => String

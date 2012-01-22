@@ -12,6 +12,7 @@ import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 
 import CountVonCount.Persistence
+import CountVonCount.Types
 
 template :: Html -> Html -> Html
 template title content = H.docTypeHtml $ do
@@ -34,14 +35,14 @@ template title content = H.docTypeHtml $ do
 index :: Html
 index = template "Home" "Hello world"
 
-management :: [(Ref Team, Team, Maybe Baton)] -> [(Ref Baton, Baton)] -> Html
+management :: [(Ref Team, Team, Maybe Baton)] -> [Baton] -> Html
 management teams batons = template "Teams" $ do
     H.div ! A.id "secondary" $ do
         H.h1 "Free batons"
-        forM_ batons $ \(_, baton) -> H.div ! A.class_ "baton" $ do
+        forM_ batons $ \baton -> H.div ! A.class_ "baton" $ do
             H.toHtml $ batonName baton
             " ("
-            H.toHtml $ batonMac baton
+            H.unsafeByteString $ batonMac baton
             ")"
 
     H.h1 "Teams"
@@ -52,16 +53,18 @@ management teams batons = template "Teams" $ do
 
         H.form ! A.action (H.toValue assignUri) ! A.method "post" $ do
             H.select ! A.name "baton" $ do
-                case (teamBaton team, assigned) of
-                    (Just bref, Just baton) ->
-                        H.option ! A.value (H.toValue (refToString bref))
+                case assigned of
+                    Just baton ->
+                        H.option ! A.value (macValue baton)
                                  ! A.selected "selected" $
                             H.toHtml (batonName baton)
-                    _                       ->
+                    _          ->
                         H.option ! A.value "" ! A.selected "selected" $ ""
 
-                forM_ batons $ \(bref, baton) ->
-                    H.option ! A.value (H.toValue (refToString bref)) $
+                forM_ batons $ \baton ->
+                    H.option ! A.value (macValue baton) $
                         H.toHtml (batonName baton)
                 
             H.input ! A.type_ "submit" ! A.value "Assign"
+  where
+    macValue = H.unsafeByteStringValue . batonMac
