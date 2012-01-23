@@ -1,7 +1,7 @@
 -- | This module is responsible for analyzing and filtering stick events
 module CountVonCount.Counter.Core
-    ( Station (..)
-    , CounterEvent (..)
+    ( CounterEvent (..)
+    , isLap
     , Counter
     , emptyCounter
     , stepCounter
@@ -17,6 +17,10 @@ data CounterEvent
     = Progression UTCTime Station Double
     | Lap UTCTime
     deriving (Show)
+
+isLap :: CounterEvent -> Bool
+isLap (Lap _) = True
+isLap _       = False
 
 data Counter = Counter
     { counterEvents :: [SensorEvent]

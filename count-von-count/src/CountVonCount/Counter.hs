@@ -12,7 +12,7 @@ module CountVonCount.Counter
 
 import Control.Arrow ((&&&))
 import Control.Concurrent.Chan (Chan, readChan)
-import Control.Monad (unless)
+import Control.Monad (when)
 import Control.Monad.Trans (liftIO)
 import Data.Foldable (forM_)
 import Data.Time (UTCTime)
@@ -50,11 +50,16 @@ step conf handler time smac bmac cmap
         Just station -> do
             let sensorEvent     = SensorEvent time station
                 (events, cmap') = stepCounterMap bmac sensorEvent cmap
-            unless (null events) $ runPersistence $ do
-                mteam <- getTeamByMac bmac
-                forM_ mteam $ \(_, team) -> forM_ events $
-                    liftIO . handler team
+            process events
             return cmap'
   where
     ignoreMac  = const False  -- TODO
     stationMap = M.fromList $ map (stationMac &&& id) $ configStations conf
+
+    process []     = return ()
+    process events = runPersistence $ do
+        mteam <- getTeamByMac bmac
+        forM_ mteam $ \(ref, team) ->
+            forM_ events $ \event -> do
+                liftIO $ handler team event
+                when (isLap event) $ put ref $ addLap team

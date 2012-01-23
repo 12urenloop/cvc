@@ -2,6 +2,7 @@
 module CountVonCount.Persistence
     ( module CountVonCount.Persistence.Core
     , Team (..)
+    , addLap
     , getTeamByMac
     ) where
 
@@ -28,6 +29,9 @@ instance IsDocument Team where
         (MDB.at "name" doc)
         (MDB.at "laps" doc)
         (MDB.at "baton" doc)
+
+addLap :: Team -> Team
+addLap team = team {teamLaps = teamLaps team + 1}
 
 getTeamByMac :: Mac -> Persistence (Maybe (Ref Team, Team))
 getTeamByMac m = do
