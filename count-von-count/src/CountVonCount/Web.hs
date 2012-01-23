@@ -7,7 +7,7 @@ import Control.Applicative ((<$>), (<|>))
 import Control.Arrow ((&&&))
 import Control.Monad (unless)
 import Control.Monad.Reader (ReaderT, ask, runReaderT)
-import Data.List (sortBy)
+import Data.List (sort, sortBy)
 import Data.Maybe (catMaybes)
 import Data.Ord (comparing)
 import qualified Data.Map as M
@@ -30,10 +30,15 @@ type Web = ReaderT Config Snap.Snap
 index :: Web ()
 index = Snap.blaze Views.index
 
+monitor :: Web ()
+monitor = do
+    teams <- sort . map snd <$> runPersistence getAll
+    Snap.blaze $ Views.monitor teams
+
 management :: Web ()
 management = do
     batons <- configBatons <$> ask
-    teams  <- sortBy (comparing (teamName . snd)) <$> runPersistence getAll
+    teams  <- sortBy (comparing snd) <$> runPersistence getAll
     let batonMap   = M.fromList $ map (batonMac &&& id) batons
         withBatons = flip map teams $ \(ref, team) ->
             (ref, team, teamBaton team >>= flip M.lookup batonMap . BC.pack)
@@ -56,6 +61,7 @@ assign = do
 site :: Web ()
 site = Snap.route
     [ ("",                 Snap.ifTop index)
+    , ("/monitor",         monitor)
     , ("/management",      management)
     , ("/team/:id/assign", assign)
     ] <|> Snap.serveDirectory "static"

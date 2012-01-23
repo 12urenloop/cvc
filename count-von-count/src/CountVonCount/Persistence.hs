@@ -16,7 +16,7 @@ data Team = Team
     { teamName  :: String
     , teamLaps  :: Int
     , teamBaton :: Maybe String
-    } deriving (Eq, Show)
+    } deriving (Eq, Show, Ord)
 
 instance IsDocument Team where
     collection _     = "teams"

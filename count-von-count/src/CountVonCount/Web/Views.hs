@@ -2,6 +2,7 @@
 {-# OPTIONS_GHC -fno-warn-unused-do-bind #-}
 module CountVonCount.Web.Views
     ( index
+    , monitor
     , management
     ) where
 
@@ -34,6 +35,14 @@ template title content = H.docTypeHtml $ do
 
 index :: Html
 index = template "Home" "Hello world"
+
+monitor :: [Team] -> Html
+monitor teams = template "Monitor" $ do
+    H.h1 "Scores"
+    forM_ teams $ \team -> H.div $ do
+        H.toHtml $ teamName team
+        ": "
+        H.toHtml $ teamLaps team
 
 management :: [(Ref Team, Team, Maybe Baton)] -> [Baton] -> Html
 management teams batons = template "Teams" $ do
