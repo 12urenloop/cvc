@@ -20,16 +20,16 @@ tests = testGroup "CountVonCount.Analyze.Tests"
     ]
 
 station0 :: Station
-station0 = Station "station0" 10
+station0 = Station "station-0" "0" 10
 
 station1 :: Station
-station1 = Station "station1" 100
+station1 = Station "station-1" "1" 100
 
 station2 :: Station
-station2 = Station "station2" 180
+station2 = Station "station-2" "2" 180
 
 station3 :: Station
-station3 = Station "station3" 320
+station3 = Station "station-3" "3" 320
 
 fromSeconds :: Int -> UTCTime
 fromSeconds = UTCTime (ModifiedJulianDay 0) . fromIntegral

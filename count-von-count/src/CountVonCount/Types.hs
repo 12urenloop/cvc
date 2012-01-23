@@ -13,8 +13,8 @@ import qualified Data.ByteString as B
 type Mac = B.ByteString
 
 data Station = Station
-    { stationMac      :: Mac
-    , stationName     :: String
+    { stationName     :: String
+    , stationMac      :: Mac
     , stationPosition :: Double
     }
 

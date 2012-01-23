@@ -44,9 +44,9 @@ readConfigFile filePath = do
   where
     makeBaton (k, v) = do
         value <- Yaml.fromScalar v
-        return $ Baton (BC.pack k) (read value)
+        return $ Baton (BC.pack value) (read k)
     makeStation (k, v) = do
         properties <- Yaml.fromMapping v
         mac <- Yaml.lookupScalar "Mac" properties
         pos <- Yaml.lookupScalar "Position" properties
-        return $ Station (BC.pack mac) k (read pos)
+        return $ Station k (BC.pack mac) (read pos)
