@@ -19,6 +19,8 @@ template :: Html -> Html -> Html
 template title content = H.docTypeHtml $ do
     H.head $ do
         H.title title
+        H.script ! A.type_ "text/JavaScript"
+            ! A.src "http://code.jquery.com/jquery-1.6.3.min.js" $ ""
         H.link ! A.rel "stylesheet" ! A.type_ "text/css"
             ! A.href "/css/screen.css"
     H.body $ do
@@ -43,6 +45,7 @@ monitor teams = template "Monitor" $ do
         H.toHtml $ teamName team
         ": "
         H.toHtml $ teamLaps team
+    H.script ! A.type_ "text/JavaScript" ! A.src "/js/monitor.js" $ ""
 
 management :: [(Ref Team, Team, Maybe Baton)] -> [Baton] -> Html
 management teams batons = template "Teams" $ do

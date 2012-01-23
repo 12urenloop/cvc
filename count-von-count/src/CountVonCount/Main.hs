@@ -5,9 +5,11 @@ module Main
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Chan (newChan, writeChan)
 
-import CountVonCount.Counter
-import CountVonCount.Persistence ()
 import CountVonCount.Config
+import CountVonCount.Counter
+import CountVonCount.Monitor
+import CountVonCount.Persistence ()
+import Network.WebSockets.PubSub
 import qualified CountVonCount.Sensor as Sensor
 import qualified CountVonCount.Web as Web
 
@@ -19,11 +21,15 @@ main = do
     sensorOut <- newChan
     let sensorHandler time smac bmac = writeChan sensorOut (time, smac, bmac)
 
+    -- Create the pubsub system
+    pubSub <- newPubSub
+
     -- Connecting the counter to whatever (TODO)
-    let counterHandler bmac event = putStrLn $
-            "Baton " ++ show bmac ++ ": " ++ show event
+    let counterHandler team event = do
+            print (team, event)
+            publish pubSub $ CounterEvent team event
 
     config <- readConfigFile "count-von-count.yaml"
     _      <- forkIO $ Sensor.listen (configSensorPort config) sensorHandler
     _      <- forkIO $ counter config counterHandler sensorOut
-    Web.listen config
+    Web.listen config pubSub

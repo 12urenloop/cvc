@@ -14,6 +14,8 @@ import qualified Data.Map as M
 
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as BC
+import qualified Network.WebSockets.Snap as WS
+import qualified Network.WebSockets as WS
 import qualified Snap.Blaze as Snap
 import qualified Snap.Core as Snap
 import qualified Snap.Http.Server as Snap
@@ -24,8 +26,14 @@ import CountVonCount.Types
 import CountVonCount.Persistence
 import CountVonCount.Web.Util
 import qualified CountVonCount.Web.Views as Views
+import Network.WebSockets.PubSub
 
-type Web = ReaderT Config Snap.Snap
+data WebEnv = WebEnv
+    { webConfig :: Config
+    , webPubSub :: PubSub
+    }
+
+type Web = ReaderT WebEnv Snap.Snap
 
 index :: Web ()
 index = Snap.blaze Views.index
@@ -35,9 +43,19 @@ monitor = do
     teams <- sort . map snd <$> runPersistence getAll
     Snap.blaze $ Views.monitor teams
 
+monitorSubscribe :: Web ()
+monitorSubscribe = do
+    pubSub <- webPubSub <$> ask
+    Snap.liftSnap $ WS.runWebSocketsSnap $ wsApp pubSub
+  where
+    wsApp :: PubSub -> WS.Request -> WS.WebSockets WS.Hybi00 ()
+    wsApp pubSub req = do
+        WS.acceptRequest req
+        subscribe pubSub
+
 management :: Web ()
 management = do
-    batons <- configBatons <$> ask
+    batons <- configBatons . webConfig <$> ask
     teams  <- sortBy (comparing snd) <$> runPersistence getAll
     let batonMap   = M.fromList $ map (batonMac &&& id) batons
         withBatons = flip map teams $ \(ref, team) ->
@@ -60,11 +78,17 @@ assign = do
 
 site :: Web ()
 site = Snap.route
-    [ ("",                 Snap.ifTop index)
-    , ("/monitor",         monitor)
-    , ("/management",      management)
-    , ("/team/:id/assign", assign)
+    [ ("",                   Snap.ifTop index)
+    , ("/monitor",           monitor)
+    , ("/monitor/subscribe", monitorSubscribe)
+    , ("/management",        management)
+    , ("/team/:id/assign",   assign)
     ] <|> Snap.serveDirectory "static"
 
-listen :: Config -> IO ()
-listen = Snap.httpServe Snap.defaultConfig . runReaderT site
+listen :: Config -> PubSub -> IO ()
+listen conf pubSub = Snap.httpServe Snap.defaultConfig $ runReaderT site env
+  where
+    env = WebEnv
+        { webConfig = conf
+        , webPubSub = pubSub
+        }
