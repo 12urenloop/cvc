@@ -56,7 +56,7 @@ stepCounter event state
     SensorEvent time station               = event
     (SensorEvent lastTime lastStation : _) = events
     Station _ _ position                   = station
-    Station _ _ lastPosition               = lastStation§
+    Station _ _ lastPosition               = lastStation
 
     SensorEvent lapStart _ = last events
     lapTime                = time `diffUTCTime` lapStart
