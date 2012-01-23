@@ -14,7 +14,7 @@ main :: IO ()
 main = do
     putStrLn "Hello world"
     config <- readConfigFile "count-von-count.yaml"
-    _      <- forkIO $ Sensor.listen handler
+    _      <- forkIO $ Sensor.listen (configSensorPort config) handler
     Web.listen config
   where
     handler time station mac =

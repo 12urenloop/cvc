@@ -27,9 +27,10 @@ import qualified Network.Socket.Enumerator as SE
 
 import CountVonCount.Types
 
-listen :: (UTCTime -> Mac -> Mac -> IO ())
+listen :: Int
+       -> (UTCTime -> Mac -> Mac -> IO ())
        -> IO ()
-listen handler = do
+listen port handler = do
     putStrLn $ "Sensor: listening..."
 
     sock <- S.socket S.AF_INET S.Stream S.defaultProtocol
@@ -40,13 +41,14 @@ listen handler = do
 
     forever $ do
         (conn, _) <- S.accept sock
-        S.sendAll conn "MSG,enable_rssi,true\r\n"
-        S.sendAll conn "MSG,enable_cache,false\r\n"
-        _ <- forkIO $ E.run_ $ SE.enumSocket 4096 conn $$
+        _ <- forkIO $ ignore $ do
+            S.sendAll conn "MSG,enable_rssi,true\r\n"
+            S.sendAll conn "MSG,enable_cache,false\r\n"
+        _ <- forkIO $ E.run_ $ SE.enumSocket 256 conn $$
             E.sequence (AE.iterParser gyrid) =$ receive handler
         return ()
   where
-    port = 8001 :: Int
+    ignore x = catch x $ const $ return ()
 
 receive :: (UTCTime -> Mac -> Mac -> IO ())
         -> Iteratee Gyrid IO ()

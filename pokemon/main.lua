@@ -18,10 +18,10 @@ local stationFoundSprite = love.graphics.newImage('pokemon/station-found.png')
 local backgroundSprite = love.graphics.newImage('pokemon/background.png')
 
 local stations = {
-  station.Station:new('Station-0', 0, circuitLength),
-  station.Station:new('Station-1', 100, circuitLength),
-  station.Station:new('Station-2', 200, circuitLength),
-  station.Station:new('Station-3', 300, circuitLength)
+  station.Station:new('00:00:00:00:01:00', 0, circuitLength),
+  station.Station:new('00:00:00:00:02:00', 100, circuitLength),
+  station.Station:new('00:00:00:00:03:00', 200, circuitLength),
+  station.Station:new('00:00:00:00:04:00', 300, circuitLength)
 }
 
 local function drawCenteredImage(image, x, y)

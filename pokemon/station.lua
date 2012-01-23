@@ -8,9 +8,9 @@ Station = {}
 local mt = {}
 mt.__index = Station
 
-function Station:new(name, position, circuitLength)
+function Station:new(mac, position, circuitLength)
   local station = {}
-  station.name = name
+  station.mac = mac
   station.position = position
   station.circuitLength = circuitLength
   station.found = false
@@ -22,7 +22,7 @@ end
 function Station:signal(team)
   local s = socket.tcp()
   s:connect('localhost', 9001)
-  s:send(self.name .. ',-,' .. team.mac .. ',-,in\n')
+  s:send(self.mac .. ',-,' .. team.mac .. ',-\n')
   s:close()
 end
 
