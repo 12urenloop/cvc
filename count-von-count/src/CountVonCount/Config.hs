@@ -5,7 +5,7 @@ module CountVonCount.Config
     ) where
 
 import Control.Applicative ((<$>))
-import Control.Monad (join, (=<<))
+import Control.Monad (join)
 
 import qualified Data.ByteString.Char8 as BC
 import qualified Data.Object as Yaml
@@ -34,7 +34,7 @@ readConfigFile filePath = do
     -- TODO: actually use defaultConfig?
     sensorPort <- read <$> Yaml.lookupScalar "Sensor port" root
     stations <- mapM makeStation =<< Yaml.lookupMapping "Stations" root
-    batons   <- mapM makeBaton =<< Yaml.lookupMapping "Batons" root
+    batons   <- mapM makeBaton   =<< Yaml.lookupMapping "Batons" root
 
     return Config
         { configSensorPort = sensorPort
