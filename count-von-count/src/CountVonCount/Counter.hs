@@ -49,7 +49,7 @@ step conf handler time smac bmac cmap
             Just station -> do
                 let sensorEvent     = SensorEvent time station
                     (events, cmap') = stepCounterMap bmac sensorEvent cmap
-                forM_ events $ handler smac 
+                forM_ events $ handler bmac 
                 return cmap'
   where
     ignoreMac  = const False  -- TODO

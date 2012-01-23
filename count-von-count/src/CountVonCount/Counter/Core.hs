@@ -11,6 +11,8 @@ import Data.Time (UTCTime, diffUTCTime)
 
 import CountVonCount.Types
 
+import Debug.Trace
+
 data CounterEvent
     = Progression UTCTime Station Double
     | Lap UTCTime
@@ -57,9 +59,10 @@ stepCounter event state
 
     falseLap = length events < minimumStations || lapTime < minimumLapTime
 
-    speed = (time `diffTime` lastTime) / (position - lastPosition)
+    speed = traceShow (time, lastTime, position, lastPosition) $
+        (time `diffTime` lastTime) / (position - lastPosition)
 
     minimumStations = 2   -- TODO: configurable
     minimumLapTime  = 30  -- TODO: configurable
 
-    diffTime t1 t2 = fromRational $ toRational $ t2 `diffUTCTime` t1
+    diffTime t1 t2 = fromRational $ toRational $ t1 `diffUTCTime` t2
