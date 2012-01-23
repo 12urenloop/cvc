@@ -44,8 +44,10 @@ listen port handler = do
         _ <- forkIO $ ignore $ do
             S.sendAll conn "MSG,enable_rssi,true\r\n"
             S.sendAll conn "MSG,enable_cache,false\r\n"
-        _ <- forkIO $ E.run_ $ SE.enumSocket 256 conn $$
-            E.sequence (AE.iterParser gyrid) =$ receive handler
+        _ <- forkIO $ do
+            E.run_ $ SE.enumSocket 256 conn $$
+                E.sequence (AE.iterParser gyrid) =$ receive handler
+            S.sClose conn
         return ()
   where
     ignore x = catch x $ const $ return ()
