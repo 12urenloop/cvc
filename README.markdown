@@ -1,68 +1,31 @@
 12UrenLoop
 ==========
 
-People run laps. We count and shit like that.
+People run laps. We count, give them points and monitor it all.
 
 count-von-count
 ---------------
 
 See `count-von-count/README.markdown`
 
-dr.beaker
----------
+pokemon
+-------
 
-Presents the data analyzed by `count-von-count` in a nice fashion.
+Demo application that generates detection events and sends them to a
+count-von-count process.
 
-### Installing and running
+tools/data-analysis
+-------------------
 
-You'll need maven to build Dr. Beaker. You can get it using your package manager of choice.
+Checks the gathered data for inconsistencies.
 
-Create the mysql database "score", accessible by user "score" and password "score"
+tools/monitor.rb
+----------------
 
-Compile `Dr. Beaker` from the project root dir
+Runs a series of checks on each monitored host.
 
-    mvn build
+tools/macalive.sh
+-----------------
 
-Download glassfish from http://glassfish.java.net/ , extract it, and start it by running 
-
-    $GLASSFISH_HOME/bin/asadmin start-domain domain1
-
-Create the authentication realm
-
-- Go to http://localhost:4848
-- Navigate to "Configuration > Security > Realms"
-- Create a new realm with following specifications: (fields not mentioned are empty)
-    * Name = 12UrenLoopRealm
-    * classname = ...JDBCRealm
-    * JAAS Context = jdbcRealm
-    * JNDI = jdbc/score
-    * User Table = USERS
-    * User Name Column = USERNAME
-    * Password Column = PASSWORD
-    * Group Table = USERS_GROUPS
-    * Group Name Column = NAME
-    * Digest Algorithm = SHA1
-    * Encoding = Base64
-
-Add the `jdbc/score` resource (from the `dr.beaker` directory):
-
-    $GLASSFISH_HOME/bin/asadmin add-resources src/main/setup/sun-resources.xml
-
-Install Dr. Beaker on the app-server
-
-- Go to http://localhost:4848
-- Navigate to "Applications" in the menu on the left
-- Choose "Deploy"
-- upload the dr.beaker.war file (located in ./target/ )
-
-Dr. Beaker is now available at http://localhost:8080/dr.beaker/
-
-### API
-
-- `PUT /api/0.1/{mac}/laps/increase`: Add a lap for a mac address. Parameters (more might be added later):
-    * speed (double): average m/s
-    * suspicious (boolean): true if the lap is suspicious
-
-macalive
---------
-Checks if a bluetooth device is still alive using the hcitool command.
+Checks if a bluetooth device is still alive using the hcitool command. Used
+to assess the lifetime of our batons.

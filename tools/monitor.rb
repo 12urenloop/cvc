@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby -w
 require 'net/ssh'
 
-hosts = File.open('hosts').readlines.map(&:strip)
+hosts = File.open('monitor-hosts').readlines.map(&:strip)
 
 def error(host, message)
   puts "#{Time.now}: #{host}: #{message}"
