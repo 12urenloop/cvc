@@ -7,9 +7,23 @@ function createWebSocket(path) {
     return new Socket(uri);
 }
 
+var handlers = {
+    "lap": function(event) {
+        $('[data-team-id = "' + event.team.id + '"]')
+            .children('.laps')
+            .html(event.team.laps + 1);
+    }
+};
+
 $(document).ready(function() {
     var ws = createWebSocket('/monitor/subscribe');
     ws.onmessage = function(event) {
-        alert(event.data);
+        try {
+            var json = JSON.parse(event.data);
+            var handler = handlers[json.type];
+            if(handler) handler(json);
+        } catch(err) {
+            alert(err);
+        }
     };
 });

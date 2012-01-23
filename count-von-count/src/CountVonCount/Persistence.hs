@@ -13,7 +13,8 @@ import CountVonCount.Types
 import CountVonCount.Persistence.Core
 
 data Team = Team
-    { teamName  :: String
+    { teamId    :: Int
+    , teamName  :: String
     , teamLaps  :: Int
     , teamBaton :: Maybe String
     } deriving (Eq, Show, Ord)
@@ -21,11 +22,13 @@ data Team = Team
 instance IsDocument Team where
     collection _     = "teams"
     toDocument team  =
-        [ "name"  MDB.=: teamName team
+        [ "id"    MDB.=: teamId team
+        , "name"  MDB.=: teamName team
         , "laps"  MDB.=: teamLaps team
         , "baton" MDB.=: teamBaton team
         ]
     fromDocument doc = Team
+        (MDB.at "id" doc)
         (MDB.at "name" doc)
         (MDB.at "laps" doc)
         (MDB.at "baton" doc)

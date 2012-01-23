@@ -39,16 +39,17 @@ index :: Html
 index = template "Home" "Hello world"
 
 monitor :: [Team] -> Html
-monitor teams = template "Monitor" $ do
+monitor teams = template "Monitor" $ H.div ! A.id "monitor" $ do
     H.h1 "Scores"
-    forM_ teams $ \team -> H.div $ do
+    forM_ teams $ \team -> H.div ! A.class_ "team"
+            !  H.dataAttribute "team-id" (H.toValue $ teamId team) $ do
         H.toHtml $ teamName team
         ": "
-        H.toHtml $ teamLaps team
+        H.span ! A.class_ "laps" $ H.toHtml $ teamLaps team
     H.script ! A.type_ "text/JavaScript" ! A.src "/js/monitor.js" $ ""
 
 management :: [(Ref Team, Team, Maybe Baton)] -> [Baton] -> Html
-management teams batons = template "Teams" $ do
+management teams batons = template "Teams" $ H.div ! A.id "management" $ do
     H.div ! A.id "secondary" $ do
         H.h1 "Free batons"
         forM_ batons $ \baton -> H.div ! A.class_ "baton" $ do

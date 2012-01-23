@@ -29,8 +29,8 @@ instance ToJSON MonitorEvent where
             ]
 
 instance ToJSON Team where
-    toJSON (Team name laps baton) = object
-        ["name" .= name, "laps" .= laps, "baton" .= baton]
+    toJSON (Team id' name laps baton) = object
+        ["id" .= id', "name" .= name, "laps" .= laps, "baton" .= baton]
 
 instance ToJSON Station where
     toJSON (Station name mac position) = object

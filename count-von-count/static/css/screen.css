@@ -59,11 +59,11 @@ div#footer {
 * Management                                                                   *
 *******************************************************************************/
 
-div.team {
+div#management div.team {
     margin-bottom: 12px;
     width: 300px;
 }
 
-div.team div.assign form {
+div#management div.team div.assign form {
     float: right;
 }
