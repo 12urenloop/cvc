@@ -5,7 +5,7 @@ module CountVonCount.Config
     ) where
 
 import Control.Applicative ((<$>))
-import Control.Monad (forM, join)
+import Control.Monad (join, (=<<))
 
 import qualified Data.ByteString.Char8 as BC
 import qualified Data.Object as Yaml
@@ -31,10 +31,10 @@ readConfigFile filePath = do
     file <- join $ Yaml.decodeFile filePath
     root <- Yaml.fromMapping file
 
+    -- TODO: actually use defaultConfig?
     sensorPort <- read <$> Yaml.lookupScalar "Sensor port" root
-
-    stations <- map makeStation <$> fromMapping "Stations" root
-    batons   <- map makeBaton   <$> fromMapping "Batons"   root
+    stations <- mapM makeStation =<< Yaml.lookupMapping "Stations" root
+    batons   <- mapM makeBaton =<< Yaml.lookupMapping "Batons" root
 
     return Config
         { configSensorPort = sensorPort
@@ -42,15 +42,11 @@ readConfigFile filePath = do
         , configBatons     = batons
         }
   where
-    makeStation (k, v) = Station (BC.pack k) (read v)
-    makeBaton   (k, v) = Baton (BC.pack k) (read v)
-
-fromMapping :: (Yaml.IsYamlScalar v)
-            => String
-            -> [(String, Yaml.Object String v)]
-            -> IO [(String, v)]
-fromMapping name root = do
-    pairs <- Yaml.lookupMapping name root
-    forM pairs $ \(k, v) -> do
-        v' <- Yaml.fromScalar v
-        return (k, v')
+    makeBaton (k, v) = do
+        value <- Yaml.fromScalar v
+        return $ Baton (BC.pack k) (read value)
+    makeStation (k, v) = do
+        properties <- Yaml.fromMapping v
+        mac <- Yaml.lookupScalar "Mac" properties
+        pos <- Yaml.lookupScalar "Position" properties
+        return $ Station (BC.pack mac) k (read pos)

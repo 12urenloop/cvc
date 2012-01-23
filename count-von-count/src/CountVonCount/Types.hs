@@ -14,8 +14,12 @@ type Mac = B.ByteString
 
 data Station = Station
     { stationMac      :: Mac
+    , stationName     :: String
     , stationPosition :: Double
-    } deriving (Show)
+    }
+
+instance Show Station where
+    show s = stationName s ++ " (" ++ (show $ stationPosition s) ++ "m)"
 
 instance Eq Station where
     s1 == s2 = stationMac s1 == stationMac s2
