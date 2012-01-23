@@ -33,5 +33,5 @@ instance ToJSON Team where
         ["name" .= name, "laps" .= laps, "baton" .= baton]
 
 instance ToJSON Station where
-    toJSON (Station mac position) = object
-        ["mac" .= mac, "position" .= position]
+    toJSON (Station name mac position) = object
+        ["name" .= name, "mac" .= mac, "position" .= position]
