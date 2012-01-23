@@ -67,6 +67,6 @@ stepCounter event state
         (time `diffTime` lastTime) / (position - lastPosition)
 
     minimumStations = 2   -- TODO: configurable
-    minimumLapTime  = 30  -- TODO: configurable
+    minimumLapTime  = 10  -- TODO: configurable
 
     diffTime t1 t2 = fromRational $ toRational $ t1 `diffUTCTime` t2
