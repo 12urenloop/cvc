@@ -42,13 +42,19 @@ instance FromJSON Station where
         o .: "name" <*> o .: "mac" <*> o .: "position"
     parseJSON _ = mzero
 
-data SensorEvent = SensorEvent UTCTime Station
-    deriving (Show)
+data SensorEvent = SensorEvent
+    { sensorTime    :: UTCTime
+    , sensorStation :: Station
+    , sensorBaton   :: Baton
+    } deriving (Show)
 
 data Baton = Baton
     { batonMac  :: Mac
     , batonNr   :: Int
     } deriving (Eq, Show)
+
+instance Ord Baton where
+  l `compare` r = batonNr l `compare` batonNr r
 
 instance ToJSON Baton where
     toJSON (Baton mac nr) = A.object ["mac" .= mac, "nr" .= nr]
