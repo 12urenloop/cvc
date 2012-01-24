@@ -62,9 +62,9 @@ stepCounter circuitLength event state
     falseLap = (lastPosition - position) < minimumDrop ||
         lapTime < minimumLapTime
 
-    speed    = (time `diffTime` lastTime) / (position - lastPosition)
-    lapSpeed = (time `diffTime` lastTime) /
-        (position - lastPosition + circuitLength)
+    speed    = (position - lastPosition) / (time `diffTime` lastTime)
+    lapSpeed = (position - lastPosition + circuitLength) /
+        (time `diffTime` lastTime)
 
     minimumDrop    = circuitLength / 2   -- TODO: configurable
     minimumLapTime = 10                  -- TODO: configurable
