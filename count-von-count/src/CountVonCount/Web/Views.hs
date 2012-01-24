@@ -15,7 +15,7 @@ import qualified Text.Blaze.Html5.Attributes as A
 
 import CountVonCount.Persistence
 import CountVonCount.Types
-import CountVonCount.Web.Helpers
+import CountVonCount.Web.Views.Util
 
 template :: Html -> Html -> Html
 template title content = H.docTypeHtml $ do

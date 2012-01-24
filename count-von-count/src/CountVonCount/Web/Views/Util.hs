@@ -1,8 +1,11 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# OPTIONS_GHC -fno-warn-unused-do-bind #-}
-module CountVonCount.Web.Helpers where
-
-import Prelude hiding (div)
+module CountVonCount.Web.Views.Util
+    ( stylesheet
+    , javascript
+    , linkTo
+    , block
+    , postForm
+    ) where
 
 import Text.Blaze ((!))
 import qualified Text.Blaze.Html5 as H

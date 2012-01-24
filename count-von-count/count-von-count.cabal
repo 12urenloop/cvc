@@ -23,6 +23,7 @@ Executable count-von-count
     CountVonCount.Web
     CountVonCount.Web.Util
     CountVonCount.Web.Views
+    CountVonCount.Web.Views.Util
 
   Build-depends:
     aeson                 >= 0.5  && < 0.6,
