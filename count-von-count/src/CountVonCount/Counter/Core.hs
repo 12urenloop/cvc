@@ -59,13 +59,14 @@ stepCounter circuitLength event state
     SensorEvent lapStart _ = last events
     lapTime                = time `diffUTCTime` lapStart
 
-    falseLap = length events < minimumStations || lapTime < minimumLapTime
+    falseLap = (lastPosition - position) < minimumDrop ||
+        lapTime < minimumLapTime
 
     speed    = (time `diffTime` lastTime) / (position - lastPosition)
     lapSpeed = (time `diffTime` lastTime) /
         (position - lastPosition + circuitLength)
 
-    minimumStations = 2   -- TODO: configurable
-    minimumLapTime  = 10  -- TODO: configurable
+    minimumDrop    = circuitLength / 2   -- TODO: configurable
+    minimumLapTime = 10                  -- TODO: configurable
 
     diffTime t1 t2 = fromRational $ toRational $ t1 `diffUTCTime` t2
