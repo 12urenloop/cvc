@@ -14,7 +14,7 @@ import qualified Data.Map as M
 
 import qualified Data.Aeson as A
 import qualified Data.ByteString as B
-import qualified Data.ByteString.Char8 as BC
+import qualified Data.Text.Encoding as T
 import qualified Network.WebSockets as WS
 import qualified Network.WebSockets.Snap as WS
 import qualified Snap.Blaze as Snap
@@ -66,9 +66,9 @@ management = do
     teams  <- sortBy (comparing snd) <$> runPersistence getAll
     let batonMap   = M.fromList $ map (batonMac &&& id) batons
         withBatons = flip map teams $ \(ref, team) ->
-            (ref, team, teamBaton team >>= flip M.lookup batonMap . BC.pack)
+            (ref, team, teamBaton team >>= flip M.lookup batonMap)
         freeBatons = map snd $ M.toList $ foldl (flip M.delete) batonMap $
-            map BC.pack $ catMaybes $ map (teamBaton . snd) teams
+            catMaybes $ map (teamBaton . snd) teams
 
     Snap.blaze $ Views.management withBatons freeBatons
 
@@ -79,7 +79,7 @@ assign = do
         Just teamRef <- refFromParam "id"
         runPersistence $ do
             team  <- get teamRef
-            put teamRef  $ team {teamBaton = Just (BC.unpack mac)}
+            put teamRef $ team {teamBaton = Just (T.decodeUtf8 mac)}
 
     Snap.redirect "/management"
 

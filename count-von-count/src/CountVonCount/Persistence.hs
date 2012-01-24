@@ -7,7 +7,8 @@ module CountVonCount.Persistence
     ) where
 
 import Data.Aeson (ToJSON (..), object, (.=))
-import qualified Data.ByteString.Char8 as BC
+import Data.Text (Text)
+import qualified Data.Text as T
 import qualified Database.MongoDB as MDB
 
 import CountVonCount.Types
@@ -15,9 +16,9 @@ import CountVonCount.Persistence.Core
 
 data Team = Team
     { teamId    :: Int
-    , teamName  :: String
+    , teamName  :: Text
     , teamLaps  :: Int
-    , teamBaton :: Maybe String
+    , teamBaton :: Maybe Mac
     } deriving (Eq, Show, Ord)
 
 instance ToJSON Team where
@@ -28,22 +29,22 @@ instance IsDocument Team where
     collection _     = "teams"
     toDocument team  =
         [ "id"    MDB.=: teamId team
-        , "name"  MDB.=: teamName team
+        , "name"  MDB.=: T.unpack (teamName team)
         , "laps"  MDB.=: teamLaps team
-        , "baton" MDB.=: teamBaton team
+        , "baton" MDB.=: fmap T.unpack (teamBaton team)
         ]
     fromDocument doc = Team
         (MDB.at "id" doc)
-        (MDB.at "name" doc)
+        (T.pack $ MDB.at "name" doc)
         (MDB.at "laps" doc)
-        (MDB.at "baton" doc)
+        (fmap T.pack $ MDB.at "baton" doc)
 
 addLap :: Team -> Team
 addLap team = team {teamLaps = teamLaps team + 1}
 
 getTeamByMac :: Mac -> Persistence (Maybe (Ref Team, Team))
 getTeamByMac m = do
-    cursor <- MDB.find $ MDB.select ["baton" MDB.=: BC.unpack m] $ collection x
+    cursor <- MDB.find $ MDB.select ["baton" MDB.=: T.unpack m] $ collection x
     docs   <- MDB.rest cursor
     return $ case docs of
         [doc] -> Just (MDB.valueAt "_id" doc, fromDocument doc)

@@ -21,6 +21,7 @@ import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as BC
 import qualified Data.Enumerator as E
 import qualified Data.Enumerator.List as EL
+import qualified Data.Text.Encoding as T
 import qualified Network.Socket as S
 import qualified Network.Socket.ByteString as S
 import qualified Network.Socket.Enumerator as SE
@@ -81,19 +82,19 @@ gyrid = do
         ("INFO" : _)                      -> Ignored
         ["REPLAY", !time, !station, !mac] ->
             case parseTime defaultTimeLocale "%s" (BC.unpack time) of
-                Just t -> Replay t (addColons station) (addColons mac)
+                Just t -> Replay t (parseMac station) (parseMac mac)
                 _      -> Ignored
         [!station, _, !mac, _]            ->
-            Event (addColons station) (addColons mac)
+            Event (parseMac station) (parseMac mac)
         _                                 -> Ignored
   where
     newline x  = x `B.elem` "\r\n"
     lineParser = A.skipWhile newline *> A.takeWhile (not . newline)
 
 -- | Transform a mac without @:@ delimiters to one a mac with @:@ delimiters
-addColons :: ByteString -> Mac
-addColons bs = if ':' `BC.elem` bs then bs else addColons' bs
+parseMac :: ByteString -> Mac
+parseMac bs = T.decodeUtf8 $ if ':' `BC.elem` bs then bs else parseMac' bs
   where
-    addColons' bs' = case BC.splitAt 2 bs' of
+    parseMac' bs' = case BC.splitAt 2 bs' of
         (h, "")   -> h
-        (h, rest) -> h `mappend` ":" `mappend` addColons rest
+        (h, rest) -> h `mappend` ":" `mappend` parseMac' rest

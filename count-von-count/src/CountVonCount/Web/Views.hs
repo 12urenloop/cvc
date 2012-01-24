@@ -57,7 +57,7 @@ management teams batons = template "Teams" $ H.div ! A.id "management" $ do
         forM_ batons $ \baton -> H.div ! A.class_ "baton" $ do
             H.toHtml $ batonName baton
             " ("
-            H.unsafeByteString $ batonMac baton
+            H.toHtml $ batonMac baton
             ")"
 
     H.h1 "Teams"
@@ -82,4 +82,4 @@ management teams batons = template "Teams" $ H.div ! A.id "management" $ do
                 
             H.input ! A.type_ "submit" ! A.value "Assign"
   where
-    macValue = H.unsafeByteStringValue . batonMac
+    macValue = H.toValue . batonMac
