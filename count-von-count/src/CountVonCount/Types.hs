@@ -11,6 +11,7 @@ import Control.Applicative ((<$>),(<*>))
 import Control.Monad (mzero)
 import Data.Text (Text)
 import Data.Time (UTCTime)
+import Text.Printf (printf)
 
 import Data.Aeson (FromJSON (..), ToJSON (..), (.:), (.=))
 import qualified Data.Aeson as A
@@ -24,10 +25,13 @@ data Station = Station
     }
 
 instance Show Station where
-    show s = stationName s ++ " (" ++ (show $ stationPosition s) ++ "m)"
+    show s = printf "%s (%.0fm)" (stationName s) (stationPosition s)
 
 instance Eq Station where
     s1 == s2 = stationMac s1 == stationMac s2
+
+instance Ord Station where
+    l `compare` r = stationMac l `compare` stationMac r
 
 instance ToJSON Station where
     toJSON (Station name mac position) = A.object

@@ -7,15 +7,16 @@ import Control.Concurrent.Chan (newChan, writeChan)
 
 import CountVonCount.Config
 import CountVonCount.Counter
+import CountVonCount.Monitor
 import CountVonCount.Stream
-import CountVonCount.Persistence ()
 import Network.WebSockets.PubSub
 import qualified CountVonCount.Sensor as Sensor
 import qualified CountVonCount.Web as Web
 
 main :: IO ()
 main = do
-    putStrLn "Hello world"
+    putStrLn "Count Von Count starting in 1..2..3..."
+    config <- readConfigFile "count-von-count.yaml"
 
     -- Connecting the sensor to the counter
     sensorOut <- newChan
@@ -29,7 +30,7 @@ main = do
             print (team, event)
             publish pubSub $ CounterEvent team event
 
-    config <- readConfigFile "count-von-count.yaml"
-    _      <- forkIO $ Sensor.listen (configSensorPort config) sensorHandler
-    _      <- forkIO $ counter config counterHandler sensorOut
+    _ <- forkIO $ Sensor.listen (configSensorPort config) sensorHandler
+    _ <- forkIO $ counter config counterHandler sensorOut
+    _ <- forkIO $ monitor config
     Web.listen config pubSub
