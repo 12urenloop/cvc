@@ -50,14 +50,14 @@ stepCounter circuitLength event state
     | otherwise               =
         ([Progression time station lapSpeed, Lap time], Counter [event])
   where
-    Counter events                         = state
-    SensorEvent time station               = event
-    (SensorEvent lastTime lastStation : _) = events
-    Station _ _ position                   = station
-    Station _ _ lastPosition               = lastStation
+    Counter events                           = state
+    SensorEvent time station _               = event
+    (SensorEvent lastTime lastStation _ : _) = events
+    Station _ _ position                     = station
+    Station _ _ lastPosition                 = lastStation
 
-    SensorEvent lapStart _ = last events
-    lapTime                = time `diffUTCTime` lapStart
+    SensorEvent lapStart _ _ = last events
+    lapTime                  = time `diffUTCTime` lapStart
 
     falseLap = length events < minimumStations || lapTime < minimumLapTime
 
