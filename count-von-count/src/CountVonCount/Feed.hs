@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
-module CountVonCount.Stream
-    ( StreamEvent (..)
+module CountVonCount.Feed
+    ( FeedEvent (..)
     ) where
 
 import Data.Text (Text)
@@ -9,15 +9,15 @@ import Data.Aeson (ToJSON (..), object, (.=))
 import CountVonCount.Counter.Core
 import CountVonCount.Persistence
 
-data StreamEvent
+data FeedEvent
     = CounterEvent Team CounterEvent
     deriving (Show)
 
-eventType :: StreamEvent -> Text
+eventType :: FeedEvent -> Text
 eventType (CounterEvent _ (Lap _))             = "lap"
 eventType (CounterEvent _ (Progression _ _ _)) = "progression"
 
-instance ToJSON StreamEvent where
+instance ToJSON FeedEvent where
     toJSON e = object $ ("type" .= eventType e) : case e of
         (CounterEvent team (Lap time))         ->
             ["team" .= team, "time" .= time]
