@@ -11,7 +11,9 @@ import Control.Applicative ((<$>),(<*>))
 import Control.Monad (mzero)
 import Data.Text (Text)
 import Data.Time (UTCTime)
-import Data.Yaml
+
+import Data.Aeson (FromJSON (..), ToJSON (..), (.:), (.=))
+import qualified Data.Aeson as A
 
 type Mac = Text
 
@@ -28,17 +30,13 @@ instance Eq Station where
     s1 == s2 = stationMac s1 == stationMac s2
 
 instance ToJSON Station where
-    toJSON (Station name mac position) = object
+    toJSON (Station name mac position) = A.object
         ["name" .= name, "mac" .= mac, "position" .= position]
 
 instance FromJSON Station where
-    parseJSON (Object o) = Station <$>
-                           o .: "name" <*>
-                           o .: "mac" <*>
-                           o .: "position"
+    parseJSON (A.Object o) = Station <$>
+        o .: "name" <*> o .: "mac" <*> o .: "position"
     parseJSON _ = mzero
-
-
 
 data SensorEvent = SensorEvent UTCTime Station
     deriving (Show)
@@ -49,12 +47,10 @@ data Baton = Baton
     } deriving (Eq, Show)
 
 instance ToJSON Baton where
-    toJSON (Baton mac nr) = object ["mac" .= mac, "nr" .= nr]
+    toJSON (Baton mac nr) = A.object ["mac" .= mac, "nr" .= nr]
 
 instance FromJSON Baton where
-    parseJSON (Object o) = Baton <$>
-                           o .: "mac" <*>
-                           o .: "nr"
+    parseJSON (A.Object o) = Baton <$> o .: "mac" <*> o .: "nr"
     parseJSON _ = mzero
 
 batonName :: Baton -> String
