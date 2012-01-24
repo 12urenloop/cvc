@@ -6,7 +6,8 @@ import Control.Applicative ((<$>),(<*>))
 import Control.Concurrent (threadDelay)
 import Control.Monad (forM,forM_,forever)
 import Data.IORef
-import System (ExitCode (ExitSuccess), system)
+import System.Exit (ExitCode (ExitSuccess))
+import System.Process (system)
 
 import CountVonCount.Config
 import CountVonCount.Types
