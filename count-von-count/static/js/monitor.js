@@ -48,13 +48,15 @@ var handlers = {
 };
 
 $(document).ready(function() {
-    $('.team').each(function() {
-        var id = $(this).attr('data-team-id');
-        speedData[id] = [[0, 0]];
-    });
-
     $.get('/config.json', function(data) {
         config = data;
+
+        $('.team').each(function() {
+            var id = $(this).attr('data-team-id');
+            speedData[id] = [[0, 0]];
+            plotSpeedData(id);
+        });
+
         var ws = createWebSocket('/monitor/subscribe');
         ws.onmessage = function(event) {
             try {
