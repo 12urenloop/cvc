@@ -7,6 +7,7 @@ module CountVonCount.Web.Views
     ) where
 
 import Control.Monad (forM_)
+import Prelude hiding (div)
 
 import Text.Blaze (Html, (!))
 import qualified Text.Blaze.Html5 as H
@@ -25,47 +26,46 @@ template title content = H.docTypeHtml $ do
         stylesheet "/css/screen.css"
 
     H.body $ do
-        H.div ! A.id "header" $
-            H.div ! A.id "navigation" $ do
-                link_to "/monitor"    "Monitor"
-                link_to "/management" "Management"
-                link_to "/bonus"      "Bonus"
+        div "header" $
+            div "navigation" $ do
+                linkTo "/monitor"    "Monitor"
+                linkTo "/management" "Management"
+                linkTo "/bonus"      "Bonus"
 
-        H.div ! A.id "content" $
-            content
+        div "content" $ content
 
-        H.div ! A.id "footer" $ ""
+        div_ "footer"
 
 index :: Html
 index = template "Home" "Hello world"
 
 monitor :: [Team] -> Html
-monitor teams = template "Monitor" $ H.div ! A.id "monitor" $ do
+monitor teams = template "Monitor" $ div "monitor" $ do
     H.h1 "Scores"
-    forM_ teams $ \team -> H.div ! A.class_ "team"
+    forM_ teams $ \team -> divC "team"
             !  H.dataAttribute "team-id" (H.toValue $ teamId team) $ do
         H.h2 $ H.toHtml $ teamName team
-        H.div ! A.class_ "laps" $ H.toHtml $ teamLaps team
-        H.div ! A.class_ "speed" $ ""
+        divC "laps" $ H.toHtml $ teamLaps team
+        divC "speed" $ ""
     javascript "/js/monitor.js"
 
 management :: [(Ref Team, Team, Maybe Baton)] -> [Baton] -> Html
-management teams batons = template "Teams" $ H.div ! A.id "management" $ do
-    H.div ! A.id "secondary" $ do
+management teams batons = template "Teams" $ div "management" $ do
+    div "secondary" $ do
         H.h1 "Free batons"
-        forM_ batons $ \baton -> H.div ! A.class_ "baton" $ do
+        forM_ batons $ \baton -> divC "baton" $ do
             H.toHtml $ batonName baton
             " ("
             H.toHtml $ batonMac baton
             ")"
 
     H.h1 "Teams"
-    forM_ teams $ \(ref, team, assigned) -> H.div ! A.class_ "team" $ do
+    forM_ teams $ \(ref, team, assigned) -> divC "team" $ do
         let assignUri = "/team/" ++ refToString ref ++ "/assign"
 
         H.toHtml $ teamName team
 
-        H.form ! A.action (H.toValue assignUri) ! A.method "post" $ do
+        postForm assignUri $ do
             H.select ! A.name "baton" $ do
                 case assigned of
                     Just baton ->
