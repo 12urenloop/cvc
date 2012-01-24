@@ -2,7 +2,7 @@
 
 **TL;DR**: People run laps. We count, give them points and monitor it all.
 
-This software is made for the yearly [12-Urenloop](http://12urenloop.be/) event. Small embedded computers with Bluetooth sensors running [Gyrid](https://github.com/Rulus/Gyrid) are placed around the circuit and forward information on detected Bluetooth devices (i.e. our batons). 
+This software is made for the yearly [12-Urenloop](http://12urenloop.be/) event. Small embedded computers with Bluetooth sensors running [Gyrid](https://github.com/Rulus/Gyrid) are placed around the circuit and forward information on detected Bluetooth devices (i.e. our batons).
 
 ## count-von-count
 
@@ -13,14 +13,14 @@ All information and actions are permanently stored and can be replayed through t
 ### Dependencies
 
 *   [Haskell Platform](http://hackage.haskell.org/platform/)
-  
+
     Run `cabal update` after installation to fetch the lastest package information, afterwards run `cabal install --only-dependencies` from the count-von-count folder to install all Haskell dependencies.
 
 *   [mongoDB](http://www.mongodb.org/)
 
 ### Usage
 
-To build the application run `cabal build` from the count-von-count folder. The executable is now available as `dist/build/count-von-count/count-von-count`.
+To build the application run `cabal configure` and `cabal build` from the count-von-count folder. The executable is now available as `dist/build/count-von-count/count-von-count`.
 
 Developing the application:
 
