@@ -22,6 +22,6 @@ instance ToJSON MonitorEvent where
         (CounterEvent team (Lap time))         ->
             ["team" .= team, "time" .= time]
         (CounterEvent team (Progression time station speed)) ->
-            [ "team" .= team, "speed" .= time
+            [ "team" .= team, "time" .= time
             , "station" .= station, "speed" .= speed
             ]

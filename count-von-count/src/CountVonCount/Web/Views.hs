@@ -20,9 +20,16 @@ template :: Html -> Html -> Html
 template title content = H.docTypeHtml $ do
     H.head $ do
         H.title title
-        javascript "http://code.jquery.com/jquery-1.6.3.min.js"
+        javascript "/js/jquery-1.7.1.min.js"
         javascript "/js/jquery.flot.min.js"
         stylesheet "/css/screen.css"
+        H.script ! A.type_ "text/javascript"
+            ! A.src "/js/jquery-1.7.1.min.js" $ ""
+        H.script ! A.type_ "text/javascript"
+            ! A.src "/js/jquery.flot.min.js" $ ""
+        H.link ! A.rel "stylesheet" ! A.type_ "text/css"
+            ! A.href "/css/screen.css"
+
     H.body $ do
         H.div ! A.id "header" $
             H.div ! A.id "navigation" $ do
