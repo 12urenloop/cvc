@@ -5,12 +5,16 @@ module CountVonCount.Sensor
     ) where
 
 import Control.Applicative ((*>))
+import Control.Arrow ((&&&))
 import Control.Concurrent (forkIO)
-import Control.Monad (forever)
+import Control.Concurrent.Chan
+import Control.Monad (forever, when)
 import Control.Monad.Trans (liftIO)
 import Data.Monoid (mappend)
 import Data.Time (UTCTime, getCurrentTime, parseTime)
 import System.Locale (defaultTimeLocale)
+import Data.Map (Map)
+import Data.Maybe (isJust, fromJust)
 
 import Data.ByteString (ByteString)
 import Data.ByteString.Char8 ()
@@ -21,17 +25,25 @@ import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as BC
 import qualified Data.Enumerator as E
 import qualified Data.Enumerator.List as EL
+import qualified Data.Map as M
 import qualified Data.Text.Encoding as T
 import qualified Network.Socket as S
 import qualified Network.Socket.ByteString as S
 import qualified Network.Socket.Enumerator as SE
 
 import CountVonCount.Types
+import CountVonCount.Config
 
-listen :: Int
-       -> (UTCTime -> Mac -> Mac -> IO ())
+data SensorState = SensorState
+    { stationMap :: Map Mac Station
+    , batonMap   :: Map Mac Baton
+    , sensorChan :: Chan SensorEvent
+    }
+
+listen :: Config
+       -> Chan SensorEvent
        -> IO ()
-listen port handler = do
+listen conf chan = do
     putStrLn $ "Sensor: listening..."
 
     sock <- S.socket S.AF_INET S.Stream S.defaultProtocol
@@ -40,6 +52,8 @@ listen port handler = do
     S.bindSocket sock $ S.SockAddrInet (fromIntegral port) host
     S.listen sock 5
 
+    let sensorState = constructState conf chan
+
     forever $ do
         (conn, _) <- S.accept sock
         _ <- forkIO $ ignore $ do
@@ -47,26 +61,50 @@ listen port handler = do
             S.sendAll conn "MSG,enable_cache,false\r\n"
         _ <- forkIO $ do
             E.run_ $ SE.enumSocket 256 conn $$
-                E.sequence (AE.iterParser gyrid) =$ receive handler
+                E.sequence (AE.iterParser gyrid) =$ receive sensorState
             S.sClose conn
         return ()
   where
     ignore x = catch x $ const $ return ()
+    port = configSensorPort conf
 
-receive :: (UTCTime -> Mac -> Mac -> IO ())
+constructState :: Config -> Chan SensorEvent -> SensorState
+constructState config chan = SensorState
+    { stationMap = stMap
+    , batonMap   = bMap
+    , sensorChan = chan
+    }
+  where
+    stMap = M.fromList $ fmap (stationMac &&& id) $ configStations config
+    bMap  = M.fromList $ fmap (batonMac &&& id)   $ configBatons   config
+
+receive :: SensorState
         -> Iteratee Gyrid IO ()
-receive handler = do
+receive state = do
     g <- EL.head
     case g of
         Nothing                        -> return ()
-        Just Ignored                   -> receive handler
+        Just Ignored                   -> receive state
         Just (Replay time station mac) -> do
-            liftIO $ handler time station mac
-            receive handler
+            liftIO $ handler state time station mac
+            receive state
         Just (Event station mac)       -> do
             time <- liftIO getCurrentTime
-            liftIO $ handler time station mac
-            receive handler
+            liftIO $ handler state time station mac
+            receive state
+
+handler :: SensorState -> UTCTime -> Mac -> Mac -> IO ()
+handler state time station baton = do
+    when (isJust station' && isJust baton') $
+        writeChan (sensorChan state) $ SensorEvent time st bt
+  where
+    station' = M.lookup station $ stationMap state
+    baton'   = M.lookup baton   $ batonMap   state
+    st       = fromJust station'
+    bt       = fromJust baton'
+
+
+
 
 data Gyrid
     = Event Mac Mac

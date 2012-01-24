@@ -3,7 +3,7 @@ module Main
     ) where
 
 import Control.Concurrent (forkIO)
-import Control.Concurrent.Chan (newChan, writeChan)
+import Control.Concurrent.Chan (newChan)
 
 import CountVonCount.Config
 import CountVonCount.Counter
@@ -17,10 +17,6 @@ main :: IO ()
 main = do
     putStrLn "Hello world"
 
-    -- Connecting the sensor to the counter
-    sensorOut <- newChan
-    let sensorHandler time smac bmac = writeChan sensorOut (time, smac, bmac)
-
     -- Create the pubsub system
     pubSub <- newPubSub
 
@@ -29,7 +25,10 @@ main = do
             print (team, event)
             publish pubSub $ CounterEvent team event
 
+    -- Connecting the sensor to the counter
+    sensorChan <- newChan
+
     config <- readConfigFile "count-von-count.yaml"
-    _      <- forkIO $ Sensor.listen (configSensorPort config) sensorHandler
-    _      <- forkIO $ counter config counterHandler sensorOut
+    _      <- forkIO $ Sensor.listen config sensorChan
+    _      <- forkIO $ counter config counterHandler sensorChan
     Web.listen config pubSub

@@ -5,18 +5,15 @@
 -- 2. Grouping the relevant events by stick mac
 --
 -- 3. Calling the analyzer to process these events
--- 
+--
 module CountVonCount.Counter
     ( counter
     ) where
 
-import Control.Arrow ((&&&))
 import Control.Concurrent.Chan (Chan, readChan)
 import Control.Monad (when)
 import Control.Monad.Trans (liftIO)
 import Data.Foldable (forM_)
-import Data.Time (UTCTime)
-import qualified Data.Map as M
 
 import CountVonCount.Config
 import CountVonCount.Counter.Core
@@ -26,40 +23,35 @@ import CountVonCount.Types
 
 counter :: Config
         -> (Team -> CounterEvent -> IO ())
-        -> Chan (UTCTime, Mac, Mac)
+        -> Chan SensorEvent
         -> IO ()
 counter conf handler chan = loop emptyCounterMap
   where
     step'  = step conf handler
     loop cmap = do
-        (time, smac, bmac) <- readChan chan
-        cmap'              <- step' time smac bmac cmap
+        event <- readChan chan
+        cmap' <- step' event cmap
         loop cmap'
 
 step :: Config
      -> (Team -> CounterEvent -> IO ())
-     -> UTCTime
-     -> Mac
-     -> Mac
+     -> SensorEvent
      -> CounterMap
      -> IO CounterMap
-step conf handler time smac bmac cmap
-    | ignoreMac bmac = return cmap
-    | otherwise      = case M.lookup smac stationMap of
-        Nothing      -> return cmap
-        Just station -> do
-            let sensorEvent     = SensorEvent time station
-                (events, cmap') = stepCounterMap cl bmac sensorEvent cmap
-            process events
-            return cmap'
+step conf handler event cmap
+    | ignoreBaton baton = return cmap
+    | otherwise = do
+        let (events, cmap') = stepCounterMap cl event cmap
+        process events
+        return cmap'
   where
-    cl         = configCircuitLength conf
-    ignoreMac  = const False  -- TODO
-    stationMap = M.fromList $ map (stationMac &&& id) $ configStations conf
+    baton       = sensorBaton event
+    cl          = configCircuitLength conf
+    ignoreBaton = const False  -- TODO
 
     process []     = return ()
     process events = runPersistence $ do
-        mteam <- getTeamByMac bmac
+        mteam <- getTeamByMac (batonMac . sensorBaton $ event)
         forM_ mteam $ \(ref, team) ->
             forM_ events $ \event -> do
                 liftIO $ handler team event
