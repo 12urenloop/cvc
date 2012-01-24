@@ -5,6 +5,7 @@ People run laps. We count, give them points and monitor it all.
 ## count-von-count
 
 Building the application:
+
 1. Install [Haskell Platform](http://hackage.haskell.org/platform/)
 2. Run `cabal update`
 3. From the count-von-count folder, run `cabal install --only-dependencies`
@@ -13,6 +14,7 @@ Building the application:
 The executable is now available as `dist/build/count-von-count/count-von-count`.
 
 Developing the application:
+
 1. Run `ghci` from the project folder
 2. Load the main source file: `:l src/CountVonCount/Main.hs`
 3. Enter `main` to start the program, `^C` to interrupt
