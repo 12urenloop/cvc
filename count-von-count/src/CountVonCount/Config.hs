@@ -9,7 +9,7 @@ import Control.Applicative ((<$>))
 import Control.Monad (join)
 
 import Data.Aeson (ToJSON (..), object, (.=))
-import qualified Data.ByteString.Char8 as BC
+import qualified Data.Text as T
 import qualified Data.Object as Yaml
 import qualified Data.Object.Yaml as Yaml
 
@@ -58,9 +58,9 @@ readConfigFile filePath = do
   where
     makeBaton (k, v) = do
         value <- Yaml.fromScalar v
-        return $ Baton (BC.pack value) (read k)
+        return $ Baton (T.pack value) (read k)
     makeStation (k, v) = do
         properties <- Yaml.fromMapping v
         mac <- Yaml.lookupScalar "Mac" properties
         pos <- Yaml.lookupScalar "Position" properties
-        return $ Station k (BC.pack mac) (read pos)
+        return $ Station k (T.pack mac) (read pos)

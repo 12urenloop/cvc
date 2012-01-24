@@ -10,9 +10,9 @@ module CountVonCount.Types
 import Data.Time (UTCTime)
 
 import Data.Aeson (ToJSON (..), object, (.=))
-import qualified Data.ByteString as B
+import Data.Text (Text)
 
-type Mac = B.ByteString
+type Mac = Text
 
 data Station = Station
     { stationName     :: String
