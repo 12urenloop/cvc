@@ -7,10 +7,11 @@ module CountVonCount.Types
     , batonName
     ) where
 
-import Data.Time (UTCTime)
-
-import Data.Aeson (ToJSON (..), object, (.=))
+import Control.Applicative ((<$>),(<*>))
+import Control.Monad (mzero)
 import Data.Text (Text)
+import Data.Time (UTCTime)
+import Data.Yaml
 
 type Mac = Text
 
@@ -30,6 +31,15 @@ instance ToJSON Station where
     toJSON (Station name mac position) = object
         ["name" .= name, "mac" .= mac, "position" .= position]
 
+instance FromJSON Station where
+    parseJSON (Object o) = Station <$>
+                           o .: "name" <*>
+                           o .: "mac" <*>
+                           o .: "position"
+    parseJSON _ = mzero
+
+
+
 data SensorEvent = SensorEvent UTCTime Station
     deriving (Show)
 
@@ -40,6 +50,12 @@ data Baton = Baton
 
 instance ToJSON Baton where
     toJSON (Baton mac nr) = object ["mac" .= mac, "nr" .= nr]
+
+instance FromJSON Baton where
+    parseJSON (Object o) = Baton <$>
+                           o .: "mac" <*>
+                           o .: "nr"
+    parseJSON _ = mzero
 
 batonName :: Baton -> String
 batonName = ("Baton " ++) . show . batonNr

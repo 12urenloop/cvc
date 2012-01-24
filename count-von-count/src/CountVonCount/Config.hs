@@ -5,15 +5,11 @@ module CountVonCount.Config
     , readConfigFile
     ) where
 
-import Control.Applicative ((<$>))
-import Control.Monad (join)
-
-import Data.Aeson (ToJSON (..), object, (.=))
-import qualified Data.Text as T
-import qualified Data.Object as Yaml
-import qualified Data.Object.Yaml as Yaml
-
+import Control.Applicative ((<$>),(<*>))
+import Control.Monad (mzero)
 import CountVonCount.Types
+import Data.Maybe (fromJust)
+import Data.Yaml
 
 data Config = Config
     { configCircuitLength :: Double
@@ -30,6 +26,15 @@ instance ToJSON Config where
         , "batons"        .= configBatons conf
         ]
 
+instance FromJSON Config where
+    parseJSON (Object o) = Config <$>
+                           o .:? "circuitLength" .!= configCircuitLength defaultConfig <*>
+                           o .:? "sensorPort" .!= configSensorPort defaultConfig <*>
+                           o .:? "stations" .!= configStations defaultConfig <*>
+                           o .:? "batons" .!= configBatons defaultConfig
+
+    parseJSON _ = mzero
+
 defaultConfig :: Config
 defaultConfig = Config
     { configCircuitLength = 400
@@ -39,28 +44,4 @@ defaultConfig = Config
     }
 
 readConfigFile :: FilePath -> IO Config
-readConfigFile filePath = do
-    file <- join $ Yaml.decodeFile filePath
-    root <- Yaml.fromMapping file
-
-    -- TODO: actually use defaultConfig?
-    circuitLength <- read <$> Yaml.lookupScalar "Circuit length" root
-    sensorPort    <- read <$> Yaml.lookupScalar "Sensor port" root
-    stations <- mapM makeStation =<< Yaml.lookupMapping "Stations" root
-    batons   <- mapM makeBaton   =<< Yaml.lookupMapping "Batons" root
-
-    return Config
-        { configCircuitLength = circuitLength
-        , configSensorPort    = sensorPort
-        , configStations      = stations
-        , configBatons        = batons
-        }
-  where
-    makeBaton (k, v) = do
-        value <- Yaml.fromScalar v
-        return $ Baton (T.pack value) (read k)
-    makeStation (k, v) = do
-        properties <- Yaml.fromMapping v
-        mac <- Yaml.lookupScalar "Mac" properties
-        pos <- Yaml.lookupScalar "Position" properties
-        return $ Station k (T.pack mac) (read pos)
+readConfigFile filePath = fromJust <$> decodeFile filePath
