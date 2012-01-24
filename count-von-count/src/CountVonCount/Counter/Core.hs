@@ -11,8 +11,6 @@ import Data.Time (UTCTime, diffUTCTime)
 
 import CountVonCount.Types
 
-import Debug.Trace
-
 data CounterEvent
     = Progression UTCTime Station Double
     | Lap UTCTime
@@ -29,10 +27,11 @@ data Counter = Counter
 emptyCounter :: Counter
 emptyCounter = Counter {counterEvents = []}
 
-stepCounter :: SensorEvent
+stepCounter :: Double
+            -> SensorEvent
             -> Counter
             -> ([CounterEvent], Counter)
-stepCounter event state
+stepCounter circuitLength event state
     -- First event received
     | null events             =
         ([], Counter [event])
@@ -48,9 +47,8 @@ stepCounter event state
     | falseLap                =
         ([], state)
     -- We have an actual lap!
-    -- TODO: Return progression event as well
     | otherwise               =
-        ([Lap time], Counter [event])
+        ([Progression time station lapSpeed, Lap time], Counter [event])
   where
     Counter events                         = state
     SensorEvent time station               = event
@@ -63,8 +61,9 @@ stepCounter event state
 
     falseLap = length events < minimumStations || lapTime < minimumLapTime
 
-    speed = traceShow (time, lastTime, position, lastPosition) $
-        (time `diffTime` lastTime) / (position - lastPosition)
+    speed    = (time `diffTime` lastTime) / (position - lastPosition)
+    lapSpeed = (time `diffTime` lastTime) /
+        (position - lastPosition + circuitLength)
 
     minimumStations = 2   -- TODO: configurable
     minimumLapTime  = 10  -- TODO: configurable

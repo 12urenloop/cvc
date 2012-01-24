@@ -1,3 +1,4 @@
+{-# LANGUAGE OverloadedStrings #-}
 module CountVonCount.Types
     ( Mac
     , Station (..)
@@ -8,6 +9,7 @@ module CountVonCount.Types
 
 import Data.Time (UTCTime)
 
+import Data.Aeson (ToJSON (..), object, (.=))
 import qualified Data.ByteString as B
 
 type Mac = B.ByteString
@@ -24,6 +26,10 @@ instance Show Station where
 instance Eq Station where
     s1 == s2 = stationMac s1 == stationMac s2
 
+instance ToJSON Station where
+    toJSON (Station name mac position) = object
+        ["name" .= name, "mac" .= mac, "position" .= position]
+
 data SensorEvent = SensorEvent UTCTime Station
     deriving (Show)
 
@@ -31,6 +37,9 @@ data Baton = Baton
     { batonMac  :: Mac
     , batonNr   :: Int
     } deriving (Eq, Show)
+
+instance ToJSON Baton where
+    toJSON (Baton mac nr) = object ["mac" .= mac, "nr" .= nr]
 
 batonName :: Baton -> String
 batonName = ("Baton " ++) . show . batonNr

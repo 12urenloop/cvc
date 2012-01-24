@@ -21,6 +21,8 @@ template title content = H.docTypeHtml $ do
         H.title title
         H.script ! A.type_ "text/JavaScript"
             ! A.src "http://code.jquery.com/jquery-1.6.3.min.js" $ ""
+        H.script ! A.type_ "text/JavaScript"
+            ! A.src "/js/jquery.flot.min.js" $ ""
         H.link ! A.rel "stylesheet" ! A.type_ "text/css"
             ! A.href "/css/screen.css"
     H.body $ do
@@ -43,9 +45,9 @@ monitor teams = template "Monitor" $ H.div ! A.id "monitor" $ do
     H.h1 "Scores"
     forM_ teams $ \team -> H.div ! A.class_ "team"
             !  H.dataAttribute "team-id" (H.toValue $ teamId team) $ do
-        H.toHtml $ teamName team
-        ": "
-        H.span ! A.class_ "laps" $ H.toHtml $ teamLaps team
+        H.h2 $ H.toHtml $ teamName team
+        H.div ! A.class_ "speed" $ ""
+        H.div ! A.class_ "laps" $ H.toHtml $ teamLaps team
     H.script ! A.type_ "text/JavaScript" ! A.src "/js/monitor.js" $ ""
 
 management :: [(Ref Team, Team, Maybe Baton)] -> [Baton] -> Html

@@ -1,5 +1,4 @@
 {-# LANGUAGE OverloadedStrings #-}
-{-# OPTIONS_GHC -fno-warn-orphans #-}
 module CountVonCount.Monitor
     ( MonitorEvent (..)
     ) where
@@ -9,7 +8,6 @@ import Data.Aeson (ToJSON (..), object, (.=))
 
 import CountVonCount.Counter.Core
 import CountVonCount.Persistence
-import CountVonCount.Types
 
 data MonitorEvent
     = CounterEvent Team CounterEvent
@@ -27,11 +25,3 @@ instance ToJSON MonitorEvent where
             [ "team" .= team, "speed" .= time
             , "station" .= station, "speed" .= speed
             ]
-
-instance ToJSON Team where
-    toJSON (Team id' name laps baton) = object
-        ["id" .= id', "name" .= name, "laps" .= laps, "baton" .= baton]
-
-instance ToJSON Station where
-    toJSON (Station name mac position) = object
-        ["name" .= name, "mac" .= mac, "position" .= position]

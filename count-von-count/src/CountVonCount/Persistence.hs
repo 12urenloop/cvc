@@ -6,6 +6,7 @@ module CountVonCount.Persistence
     , getTeamByMac
     ) where
 
+import Data.Aeson (ToJSON (..), object, (.=))
 import qualified Data.ByteString.Char8 as BC
 import qualified Database.MongoDB as MDB
 
@@ -18,6 +19,10 @@ data Team = Team
     , teamLaps  :: Int
     , teamBaton :: Maybe String
     } deriving (Eq, Show, Ord)
+
+instance ToJSON Team where
+    toJSON (Team id' name laps baton) = object
+        ["id" .= id', "name" .= name, "laps" .= laps, "baton" .= baton]
 
 instance IsDocument Team where
     collection _     = "teams"

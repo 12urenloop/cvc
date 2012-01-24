@@ -18,11 +18,12 @@ type CounterMap = Map Mac Counter
 emptyCounterMap :: CounterMap
 emptyCounterMap = M.empty
 
-stepCounterMap :: Mac
+stepCounterMap :: Double
+               -> Mac
                -> SensorEvent
                -> CounterMap
                -> ([CounterEvent], CounterMap)
-stepCounterMap mac event !cmap =
+stepCounterMap circuitLength mac event !cmap =
     let c             = fromMaybe emptyCounter $ M.lookup mac cmap
-        (events, !c') = stepCounter event c
+        (events, !c') = stepCounter circuitLength event c
     in (events, M.insert mac c' cmap)

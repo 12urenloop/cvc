@@ -12,10 +12,11 @@ import Data.Maybe (catMaybes)
 import Data.Ord (comparing)
 import qualified Data.Map as M
 
+import qualified Data.Aeson as A
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as BC
-import qualified Network.WebSockets.Snap as WS
 import qualified Network.WebSockets as WS
+import qualified Network.WebSockets.Snap as WS
 import qualified Snap.Blaze as Snap
 import qualified Snap.Core as Snap
 import qualified Snap.Http.Server as Snap
@@ -37,6 +38,12 @@ type Web = ReaderT WebEnv Snap.Snap
 
 index :: Web ()
 index = Snap.blaze Views.index
+
+config :: Web ()
+config = do
+    conf <- webConfig <$> ask
+    Snap.modifyResponse $ Snap.setContentType "application/json"
+    Snap.writeLBS $ A.encode conf
 
 monitor :: Web ()
 monitor = do
@@ -79,6 +86,7 @@ assign = do
 site :: Web ()
 site = Snap.route
     [ ("",                   Snap.ifTop index)
+    , ("/config.json",       config)
     , ("/monitor",           monitor)
     , ("/monitor/subscribe", monitorSubscribe)
     , ("/management",        management)

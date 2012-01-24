@@ -49,10 +49,11 @@ step conf handler time smac bmac cmap
         Nothing      -> return cmap
         Just station -> do
             let sensorEvent     = SensorEvent time station
-                (events, cmap') = stepCounterMap bmac sensorEvent cmap
+                (events, cmap') = stepCounterMap cl bmac sensorEvent cmap
             process events
             return cmap'
   where
+    cl         = configCircuitLength conf
     ignoreMac  = const False  -- TODO
     stationMap = M.fromList $ map (stationMac &&& id) $ configStations conf
 
