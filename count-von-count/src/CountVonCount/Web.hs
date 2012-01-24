@@ -50,8 +50,8 @@ monitor = do
     teams <- sort . map snd <$> runPersistence getAll
     Snap.blaze $ Views.monitor teams
 
-monitorSubscribe :: Web ()
-monitorSubscribe = do
+streamSubscribe :: Web ()
+streamSubscribe = do
     pubSub <- webPubSub <$> ask
     Snap.liftSnap $ WS.runWebSocketsSnap $ wsApp pubSub
   where
@@ -88,7 +88,7 @@ site = Snap.route
     [ ("",                   Snap.ifTop index)
     , ("/config.json",       config)
     , ("/monitor",           monitor)
-    , ("/monitor/subscribe", monitorSubscribe)
+    , ("/stream",            streamSubscribe)
     , ("/management",        management)
     , ("/team/:id/assign",   assign)
     ] <|> Snap.serveDirectory "static"

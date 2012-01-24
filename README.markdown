@@ -31,6 +31,13 @@ Developing the application:
 
 Testing the application: ???
 
+### API
+
+Count-von-count offers the following methods through a JSON API.
+
+*   `/config.json`
+*   `/stream`
+
 ## Utilities
 
 ### pokemon

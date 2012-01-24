@@ -7,7 +7,7 @@ import Control.Concurrent.Chan (newChan, writeChan)
 
 import CountVonCount.Config
 import CountVonCount.Counter
-import CountVonCount.Monitor
+import CountVonCount.Stream
 import CountVonCount.Persistence ()
 import Network.WebSockets.PubSub
 import qualified CountVonCount.Sensor as Sensor

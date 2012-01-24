@@ -26,41 +26,42 @@ template title content = H.docTypeHtml $ do
         stylesheet "/css/screen.css"
 
     H.body $ do
-        div "header" $
-            div "navigation" $ do
+        block "header" $
+            block "navigation" $ do
                 linkTo "/monitor"    "Monitor"
                 linkTo "/management" "Management"
                 linkTo "/bonus"      "Bonus"
 
-        div "content" $ content
+        block "content" content
 
-        div_ "footer"
+        block "footer" ""
 
 index :: Html
 index = template "Home" "Hello world"
 
 monitor :: [Team] -> Html
-monitor teams = template "Monitor" $ div "monitor" $ do
+monitor teams = template "Monitor" $ block "monitor" $ do
     H.h1 "Scores"
-    forM_ teams $ \team -> divC "team"
-            !  H.dataAttribute "team-id" (H.toValue $ teamId team) $ do
+    forM_ teams $ \team -> H.div
+            ! A.class_ "team"
+            ! H.dataAttribute "team-id" (H.toValue $ teamId team) $ do
         H.h2 $ H.toHtml $ teamName team
-        divC "laps" $ H.toHtml $ teamLaps team
-        divC "speed" $ ""
+        H.div ! A.class_ "laps" $ H.toHtml $ teamLaps team
+        H.div ! A.class_ "speed" $ ""
     javascript "/js/monitor.js"
 
 management :: [(Ref Team, Team, Maybe Baton)] -> [Baton] -> Html
-management teams batons = template "Teams" $ div "management" $ do
-    div "secondary" $ do
+management teams batons = template "Teams" $ block "management" $ do
+    block "secondary" $ do
         H.h1 "Free batons"
-        forM_ batons $ \baton -> divC "baton" $ do
+        forM_ batons $ \baton -> H.div ! A.class_ "baton" $ do
             H.toHtml $ batonName baton
             " ("
             H.toHtml $ batonMac baton
             ")"
 
     H.h1 "Teams"
-    forM_ teams $ \(ref, team, assigned) -> divC "team" $ do
+    forM_ teams $ \(ref, team, assigned) -> H.div ! A.class_ "team" $ do
         let assignUri = "/team/" ++ refToString ref ++ "/assign"
 
         H.toHtml $ teamName team

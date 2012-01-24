@@ -15,15 +15,10 @@ javascript :: H.AttributeValue -> H.Html
 javascript link = H.script ! A.type_ "text/JavaScript" ! A.src link $ ""
 
 linkTo :: H.AttributeValue -> H.Html -> H.Html
-linkTo url name = H.a ! A.href url $ name
+linkTo url = H.a ! A.href url
 
-div :: H.AttributeValue -> H.Html -> H.Html
-div i = H.div ! A.id i
+block :: H.AttributeValue -> H.Html -> H.Html
+block i = H.div ! A.id i
 
-div_ :: H.AttributeValue -> H.Html
-div_ i = div i $ ""
-
-divC :: H.AttributeValue -> H.Html -> H.Html
-divC cl = H.div ! A.class_ cl
-
+postForm :: String -> H.Html -> H.Html
 postForm uri = H.form ! A.action (H.toValue uri) ! A.method "post"
