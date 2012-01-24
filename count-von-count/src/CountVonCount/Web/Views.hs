@@ -14,23 +14,21 @@ import qualified Text.Blaze.Html5.Attributes as A
 
 import CountVonCount.Persistence
 import CountVonCount.Types
+import CountVonCount.Web.Helpers
 
 template :: Html -> Html -> Html
 template title content = H.docTypeHtml $ do
     H.head $ do
         H.title title
-        H.script ! A.type_ "text/JavaScript"
-            ! A.src "http://code.jquery.com/jquery-1.6.3.min.js" $ ""
-        H.script ! A.type_ "text/JavaScript"
-            ! A.src "/js/jquery.flot.min.js" $ ""
-        H.link ! A.rel "stylesheet" ! A.type_ "text/css"
-            ! A.href "/css/screen.css"
+        javascript "http://code.jquery.com/jquery-1.6.3.min.js"
+        javascript "/js/jquery.flot.min.js"
+        stylesheet "/css/screen.css"
     H.body $ do
         H.div ! A.id "header" $
             H.div ! A.id "navigation" $ do
-                H.a ! A.href "/monitor"    $ "Monitor"
-                H.a ! A.href "/management" $ "Management"
-                H.a ! A.href "/bonus"      $ "Bonus"
+                link_to "/monitor"    "Monitor"
+                link_to "/management" "Management"
+                link_to "/bonus"      "Bonus"
 
         H.div ! A.id "content" $
             content
@@ -48,7 +46,7 @@ monitor teams = template "Monitor" $ H.div ! A.id "monitor" $ do
         H.h2 $ H.toHtml $ teamName team
         H.div ! A.class_ "laps" $ H.toHtml $ teamLaps team
         H.div ! A.class_ "speed" $ ""
-    H.script ! A.type_ "text/JavaScript" ! A.src "/js/monitor.js" $ ""
+    javascript "/js/monitor.js"
 
 management :: [(Ref Team, Team, Maybe Baton)] -> [Baton] -> Html
 management teams batons = template "Teams" $ H.div ! A.id "management" $ do
@@ -79,7 +77,7 @@ management teams batons = template "Teams" $ H.div ! A.id "management" $ do
                 forM_ batons $ \baton ->
                     H.option ! A.value (macValue baton) $
                         H.toHtml (batonName baton)
-                
+
             H.input ! A.type_ "submit" ! A.value "Assign"
   where
     macValue = H.toValue . batonMac
