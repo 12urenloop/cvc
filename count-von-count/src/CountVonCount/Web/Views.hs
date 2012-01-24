@@ -46,8 +46,8 @@ monitor teams = template "Monitor" $ H.div ! A.id "monitor" $ do
     forM_ teams $ \team -> H.div ! A.class_ "team"
             !  H.dataAttribute "team-id" (H.toValue $ teamId team) $ do
         H.h2 $ H.toHtml $ teamName team
-        H.div ! A.class_ "speed" $ ""
         H.div ! A.class_ "laps" $ H.toHtml $ teamLaps team
+        H.div ! A.class_ "speed" $ ""
     H.script ! A.type_ "text/JavaScript" ! A.src "/js/monitor.js" $ ""
 
 management :: [(Ref Team, Team, Maybe Baton)] -> [Baton] -> Html
