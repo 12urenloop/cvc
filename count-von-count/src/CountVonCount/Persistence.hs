@@ -19,7 +19,10 @@ data Team = Team
     , teamName  :: Text
     , teamLaps  :: Int
     , teamBaton :: Maybe Mac
-    } deriving (Eq, Show, Ord)
+    } deriving (Eq, Ord)
+
+instance Show Team where
+    show = T.unpack . teamName
 
 instance ToJSON Team where
     toJSON (Team id' name laps baton) = object

@@ -65,7 +65,10 @@ toReplay event = intercalate ","
 data Baton = Baton
     { batonMac  :: Mac
     , batonNr   :: Int
-    } deriving (Eq, Show)
+    } deriving (Eq)
+
+instance Show Baton where
+    show (Baton mac nr) = show nr ++ " (" ++ T.unpack mac ++ ")"
 
 instance Ord Baton where
     compare = comparing batonNr

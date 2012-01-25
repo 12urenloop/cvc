@@ -56,7 +56,9 @@ step cl logger handler event cmap
         mteam <- getTeamByMac (batonMac . sensorBaton $ event)
         forM_ mteam $ \(ref, team) ->
             forM_ events $ \event' -> do
-                liftIO $ handler team event'
-                when (isLap event') $ do
-                    liftIO  $ Log.string logger $ "adding lap for " ++ show team
-                    put ref $ addLap team
+                liftIO $ do
+                    handler team event'
+                    Log.string logger $ case event' of
+                        Progression _ s _ -> show team ++ " @ " ++ show s
+                        Lap _ _           -> "Lap for " ++ show team
+                when (isLap event') $ put ref $ addLap team
