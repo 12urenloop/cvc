@@ -24,11 +24,12 @@ import qualified Snap.Http.Server as Snap
 import qualified Snap.Util.FileServe as Snap
 
 import CountVonCount.Config
-import CountVonCount.Log
+import CountVonCount.Log (Log)
 import CountVonCount.Persistence
 import CountVonCount.Types
 import CountVonCount.Web.Util
 import Network.WebSockets.PubSub
+import qualified CountVonCount.Log as Log
 import qualified CountVonCount.Web.Views as Views
 
 data WebEnv = WebEnv
@@ -83,7 +84,7 @@ assign = do
         logger       <- webLog <$> ask
         runPersistence $ do
             team  <- get teamRef
-            liftIO $ logStr logger "Web" $
+            liftIO $ Log.string logger $
                 "assigning " ++ show mac ++ " to " ++ show team
             put teamRef $ team {teamBaton = Just (T.decodeUtf8 mac)}
 

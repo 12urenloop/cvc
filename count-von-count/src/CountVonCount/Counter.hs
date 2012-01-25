@@ -17,9 +17,10 @@ import Data.Foldable (forM_)
 
 import CountVonCount.Counter.Core
 import CountVonCount.Counter.Map
-import CountVonCount.Log
+import CountVonCount.Log (Log)
 import CountVonCount.Persistence
 import CountVonCount.Types
+import qualified CountVonCount.Log as Log
 
 counter :: Double
         -> Log
@@ -57,5 +58,5 @@ step cl logger handler event cmap
             forM_ events $ \event' -> do
                 liftIO $ do
                     handler team event'
-                    logStr logger "Counter" $ "adding lap for " ++ show team
+                    Log.string logger $ "adding lap for " ++ show team
                 when (isLap event') $ put ref $ addLap team
