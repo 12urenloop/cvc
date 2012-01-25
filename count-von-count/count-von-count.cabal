@@ -14,20 +14,21 @@ Executable count-von-count
   Ghc-options:    -Wall
 
   Other-modules:
-    CountVonCount.Types
+    CountVonCount.Config
+    CountVonCount.Counter
+    CountVonCount.Counter.Core
+    CountVonCount.Counter.Map
+    CountVonCount.Feed
+    CountVonCount.Log
     CountVonCount.Monitor
     CountVonCount.Persistence
-    CountVonCount.Config
-    CountVonCount.Web.Views
-    CountVonCount.Web.Views.Util
-    CountVonCount.Web.Util
-    CountVonCount.Feed
-    CountVonCount.Counter.Map
-    CountVonCount.Counter.Core
-    CountVonCount.Web
     CountVonCount.Persistence.Core
     CountVonCount.Sensor
-    CountVonCount.Counter
+    CountVonCount.Types
+    CountVonCount.Web
+    CountVonCount.Web.Util
+    CountVonCount.Web.Views
+    CountVonCount.Web.Views.Util
     Network.WebSockets.PubSub
 
   Build-depends:
