@@ -7,6 +7,7 @@ import Control.Applicative ((<$>), (<|>))
 import Control.Arrow ((&&&))
 import Control.Monad (unless)
 import Control.Monad.Reader (ReaderT, ask, runReaderT)
+import Control.Monad.Trans (liftIO)
 import Data.List (sort, sortBy)
 import Data.Maybe (mapMaybe)
 import Data.Ord (comparing)
@@ -23,14 +24,16 @@ import qualified Snap.Http.Server as Snap
 import qualified Snap.Util.FileServe as Snap
 
 import CountVonCount.Config
-import CountVonCount.Types
+import CountVonCount.Log
 import CountVonCount.Persistence
+import CountVonCount.Types
 import CountVonCount.Web.Util
-import qualified CountVonCount.Web.Views as Views
 import Network.WebSockets.PubSub
+import qualified CountVonCount.Web.Views as Views
 
 data WebEnv = WebEnv
     { webConfig :: Config
+    , webLog    :: Log
     , webPubSub :: PubSub
     }
 
@@ -77,8 +80,11 @@ assign = do
     Just mac <- Snap.getParam "baton"
     unless (B.null mac) $ do
         Just teamRef <- refFromParam "id"
+        logger       <- webLog <$> ask
         runPersistence $ do
             team  <- get teamRef
+            liftIO $ logPutStrLn logger $
+                "Web: assigning " ++ show mac ++ " to " ++ show team
             put teamRef $ team {teamBaton = Just (T.decodeUtf8 mac)}
 
     Snap.redirect "/management"
@@ -93,10 +99,12 @@ site = Snap.route
     , ("/team/:id/assign",   assign)
     ] <|> Snap.serveDirectory "static"
 
-listen :: Config -> PubSub -> IO ()
-listen conf pubSub = Snap.httpServe Snap.defaultConfig $ runReaderT site env
+listen :: Config -> Log -> PubSub -> IO ()
+listen conf logger pubSub =
+    Snap.httpServe Snap.defaultConfig $ runReaderT site env
   where
     env = WebEnv
         { webConfig = conf
+        , webLog    = logger
         , webPubSub = pubSub
         }

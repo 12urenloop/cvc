@@ -18,27 +18,30 @@ import Data.Foldable (forM_)
 import CountVonCount.Config
 import CountVonCount.Counter.Core
 import CountVonCount.Counter.Map
+import CountVonCount.Log
 import CountVonCount.Persistence
 import CountVonCount.Types
 
-counter :: Config
+counter :: Config  -- TODO: more selective
+        -> Log
         -> (Team -> CounterEvent -> IO ())
         -> Chan SensorEvent
         -> IO ()
-counter conf handler chan = loop emptyCounterMap
+counter conf logger handler chan = loop emptyCounterMap
   where
-    step'  = step conf handler
+    step'     = step conf logger handler
     loop cmap = do
         event <- readChan chan
         cmap' <- step' event cmap
         loop cmap'
 
 step :: Config
+     -> Log
      -> (Team -> CounterEvent -> IO ())
      -> SensorEvent
      -> CounterMap
      -> IO CounterMap
-step conf handler event cmap
+step conf logger handler event cmap
     | ignoreBaton baton = return cmap
     | otherwise = do
         let (events, cmap') = stepCounterMap cl event cmap
@@ -54,5 +57,7 @@ step conf handler event cmap
         mteam <- getTeamByMac (batonMac . sensorBaton $ event)
         forM_ mteam $ \(ref, team) ->
             forM_ events $ \event' -> do
-                liftIO $ handler team event'
+                liftIO $ do
+                    handler team event'
+                    logPutStrLn logger $ "Counter: adding lap for " ++ show team
                 when (isLap event') $ put ref $ addLap team

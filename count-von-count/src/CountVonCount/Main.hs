@@ -43,9 +43,9 @@ main = do
     _ <- forkIO $ Sensor.listen (configSensorPort config)
         (configStations config) (configBatons config) sensorHandler
 
-    _      <- forkIO $ counter config counterHandler sensorChan
+    _      <- forkIO $ counter config mainLog counterHandler sensorChan
     -- _   <- forkIO $ runMonitor monitor
-    Web.listen config pubSub
+    Web.listen config mainLog pubSub
 
     putStrLn "Closing..."
     closeLog replayLog
