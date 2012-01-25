@@ -68,6 +68,8 @@ management teams batons = template "Teams" $ block "management" $ do
         " "
         H.span ! A.class_ "soft" $ do
             "("
+            H.toHtml $ teamLaps team
+            " laps, "
             maybe "no baton" (H.toHtml . batonName) assigned
             ")"
 
