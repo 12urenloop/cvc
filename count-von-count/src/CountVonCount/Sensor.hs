@@ -8,13 +8,12 @@ import Control.Applicative ((*>))
 import Control.Arrow ((&&&))
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Chan
-import Control.Monad (forever, when)
+import Control.Monad (forever)
 import Control.Monad.Trans (liftIO)
 import Data.Monoid (mappend)
 import Data.Time (UTCTime, getCurrentTime, parseTime)
 import System.Locale (defaultTimeLocale)
 import Data.Map (Map)
-import Data.Maybe (isJust, fromJust)
 
 import Data.ByteString (ByteString)
 import Data.ByteString.Char8 ()
@@ -86,23 +85,24 @@ receive state = do
         Nothing                        -> return ()
         Just Ignored                   -> receive state
         Just (Replay time station mac) -> do
-            liftIO $ handler state time station mac
+            let event = handler state time station mac
+            liftIO $ writeToChan (sensorChan state) event
             receive state
         Just (Event station mac)       -> do
             time <- liftIO getCurrentTime
-            liftIO $ handler state time station mac
+            let event = handler state time station mac
+            liftIO $ writeToChan (sensorChan state) event
             receive state
 
-handler :: SensorState -> UTCTime -> Mac -> Mac -> IO ()
-handler state time station baton = do
-    when (isJust station' && isJust baton') $
-        writeChan (sensorChan state) $ SensorEvent time st bt
-  where
-    station' = M.lookup station $ stationMap state
-    baton'   = M.lookup baton   $ batonMap   state
-    st       = fromJust station'
-    bt       = fromJust baton'
+writeToChan :: Chan SensorEvent -> Maybe SensorEvent -> IO ()
+writeToChan _ Nothing = return ()
+writeToChan chan (Just event) = writeChan chan event
 
+handler :: SensorState -> UTCTime -> Mac -> Mac -> Maybe SensorEvent
+handler state time station baton = do
+    st <- M.lookup station $ stationMap state
+    bt <- M.lookup baton   $ batonMap   state
+    return $ SensorEvent time st bt
 
 
 
