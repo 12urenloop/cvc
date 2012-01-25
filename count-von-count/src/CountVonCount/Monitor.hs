@@ -5,16 +5,16 @@ module CountVonCount.Monitor
 
 import Control.Applicative ((<$>))
 import Control.Concurrent (threadDelay)
-import Control.Monad (forM,forM_,forever)
+import Control.Monad (forM,forM_,forever,when)
 import Data.IORef
 import System.Exit (ExitCode (ExitSuccess))
 import System.IO
-import System.Process (runInteractiveCommand,system)
+import System.Process (runInteractiveCommand,system,ProcessHandle)
 
 import CountVonCount.Config
 import CountVonCount.Types
 
-type Monitor = [(Station,StationState)]
+type Monitor = [(Station, StationState)]
 
 data StationState = StationState
     { online :: IORef Bool
@@ -37,24 +37,46 @@ newMonitor config =
 runMonitor :: Monitor -> IO ()
 runMonitor monitor = forever $ do
     forM_ monitor $ \(station, state) -> do
-        pingHost station state
-        connect station
+        putStrLn $ "Checking " ++ (show station)
+        hostOnline <- pingHost station
+        when hostOnline $ do
+            conn <- newConnection station
+            load <- checkLoad conn
+            closeConnection conn
+            putStrLn $ show (hostOnline, load)
+        return ()
+
     threadDelay 10000000 -- 10 seconds
 
-pingHost :: Station -> StationState -> IO ()
-pingHost station state = do
-    code <- system $ "ping -c 1 " ++ stationName station ++ " >/dev/null 2>&1"
-    writeIORef (online state) $ code == ExitSuccess
+data Connection = Conn Handle Handle Handle ProcessHandle
 
-connect :: Station -> IO ()
-connect station = do
+newConnection :: Station -> IO Connection
+newConnection station = do
     let sshCommand = "ssh " ++ stationName station ++ " sh"
+    (pin, pout, perr, pid) <- runInteractiveCommand sshCommand
 
-    (pin, pout, perr, _) <- runInteractiveCommand sshCommand
+    -- configure handles
     mapM_ (flip hSetBinaryMode False) [pin, pout, perr]
     hSetBuffering pin LineBuffering
     hSetBuffering pout LineBuffering
 
-    hPutStrLn pin "echo hello"
-    hGetLine pout >>= print
-    hClose pin
+    return $ Conn pin pout perr pid
+
+closeConnection :: Connection -> IO ()
+closeConnection conn = do
+    return ()
+
+runCommand :: Connection -> String -> IO String
+runCommand (Conn pin pout _ _) cmd = do
+    hPutStrLn pin cmd
+    hGetLine pout
+
+pingHost :: Station -> IO Bool
+pingHost station = do
+    code <- system $ "ping -c 1 " ++ stationName station ++ " >/dev/null 2>&1"
+    return $ code == ExitSuccess
+
+checkLoad :: Connection -> IO Double
+checkLoad conn = do
+    load <- runCommand conn "uptime"
+    return 0.0

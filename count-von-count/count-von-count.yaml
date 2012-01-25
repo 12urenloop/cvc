@@ -37,7 +37,7 @@ batons:
       mac: "00:00:00:00:00:0a"
 
 stations:
-    - name:     "gyrid-1"
+    - name:     "localhost"
       mac:      "00:00:00:00:01:00"
       position: 0
 
