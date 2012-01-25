@@ -29,7 +29,10 @@ main = do
     -- Connecting the sensor to the counter
     sensorChan <- newChan
 
+    -- Initialize the monitoring state
+    monitor <- newMonitor config
+
     _      <- forkIO $ Sensor.listen config sensorChan
     _      <- forkIO $ counter config counterHandler sensorChan
-    _      <- forkIO $ monitor config
+    -- _   <- forkIO $ runMonitor monitor
     Web.listen config pubSub
