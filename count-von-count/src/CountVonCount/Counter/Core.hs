@@ -7,6 +7,7 @@ module CountVonCount.Counter.Core
     , stepCounter
     ) where
 
+import Data.Fixed (mod')
 import Data.Time (UTCTime, diffUTCTime)
 
 import CountVonCount.Types
@@ -21,11 +22,11 @@ isLap (Lap _) = True
 isLap _       = False
 
 data Counter = Counter
-    { counterEvents :: [SensorEvent]
+    { sensorEvents :: [SensorEvent]
     } deriving (Show)
 
 emptyCounter :: Counter
-emptyCounter = Counter {counterEvents = []}
+emptyCounter = Counter {sensorEvents = []}
 
 stepCounter :: Double
             -> SensorEvent
@@ -48,13 +49,13 @@ stepCounter circuitLength event state
         ([], state)
     -- We have an actual lap!
     | otherwise               =
-        ([Progression time station lapSpeed, Lap time], Counter [event])
+        ([Progression time station speed, Lap time], Counter [event])
   where
-    Counter events                           = state
-    SensorEvent time station _               = event
-    (SensorEvent lastTime lastStation _ : _) = events
-    Station _ _ position                     = station
-    Station _ _ lastPosition                 = lastStation
+    Counter events                     = state
+    SensorEvent time station _         = event
+    SensorEvent lastTime lastStation _ = head events
+    Station _ _ position               = station
+    Station _ _ lastPosition           = lastStation
 
     SensorEvent lapStart _ _ = last events
     lapTime                  = time `diffUTCTime` lapStart
@@ -62,9 +63,8 @@ stepCounter circuitLength event state
     falseLap = (lastPosition - position) < minimumDrop ||
         lapTime < minimumLapTime
 
-    speed    = (position - lastPosition) / (time `diffTime` lastTime)
-    lapSpeed = (position - lastPosition + circuitLength) /
-        (time `diffTime` lastTime)
+    speed = ((position - lastPosition) `mod'` circuitLength) /
+            (time `diffTime` lastTime)
 
     minimumDrop    = circuitLength / 2   -- TODO: configurable
     minimumLapTime = 10                  -- TODO: configurable

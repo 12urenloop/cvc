@@ -36,7 +36,7 @@ instance Eq Station where
     s1 == s2 = stationMac s1 == stationMac s2
 
 instance Ord Station where
-    compare = comparing stationMac
+    compare = comparing stationPosition
 
 instance ToJSON Station where
     toJSON (Station name mac position) = A.object
