@@ -95,7 +95,7 @@ receive state = do
             receive state
 
 writeToChan :: Chan SensorEvent -> Maybe SensorEvent -> IO ()
-writeToChan _ Nothing = return ()
+writeToChan _     Nothing     = return ()
 writeToChan chan (Just event) = writeChan chan event
 
 handler :: SensorState -> UTCTime -> Mac -> Mac -> Maybe SensorEvent
