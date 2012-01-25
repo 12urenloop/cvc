@@ -59,5 +59,5 @@ step conf logger handler event cmap
             forM_ events $ \event' -> do
                 liftIO $ do
                     handler team event'
-                    logPutStrLn logger $ "Counter: adding lap for " ++ show team
+                    logStr logger "Counter" $ "adding lap for " ++ show team
                 when (isLap event') $ put ref $ addLap team

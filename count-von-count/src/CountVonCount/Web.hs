@@ -83,8 +83,8 @@ assign = do
         logger       <- webLog <$> ask
         runPersistence $ do
             team  <- get teamRef
-            liftIO $ logPutStrLn logger $
-                "Web: assigning " ++ show mac ++ " to " ++ show team
+            liftIO $ logStr logger "Web" $
+                "assigning " ++ show mac ++ " to " ++ show team
             put teamRef $ team {teamBaton = Just (T.decodeUtf8 mac)}
 
     Snap.redirect "/management"

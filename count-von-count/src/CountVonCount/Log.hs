@@ -2,8 +2,8 @@ module CountVonCount.Log
     ( Log
     , openLog
     , closeLog
-    , logPutStrLn
-    , logPutStrLnRaw
+    , logStr
+    , logRaw
     ) where
 
 import Control.Applicative ((<$>), (<*>))
@@ -54,14 +54,17 @@ closeLog logger = do
     takeMVar (logStop logger)
 
 -- | Write a message to the log. This function will prepend the current time.
-logPutStrLn :: Log -> String -> IO ()
-logPutStrLn logger str = do
+logStr :: Log      -- ^ Log handle to write to
+       -> String   -- ^ Name of the component (usually canonical module name)
+       -> String   -- ^ Actual message
+       -> IO ()    -- ^ Returns immediately
+logStr logger component str = do
     tz  <- Time.getCurrentTimeZone
     utc <- Time.getCurrentTime
     let time = Time.utcToLocalTime tz utc
         fmt  = Time.formatTime defaultTimeLocale "[%H:%M:%S]" time
-    logPutStrLnRaw logger $ fmt ++ " " ++ str
+    logRaw logger $ fmt ++ " " ++ component ++ ": " ++ str
 
 -- | Write a raw line to the log.
-logPutStrLnRaw :: Log -> String -> IO ()
-logPutStrLnRaw logger = writeChan (logChan logger) . LogString
+logRaw :: Log -> String -> IO ()
+logRaw logger = writeChan (logChan logger) . LogString

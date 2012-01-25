@@ -21,7 +21,7 @@ main = do
     config    <- readConfigFile "count-von-count.yaml"
     mainLog   <- openLog $ configLog config
     replayLog <- openLog $ configReplayLog config
-    logPutStrLn mainLog "Main: count-von-count started"
+    logStr mainLog "Main" "count-von-count started"
 
     -- Create the pubsub system
     pubSub <- newPubSub
@@ -34,7 +34,7 @@ main = do
     -- Connecting the sensor to the counter
     sensorChan <- newChan
     let sensorHandler event = do
-            logPutStrLnRaw replayLog $ toReplay event
+            logRaw replayLog $ toReplay event
             writeChan sensorChan event
 
     -- Initialize the monitoring state
