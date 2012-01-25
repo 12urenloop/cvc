@@ -65,17 +65,16 @@ management teams batons = template "Teams" $ block "management" $ do
         let assignUri = "/team/" ++ refToString ref ++ "/assign"
 
         H.toHtml $ teamName team
+        " "
+        H.span ! A.class_ "soft" $ do
+            "("
+            maybe "no baton" (H.toHtml . batonName) assigned
+            ")"
 
         postForm assignUri $ do
             H.select ! A.name "baton" $ do
-                case assigned of
-                    Just baton ->
-                        H.option ! A.value (macValue baton)
-                                 ! A.selected "selected" $
-                            H.toHtml (batonName baton)
-                    _          ->
-                        H.option ! A.value "" ! A.selected "selected" $ ""
-
+                H.option ! A.value "" ! A.selected "selected" $
+                    "Choose baton..."
                 forM_ batons $ \baton ->
                     H.option ! A.value (macValue baton) $
                         H.toHtml (batonName baton)

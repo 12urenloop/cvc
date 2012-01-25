@@ -1,6 +1,7 @@
 html {
     font-family: sans-serif;
     font-size: 16px;
+    color: #222;
 }
 
 body {
@@ -55,6 +56,10 @@ div#footer {
     margin: 18px 0px 60px 0px;
 }
 
+span.soft {
+    color: #777;
+}
+
 /*******************************************************************************
 * Monitor                                                                      *
 *******************************************************************************/
@@ -78,10 +83,10 @@ div#monitor div.team div.laps {
 *******************************************************************************/
 
 div#management div.team {
-    margin-bottom: 12px;
+    margin-bottom: 18px;
     width: 300px;
 }
 
-div#management div.team div.assign form {
-    float: right;
+div#management div.team form {
+    margin-top: 6px;
 }
