@@ -41,7 +41,7 @@ data WebEnv = WebEnv
 type Web = ReaderT WebEnv Snap.Snap
 
 index :: Web ()
-index = Snap.blaze Views.index
+index = Snap.redirect "/monitor"
 
 config :: Web ()
 config = do
