@@ -53,6 +53,6 @@ step conf handler event cmap
     process events = runPersistence $ do
         mteam <- getTeamByMac (batonMac . sensorBaton $ event)
         forM_ mteam $ \(ref, team) ->
-            forM_ events $ \event -> do
-                liftIO $ handler team event
-                when (isLap event) $ put ref $ addLap team
+            forM_ events $ \event' -> do
+                liftIO $ handler team event'
+                when (isLap event') $ put ref $ addLap team

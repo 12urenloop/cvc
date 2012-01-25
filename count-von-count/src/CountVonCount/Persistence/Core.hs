@@ -26,6 +26,7 @@ type Persistence = MDB.Action IO
 runPersistence :: MonadIO m => Persistence a -> m a
 runPersistence p = liftIO $ do
     -- TODO: show a more descriptive error message when failing?
+    -- TODO: pool and re-use connections
     pipe <- MDB.runIOE $ MDB.connect $ MDB.host "127.0.0.1"
     x    <- MDB.access pipe MDB.master "count-von-count" p
     MDB.close pipe

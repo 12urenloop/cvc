@@ -43,7 +43,7 @@ listen :: Config
        -> Chan SensorEvent
        -> IO ()
 listen conf chan = do
-    putStrLn $ "Sensor: listening..."
+    putStrLn "Sensor: listening..."
 
     sock <- S.socket S.AF_INET S.Stream S.defaultProtocol
     _    <- S.setSocketOption sock S.ReuseAddr 1

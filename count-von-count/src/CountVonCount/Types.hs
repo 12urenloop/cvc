@@ -9,6 +9,7 @@ module CountVonCount.Types
 
 import Control.Applicative ((<$>),(<*>))
 import Control.Monad (mzero)
+import Data.Ord (comparing)
 import Data.Text (Text)
 import Data.Time (UTCTime)
 import Text.Printf (printf)
@@ -31,7 +32,7 @@ instance Eq Station where
     s1 == s2 = stationMac s1 == stationMac s2
 
 instance Ord Station where
-    l `compare` r = stationMac l `compare` stationMac r
+    compare = comparing stationMac
 
 instance ToJSON Station where
     toJSON (Station name mac position) = A.object
@@ -54,7 +55,7 @@ data Baton = Baton
     } deriving (Eq, Show)
 
 instance Ord Baton where
-  l `compare` r = batonNr l `compare` batonNr r
+    compare = comparing batonNr
 
 instance ToJSON Baton where
     toJSON (Baton mac nr) = A.object ["mac" .= mac, "nr" .= nr]

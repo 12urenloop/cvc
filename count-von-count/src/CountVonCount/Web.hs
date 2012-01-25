@@ -8,7 +8,7 @@ import Control.Arrow ((&&&))
 import Control.Monad (unless)
 import Control.Monad.Reader (ReaderT, ask, runReaderT)
 import Data.List (sort, sortBy)
-import Data.Maybe (catMaybes)
+import Data.Maybe (mapMaybe)
 import Data.Ord (comparing)
 import qualified Data.Map as M
 
@@ -68,7 +68,7 @@ management = do
         withBatons = flip map teams $ \(ref, team) ->
             (ref, team, teamBaton team >>= flip M.lookup batonMap)
         freeBatons = map snd $ M.toList $ foldl (flip M.delete) batonMap $
-            catMaybes $ map (teamBaton . snd) teams
+            mapMaybe (teamBaton . snd) teams
 
     Snap.blaze $ Views.management withBatons freeBatons
 
