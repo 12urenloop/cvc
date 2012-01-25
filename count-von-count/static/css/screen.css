@@ -23,6 +23,10 @@ h2 {
     padding: 0px;
 }
 
+p {
+    margin: 0px 0px 12px 0px;
+}
+
 div#header {
     background-color: #444;
 }
@@ -84,9 +88,26 @@ div#monitor div.team div.laps {
 
 div#management div.team {
     margin-bottom: 18px;
-    width: 300px;
+    width: 400px;
 }
 
-div#management div.team form {
+div#management div.controls {
     margin-top: 6px;
+}
+
+div#management div.team div.controls form {
+    display: inline;
+    margin-right: 24px;
+}
+
+/*******************************************************************************
+* Bonus                                                                        *
+*******************************************************************************/
+
+div#bonus label {
+    display: block;
+}
+
+div#bonus input {
+    margin-bottom: 12px;
 }

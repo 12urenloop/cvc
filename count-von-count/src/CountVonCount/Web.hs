@@ -15,6 +15,8 @@ import qualified Data.Map as M
 
 import qualified Data.Aeson as A
 import qualified Data.ByteString as B
+import qualified Data.ByteString.Char8 as BC
+import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Network.WebSockets as WS
 import qualified Network.WebSockets.Snap as WS
@@ -86,18 +88,41 @@ assign = do
             team  <- get teamRef
             liftIO $ Log.string logger $
                 "assigning " ++ show mac ++ " to " ++ show team
-            put teamRef $ team {teamBaton = Just (T.decodeUtf8 mac)}
+            put teamRef team {teamBaton = Just (T.decodeUtf8 mac)}
 
     Snap.redirect "/management"
 
+bonus :: Web ()
+bonus = do
+    Just teamRef <- refFromParam "id"
+    laps         <- Snap.getParam "laps"
+    reason       <- Snap.getParam "reason"
+    logger       <- webLog <$> ask
+    case (laps, reason) of
+        -- Success
+        (Just l, Just r) -> do
+            let laps'   = read $ BC.unpack l
+                reason' = T.decodeUtf8 r
+            runPersistence $ do
+                team <- get teamRef
+                put teamRef team {teamLaps = teamLaps team + laps'}
+                liftIO $ Log.string logger $ show laps' ++ " bonus laps to " ++
+                    show team ++ " because " ++ T.unpack reason'
+            Snap.redirect "/management"
+        -- Render form
+        _                -> do
+            team <- runPersistence $ get teamRef
+            Snap.blaze $ Views.bonus teamRef team
+
 site :: Web ()
 site = Snap.route
-    [ ("",                   Snap.ifTop index)
-    , ("/config.json",       config)
-    , ("/monitor",           monitor)
-    , ("/feed",              feed)
-    , ("/management",        management)
-    , ("/team/:id/assign",   assign)
+    [ ("",                 Snap.ifTop index)
+    , ("/config.json",     config)
+    , ("/monitor",         monitor)
+    , ("/feed",            feed)
+    , ("/management",      management)
+    , ("/team/:id/assign", assign)
+    , ("/team/:id/bonus",  bonus)
     ] <|> Snap.serveDirectory "static"
 
 listen :: Config -> Log -> PubSub -> IO ()

@@ -4,6 +4,7 @@ module CountVonCount.Web.Views
     ( index
     , monitor
     , management
+    , bonus
     ) where
 
 import Control.Monad (forM_)
@@ -30,7 +31,6 @@ template title content = H.docTypeHtml $ do
             block "navigation" $ do
                 linkTo "/monitor"    "Monitor"
                 linkTo "/management" "Management"
-                linkTo "/bonus"      "Bonus"
 
         block "content" content
 
@@ -63,6 +63,7 @@ management teams batons = template "Teams" $ block "management" $ do
     H.h1 "Teams"
     forM_ teams $ \(ref, team, assigned) -> H.div ! A.class_ "team" $ do
         let assignUri = "/team/" ++ refToString ref ++ "/assign"
+            bonusUri  = "/team/" ++ refToString ref ++ "/bonus"
 
         H.toHtml $ teamName team
         " "
@@ -71,14 +72,38 @@ management teams batons = template "Teams" $ block "management" $ do
             maybe "no baton" (H.toHtml . batonName) assigned
             ")"
 
-        postForm assignUri $ do
-            H.select ! A.name "baton" $ do
-                H.option ! A.value "" ! A.selected "selected" $
-                    "Choose baton..."
-                forM_ batons $ \baton ->
-                    H.option ! A.value (macValue baton) $
-                        H.toHtml (batonName baton)
+        H.div ! A.class_ "controls" $ do
+            postForm bonusUri $
+                H.input ! A.type_ "submit" ! A.value "Add bonus"
 
-            H.input ! A.type_ "submit" ! A.value "Assign"
+            postForm assignUri $ do
+                H.select ! A.name "baton" $ do
+                    H.option ! A.value "" ! A.selected "selected" $
+                        "Choose baton..."
+                    forM_ batons $ \baton ->
+                        H.option ! A.value (macValue baton) $
+                            H.toHtml (batonName baton)
+
+                H.input ! A.type_ "submit" ! A.value "Assign"
   where
     macValue = H.toValue . batonMac
+
+bonus :: Ref Team -> Team -> Html
+bonus ref team = template "Add bonus" $ block "bonus" $ do
+    let bonusUri  = "/team/" ++ refToString ref ++ "/bonus"  -- TODO: cleanup
+
+    H.h1 "Add bonus"
+    H.p $ do
+        "Specify bonus for "
+        H.toHtml $ teamName team
+        ":"
+    postForm bonusUri $ do
+        H.label ! A.for "laps" $ "Laps:"
+        H.input ! A.name "laps" ! A.id "laps"
+            ! A.type_ "text" ! A.size "5" ! A.value "1"
+        H.br
+        H.label ! A.for "reason" $ "Because:"
+        H.input ! A.name "reason" ! A.id "reason"
+            ! A.type_ "text" ! A.size "30" ! A.value ""
+        H.br
+        H.input ! A.type_ "submit" ! A.value "Add bonus"
