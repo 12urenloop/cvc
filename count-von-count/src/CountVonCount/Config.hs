@@ -18,6 +18,8 @@ import CountVonCount.Types
 data Config = Config
     { configCircuitLength :: Double
     , configSensorPort    :: Int
+    , configLog           :: FilePath
+    , configReplayLog     :: FilePath
     , configStations      :: [Station]
     , configBatons        :: [Baton]
     } deriving (Show)
@@ -26,6 +28,8 @@ instance ToJSON Config where
     toJSON conf = A.object
         [ "circuitLength" .= configCircuitLength conf
         , "sensorPort"    .= configSensorPort    conf
+        , "log"           .= configLog           conf
+        , "replayLog"     .= configReplayLog     conf
         , "stations"      .= configStations      conf
         , "batons"        .= configBatons        conf
         ]
@@ -34,6 +38,8 @@ instance FromJSON Config where
     parseJSON (A.Object o) = Config <$>
         o .:? "circuitLength" .!= configCircuitLength defaultConfig <*>
         o .:? "sensorPort"    .!= configSensorPort    defaultConfig <*>
+        o .:? "log"           .!= configLog           defaultConfig <*>
+        o .:? "replayLog"     .!= configReplayLog     defaultConfig <*>
         o .:? "stations"      .!= configStations      defaultConfig <*>
         o .:? "batons"        .!= configBatons        defaultConfig
 
@@ -43,6 +49,8 @@ defaultConfig :: Config
 defaultConfig = Config
     { configCircuitLength = 400
     , configSensorPort    = 9001
+    , configLog           = "log/count-von-count.log"
+    , configReplayLog     = "log/replay.log"
     , configStations      = []
     , configBatons        = []
     }

@@ -1,6 +1,6 @@
 module CountVonCount.Log
     ( Log
-    , newLog
+    , openLog
     , closeLog
     , logPutStrLn
     , logPutStrLnRaw
@@ -27,8 +27,8 @@ data Log = Log
     }
 
 -- | Open a new log file. New content is appended.
-newLog :: FilePath -> IO Log
-newLog filePath = do
+openLog :: FilePath -> IO Log
+openLog filePath = do
     logger <- Log <$> newChan <*> newEmptyMVar
     handle <- IO.openFile filePath IO.AppendMode
     _      <- forkIO $ writer logger handle

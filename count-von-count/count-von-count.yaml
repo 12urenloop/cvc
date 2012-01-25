@@ -2,6 +2,9 @@ circuitLength: 400
 
 sensorPort: 9001
 
+log:       log/count-von-count.log
+replayLog: log/replay.log
+
 batons:
     - nr:  1
       mac: "00:00:00:00:00:01"

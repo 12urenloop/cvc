@@ -3,19 +3,23 @@ module CountVonCount.Types
     ( Mac
     , Station (..)
     , SensorEvent (..)
+    , toReplay
     , Baton (..)
     , batonName
     ) where
 
 import Control.Applicative ((<$>),(<*>))
 import Control.Monad (mzero)
+import Data.List (intercalate)
 import Data.Ord (comparing)
-import Data.Text (Text)
-import Data.Time (UTCTime)
+import System.Locale (defaultTimeLocale)
 import Text.Printf (printf)
 
 import Data.Aeson (FromJSON (..), ToJSON (..), (.:), (.=))
+import Data.Text (Text)
+import Data.Time (UTCTime, formatTime)
 import qualified Data.Aeson as A
+import qualified Data.Text as T
 
 type Mac = Text
 
@@ -48,6 +52,15 @@ data SensorEvent = SensorEvent
     , sensorStation :: Station
     , sensorBaton   :: Baton
     } deriving (Show)
+
+-- | Format a 'SensorEvent' in order to be readable by the replay log
+toReplay :: SensorEvent -> String
+toReplay event = intercalate ","
+    [ "REPLAY"
+    , formatTime defaultTimeLocale "%s" (sensorTime event)
+    , T.unpack $ stationMac (sensorStation event)
+    , T.unpack $ batonMac (sensorBaton event)
+    ]
 
 data Baton = Baton
     { batonMac  :: Mac
