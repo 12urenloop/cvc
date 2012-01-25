@@ -14,13 +14,13 @@ data FeedEvent
     deriving (Show)
 
 eventType :: FeedEvent -> Text
-eventType (CounterEvent _ (Lap _))             = "lap"
+eventType (CounterEvent _ (Lap _ _))           = "lap"
 eventType (CounterEvent _ (Progression _ _ _)) = "progression"
 
 instance ToJSON FeedEvent where
     toJSON e = object $ ("type" .= eventType e) : case e of
-        (CounterEvent team (Lap time))         ->
-            ["team" .= team, "time" .= time]
+        (CounterEvent team (Lap time lapTime))         ->
+            ["team" .= team, "time" .= time, "lapTime" .= lapTime]
         (CounterEvent team (Progression time station speed)) ->
             [ "team" .= team, "time" .= time
             , "station" .= station, "speed" .= speed

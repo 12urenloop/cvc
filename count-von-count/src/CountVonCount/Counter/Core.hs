@@ -14,12 +14,12 @@ import CountVonCount.Types
 
 data CounterEvent
     = Progression UTCTime Station Double
-    | Lap UTCTime
+    | Lap UTCTime Double
     deriving (Show)
 
 isLap :: CounterEvent -> Bool
-isLap (Lap _) = True
-isLap _       = False
+isLap (Lap _ _) = True
+isLap _         = False
 
 data Counter = Counter
     { sensorEvents :: [SensorEvent]
@@ -49,7 +49,7 @@ stepCounter circuitLength event state
         ([], state)
     -- We have an actual lap!
     | otherwise               =
-        ([Progression time station speed, Lap time], Counter [event])
+        ([Progression time station speed, Lap time lapTime], Counter [event])
   where
     Counter events                     = state
     SensorEvent time station _         = event
@@ -58,7 +58,8 @@ stepCounter circuitLength event state
     Station _ _ lastPosition           = lastStation
 
     SensorEvent lapStart _ _ = last events
-    lapTime                  = time `diffUTCTime` lapStart
+    lapTime                  = fromRational $ toRational $
+        time `diffUTCTime` lapStart
 
     falseLap = (lastPosition - position) < minimumDrop ||
         lapTime < minimumLapTime
