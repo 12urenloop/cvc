@@ -1,4 +1,5 @@
 {-# LANGUAGE OverloadedStrings, ScopedTypeVariables #-}
+{-# OPTIONS_GHC -fno-warn-unused-do-bind #-}
 module CountVonCount.Persistence
     ( module CountVonCount.Persistence.Core
     , Team (..)
@@ -13,6 +14,24 @@ import qualified Database.MongoDB as MDB
 
 import CountVonCount.Types
 import CountVonCount.Persistence.Core
+
+data Lap = Lap
+    { lapTeam   :: Ref Team
+    , lapReason :: Text
+    , lapCount  :: Int
+    }
+
+instance IsDocument Lap where
+    collection _     = "laps"
+    toDocument lap   =
+        [ "team"   MDB.=: refToString (lapTeam lap)
+        , "reason" MDB.=: T.unpack (lapReason lap)
+        , "count"  MDB.=: lapCount lap
+        ]
+    fromDocument doc = Lap
+        (refFromString $ MDB.at "team" doc)
+        (T.pack $ MDB.at "reason" doc)
+        (MDB.at "count" doc)
 
 data Team = Team
     { teamId    :: Int
@@ -42,8 +61,15 @@ instance IsDocument Team where
         (MDB.at "laps" doc)
         (fmap T.pack $ MDB.at "baton" doc)
 
-addLap :: Team -> Team
-addLap team = team {teamLaps = teamLaps team + 1}
+addLaps :: Ref Team -> Text -> Int -> Persistence ()
+addLaps ref reason c = do
+    team   <- get ref
+    add $ Lap ref reason c
+    put ref $ team { teamLaps = teamLaps team + c}
+
+
+addLap :: Ref Team -> Persistence ()
+addLap team = addLaps team "counted lap" 1
 
 getTeamByMac :: Mac -> Persistence (Maybe (Ref Team, Team))
 getTeamByMac m = do

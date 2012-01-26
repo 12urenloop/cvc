@@ -61,4 +61,4 @@ step cl logger handler event cmap
                     Log.string logger $ case event' of
                         Progression _ s _ -> show team ++ " @ " ++ show s
                         Lap _ _           -> "Lap for " ++ show team
-                when (isLap event') $ put ref $ addLap team
+                when (isLap event') $ addLap ref
