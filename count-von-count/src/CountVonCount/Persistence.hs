@@ -19,17 +19,17 @@ data Lap = Lap
     { lapTeam   :: Ref Team
     , lapReason :: Text
     , lapCount  :: Int
-    }
+    } deriving (Show)
 
 instance IsDocument Lap where
     collection _     = "laps"
     toDocument lap   =
-        [ "team"   MDB.=: refToString (lapTeam lap)
+        [ "team"   MDB.:= lapTeam lap
         , "reason" MDB.=: T.unpack (lapReason lap)
         , "count"  MDB.=: lapCount lap
         ]
     fromDocument doc = Lap
-        (refFromString $ MDB.at "team" doc)
+        (MDB.valueAt "team" doc)
         (T.pack $ MDB.at "reason" doc)
         (MDB.at "count" doc)
 
@@ -63,10 +63,9 @@ instance IsDocument Team where
 
 addLaps :: Ref Team -> Text -> Int -> Persistence ()
 addLaps ref reason c = do
-    team   <- get ref
+    team <- get ref
     add $ Lap ref reason c
-    put ref $ team { teamLaps = teamLaps team + c}
-
+    put ref $ team {teamLaps = teamLaps team + c}
 
 addLap :: Ref Team -> Persistence ()
 addLap team = addLaps team "counted lap" 1
