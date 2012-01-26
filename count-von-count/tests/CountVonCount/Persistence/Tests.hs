@@ -21,7 +21,7 @@ testPersistence x =
 
 test01 :: Assertion
 test01 = testPersistence $ do
-    let x = Team "wina" 4 Nothing
+    let x = Team 1 "wina" 4 Nothing
     r  <- add x
     x' <- get r
     return $ x == x'

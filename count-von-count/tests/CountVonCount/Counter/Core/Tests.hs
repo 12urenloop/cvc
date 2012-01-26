@@ -1,5 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
-module CountVonCount.Analyze.Tests
+module CountVonCount.Counter.Core.Tests
     ( tests
     ) where
 
@@ -7,14 +7,15 @@ import Data.List (mapAccumL)
 import Data.Time (Day (..), UTCTime (..))
 import Test.Framework (Test, testGroup)
 import Test.Framework.Providers.HUnit (testCase)
-import Test.HUnit (Assertion, assert)
+import Test.HUnit (Assertion, (@=?))
 
 import Data.ByteString.Char8 ()
 
-import CountVonCount.Analyze
+import CountVonCount.Counter.Core
+import CountVonCount.Types
 
 tests :: Test
-tests = testGroup "CountVonCount.Analyze.Tests"
+tests = testGroup "CountVonCount.Counter.Core.Tests"
     [ testCase "test01" test01
     , testCase "test02" test02
     ]
@@ -35,21 +36,20 @@ fromSeconds :: Int -> UTCTime
 fromSeconds = UTCTime (ModifiedJulianDay 0) . fromIntegral
 
 sensorEvent :: Int -> Station -> SensorEvent
-sensorEvent = SensorEvent . fromSeconds
+sensorEvent time station = SensorEvent (fromSeconds time) station $
+    error "Baton is irrelevant"
 
-simulate :: [SensorEvent] -> [AnalyzerEvent]
-simulate = concat . snd . mapAccumL step emptyAnalyzerState
+simulate :: [SensorEvent] -> [CounterEvent]
+simulate = concat . snd . mapAccumL step emptyCounter
   where
-    step acc x = let (ys, acc') = stepAnalyzer x acc in (acc', ys)
+    stepCounter' = stepCounter 400
+    step acc x   = let (ys, acc') = stepCounter' x acc in (acc', ys)
+
+numLaps :: [CounterEvent] -> Int
+numLaps = length . filter isLap
 
 test01 :: Assertion
-test01 = assert $ case simulate events of
-    [     Progression _ _ _
-        , Progression _ _ _
-        , Progression _ _ _
-        , Lap         _
-        ] -> True
-    _     -> False
+test01 = 1 @=? numLaps (simulate events)
   where
     events =
         [ sensorEvent  0 station0
@@ -60,9 +60,7 @@ test01 = assert $ case simulate events of
         ]
 
 test02 :: Assertion
-test02 = assert $ case simulate events of
-    [Progression _ _ _] -> True
-    _                   -> False
+test02 = 0 @=? numLaps (simulate events)
   where
     events =
         [ sensorEvent  0 station0
