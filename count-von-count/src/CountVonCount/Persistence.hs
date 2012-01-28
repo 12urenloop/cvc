@@ -2,6 +2,7 @@
 {-# OPTIONS_GHC -fno-warn-unused-do-bind #-}
 module CountVonCount.Persistence
     ( module CountVonCount.Persistence.Core
+    , Lap (..)
     , Team (..)
     , addLap
     , addLaps

@@ -5,7 +5,7 @@ module CountVonCount.Web
 
 import Control.Applicative ((<$>), (<|>))
 import Control.Arrow ((&&&))
-import Control.Monad (unless)
+import Control.Monad (forM, unless)
 import Control.Monad.Reader (ReaderT, ask, runReaderT)
 import Control.Monad.Trans (liftIO)
 import Data.List (sort, sortBy)
@@ -78,6 +78,16 @@ management = do
 
     Snap.blaze $ Views.management withBatons freeBatons
 
+laps :: Web ()
+laps = do
+    laps' <- runPersistence $ do
+        laps' <- getLaps 0 20
+        forM laps' $ \lap -> do
+            team <- get $ lapTeam lap
+            return (lap, team)
+
+    Snap.blaze $ Views.laps laps'
+
 assign :: Web ()
 assign = do
     Just mac <- Snap.getParam "baton"
@@ -95,15 +105,15 @@ assign = do
 bonus :: Web ()
 bonus = do
     Just teamRef <- refFromParam "id"
-    laps         <- Snap.getParam "laps"
-    reason       <- Snap.getParam "reason"
-    case (laps, reason) of
+    mlaps        <- Snap.getParam "laps"
+    mreason      <- Snap.getParam "reason"
+    case (mlaps, mreason) of
         -- Success
         (Just l, Just r) -> do
-            let laps'   = read $ BC.unpack l
-                reason' = T.decodeUtf8 r
+            let laps'  = read $ BC.unpack l
+                reason = T.decodeUtf8 r
             timestamp <- liftIO getCurrentTime 
-            runPersistence $ addLaps teamRef timestamp reason' laps'
+            runPersistence $ addLaps teamRef timestamp reason laps'
             Snap.redirect "/management"
         -- Render form
         _                -> do
@@ -117,6 +127,7 @@ site = Snap.route
     , ("/monitor",         monitor)
     , ("/feed",            feed)
     , ("/management",      management)
+    , ("/laps",            laps)
     , ("/team/:id/assign", assign)
     , ("/team/:id/bonus",  bonus)
     ] <|> Snap.serveDirectory "static"

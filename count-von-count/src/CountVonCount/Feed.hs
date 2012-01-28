@@ -7,7 +7,7 @@ import Data.Text (Text)
 import Data.Aeson (ToJSON (..), object, (.=))
 
 import CountVonCount.Counter.Core
-import CountVonCount.Persistence
+import CountVonCount.Persistence (Team (..))
 
 data FeedEvent
     = CounterEvent Team CounterEvent

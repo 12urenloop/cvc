@@ -17,13 +17,13 @@ import Data.Foldable (forM_)
 import CountVonCount.Counter.Core
 import CountVonCount.Counter.Map
 import CountVonCount.Log (Log)
-import CountVonCount.Persistence
 import CountVonCount.Types
 import qualified CountVonCount.Log as Log
+import qualified CountVonCount.Persistence as P
 
 counter :: Double
         -> Log
-        -> (Team -> CounterEvent -> IO ())
+        -> (P.Team -> CounterEvent -> IO ())
         -> Chan SensorEvent
         -> IO ()
 counter cl logger handler chan = loop emptyCounterMap
@@ -36,7 +36,7 @@ counter cl logger handler chan = loop emptyCounterMap
 
 step :: Double
      -> Log
-     -> (Team -> CounterEvent -> IO ())
+     -> (P.Team -> CounterEvent -> IO ())
      -> SensorEvent
      -> CounterMap
      -> IO CounterMap
@@ -51,8 +51,8 @@ step cl logger handler event cmap
     ignoreBaton = const False  -- TODO
 
     process []     = return ()
-    process events = runPersistence $ do
-        mteam <- getTeamByMac (batonMac . sensorBaton $ event)
+    process events = P.runPersistence $ do
+        mteam <- P.getTeamByMac (batonMac . sensorBaton $ event)
         forM_ mteam $ \(ref, team) ->
             forM_ events $ \event' -> do
                 liftIO $ do
@@ -63,5 +63,5 @@ step cl logger handler event cmap
     
                 -- Add the lap in the database
                 case event' of
-                    Lap timestamp _ -> addLap ref timestamp
+                    Lap timestamp _ -> P.addLap ref timestamp
                     _               -> return ()

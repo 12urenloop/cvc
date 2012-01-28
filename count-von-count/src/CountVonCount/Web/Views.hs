@@ -4,6 +4,7 @@ module CountVonCount.Web.Views
     ( index
     , monitor
     , management
+    , laps
     , bonus
     ) where
 
@@ -31,6 +32,7 @@ template title content = H.docTypeHtml $ do
             block "navigation" $ do
                 linkTo "/monitor"    "Monitor"
                 linkTo "/management" "Management"
+                linkTo "/laps"       "Laps"
 
         block "content" content
 
@@ -89,6 +91,19 @@ management teams batons = template "Teams" $ block "management" $ do
                 H.input ! A.type_ "submit" ! A.value "Assign"
   where
     macValue = H.toValue . batonMac
+
+laps :: [(Lap, Team)] -> Html
+laps laps' = template "Laps" $ block "laps" $ do
+    H.h1 "Laps"
+    H.table $ do
+        H.tr $ do
+            H.th "Team name"
+            H.th "Reason given"
+            H.th "Count"
+        forM_ laps' $ \(lap, team) -> H.tr $ do
+            H.td $ H.toHtml $ teamName team
+            H.td $ H.toHtml $ lapReason lap
+            H.td $ H.toHtml $ lapCount lap
 
 bonus :: Ref Team -> Team -> Html
 bonus ref team = template "Add bonus" $ block "bonus" $ do
