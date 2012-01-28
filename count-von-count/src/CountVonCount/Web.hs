@@ -13,10 +13,10 @@ import Data.Maybe (mapMaybe)
 import Data.Ord (comparing)
 import qualified Data.Map as M
 
+import Data.Time (getCurrentTime)
 import qualified Data.Aeson as A
 import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as BC
-import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Network.WebSockets as WS
 import qualified Network.WebSockets.Snap as WS
@@ -97,17 +97,13 @@ bonus = do
     Just teamRef <- refFromParam "id"
     laps         <- Snap.getParam "laps"
     reason       <- Snap.getParam "reason"
-    logger       <- webLog <$> ask
     case (laps, reason) of
         -- Success
         (Just l, Just r) -> do
             let laps'   = read $ BC.unpack l
                 reason' = T.decodeUtf8 r
-            runPersistence $ do
-                team <- get teamRef
-                put teamRef team {teamLaps = teamLaps team + laps'}
-                liftIO $ Log.string logger $ show laps' ++ " bonus laps to " ++
-                    show team ++ " because " ++ T.unpack reason'
+            timestamp <- liftIO getCurrentTime 
+            runPersistence $ addLaps teamRef timestamp reason' laps'
             Snap.redirect "/management"
         -- Render form
         _                -> do

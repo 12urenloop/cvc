@@ -11,7 +11,6 @@ module CountVonCount.Counter
     ) where
 
 import Control.Concurrent.Chan (Chan, readChan)
-import Control.Monad (when)
 import Control.Monad.Trans (liftIO)
 import Data.Foldable (forM_)
 
@@ -61,4 +60,8 @@ step cl logger handler event cmap
                     Log.string logger $ case event' of
                         Progression _ s _ -> show team ++ " @ " ++ show s
                         Lap _ _           -> "Lap for " ++ show team
-                when (isLap event') $ addLap ref
+    
+                -- Add the lap in the database
+                case event' of
+                    Lap timestamp _ -> addLap ref timestamp
+                    _               -> return ()
