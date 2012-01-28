@@ -6,6 +6,7 @@ module CountVonCount.Persistence
     , addLap
     , addLaps
     , getTeamByMac
+    , getLaps
     ) where
 
 import Data.Aeson (ToJSON (..), object, (.=))
@@ -84,3 +85,16 @@ getTeamByMac m = do
         _     -> Nothing
   where
     x = undefined :: Team
+
+getLaps :: Int                -- ^ Offset (0-based)
+        -> Int                -- ^ Count
+        -> Persistence [Lap]  -- ^ Matching laps
+getLaps offset count = do
+    cursor <- MDB.find (MDB.select [] $ collection x)
+        { MDB.skip  = fromIntegral offset
+        , MDB.limit = fromIntegral count
+        }
+    docs   <- MDB.rest cursor
+    return $ map fromDocument docs
+  where
+    x = undefined :: Lap
