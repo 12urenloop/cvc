@@ -93,6 +93,7 @@ getLaps offset count = do
     cursor <- MDB.find (MDB.select [] $ collection x)
         { MDB.skip  = fromIntegral offset
         , MDB.limit = fromIntegral count
+        , MDB.sort  = ["timestamp" MDB.=: (-1 :: Int)]
         }
     docs   <- MDB.rest cursor
     return $ map fromDocument docs
