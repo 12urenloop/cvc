@@ -18,6 +18,7 @@ import System.Locale (defaultTimeLocale)
 import Data.ByteString (ByteString)
 import Data.ByteString.Char8 ()
 import Data.Enumerator (Iteratee, ($$), (=$))
+import Network (PortID(..))
 import qualified Data.Attoparsec as A
 import qualified Data.Attoparsec.Enumerator as AE
 import qualified Data.ByteString as B
@@ -26,6 +27,7 @@ import qualified Data.Enumerator as E
 import qualified Data.Enumerator.List as EL
 import qualified Data.Map as M
 import qualified Data.Text.Encoding as T
+import qualified Network as N
 import qualified Network.Socket as S
 import qualified Network.Socket.ByteString as S
 import qualified Network.Socket.Enumerator as SE
@@ -46,11 +48,7 @@ listen :: Int
 listen port stations batons handler = do
     putStrLn "Sensor: listening..."
 
-    sock <- S.socket S.AF_INET S.Stream S.defaultProtocol
-    _    <- S.setSocketOption sock S.ReuseAddr 1
-    host <- S.inet_addr "0.0.0.0"
-    S.bindSocket sock $ S.SockAddrInet (fromIntegral port) host
-    S.listen sock 5
+    sock <- N.listenOn (PortNumber $ fromIntegral port)
 
     forever $ do
         (conn, _) <- S.accept sock
@@ -77,7 +75,7 @@ receive env = do
         Nothing    -> return ()
         Just event -> do
             time <- liftIO getCurrentTime
-            let sensorEvent = case event of 
+            let sensorEvent = case event of
                     Replay time' station mac -> makeEvent time' station mac
                     Event station mac        -> makeEvent time station mac
                     Ignored                  -> Nothing
