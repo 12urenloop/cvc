@@ -7,10 +7,13 @@ import Data.Text (Text)
 import Data.Aeson (ToJSON (..), object, (.=))
 
 import CountVonCount.Counter.Core
+import CountVonCount.Monitor
 import CountVonCount.Persistence (Team (..))
+import CountVonCount.Types
 
 data FeedEvent
     = CounterEvent Team CounterEvent
+    | MonitorEvent Station StationState
     deriving (Show)
 
 eventType :: FeedEvent -> Text

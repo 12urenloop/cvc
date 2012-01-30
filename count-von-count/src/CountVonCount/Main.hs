@@ -38,15 +38,16 @@ main = do
             Log.raw replayLog $ toReplay event
             writeChan sensorChan event
 
-    -- Initialize the monitoring state
-    monitor <- newMonitor config
+    -- Initialize the monitoring and connect it
+    monitor <- newMonitor (configStations config)
+    let monitorHandler (StateChanged host state) =
+            publish pubSub $ MonitorEvent host state
 
     _ <- forkIO $ Sensor.listen (configSensorPort config)
         (configStations config) (configBatons config) sensorHandler
-
-    _      <- forkIO $ counter (configCircuitLength config)
+    _ <- forkIO $ counter (configCircuitLength config)
         (Log.setModule "Counter" logger) counterHandler sensorChan
-    -- _   <- forkIO $ runMonitor monitor
+    -- _ <- forkIO $ runMonitor monitor monitorHandler
     Web.listen config (Log.setModule "Web" logger) pubSub
 
     putStrLn "Closing..."

@@ -1,6 +1,8 @@
 module CountVonCount.Monitor
     ( newMonitor
     , runMonitor
+    , MonitorEvent (..)
+    , StationState
     ) where
 
 import Control.Applicative ((<$>))
@@ -11,32 +13,31 @@ import System.Exit (ExitCode (ExitSuccess))
 import System.IO
 import System.Process (runInteractiveCommand,system,ProcessHandle)
 
-import CountVonCount.Config
 import CountVonCount.Types
 
-type Monitor = [(Station, StationState)]
+type Monitor = [(Station, IORef StationState)]
 
 data StationState = StationState
-    { online :: IORef Bool
---    , usbOK :: IORef Bool
---    , connected :: IORef Bool
---    , load :: IORef Double
-    }
+    { online :: Bool
+    , usbOK :: Bool
+    , connected :: Bool
+    , load :: Double
+    } deriving (Show, Eq)
 
-newMonitor :: Config -> IO Monitor
-newMonitor config =
-    forM (configStations config) $ \host -> do
-        state <- StationState <$>
-            newIORef False
---            newIORef False <*>
---            newIORef False <*>
---            newIORef 0.0
-        return (host, state)
+data MonitorEvent = StateChanged Station StationState
 
--- TODO: how to send events when stuff changes
-runMonitor :: Monitor -> IO ()
-runMonitor monitor = forever $ do
+newMonitor :: [Station] -> IO Monitor
+newMonitor stations =
+    forM stations $ \station -> do
+        state <- newIORef $ StationState False False False 0.0
+        return (station, state)
+
+runMonitor :: Monitor
+           -> (MonitorEvent -> IO ())
+           -> IO ()
+runMonitor monitor handler = forever $ do
     forM_ monitor $ \(station, state) -> do
+        -- TODO: abstract using fclabels?
         putStrLn $ "Checking " ++ (show station)
         hostOnline <- pingHost station
         when hostOnline $ do
@@ -56,7 +57,6 @@ newConnection station = do
     (pin, pout, perr, pid) <- runInteractiveCommand sshCommand
 
     -- configure handles
-    mapM_ (flip hSetBinaryMode False) [pin, pout, perr]
     hSetBuffering pin LineBuffering
     hSetBuffering pout LineBuffering
 
