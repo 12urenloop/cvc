@@ -19,6 +19,7 @@ data FeedEvent
 eventType :: FeedEvent -> Text
 eventType (CounterEvent _ (Lap _ _))           = "lap"
 eventType (CounterEvent _ (Progression _ _ _)) = "progression"
+eventType (MonitorEvent _ _)                   = "monitor"
 
 instance ToJSON FeedEvent where
     toJSON e = object $ ("type" .= eventType e) : case e of
@@ -28,3 +29,4 @@ instance ToJSON FeedEvent where
             [ "team" .= team, "time" .= time
             , "station" .= station, "speed" .= speed
             ]
+        (MonitorEvent _ _) -> []  -- TODO

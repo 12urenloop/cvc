@@ -20,6 +20,7 @@ import qualified Data.ByteString.Char8 as BC
 import qualified Data.Text.Encoding as T
 import qualified Network.WebSockets as WS
 import qualified Network.WebSockets.Snap as WS
+import qualified Network.WebSockets.Util.PubSub as WS
 import qualified Snap.Blaze as Snap
 import qualified Snap.Core as Snap
 import qualified Snap.Http.Server as Snap
@@ -30,14 +31,13 @@ import CountVonCount.Log (Log)
 import CountVonCount.Persistence
 import CountVonCount.Types
 import CountVonCount.Web.Util
-import Network.WebSockets.PubSub
 import qualified CountVonCount.Log as Log
 import qualified CountVonCount.Web.Views as Views
 
 data WebEnv = WebEnv
     { webConfig :: Config
     , webLog    :: Log
-    , webPubSub :: PubSub
+    , webPubSub :: WS.PubSub WS.Hybi00
     }
 
 type Web = ReaderT WebEnv Snap.Snap
@@ -61,10 +61,10 @@ feed = do
     pubSub <- webPubSub <$> ask
     Snap.liftSnap $ WS.runWebSocketsSnap $ wsApp pubSub
   where
-    wsApp :: PubSub -> WS.Request -> WS.WebSockets WS.Hybi00 ()
+    wsApp :: WS.PubSub WS.Hybi00 -> WS.Request -> WS.WebSockets WS.Hybi00 ()
     wsApp pubSub req = do
         WS.acceptRequest req
-        subscribe pubSub
+        WS.subscribe pubSub
 
 management :: Web ()
 management = do
@@ -132,7 +132,7 @@ site = Snap.route
     , ("/team/:id/bonus",  bonus)
     ] <|> Snap.serveDirectory "static"
 
-listen :: Config -> Log -> PubSub -> IO ()
+listen :: Config -> Log -> WS.PubSub WS.Hybi00 -> IO ()
 listen conf logger pubSub =
     Snap.httpServe Snap.defaultConfig $ runReaderT site env
   where

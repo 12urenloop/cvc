@@ -6,12 +6,15 @@ import Control.Applicative ((<$>))
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Chan (newChan, writeChan)
 
+import qualified Data.Aeson as A
+import qualified Network.WebSockets as WS
+import qualified Network.WebSockets.Util.PubSub as WS
+
 import CountVonCount.Config
 import CountVonCount.Counter
 import CountVonCount.Feed
 import CountVonCount.Monitor
 import CountVonCount.Types
-import Network.WebSockets.PubSub
 import qualified CountVonCount.Log as Log
 import qualified CountVonCount.Sensor as Sensor
 import qualified CountVonCount.Web as Web
@@ -25,12 +28,13 @@ main = do
     Log.string logger "count-von-count started"
 
     -- Create the pubsub system
-    pubSub <- newPubSub
+    pubSub <- WS.newPubSub
+    let publish = WS.publish pubSub . WS.textData . A.encode
 
     -- Connecting the counter to whatever (TODO)
     let counterHandler team event = do
             print (team, event)
-            publish pubSub $ CounterEvent team event
+            publish $ CounterEvent team event
 
     -- Connecting the sensor to the counter
     sensorChan <- newChan
@@ -41,7 +45,7 @@ main = do
     -- Initialize the monitoring and connect it
     monitor <- newMonitor (configStations config)
     let monitorHandler (StateChanged host state) =
-            publish pubSub $ MonitorEvent host state
+            publish $ MonitorEvent host state
 
     _ <- forkIO $ Sensor.listen (configSensorPort config)
         (configStations config) (configBatons config) sensorHandler
