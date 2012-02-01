@@ -49,7 +49,7 @@ main = do
 
     _ <- forkIO $ Sensor.listen (configSensorPort config)
         (configStations config) (configBatons config)
-        (configRSSIThreshold config) sensorHandler
+        (configRssiThreshold config) sensorHandler
     _ <- forkIO $ counter (configCircuitLength config)
         (Log.setModule "Counter" logger) counterHandler sensorChan
     -- _ <- forkIO $ runMonitor monitor monitorHandler
