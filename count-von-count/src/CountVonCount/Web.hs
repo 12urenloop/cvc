@@ -1,10 +1,11 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings, ScopedTypeVariables #-}
 module CountVonCount.Web
     ( listen
     ) where
 
 import Control.Applicative ((<$>), (<|>))
 import Control.Arrow ((&&&))
+import Control.Exception
 import Control.Monad (forM, unless)
 import Control.Monad.Reader (ReaderT, ask, runReaderT)
 import Control.Monad.Trans (liftIO)
@@ -12,6 +13,7 @@ import Data.List (sort, sortBy)
 import Data.Maybe (mapMaybe)
 import Data.Ord (comparing)
 import qualified Data.Map as M
+import qualified Control.Monad.CatchIO as CIO
 
 import Data.Time (getCurrentTime)
 import qualified Data.Aeson as A
@@ -107,6 +109,9 @@ bonus = do
     Just teamRef <- refFromParam "id"
     mlaps        <- Snap.getParam "laps"
     mreason      <- Snap.getParam "reason"
+    let renderForm = do
+            team <- runPersistence $ get teamRef
+            Snap.blaze $ Views.bonus teamRef team
     case (mlaps, mreason) of
         -- Success
         (Just l, Just r) -> do
@@ -115,10 +120,10 @@ bonus = do
             timestamp <- liftIO getCurrentTime
             runPersistence $ addLaps teamRef timestamp reason laps'
             Snap.redirect "/management"
+            `CIO.catch`
+            \(_ :: SomeException) -> renderForm
         -- Render form
-        _                -> do
-            team <- runPersistence $ get teamRef
-            Snap.blaze $ Views.bonus teamRef team
+        _                -> renderForm
 
 
 reset :: Web ()
