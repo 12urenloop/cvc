@@ -31,10 +31,9 @@ function Station:update(dt, teams)
   self.foundTime = self.foundTime + dt
 
   for _, t in ipairs(teams) do
-    local diff =
-        (self.position + self.circuitLength - t.position) % self.circuitLength
+    local diff = math.abs(self.position - t.position) % self.circuitLength
     local chance = 3 * dt
-    if math.abs(diff) < 20 and math.random() < chance then
+    if diff < 20 and math.random() < chance then
       self.found = true
       self.foundTime = 0
       self:signal(t)
