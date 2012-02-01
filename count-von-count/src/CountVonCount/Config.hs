@@ -33,7 +33,7 @@ instance ToJSON Config where
         , "replayLog"     .= configReplayLog     conf
         , "stations"      .= configStations      conf
         , "batons"        .= configBatons        conf
-        , "threshold"     .= configRSSIThreshold conf
+        , "RSSIthreshold" .= configRSSIThreshold conf
         ]
 
 instance FromJSON Config where
@@ -44,7 +44,7 @@ instance FromJSON Config where
         o .:? "replayLog"     .!= configReplayLog     defaultConfig <*>
         o .:? "stations"      .!= configStations      defaultConfig <*>
         o .:? "batons"        .!= configBatons        defaultConfig <*>
-        o .:? "threshold"     .!= configRSSIThreshold defaultConfig
+        o .:? "RSSIthreshold" .!= configRSSIThreshold defaultConfig
 
     parseJSON _ = mzero
 
