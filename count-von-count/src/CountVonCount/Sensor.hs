@@ -103,12 +103,16 @@ gyrid = do
             case parseTime defaultTimeLocale "%s" (BC.unpack time) of
                 Just t -> Replay t (parseMac station) (parseMac mac)
                 _      -> Ignored
-        [!station, _, !mac, _]            ->
-            Event (parseMac station) (parseMac mac)
+        [!station, _, !mac, !strength]            ->
+            if (read $ BC.unpack strength) > threshold
+            then Event (parseMac station) (parseMac mac)
+            else Ignored
         _                                 -> Ignored
   where
     newline x  = x `B.elem` "\r\n"
     lineParser = A.skipWhile newline *> A.takeWhile (not . newline)
+    threshold :: Double
+    threshold  = 20.0 -- TODO: configurable
 
 -- | Transform a mac without @:@ delimiters to one a mac with @:@ delimiters
 parseMac :: ByteString -> Mac
