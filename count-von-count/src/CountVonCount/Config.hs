@@ -56,7 +56,7 @@ defaultConfig = Config
     , configReplayLog     = "log/replay.log"
     , configStations      = []
     , configBatons        = []
-    , configRssiThreshold = 20.0 -- TODO: better value
+    , configRssiThreshold = -81
     }
 
 readConfigFile :: FilePath -> IO Config
