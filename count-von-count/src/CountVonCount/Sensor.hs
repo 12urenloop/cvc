@@ -43,9 +43,10 @@ data SensorEnv = SensorEnv
 listen :: Int
        -> [Station]
        -> [Baton]
+       -> Double
        -> (SensorEvent -> IO ())
        -> IO ()
-listen port stations batons handler = do
+listen port stations batons threshold handler = do
     putStrLn "Sensor: listening..."
 
     sock <- N.listenOn (PortNumber $ fromIntegral port)
@@ -57,7 +58,7 @@ listen port stations batons handler = do
             S.sendAll conn "MSG,enable_cache,false\r\n"
         _ <- forkIO $ do
             E.run_ $ SE.enumSocket 256 conn $$
-                E.sequence (AE.iterParser gyrid) =$ receive env
+                E.sequence (AE.iterParser $ gyrid threshold) =$ receive env
             S.sClose conn
         return ()
   where
@@ -93,8 +94,9 @@ data Gyrid
     | Ignored
     deriving (Show)
 
-gyrid :: A.Parser Gyrid
-gyrid = do
+gyrid :: Double
+      -> A.Parser Gyrid
+gyrid threshold = do
     line <- lineParser
     return $ case BC.split ',' line of
         ("MSG" : _)                       -> Ignored
@@ -103,7 +105,7 @@ gyrid = do
             case parseTime defaultTimeLocale "%s" (BC.unpack time) of
                 Just t -> Replay t (parseMac station) (parseMac mac)
                 _      -> Ignored
-        [!station, _, !mac, !strength]            ->
+        [!station, _, !mac, !strength]    ->
             if (read $ BC.unpack strength) > threshold
             then Event (parseMac station) (parseMac mac)
             else Ignored
@@ -111,8 +113,6 @@ gyrid = do
   where
     newline x  = x `B.elem` "\r\n"
     lineParser = A.skipWhile newline *> A.takeWhile (not . newline)
-    threshold :: Double
-    threshold  = 20.0 -- TODO: configurable
 
 -- | Transform a mac without @:@ delimiters to one a mac with @:@ delimiters
 parseMac :: ByteString -> Mac
