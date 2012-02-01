@@ -10,6 +10,7 @@ module CountVonCount.Counter.Core
 import Data.Fixed (mod')
 import Data.Time (UTCTime, diffUTCTime)
 
+import CountVonCount.Sensor
 import CountVonCount.Types
 
 data CounterEvent

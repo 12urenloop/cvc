@@ -21,6 +21,8 @@ import CountVonCount.Types
 import qualified CountVonCount.Log as Log
 import qualified CountVonCount.Persistence as P
 
+import CountVonCount.Sensor
+
 counter :: Double
         -> Double
         -> Log
@@ -52,8 +54,7 @@ step cl threshold logger handler event cmap
   where
     baton       = sensorBaton event
     ignoreBaton = const False  -- TODO
-
-    ignoreRssi event = sensorRssi event < threshold
+    ignoreRssi  = (< threshold) . sensorRssi
 
     process []     = return ()
     process events = P.runPersistence $ do

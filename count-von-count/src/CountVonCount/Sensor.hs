@@ -1,7 +1,9 @@
 -- | Communication with sensors (i.e. Gyrid)
 {-# LANGUAGE BangPatterns, OverloadedStrings #-}
 module CountVonCount.Sensor
-    ( listen
+    ( SensorEvent (..)
+    , toReplay
+    , listen
     ) where
 
 import Control.Applicative ((*>))
@@ -10,14 +12,15 @@ import Control.Concurrent (forkIO)
 import Control.Monad (forever)
 import Control.Monad.Trans (liftIO)
 import Data.Foldable (forM_)
+import Data.List (intercalate)
 import Data.Map (Map)
 import Data.Monoid (mappend)
-import Data.Time (UTCTime, getCurrentTime, parseTime)
 import System.Locale (defaultTimeLocale)
 
 import Data.ByteString (ByteString)
 import Data.ByteString.Char8 ()
 import Data.Enumerator (Iteratee, ($$), (=$))
+import Data.Time (UTCTime, formatTime, getCurrentTime, parseTime)
 import Network (PortID(..))
 import qualified Data.Attoparsec as A
 import qualified Data.Attoparsec.Enumerator as AE
@@ -26,6 +29,7 @@ import qualified Data.ByteString.Char8 as BC
 import qualified Data.Enumerator as E
 import qualified Data.Enumerator.List as EL
 import qualified Data.Map as M
+import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Network as N
 import qualified Network.Socket as S
@@ -33,6 +37,23 @@ import qualified Network.Socket.ByteString as S
 import qualified Network.Socket.Enumerator as SE
 
 import CountVonCount.Types
+
+data SensorEvent = SensorEvent
+    { sensorTime    :: UTCTime
+    , sensorStation :: Station
+    , sensorBaton   :: Baton
+    , sensorRssi    :: Double
+    } deriving (Show)
+
+-- | Format a 'SensorEvent' in order to be readable by the replay log
+toReplay :: SensorEvent -> String
+toReplay event = intercalate ","
+    [ "REPLAY"
+    , formatTime defaultTimeLocale "%s" (sensorTime event)
+    , T.unpack $ stationMac (sensorStation event)
+    , T.unpack $ batonMac (sensorBaton event)
+    , show     $ sensorRssi event
+    ]
 
 data SensorEnv = SensorEnv
     { stationMap    :: Map Mac Station

@@ -14,7 +14,7 @@ import CountVonCount.Config
 import CountVonCount.Counter
 import CountVonCount.Feed
 import CountVonCount.Monitor
-import CountVonCount.Types
+import CountVonCount.Sensor
 import qualified CountVonCount.Log as Log
 import qualified CountVonCount.Sensor as Sensor
 import qualified CountVonCount.Web as Web
