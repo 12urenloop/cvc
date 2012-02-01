@@ -51,21 +51,21 @@ stepCounter circuitLength event state
     | otherwise               =
         ([Progression time station speed, Lap time lapTime], Counter [event])
   where
-    Counter events                     = state
-    SensorEvent time station _         = event
-    SensorEvent lastTime lastStation _ = head events
-    Station _ _ position               = station
-    Station _ _ lastPosition           = lastStation
+    Counter events                       = state
+    SensorEvent time station _ _         = event
+    SensorEvent lastTime lastStation _ _ = head events
+    Station _ _ position                 = station
+    Station _ _ lastPosition             = lastStation
+    SensorEvent lapStart _ _ _           = last events
 
-    SensorEvent lapStart _ _ = last events
-    lapTime                  = fromRational $ toRational $
+    lapTime = fromRational $ toRational $
         time `diffUTCTime` lapStart
 
     falseLap = (lastPosition - position) < minimumDrop ||
         lapTime < minimumLapTime
 
     speed = ((position - lastPosition) `mod'` circuitLength) /
-            (time `diffTime` lastTime)
+        (time `diffTime` lastTime)
 
     minimumDrop    = circuitLength / 2   -- TODO: configurable
     minimumLapTime = 10                  -- TODO: configurable

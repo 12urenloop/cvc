@@ -77,20 +77,20 @@ receive env = do
         Just event -> do
             time <- liftIO getCurrentTime
             let sensorEvent = case event of
-                    Replay time' station mac -> makeEvent time' station mac
-                    Event station mac        -> makeEvent time station mac
-                    Ignored                  -> Nothing
+                    Replay time' station mac rssi -> makeEvent time' station mac rssi
+                    Event station mac rssi        -> makeEvent time station mac rssi
+                    Ignored                       -> Nothing
             forM_ sensorEvent $ liftIO . sensorHandler env
             receive env
   where
-    makeEvent time station baton = do
+    makeEvent time station baton rssi = do
         st <- M.lookup station $ stationMap env
         bt <- M.lookup baton   $ batonMap   env
-        return $ SensorEvent time st bt
+        return $ SensorEvent time st bt rssi
 
 data Gyrid
-    = Event Mac Mac
-    | Replay UTCTime Mac Mac
+    = Event Mac Mac Double
+    | Replay UTCTime Mac Mac Double
     | Ignored
     deriving (Show)
 
@@ -101,18 +101,20 @@ gyrid threshold = do
     return $ case BC.split ',' line of
         ("MSG" : _)                       -> Ignored
         ("INFO" : _)                      -> Ignored
-        ["REPLAY", !time, !station, !mac] ->
+        ["REPLAY", !time, !station, !mac, !rssi] ->
             case parseTime defaultTimeLocale "%s" (BC.unpack time) of
-                Just t -> Replay t (parseMac station) (parseMac mac)
+                Just t -> Replay t (parseMac station) (parseMac mac) (toDouble rssi)
                 _      -> Ignored
-        [!station, _, !mac, !strength]    ->
-            if (read $ BC.unpack strength) > threshold
-            then Event (parseMac station) (parseMac mac)
+        [!station, _, !mac, !rssi]    ->
+            if (toDouble rssi) > threshold
+            then Event (parseMac station) (parseMac mac) (toDouble rssi)
             else Ignored
         _                                 -> Ignored
   where
     newline x  = x `B.elem` "\r\n"
     lineParser = A.skipWhile newline *> A.takeWhile (not . newline)
+
+    toDouble = read . BC.unpack
 
 -- | Transform a mac without @:@ delimiters to one a mac with @:@ delimiters
 parseMac :: ByteString -> Mac

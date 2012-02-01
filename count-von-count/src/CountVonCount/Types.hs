@@ -51,6 +51,7 @@ data SensorEvent = SensorEvent
     { sensorTime    :: UTCTime
     , sensorStation :: Station
     , sensorBaton   :: Baton
+    , sensorRssi    :: Double
     } deriving (Show)
 
 -- | Format a 'SensorEvent' in order to be readable by the replay log
@@ -60,6 +61,7 @@ toReplay event = intercalate ","
     , formatTime defaultTimeLocale "%s" (sensorTime event)
     , T.unpack $ stationMac (sensorStation event)
     , T.unpack $ batonMac (sensorBaton event)
+    , show     $ sensorRssi event
     ]
 
 data Baton = Baton

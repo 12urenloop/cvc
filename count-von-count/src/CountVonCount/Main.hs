@@ -51,7 +51,8 @@ main = do
         (configStations config) (configBatons config)
         (configRssiThreshold config) sensorHandler
     _ <- forkIO $ counter (configCircuitLength config)
-        (Log.setModule "Counter" logger) counterHandler sensorChan
+        (configRssiThreshold config) (Log.setModule "Counter" logger)
+        counterHandler sensorChan
     -- _ <- forkIO $ runMonitor monitor monitorHandler
     Web.listen config (Log.setModule "Web" logger) pubSub
 
