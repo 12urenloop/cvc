@@ -24,7 +24,6 @@ import qualified Snap.Blaze as Snap
 import qualified Snap.Core as Snap
 import qualified Snap.Http.Server as Snap
 import qualified Snap.Util.FileServe as Snap
-import qualified Snap.Util.Readable as Snap
 
 import CountVonCount.Config
 import CountVonCount.Log (Log)
@@ -105,12 +104,11 @@ assign = do
 bonus :: Web ()
 bonus = do
     Just teamRef <- refFromParam "id"
-    mlaps        <- (>>= Snap.fromBS) <$> Snap.getParam "laps"
-    mreason      <- Snap.getParam "reason"
+    mlaps        <- readParam "laps"
+    mreason      <- readParam "reason"
     case (mlaps, mreason) of
         -- Success
-        (Just laps', Just r) -> do
-            let reason = T.decodeUtf8 r
+        (Just laps', Just reason) -> do
             timestamp <- liftIO getCurrentTime
             runPersistence $ addLaps teamRef timestamp reason laps'
             Snap.redirect "/management"
