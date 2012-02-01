@@ -112,23 +112,13 @@ bonus = do
         (Just l, Just r) -> do
             let laps'  = read $ BC.unpack l
                 reason = T.decodeUtf8 r
-            timestamp <- liftIO getCurrentTime
+            timestamp <- liftIO getCurrentTime 
             runPersistence $ addLaps teamRef timestamp reason laps'
             Snap.redirect "/management"
         -- Render form
         _                -> do
             team <- runPersistence $ get teamRef
             Snap.blaze $ Views.bonus teamRef team
-
-
-reset :: Web ()
-reset = do
-    Just teamRef <- refFromParam "id"
-    runPersistence $ do
-        team <- get teamRef
-        put teamRef team { teamLaps = 0 }
-
-    Snap.redirect "/management"
 
 site :: Web ()
 site = Snap.route
@@ -140,7 +130,6 @@ site = Snap.route
     , ("/laps",            laps)
     , ("/team/:id/assign", assign)
     , ("/team/:id/bonus",  bonus)
-    , ("/team/:id/reset",  reset)
     ] <|> Snap.serveDirectory "static"
 
 listen :: Config -> Log -> WS.PubSub WS.Hybi00 -> IO ()
