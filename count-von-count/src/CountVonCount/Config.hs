@@ -22,7 +22,7 @@ data Config = Config
     , configReplayLog     :: FilePath
     , configStations      :: [Station]
     , configBatons        :: [Baton]
-    , configThreshold     :: Double
+    , configRSSIThreshold :: Double
     } deriving (Show)
 
 instance ToJSON Config where
@@ -33,7 +33,7 @@ instance ToJSON Config where
         , "replayLog"     .= configReplayLog     conf
         , "stations"      .= configStations      conf
         , "batons"        .= configBatons        conf
-        , "threshold"     .= configThreshold     conf
+        , "threshold"     .= configRSSIThreshold conf
         ]
 
 instance FromJSON Config where
@@ -44,7 +44,7 @@ instance FromJSON Config where
         o .:? "replayLog"     .!= configReplayLog     defaultConfig <*>
         o .:? "stations"      .!= configStations      defaultConfig <*>
         o .:? "batons"        .!= configBatons        defaultConfig <*>
-        o .:? "threshold"     .!= configThreshold     defaultConfig
+        o .:? "threshold"     .!= configRSSIThreshold defaultConfig
 
     parseJSON _ = mzero
 
@@ -56,7 +56,7 @@ defaultConfig = Config
     , configReplayLog     = "log/replay.log"
     , configStations      = []
     , configBatons        = []
-    , configThreshold     = 20.0 -- TODO: better value
+    , configRSSIThreshold = 20.0 -- TODO: better value
     }
 
 readConfigFile :: FilePath -> IO Config
