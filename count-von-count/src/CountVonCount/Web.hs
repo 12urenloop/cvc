@@ -16,7 +16,6 @@ import qualified Data.Map as M
 import Data.Time (getCurrentTime)
 import qualified Data.Aeson as A
 import qualified Data.ByteString as B
-import qualified Data.ByteString.Char8 as BC
 import qualified Data.Text.Encoding as T
 import qualified Network.WebSockets as WS
 import qualified Network.WebSockets.Snap as WS
@@ -25,6 +24,7 @@ import qualified Snap.Blaze as Snap
 import qualified Snap.Core as Snap
 import qualified Snap.Http.Server as Snap
 import qualified Snap.Util.FileServe as Snap
+import qualified Snap.Util.Readable as Snap
 
 import CountVonCount.Config
 import CountVonCount.Log (Log)
@@ -105,14 +105,13 @@ assign = do
 bonus :: Web ()
 bonus = do
     Just teamRef <- refFromParam "id"
-    mlaps        <- Snap.getParam "laps"
+    mlaps        <- (>>= Snap.fromBS) <$> Snap.getParam "laps"
     mreason      <- Snap.getParam "reason"
     case (mlaps, mreason) of
         -- Success
-        (Just l, Just r) -> do
-            let laps'  = read $ BC.unpack l
-                reason = T.decodeUtf8 r
-            timestamp <- liftIO getCurrentTime 
+        (Just laps', Just r) -> do
+            let reason = T.decodeUtf8 r
+            timestamp <- liftIO getCurrentTime
             runPersistence $ addLaps teamRef timestamp reason laps'
             Snap.redirect "/management"
         -- Render form
