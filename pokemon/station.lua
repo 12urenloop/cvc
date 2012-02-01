@@ -15,15 +15,16 @@ function Station:new(mac, position, circuitLength)
   station.circuitLength = circuitLength
   station.found = false
   station.foundTime = 0
+
+  station.socket = socket.tcp()
+  station.socket:connect('localhost', 9001)
+
   setmetatable(station, mt)
   return station
 end
 
 function Station:signal(team)
-  local s = socket.tcp()
-  s:connect('localhost', 9001)
-  s:send(self.mac .. ',-,' .. team.mac .. ',0\n')
-  s:close()
+  self.socket:send(self.mac .. ',-,' .. team.mac .. ',0\n')
 end
 
 function Station:update(dt, teams)
