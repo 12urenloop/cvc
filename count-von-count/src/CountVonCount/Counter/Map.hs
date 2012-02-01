@@ -11,7 +11,7 @@ import Data.Maybe (fromMaybe)
 import qualified Data.Map as M
 
 import CountVonCount.Counter.Core
-import CountVonCount.Sensor
+import CountVonCount.Sensor.Filter
 import CountVonCount.Types
 
 type CounterMap = Map Baton Counter

@@ -5,6 +5,7 @@ module Main
 import Control.Applicative ((<$>))
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Chan (newChan, writeChan)
+import Data.Foldable (forM_)
 
 import qualified Data.Aeson as A
 import qualified Network.WebSockets as WS
@@ -15,6 +16,7 @@ import CountVonCount.Counter
 import CountVonCount.Feed
 import CountVonCount.Monitor
 import CountVonCount.Sensor
+import CountVonCount.Sensor.Filter
 import qualified CountVonCount.Log as Log
 import qualified CountVonCount.Sensor as Sensor
 import qualified CountVonCount.Web as Web
@@ -38,20 +40,21 @@ main = do
 
     -- Connecting the sensor to the counter
     sensorChan <- newChan
-    let sensorHandler event = do
+    let filterSensorEvent' = filterSensorEvent
+            (configRssiThreshold config) (configStations config)
+            (configBatons config)
+        sensorHandler event = do
             Log.raw replayLog $ toReplay event
-            writeChan sensorChan event
+            forM_ (filterSensorEvent' event) $ writeChan sensorChan
 
     -- Initialize the monitoring and connect it
     monitor <- newMonitor (configStations config)
     let monitorHandler (StateChanged host state) =
             publish $ MonitorEvent host state
 
-    _ <- forkIO $ Sensor.listen (configSensorPort config)
-        (configStations config) (configBatons config)
-        (configRssiThreshold config) sensorHandler
+    _ <- forkIO $ Sensor.listen (configSensorPort config) sensorHandler
     _ <- forkIO $ counter (configCircuitLength config)
-        (configRssiThreshold config) (Log.setModule "Counter" logger)
+        (Log.setModule "Counter" logger)
         counterHandler sensorChan
     -- _ <- forkIO $ runMonitor monitor monitorHandler
     Web.listen config (Log.setModule "Web" logger) pubSub

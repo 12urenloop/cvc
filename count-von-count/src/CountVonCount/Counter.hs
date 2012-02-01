@@ -21,41 +21,32 @@ import CountVonCount.Types
 import qualified CountVonCount.Log as Log
 import qualified CountVonCount.Persistence as P
 
-import CountVonCount.Sensor
+import CountVonCount.Sensor.Filter
 
 counter :: Double
-        -> Double
         -> Log
         -> (P.Team -> CounterEvent -> IO ())
         -> Chan SensorEvent
         -> IO ()
-counter cl threshold logger handler chan = loop emptyCounterMap
+counter cl logger handler chan = loop emptyCounterMap
   where
-    step'     = step cl threshold logger handler
+    step'     = step cl logger handler
     loop cmap = do
         event <- readChan chan
         cmap' <- step' event cmap
         loop cmap'
 
 step :: Double
-     -> Double
      -> Log
      -> (P.Team -> CounterEvent -> IO ())
      -> SensorEvent
      -> CounterMap
      -> IO CounterMap
-step cl threshold logger handler event cmap
-    | ignoreBaton baton = return cmap
-    | ignoreRssi event  = return cmap
-    | otherwise = do
-        let (events, cmap') = stepCounterMap cl event cmap
-        process events
-        return cmap'
+step cl logger handler event cmap = do
+    let (events, cmap') = stepCounterMap cl event cmap
+    process events
+    return cmap'
   where
-    baton       = sensorBaton event
-    ignoreBaton = const False  -- TODO
-    ignoreRssi  = (< threshold) . sensorRssi
-
     process []     = return ()
     process events = P.runPersistence $ do
         mteam <- P.getTeamByMac (batonMac . sensorBaton $ event)

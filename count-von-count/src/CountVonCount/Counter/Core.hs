@@ -10,7 +10,7 @@ module CountVonCount.Counter.Core
 import Data.Fixed (mod')
 import Data.Time (UTCTime, diffUTCTime)
 
-import CountVonCount.Sensor
+import CountVonCount.Sensor.Filter
 import CountVonCount.Types
 
 data CounterEvent
@@ -52,12 +52,12 @@ stepCounter circuitLength event state
     | otherwise               =
         ([Progression time station speed, Lap time lapTime], Counter [event])
   where
-    Counter events                       = state
-    SensorEvent time station _ _         = event
-    SensorEvent lastTime lastStation _ _ = head events
-    Station _ _ position                 = station
-    Station _ _ lastPosition             = lastStation
-    SensorEvent lapStart _ _ _           = last events
+    Counter events                     = state
+    SensorEvent time station _         = event
+    SensorEvent lastTime lastStation _ = head events
+    Station _ _ position               = station
+    Station _ _ lastPosition           = lastStation
+    SensorEvent lapStart _ _           = last events
 
     lapTime = fromRational $ toRational $
         time `diffUTCTime` lapStart

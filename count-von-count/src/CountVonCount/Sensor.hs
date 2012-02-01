@@ -1,19 +1,17 @@
 -- | Communication with sensors (i.e. Gyrid)
 {-# LANGUAGE BangPatterns, OverloadedStrings #-}
 module CountVonCount.Sensor
-    ( SensorEvent (..)
+    ( RawSensorEvent (..)
     , toReplay
     , listen
     ) where
 
 import Control.Applicative ((*>))
-import Control.Arrow ((&&&))
 import Control.Concurrent (forkIO)
 import Control.Monad (forever)
 import Control.Monad.Trans (liftIO)
 import Data.Foldable (forM_)
 import Data.List (intercalate)
-import Data.Map (Map)
 import Data.Monoid (mappend)
 import System.Locale (defaultTimeLocale)
 
@@ -28,7 +26,6 @@ import qualified Data.ByteString as B
 import qualified Data.ByteString.Char8 as BC
 import qualified Data.Enumerator as E
 import qualified Data.Enumerator.List as EL
-import qualified Data.Map as M
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Network as N
@@ -38,36 +35,27 @@ import qualified Network.Socket.Enumerator as SE
 
 import CountVonCount.Types
 
-data SensorEvent = SensorEvent
-    { sensorTime    :: UTCTime
-    , sensorStation :: Station
-    , sensorBaton   :: Baton
-    , sensorRssi    :: Double
+data RawSensorEvent = RawSensorEvent
+    { rawSensorTime    :: UTCTime
+    , rawSensorStation :: Mac
+    , rawSensorBaton   :: Mac
+    , rawSensorRssi    :: Double
     } deriving (Show)
 
 -- | Format a 'SensorEvent' in order to be readable by the replay log
-toReplay :: SensorEvent -> String
-toReplay event = intercalate ","
+toReplay :: RawSensorEvent -> String
+toReplay (RawSensorEvent time station baton rssi) = intercalate ","
     [ "REPLAY"
-    , formatTime defaultTimeLocale "%s" (sensorTime event)
-    , T.unpack $ stationMac (sensorStation event)
-    , T.unpack $ batonMac (sensorBaton event)
-    , show     $ sensorRssi event
+    , formatTime defaultTimeLocale "%s" time
+    , T.unpack station
+    , T.unpack baton
+    , show rssi
     ]
 
-data SensorEnv = SensorEnv
-    { stationMap    :: Map Mac Station
-    , batonMap      :: Map Mac Baton
-    , sensorHandler :: SensorEvent -> IO ()
-    }
-
 listen :: Int
-       -> [Station]
-       -> [Baton]
-       -> Double
-       -> (SensorEvent -> IO ())
+       -> (RawSensorEvent -> IO ())
        -> IO ()
-listen port stations batons threshold handler = do
+listen port handler = do
     putStrLn "Sensor: listening..."
 
     sock <- N.listenOn (PortNumber $ fromIntegral port)
@@ -79,35 +67,26 @@ listen port stations batons threshold handler = do
             S.sendAll conn "MSG,enable_cache,false\r\n"
         _ <- forkIO $ do
             E.run_ $ SE.enumSocket 256 conn $$
-                E.sequence (AE.iterParser $ gyrid threshold) =$ receive env
+                E.sequence (AE.iterParser gyrid) =$ receive handler
             S.sClose conn
         return ()
   where
     ignore x = catch x $ const $ return ()
 
-    env   = SensorEnv stMap bMap handler
-    stMap = M.fromList $ fmap (stationMac &&& id) stations
-    bMap  = M.fromList $ fmap (batonMac &&& id)   batons
-
-receive :: SensorEnv
+receive :: (RawSensorEvent -> IO ())
         -> Iteratee Gyrid IO ()
-receive env = do
+receive handler = do
     g <- EL.head
     case g of
         Nothing    -> return ()
         Just event -> do
             time <- liftIO getCurrentTime
             let sensorEvent = case event of
-                    Replay time' station mac rssi -> makeEvent time' station mac rssi
-                    Event station mac rssi        -> makeEvent time station mac rssi
-                    Ignored                       -> Nothing
-            forM_ sensorEvent $ liftIO . sensorHandler env
-            receive env
-  where
-    makeEvent time station baton rssi = do
-        st <- M.lookup station $ stationMap env
-        bt <- M.lookup baton   $ batonMap   env
-        return $ SensorEvent time st bt rssi
+                    Replay t s b r -> Just $ RawSensorEvent t s b r
+                    Event s b r    -> Just $ RawSensorEvent time s b r
+                    Ignored        -> Nothing
+            forM_ sensorEvent $ liftIO . handler
+            receive handler
 
 data Gyrid
     = Event Mac Mac Double
@@ -115,21 +94,18 @@ data Gyrid
     | Ignored
     deriving (Show)
 
-gyrid :: Double
-      -> A.Parser Gyrid
-gyrid threshold = do
+gyrid :: A.Parser Gyrid
+gyrid = do
     line <- lineParser
     return $ case BC.split ',' line of
-        ("MSG" : _)                       -> Ignored
-        ("INFO" : _)                      -> Ignored
-        ["REPLAY", !time, !station, !mac, !rssi] ->
-            case parseTime defaultTimeLocale "%s" (BC.unpack time) of
-                Just t -> Replay t (parseMac station) (parseMac mac) (toDouble rssi)
-                _      -> Ignored
-        [!station, _, !mac, !rssi]    ->
-            if (toDouble rssi) > threshold
-            then Event (parseMac station) (parseMac mac) (toDouble rssi)
-            else Ignored
+        ("MSG" : _)                -> Ignored
+        ("INFO" : _)               -> Ignored
+        ["REPLAY", !t, !s, !b, !r] ->
+            case parseTime defaultTimeLocale "%s" (BC.unpack t) of
+                Just t' -> Replay t' (parseMac s) (parseMac b) (toDouble r)
+                _       -> Ignored
+        [!s, _, !b, !r]            ->
+            Event (parseMac s) (parseMac b) (toDouble r)
         _                                 -> Ignored
   where
     newline x  = x `B.elem` "\r\n"
