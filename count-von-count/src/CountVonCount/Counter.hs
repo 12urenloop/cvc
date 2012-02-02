@@ -10,6 +10,7 @@ module CountVonCount.Counter
     ( Counter
     , newCounter
     , runCounter
+    , resetCounterFor
     ) where
 
 import Control.Applicative ((<$>))
@@ -71,3 +72,7 @@ step cl logger handler event cmap = do
                 case event' of
                     Lap timestamp _ -> P.addLap ref timestamp
                     _               -> return ()
+
+resetCounterFor :: Baton -> Counter -> IO ()
+resetCounterFor baton counter =
+    modifyMVar_ (unCounter counter) $ return . resetCounterMapFor baton

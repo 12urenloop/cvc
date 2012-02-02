@@ -4,6 +4,7 @@ module CountVonCount.Counter.Map
     ( CounterMap
     , emptyCounterMap
     , stepCounterMap
+    , resetCounterMapFor
     ) where
 
 import Data.Map (Map)
@@ -29,3 +30,9 @@ stepCounterMap circuitLength event !cmap =
     in (events, M.insert baton c' cmap)
   where
     baton = sensorBaton event
+
+-- | Resets the counter state for a single baton
+resetCounterMapFor :: Baton
+                   -> CounterMap
+                   -> CounterMap
+resetCounterMapFor = flip M.insert emptyCounterState
