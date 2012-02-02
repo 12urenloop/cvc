@@ -14,7 +14,7 @@ import CountVonCount.Counter.Core
 import CountVonCount.Sensor.Filter
 import CountVonCount.Types
 
-type CounterMap = Map Baton Counter
+type CounterMap = Map Baton CounterState
 
 emptyCounterMap :: CounterMap
 emptyCounterMap = M.empty
@@ -24,8 +24,8 @@ stepCounterMap :: Double
                -> CounterMap
                -> ([CounterEvent], CounterMap)
 stepCounterMap circuitLength event !cmap =
-    let c             = fromMaybe emptyCounter $ M.lookup baton cmap
-        (events, !c') = stepCounter circuitLength event c
+    let c             = fromMaybe emptyCounterState $ M.lookup baton cmap
+        (events, !c') = stepCounterState circuitLength event c
     in (events, M.insert baton c' cmap)
   where
     baton = sensorBaton event

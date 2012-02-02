@@ -1,10 +1,10 @@
--- | This module is responsible for analyzing and filtering stick events
+-- | This module implements the counter logic for a /single/ team
 module CountVonCount.Counter.Core
     ( CounterEvent (..)
     , isLap
-    , Counter
-    , emptyCounter
-    , stepCounter
+    , CounterState
+    , emptyCounterState
+    , stepCounterState
     ) where
 
 import Data.Fixed (mod')
@@ -22,37 +22,38 @@ isLap :: CounterEvent -> Bool
 isLap (Lap _ _) = True
 isLap _         = False
 
-data Counter = Counter
+data CounterState = CounterState
     { sensorEvents :: [SensorEvent]
     } deriving (Show)
 
-emptyCounter :: Counter
-emptyCounter = Counter {sensorEvents = []}
+emptyCounterState :: CounterState
+emptyCounterState = CounterState {sensorEvents = []}
 
-stepCounter :: Double
-            -> SensorEvent
-            -> Counter
-            -> ([CounterEvent], Counter)
-stepCounter circuitLength event state
+stepCounterState :: Double
+                 -> SensorEvent
+                 -> CounterState
+                 -> ([CounterEvent], CounterState)
+stepCounterState circuitLength event state
     -- First event received
     | null events             =
-        ([], Counter [event])
+        ([], CounterState [event])
     -- Still at the same station. Do nothing.
     | station == lastStation  =
         ([], state)
     -- Advanced at least one station, update.
     | position > lastPosition =
-        ([Progression time station speed], Counter (event : events))
+        ([Progression time station speed], CounterState (event : events))
     -- At a lower position. Either a lap was made, or the sensor event was
     -- foobar. For a lap to be made, we consider a minimum number of stations
     -- and a minimum timespan.
     | falseLap                =
         ([], state)
-    -- We have an actual lap!
+    -- We have an actual lap! Send two events.
     | otherwise               =
-        ([Progression time station speed, Lap time lapTime], Counter [event])
+        let es = [Progression time station speed, Lap time lapTime]
+        in (es, CounterState [event])
   where
-    Counter events                     = state
+    CounterState events                     = state
     SensorEvent time station _         = event
     SensorEvent lastTime lastStation _ = head events
     Station _ _ position               = station
