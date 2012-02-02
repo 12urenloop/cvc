@@ -7,10 +7,15 @@
 -- 3. Calling the analyzer to process these events
 --
 module CountVonCount.Counter
-    ( counter
+    ( Counter
+    , newCounter
+    , runCounter
     ) where
 
+import Control.Applicative ((<$>))
 import Control.Concurrent.Chan (Chan, readChan)
+import Control.Concurrent.MVar (MVar, newMVar, modifyMVar_)
+import Control.Monad (forever)
 import Control.Monad.Trans (liftIO)
 import Data.Foldable (forM_)
 
@@ -23,18 +28,22 @@ import qualified CountVonCount.Persistence as P
 
 import CountVonCount.Sensor.Filter
 
-counter :: Double
-        -> Log
-        -> (P.Team -> CounterEvent -> IO ())
-        -> Chan SensorEvent
-        -> IO ()
-counter cl logger handler chan = loop emptyCounterMap
+newtype Counter = Counter {unCounter :: MVar CounterMap}
+
+newCounter :: IO Counter
+newCounter = Counter <$> newMVar emptyCounterMap
+
+runCounter :: Counter
+           -> Double
+           -> Log
+           -> (P.Team -> CounterEvent -> IO ())
+           -> Chan SensorEvent
+           -> IO ()
+runCounter counter cl logger handler chan = forever $ do
+    event <- readChan chan
+    modifyMVar_ (unCounter counter) (step' event)
   where
-    step'     = step cl logger handler
-    loop cmap = do
-        event <- readChan chan
-        cmap' <- step' event cmap
-        loop cmap'
+    step' = step cl logger handler
 
 step :: Double
      -> Log
