@@ -121,22 +121,30 @@ bonus = do
 
 reset :: Web ()
 reset = do
-    Just mac   <- readParam "mac"
+    Just teamRef <- refFromParam "id"
     counter    <- webCounter <$> ask
-    Just baton <- find (\x -> batonMac x == mac) . configBatons . webConfig <$> ask
-    liftIO $ resetCounterFor baton counter
+    batons     <- configBatons . webConfig <$> ask
+    runPersistence $ do
+        team   <- get teamRef
+        case teamBaton team of
+            Just mac -> do
+                let Just baton = find (\x -> batonMac x == mac) batons
+                liftIO $ resetCounterFor baton counter
+
+            Nothing  -> return ()
+    -- TODO render view
 
 site :: Web ()
 site = Snap.route
-    [ ("",                  Snap.ifTop index)
-    , ("/config.json",      config)
-    , ("/monitor",          monitor)
-    , ("/feed",             feed)
-    , ("/management",       management)
-    , ("/laps",             laps)
-    , ("/team/:id/assign" , assign)
-    , ("/team/:id/bonus",   bonus)
-    , ("/baton/:mac/reset", reset)
+    [ ("",                 Snap.ifTop index)
+    , ("/config.json",     config)
+    , ("/monitor",         monitor)
+    , ("/feed",            feed)
+    , ("/management",      management)
+    , ("/laps",            laps)
+    , ("/team/:id/assign", assign)
+    , ("/team/:id/bonus",  bonus)
+    , ("/team/:id/reset",  reset)
     ] <|> Snap.serveDirectory "static"
 
 listen :: Config -> Log -> WS.PubSub WS.Hybi00 -> Counter -> IO ()
