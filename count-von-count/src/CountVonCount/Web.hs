@@ -122,17 +122,19 @@ bonus = do
 reset :: Web ()
 reset = do
     Just teamRef <- refFromParam "id"
-    counter    <- webCounter <$> ask
-    batons     <- configBatons . webConfig <$> ask
+    counter      <- webCounter <$> ask
+    logger       <- webLog <$> ask
+    batons       <- configBatons . webConfig <$> ask
     runPersistence $ do
-        team   <- get teamRef
+        team <- get teamRef
         case teamBaton team of
             Just mac -> do
                 let Just baton = find (\x -> batonMac x == mac) batons
                 liftIO $ resetCounterFor baton counter
-
+                liftIO $ Log.string logger $
+                    "Resetting counter for " ++ show team
             Nothing  -> return ()
-    -- TODO render view
+    Snap.redirect "/management"
 
 site :: Web ()
 site = Snap.route

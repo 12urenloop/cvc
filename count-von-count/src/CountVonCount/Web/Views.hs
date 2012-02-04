@@ -66,6 +66,7 @@ management teams batons = template "Teams" $ block "management" $ do
     forM_ teams $ \(ref, team, assigned) -> H.div ! A.class_ "team" $ do
         let assignUri = "/team/" ++ refToString ref ++ "/assign"
             bonusUri  = "/team/" ++ refToString ref ++ "/bonus"
+            resetUri  = "/team/" ++ refToString ref ++ "/reset"
 
         H.toHtml $ teamName team
         " "
@@ -89,6 +90,9 @@ management teams batons = template "Teams" $ block "management" $ do
                             H.toHtml (batonName baton)
 
                 H.input ! A.type_ "submit" ! A.value "Assign"
+
+            postForm resetUri $
+                H.input ! A.type_ "submit" ! A.value "Reset counter"
   where
     macValue = H.toValue . batonMac
 
