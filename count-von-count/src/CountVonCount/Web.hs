@@ -8,7 +8,7 @@ import Control.Arrow ((&&&))
 import Control.Monad (forM, unless)
 import Control.Monad.Reader (ReaderT, ask, runReaderT)
 import Control.Monad.Trans (liftIO)
-import Data.List (sort, sortBy)
+import Data.List (find, sort, sortBy)
 import Data.Maybe (mapMaybe)
 import Data.Ord (comparing)
 import qualified Data.Map as M
@@ -26,6 +26,7 @@ import qualified Snap.Http.Server as Snap
 import qualified Snap.Util.FileServe as Snap
 
 import CountVonCount.Config
+import CountVonCount.Counter
 import CountVonCount.Log (Log)
 import CountVonCount.Persistence
 import CountVonCount.Types
@@ -34,9 +35,10 @@ import qualified CountVonCount.Log as Log
 import qualified CountVonCount.Web.Views as Views
 
 data WebEnv = WebEnv
-    { webConfig :: Config
-    , webLog    :: Log
-    , webPubSub :: WS.PubSub WS.Hybi00
+    { webConfig  :: Config
+    , webLog     :: Log
+    , webPubSub  :: WS.PubSub WS.Hybi00
+    , webCounter :: Counter
     }
 
 type Web = ReaderT WebEnv Snap.Snap
@@ -117,24 +119,33 @@ bonus = do
             team <- runPersistence $ get teamRef
             Snap.blaze $ Views.bonus teamRef team
 
+reset :: Web ()
+reset = do
+    Just mac   <- readParam "mac"
+    counter    <- webCounter <$> ask
+    Just baton <- find (\x -> batonMac x == mac) . configBatons . webConfig <$> ask
+    liftIO $ resetCounterFor baton counter
+
 site :: Web ()
 site = Snap.route
-    [ ("",                 Snap.ifTop index)
-    , ("/config.json",     config)
-    , ("/monitor",         monitor)
-    , ("/feed",            feed)
-    , ("/management",      management)
-    , ("/laps",            laps)
-    , ("/team/:id/assign", assign)
-    , ("/team/:id/bonus",  bonus)
+    [ ("",                  Snap.ifTop index)
+    , ("/config.json",      config)
+    , ("/monitor",          monitor)
+    , ("/feed",             feed)
+    , ("/management",       management)
+    , ("/laps",             laps)
+    , ("/team/:id/assign" , assign)
+    , ("/team/:id/bonus",   bonus)
+    , ("/baton/:mac/reset", reset)
     ] <|> Snap.serveDirectory "static"
 
-listen :: Config -> Log -> WS.PubSub WS.Hybi00 -> IO ()
-listen conf logger pubSub =
+listen :: Config -> Log -> WS.PubSub WS.Hybi00 -> Counter -> IO ()
+listen conf logger pubSub counter =
     Snap.httpServe Snap.defaultConfig $ runReaderT site env
   where
     env = WebEnv
-        { webConfig = conf
-        , webLog    = logger
-        , webPubSub = pubSub
+        { webConfig  = conf
+        , webLog     = logger
+        , webPubSub  = pubSub
+        , webCounter = counter
         }

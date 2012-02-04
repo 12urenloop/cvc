@@ -61,7 +61,7 @@ main = do
         (Log.setModule "Counter" logger) counterHandler sensorChan
 
     -- _ <- forkIO $ runMonitor monitor monitorHandler
-    Web.listen config (Log.setModule "Web" logger) pubSub
+    Web.listen config (Log.setModule "Web" logger) pubSub counter
 
     putStrLn "Closing..."
     Log.close replayLog
