@@ -6,3 +6,4 @@ before_install:
     - "sudo apt-get install -y ghc cabal-install"
     - "cabal update"
     - "cabal install"
+    - "cabal install test-framework-hunit"

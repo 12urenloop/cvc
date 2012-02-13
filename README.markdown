@@ -31,7 +31,8 @@ Developing the application:
 
 Testing the application:
 
-1. `runghc -isrc -itests tests/CountVonCount/TestSuite.hs`
+1. Install the test framework, using `cabal install test-framework-hunit`
+2. Execute `runghc -isrc -itests tests/CountVonCount/TestSuite.hs`
 
 ### API
 
