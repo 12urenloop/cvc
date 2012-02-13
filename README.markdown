@@ -29,7 +29,9 @@ Developing the application:
 3. Enter `main` to start the program, `^C` to interrupt
 4. Enter `:r` to reload all changed modules
 
-Testing the application: ???
+Testing the application:
+
+1. `runghc -isrc -itests tests/CountVonCount/TestSuite.hs`
 
 ### API
 
