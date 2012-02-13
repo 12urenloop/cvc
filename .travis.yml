@@ -1,9 +1,8 @@
 script: "cd count-von-count && runghc -isrc -itests tests/CountVonCount/TestSuite.hs"
 before_install:
-    - "sudo apt-get install -y gdebi"
-    - "wget http://ftp.de.debian.org/debian/pool/main/g/ghc/ghc_7.0.4-8_i386.deb"
-    - "wget http://ftp.de.debian.org/debian/pool/main/h/haskell-cabal-install/cabal-install_0.10.2-3_i386.deb"
-    - "sudo gdebi -n ghc_7.0.4-8_i386.deb cabal-install_0.10.2-3_i386.deb"
+    - "sudo add-apt-repository ppa:gspreemann/haskell"
+    - "sudo apt-get update"
+    - "sudo apt-get install -y ghc cabal-install"
     - "cd count-von-count"
     - "cabal update"
     - "cabal install"
