@@ -1,8 +1,8 @@
-script: "cd count-von-count && runghc -isrc -itests tests/CountVonCount/TestSuite.hs"
+script: "runghc -isrc -itests tests/CountVonCount/TestSuite.hs"
 before_install:
+    - "cd count-von-count"
     - "sudo add-apt-repository ppa:gspreemann/haskell"
     - "sudo apt-get update"
     - "sudo apt-get install -y ghc cabal-install"
-    - "cd count-von-count"
     - "cabal update"
     - "cabal install"
