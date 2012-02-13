@@ -1,6 +1,5 @@
 script: "cd count-von-count && runghc -isrc -itests tests/CountVonCount/TestSuite.hs"
 before_install:
-    - "sudo apt-get install -y ghc cabal-install"
+    - "sudo apt-get install -y ghc6 cabal-install"
     - "cd count-von-count"
-    - "cabal install --only-dependencies"
-    - "cabal configure"
+    - "cabal install"
