@@ -12,6 +12,7 @@ import Test.HUnit (Assertion, (@=?))
 import Data.ByteString.Char8 ()
 
 import CountVonCount.Counter.Core
+import CountVonCount.Sensor.Filter
 import CountVonCount.Types
 
 tests :: Test
@@ -40,9 +41,9 @@ sensorEvent time station = SensorEvent (fromSeconds time) station $
     error "Baton is irrelevant"
 
 simulate :: [SensorEvent] -> [CounterEvent]
-simulate = concat . snd . mapAccumL step emptyCounter
+simulate = concat . snd . mapAccumL step emptyCounterState
   where
-    stepCounter' = stepCounter 400
+    stepCounter' = stepCounterState 400
     step acc x   = let (ys, acc') = stepCounter' x acc in (acc', ys)
 
 numLaps :: [CounterEvent] -> Int
