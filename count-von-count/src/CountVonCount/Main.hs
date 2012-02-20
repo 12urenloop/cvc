@@ -14,7 +14,6 @@ import qualified Network.WebSockets.Util.PubSub as WS
 import CountVonCount.Config
 import CountVonCount.Counter
 import CountVonCount.Feed
-import CountVonCount.Monitor
 import CountVonCount.Sensor
 import CountVonCount.Sensor.Filter
 import qualified CountVonCount.Log as Log
@@ -47,11 +46,6 @@ main = do
             Log.raw replayLog $ toReplay event
             forM_ (filterSensorEvent' event) $ writeChan sensorChan
 
-    -- Initialize the monitoring and connect it
-    monitor <- newMonitor (configStations config)
-    let monitorHandler (StateChanged host state) =
-            publish $ MonitorEvent host state
-
     -- Start the sensor
     _ <- forkIO $ Sensor.listen (configSensorPort config) sensorHandler
 
@@ -60,7 +54,6 @@ main = do
     _       <- forkIO $ runCounter counter (configCircuitLength config)
         (Log.setModule "Counter" logger) counterHandler sensorChan
 
-    -- _ <- forkIO $ runMonitor monitor monitorHandler
     Web.listen config (Log.setModule "Web" logger) pubSub counter
 
     putStrLn "Closing..."
