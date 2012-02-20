@@ -12,6 +12,8 @@ module CountVonCount.Persistence.Core
     , get
     , add
     , getAll
+
+    , deleteAll
     ) where
 
 import Control.Applicative ((<$>))
@@ -64,3 +66,9 @@ getAll = do
     return $ map (MDB.valueAt "_id" &&& fromDocument) docs
   where
     x = undefined :: d
+
+-- | Use with extreme care
+deleteAll :: forall d. IsDocument d => d -> Persistence ()
+deleteAll x = do
+    _ <- MDB.dropCollection $ collection x
+    return ()

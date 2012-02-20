@@ -3,30 +3,54 @@ module CountVonCount.Persistence.Tests
     ( tests
     ) where
 
+import Control.Monad.Trans (liftIO)
+import Data.Maybe (fromJust)
+
+import Data.Time (diffUTCTime, getCurrentTime)
 import Test.Framework (Test, testGroup)
 import Test.Framework.Providers.HUnit (testCase)
 import Test.HUnit (Assertion, assert)
 
 import CountVonCount.Persistence
 
+wina :: Team
+wina = Team 1 "wina" 4 (Just "00:40:10:07:00:09")
+
 tests :: Test
 tests = testGroup "CountVonCount.Persistence.Tests"
     [ testCase "store/get team" $ testPersistence $ do
-        let x = Team 1 "wina" 4 Nothing
-        r  <- add x
+        r  <- add wina
         x' <- get r
-        return $ x == x'
+        return $ wina == x'
 
     , testCase "getTeamByMac" $ testPersistence $ do
-        let mac = "00:40:10:07:00:09"
-            x   = Team 1 "wina" 4 (Just mac)
-        r  <- add x
-        x' <- getTeamByMac mac
-        return $ Just (r, x) == x'
-        
+        r  <- add wina
+        x' <- getTeamByMac $ fromJust $ teamBaton wina
+        return $ Just (r, wina) == x'
+
+    , testCase "addLaps/getLaps" $ testPersistence $ do
+        r    <- add wina
+        time <- liftIO getCurrentTime
+        let reason = "Because they're gay" 
+            laps   = 10
+
+        addLaps r time reason laps
+        (lap : _) <- getLaps 0 10
+
+        return $ lapTeam lap == r &&
+            -- Might a marginal difference in the times due to conversion,
+            -- should never be more than one second
+            abs (lapTimestamp lap `diffUTCTime` time) < 1 &&
+            lapReason lap == reason &&
+            lapCount lap == laps
     ]
 
 testPersistence :: Persistence Bool -> Assertion
-testPersistence x =
-    let x' = runPersistence x :: IO Bool
-    in assert x'
+testPersistence x = assert x'
+  where
+    x' :: IO Bool
+    x' = runPersistence $ do
+        r <- x
+        deleteAll (undefined :: Team)
+        deleteAll (undefined :: Lap)
+        return r
