@@ -56,8 +56,6 @@ listen :: Int
        -> (RawSensorEvent -> IO ())
        -> IO ()
 listen port handler = do
-    putStrLn "Sensor: listening..."
-
     sock <- N.listenOn (PortNumber $ fromIntegral port)
 
     forever $ do
