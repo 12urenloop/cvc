@@ -28,6 +28,7 @@ import qualified CountVonCount.Log as Log
 import qualified CountVonCount.Persistence as P
 
 import CountVonCount.Sensor.Filter
+import CountVonCount.Util
 
 newtype Counter = Counter {unCounter :: MVar CounterMap}
 
@@ -58,11 +59,13 @@ step cl logger handler event cmap = do
     return cmap'
   where
     process []     = return ()
-    process events = P.runPersistence $ do
-        mteam <- P.getTeamByMac (batonMac . sensorBaton $ event)
+    process events = do
+        mteam <- P.runPersistence $
+            P.getTeamByMac (batonMac . sensorBaton $ event)
+
         forM_ mteam $ \(ref, team) ->
             forM_ events $ \event' -> do
-                liftIO $ do
+                liftIO $ isolate logger "CounterEvent handler" $ do
                     handler team event'
                     Log.string logger $ case event' of
                         Progression _ s _ -> show team ++ " @ " ++ show s
@@ -70,7 +73,7 @@ step cl logger handler event cmap = do
 
                 -- Add the lap in the database
                 case event' of
-                    Lap timestamp _ -> P.addLap ref timestamp
+                    Lap timestamp _ -> P.runPersistence $ P.addLap ref timestamp
                     _               -> return ()
 
 resetCounterFor :: Baton -> Counter -> IO ()

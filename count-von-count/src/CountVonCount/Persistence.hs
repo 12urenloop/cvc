@@ -1,4 +1,4 @@
-{-# LANGUAGE OverloadedStrings, ScopedTypeVariables #-}
+{-# LANGUAGE BangPatterns, OverloadedStrings, ScopedTypeVariables #-}
 {-# OPTIONS_GHC -fno-warn-unused-do-bind #-}
 module CountVonCount.Persistence
     ( module CountVonCount.Persistence.Core
@@ -72,7 +72,7 @@ addLap :: Ref Team -> UTCTime -> Persistence ()
 addLap team timestamp = addLaps team timestamp "counted lap" 1
 
 addLaps :: Ref Team -> UTCTime -> Text -> Int -> Persistence ()
-addLaps ref timestamp reason c = do
+addLaps !ref !timestamp !reason !c = do
     team <- get ref
     add $ Lap ref timestamp reason c
     put ref $ team {teamLaps = teamLaps team + c}
