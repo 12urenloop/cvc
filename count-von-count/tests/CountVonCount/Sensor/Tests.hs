@@ -15,6 +15,7 @@ import Test.Framework.Providers.HUnit (testCase)
 import Test.HUnit (assert)
 
 import CountVonCount.Sensor
+import qualified CountVonCount.Log as Log
 
 tests :: Test
 tests = testGroup "CountVonCount.Sensor.Tests"
@@ -23,8 +24,9 @@ tests = testGroup "CountVonCount.Sensor.Tests"
 
 sensorTest :: IO Bool
 sensorTest = do
+    logger   <- Log.open "/dev/null"
     ref      <- newIORef []
-    threadId <- forkIO $ listen port $ prepend ref
+    threadId <- forkIO $ listen logger port $ prepend ref
     threadDelay 100000
     handle <- connectTo "127.0.0.1" (PortNumber $ fromIntegral port)
     forM_ inputs $ \i -> hPutStrLn handle i >> hFlush handle
