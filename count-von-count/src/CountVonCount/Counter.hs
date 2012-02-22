@@ -59,7 +59,7 @@ step cl logger handler event cmap = do
     return cmap'
   where
     process []     = return ()
-    process events = do
+    process events = isolate logger "CounterEvent process" $ do
         mteam <- P.runPersistence $
             P.getTeamByMac (batonMac . sensorBaton $ event)
 

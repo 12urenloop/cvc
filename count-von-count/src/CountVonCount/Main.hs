@@ -47,7 +47,8 @@ main = do
             forM_ (filterSensorEvent' event) $ writeChan sensorChan
 
     -- Start the sensor
-    _ <- forkIO $ Sensor.listen (configSensorPort config) sensorHandler
+    _ <- forkIO $ Sensor.listen (Log.setModule "Sensor" logger)
+        (configSensorPort config) sensorHandler
 
     -- Start the counter
     counter <- newCounter
