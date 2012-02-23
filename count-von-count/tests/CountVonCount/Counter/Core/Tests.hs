@@ -44,6 +44,19 @@ tests = testGroup "CountVonCount.Counter.Core.Tests"
         , sensorEvent 12 station1
         , sensorEvent 15 station0
         ]
+    , testCase "count test 03: running backwards" $ 1 @=? simulate'
+        [ sensorEvent  0 station3
+        , sensorEvent 10 station2
+        , sensorEvent 20 station1
+        , sensorEvent 30 station0
+        , sensorEvent 40 station3
+        ]
+    , testCase "count test 04: only passing 2 points" $ 1 @=? simulate'
+        [ sensorEvent 0 station3
+        , sensorEvent 10 station0
+        , sensorEvent 20 station3
+        , sensorEvent 30 station0
+        ]
     ]
   where
     simulate' = numLaps . simulate
