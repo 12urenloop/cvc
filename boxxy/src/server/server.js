@@ -1,13 +1,12 @@
 var http = require("http");
 var url = require("url");
 
-function start(view_register){
+function start(eventParser,handler){
     function onRequest(request,response){
 	//BOXXY
 	//register view client
 	var pathname = url.parse(request.url).pathname;
-
-	view_register("sander");
+	eventParser(pathname,handler);
 
 	response.writeHead(200,{"Content-Type": "text/plain"});
 	response.write("Hell world");
