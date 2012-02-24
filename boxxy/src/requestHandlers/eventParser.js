@@ -1,9 +1,9 @@
 function parseEvent(pathname,handler){
     console.log(pathname);
     if(typeof handler[pathname] === 'function'){
-	handler[pathname]();
+	return handler[pathname]();
     }else{
-	console.log("invalid handler request");
+	return "404 invalid handler request";
     }
 }
 exports.parseEvent = parseEvent;

@@ -6,10 +6,11 @@ function start(eventParser,handler){
 	//BOXXY
 	//register view client
 	var pathname = url.parse(request.url).pathname;
-	eventParser(pathname,handler);
+
 
 	response.writeHead(200,{"Content-Type": "text/plain"});
-	response.write("Hell world");
+	response.write(eventParser(pathname,handler));
+		     
 	response.end();
     }
     http.createServer(onRequest).listen(8888);
