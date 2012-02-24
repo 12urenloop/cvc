@@ -7,8 +7,9 @@ function add_view_client(){
 function remove_view_client(){
     //remove ID
     //check if ID already exist
-    console.log("remove view clien with ID: ");
+    console.log("remove view client with ID: ");
     return "removed view client";
+
 }
 function default_handler(){
     console.log("request default request handler");

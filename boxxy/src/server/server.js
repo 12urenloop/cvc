@@ -9,8 +9,7 @@ function start(eventParser,handler){
 
 
 	response.writeHead(200,{"Content-Type": "text/plain"});
-	response.write(eventParser(pathname,handler));
-		     
+	response.write(eventParser(pathname,handler));		     
 	response.end();
     }
     http.createServer(onRequest).listen(8888);
