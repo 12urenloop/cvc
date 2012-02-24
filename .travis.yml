@@ -7,3 +7,7 @@ before_install:
     - "cabal update"
     - "cabal install"
     - "cabal install test-framework-hunit"
+notifications:
+  email: false
+  irc:
+    - "wina.ugent.be#zeus"
