@@ -1,4 +1,5 @@
 circuitLength: 400
+maxSpeed: 50
 
 sensorPort: 9001
 

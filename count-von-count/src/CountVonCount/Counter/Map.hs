@@ -21,15 +21,18 @@ emptyCounterMap :: CounterMap
 emptyCounterMap = M.empty
 
 stepCounterMap :: Double
+               -> Double
                -> SensorEvent
                -> CounterMap
-               -> ([CounterEvent], CounterMap)
-stepCounterMap circuitLength event !cmap =
-    let c             = fromMaybe emptyCounterState $ M.lookup baton cmap
-        (events, !c') = stepCounterState circuitLength event c
-    in (events, M.insert baton c' cmap)
+               -> ([CounterEvent], [String], CounterMap)
+stepCounterMap circuitLength maxSpeed event !cmap =
+    let state                = fromMaybe emptyCounterState $ M.lookup baton cmap
+        app                  = stepCounterState circuitLength maxSpeed event
+        (es, tells, !state') = runCounterM app state
+    in (es, map prepend tells, M.insert baton state' cmap)
   where
-    baton = sensorBaton event
+    baton       = sensorBaton event
+    prepend str = show baton ++ ": " ++ str
 
 -- | Resets the counter state for a single baton
 resetCounterMapFor :: Baton

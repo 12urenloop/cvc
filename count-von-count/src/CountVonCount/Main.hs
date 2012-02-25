@@ -53,7 +53,8 @@ main = do
     -- Start the counter
     counter <- newCounter
     _       <- forkIO $ runCounter counter (configCircuitLength config)
-        (Log.setModule "Counter" logger) counterHandler sensorChan
+        (configMaxSpeed config) (Log.setModule "Counter" logger)
+        counterHandler sensorChan
 
     Web.listen config (Log.setModule "Web" logger) pubSub counter
 

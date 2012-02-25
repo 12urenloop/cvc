@@ -17,6 +17,7 @@ import CountVonCount.Types
 
 data Config = Config
     { configCircuitLength :: Double
+    , configMaxSpeed      :: Double
     , configSensorPort    :: Int
     , configLog           :: FilePath
     , configReplayLog     :: FilePath
@@ -28,6 +29,7 @@ data Config = Config
 instance ToJSON Config where
     toJSON conf = A.object
         [ "circuitLength" .= configCircuitLength conf
+        , "maxSpeed"      .= configMaxSpeed      conf
         , "sensorPort"    .= configSensorPort    conf
         , "log"           .= configLog           conf
         , "replayLog"     .= configReplayLog     conf
@@ -39,6 +41,7 @@ instance ToJSON Config where
 instance FromJSON Config where
     parseJSON (A.Object o) = Config <$>
         o .:? "circuitLength" .!= configCircuitLength defaultConfig <*>
+        o .:? "maxSpeed"      .!= configMaxSpeed      defaultConfig <*>
         o .:? "sensorPort"    .!= configSensorPort    defaultConfig <*>
         o .:? "log"           .!= configLog           defaultConfig <*>
         o .:? "replayLog"     .!= configReplayLog     defaultConfig <*>
@@ -51,6 +54,7 @@ instance FromJSON Config where
 defaultConfig :: Config
 defaultConfig = Config
     { configCircuitLength = 400
+    , configMaxSpeed      = 12  -- 12m/s should be plenty?
     , configSensorPort    = 9001
     , configLog           = "log/count-von-count.log"
     , configReplayLog     = "log/replay.log"

@@ -18,6 +18,7 @@ Executable count-von-count
     CountVonCount.Counter
     CountVonCount.Counter.Core
     CountVonCount.Counter.Map
+    CountVonCount.Counter.Modulo
     CountVonCount.Feed
     CountVonCount.Log
     CountVonCount.Persistence
