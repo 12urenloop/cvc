@@ -71,8 +71,10 @@ sensorEvent time station = SensorEvent (fromSeconds time) station $
 simulate :: [SensorEvent] -> [CounterEvent]
 simulate = concat . snd . mapAccumL step emptyCounterState
   where
-    stepCounter' = stepCounterState 400
-    step acc x   = let (ys, acc') = stepCounter' x acc in (acc', ys)
+    step acc x   =
+        let counter       = stepCounterState 400 12 x
+            (ys, _, acc') = runCounterM counter acc
+        in (acc', ys)
 
 numLaps :: [CounterEvent] -> Int
 numLaps = length . filter isLap
