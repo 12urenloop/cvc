@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Boxxy Testvisualisatie</title>
+        <script type="text/javascript" src="faye-browser.js"></script>
+        <script type="text/javascript" src="http://localhost:9000/boxxy.js"></script>
+
+        <script type="text/javascript">
+            
+            window.onload = function() {
+                var speeds = {
+                    'Michiel': 0.0,
+                    'Pieter': 0.0,
+                    'Sander': 0.0
+                }
+                var client = new Faye.Client('http://localhost:9000/boxxy')
+                client.subscribe('/checkpoint', function(message) {
+                    console.log(message)
+                    if(message.type == 'checkpoint') {
+                        speeds[message.name] += message.speed
+                        if(message.checkpoint == 0) {
+                            var table = document.getElementById('laps')
+                            table.innerHTML += '<tr><td>' + message.name + '</td><td>' + speeds[message.name] / 4 + '</td></tr>'
+                            speeds[message.name] = 0
+                        }
+                    }
+                })
+            }
+        </script>
+    </head>
+    <body>
+        <table id="laps">
+            <tr><th>Loper</th><th>Gemiddelde snelheid</th></tr>
+            
+        </table>
+    </body>
+</html>
