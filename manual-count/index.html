@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html manifest="count.appcache">
+<head>
+<link href="style.css" media="screen" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="WebSqlSync/src/webSqlSync.js"> <!-- add to appcache-->
+</script>
+<script>
+//TODO: get arguments from url
+//TODO: dissable button for 30 seconds after click
+//TODO: send data to server every x min.
+var FROM_TEAM = 1
+var TO_TEAM = 11
+var PRODUCTION=0
+
+var teams = TO_TEAM - FROM_TEAM +1
+var ver = Math.floor(Math.sqrt(teams));
+var hor = Math.ceil(Math.sqrt(teams));
+function clickCounter(teamnumber)
+{
+if(typeof(Storage)!=="undefined")
+  {
+  if (localStorage.getItem(teamnumber))
+    {
+    localStorage.setItem(teamnumber,Number(localStorage.getItem(teamnumber))+1);
+    }
+  else
+    {
+    localStorage.setItem(teamnumber,1);
+    }
+  document.getElementById("result").innerHTML="You have clicked the button " + teamnumber + " " + localStorage.getItem(teamnumber) + " time(s).";
+  }
+else
+  {
+  document.getElementById("result").innerHTML="Sorry, your browser does not support web storage...";
+  }
+}
+function init(){
+	var i=0;
+	//var width = document.body.clientwidth;
+	var width = Math.floor(window.innerWidth/hor * .9);
+	var height = Math.floor(window.innerHeight/ver *.9 );
+	//var height = window.innerHeight;
+	for (i=1;i<=teams;i++)
+	{
+		document.getElementById("buttons").innerHTML += '<button style="width:' + width + 'px;height:' + height + 'px;" class="fancy_button" onclick="clickCounter(' + i + ' )" type="button">  <b>'+ i+ '</b></button>';
+	}	
+	if(! PRODUCTION){
+		document.getElementById("buttons").innerHTML += '<br /><button onclick="localStorage.clear();" type="button">Clear local storage</button>';
+	}
+}
+</script>
+</head>
+<body>
+<div id="buttons"></div>
+<div id="result"></div>
+<p>Click the button to see the counter increase.</p>
+<p>Close the browser tab (or window), and try again, and the counter will continue to count (is not reset).</p>
+</body>
+<script>
+init()
+</script>
+</html>
+
+
