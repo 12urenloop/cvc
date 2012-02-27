@@ -5,6 +5,8 @@ module CountVonCount.Counter.Fixtures.Internal
     , CounterFixture (..)
     , noLap
     , lap
+    , sensorEvents
+    , numLaps
     ) where
 
 import Control.Monad.Reader (ReaderT, ask, runReaderT)
@@ -34,3 +36,9 @@ at isLap time station = do
     (offset, baton) <- ask
     let time' = fromIntegral time `addUTCTime` offset 
     tell [CounterFixture (SensorEvent time' station baton) isLap]
+
+sensorEvents :: [CounterFixture] -> [SensorEvent]
+sensorEvents = map (\(CounterFixture se _) -> se)
+
+numLaps :: [CounterFixture] -> Int
+numLaps = sum . map (\(CounterFixture _ l) -> if l then 1 else 0)

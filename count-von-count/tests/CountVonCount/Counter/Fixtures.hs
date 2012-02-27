@@ -1,10 +1,24 @@
 {-# LANGUAGE OverloadedStrings #-}
 module CountVonCount.Counter.Fixtures
-    ( fixtures
+    ( time
+    , circuitLength
+    , maxSpeed
+    , fixtures
     ) where
+
+import Data.Time (Day (..), UTCTime (..))
 
 import CountVonCount.Counter.Fixtures.Internal
 import CountVonCount.Types
+
+time :: UTCTime
+time = UTCTime (ModifiedJulianDay 0) 0
+
+circuitLength :: Double
+circuitLength = 400
+
+maxSpeed :: Double
+maxSpeed = 12
 
 station0 :: Station
 station0 = Station "station-0" "0" 10
