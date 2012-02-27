@@ -1,4 +1,4 @@
-script: "runghc -isrc -itests tests/CountVonCount/TestSuite.hs"
+script: "runghc -isrc -itests tests/CountVonCount/TestSuite.hs --plain"
 before_install:
     - "cd count-von-count"
     - "sudo add-apt-repository ppa:gspreemann/haskell"
