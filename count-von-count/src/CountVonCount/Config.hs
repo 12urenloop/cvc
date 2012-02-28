@@ -1,6 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 module CountVonCount.Config
-    ( Config (..)
+    ( BoxxyConfig (..)
+    , Config (..)
     , defaultConfig
     , readConfigFile
     ) where
@@ -9,44 +10,12 @@ import Control.Applicative ((<$>),(<*>))
 import Control.Monad (mzero)
 import Data.Maybe (fromMaybe)
 
-import Data.Aeson (FromJSON (..), ToJSON (..), (.=), (.:), (.:?), (.!=))
-import Data.Text (Text)
+import Data.Aeson (FromJSON (..), ToJSON (..), (.=), (.:?), (.!=))
 import Data.Yaml (decodeFile)
 import qualified Data.Aeson as A
 
 import CountVonCount.Types
-
-data BoxxyConfig = BoxxyConfig
-    { boxxyHost :: Text
-    , boxxyPort :: Int
-    , boxxyPath :: Text
-    , boxxyKey  :: Text
-    } deriving (Show)
-
-instance ToJSON BoxxyConfig where
-    toJSON conf = A.object
-        [ "host" .= boxxyHost conf
-        , "port" .= boxxyPort conf
-        , "path" .= boxxyPath conf
-        , "key"  .= boxxyKey  conf
-        ]
-
-instance FromJSON BoxxyConfig where
-    parseJSON (A.Object o) = BoxxyConfig <$>
-        o .:? "host" .!= boxxyHost defaultBoxxyConfig <*>
-        o .:? "port" .!= boxxyPort defaultBoxxyConfig <*>
-        o .:? "path" .!= boxxyPath defaultBoxxyConfig <*>
-        o .:? "key"  .!= boxxyKey  defaultBoxxyConfig
-
-    parseJSON _ = mzero
-
-defaultBoxxyConfig :: BoxxyConfig
-defaultBoxxyConfig = BoxxyConfig
-    { boxxyHost = "localhost"
-    , boxxyPort = 80
-    , boxxyPath = ""
-    , boxxyKey  = "tetten"
-    }
+import CountVonCount.Boxxy
 
 data Config = Config
     { configCircuitLength :: Double
