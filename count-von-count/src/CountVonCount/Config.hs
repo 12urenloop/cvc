@@ -9,11 +9,44 @@ import Control.Applicative ((<$>),(<*>))
 import Control.Monad (mzero)
 import Data.Maybe (fromMaybe)
 
-import Data.Aeson (FromJSON (..), ToJSON (..), (.=), (.:?), (.!=))
+import Data.Aeson (FromJSON (..), ToJSON (..), (.=), (.:), (.:?), (.!=))
+import Data.Text (Text)
 import Data.Yaml (decodeFile)
 import qualified Data.Aeson as A
 
 import CountVonCount.Types
+
+data BoxxyConfig = BoxxyConfig
+    { boxxyHost :: Text
+    , boxxyPort :: Int
+    , boxxyPath :: Text
+    , boxxyKey  :: Text
+    } deriving (Show)
+
+instance ToJSON BoxxyConfig where
+    toJSON conf = A.object
+        [ "host" .= boxxyHost conf
+        , "port" .= boxxyPort conf
+        , "path" .= boxxyPath conf
+        , "key"  .= boxxyKey  conf
+        ]
+
+instance FromJSON BoxxyConfig where
+    parseJSON (A.Object o) = BoxxyConfig <$>
+        o .:? "host" .!= boxxyHost defaultBoxxyConfig <*>
+        o .:? "port" .!= boxxyPort defaultBoxxyConfig <*>
+        o .:? "path" .!= boxxyPath defaultBoxxyConfig <*>
+        o .:? "key"  .!= boxxyKey  defaultBoxxyConfig
+
+    parseJSON _ = mzero
+
+defaultBoxxyConfig :: BoxxyConfig
+defaultBoxxyConfig = BoxxyConfig
+    { boxxyHost = "localhost"
+    , boxxyPort = 80
+    , boxxyPath = ""
+    , boxxyKey  = "tetten"
+    }
 
 data Config = Config
     { configCircuitLength :: Double
@@ -24,6 +57,7 @@ data Config = Config
     , configStations      :: [Station]
     , configBatons        :: [Baton]
     , configRssiThreshold :: Double
+    , configBoxxies       :: [BoxxyConfig]
     } deriving (Show)
 
 instance ToJSON Config where
@@ -36,6 +70,7 @@ instance ToJSON Config where
         , "stations"      .= configStations      conf
         , "batons"        .= configBatons        conf
         , "rssiThreshold" .= configRssiThreshold conf
+        , "boxxies"       .= configBoxxies       conf
         ]
 
 instance FromJSON Config where
@@ -47,7 +82,8 @@ instance FromJSON Config where
         o .:? "replayLog"     .!= configReplayLog     defaultConfig <*>
         o .:? "stations"      .!= configStations      defaultConfig <*>
         o .:? "batons"        .!= configBatons        defaultConfig <*>
-        o .:? "rssiThreshold" .!= configRssiThreshold defaultConfig
+        o .:? "rssiThreshold" .!= configRssiThreshold defaultConfig <*>
+        o .:? "boxxies"       .!= configBoxxies       defaultConfig
 
     parseJSON _ = mzero
 
@@ -61,6 +97,7 @@ defaultConfig = Config
     , configStations      = []
     , configBatons        = []
     , configRssiThreshold = -81
+    , configBoxxies       = [defaultBoxxyConfig]
     }
 
 readConfigFile :: FilePath -> IO Config
