@@ -4,18 +4,16 @@
 
 var http = require('http'),
     faye = require('faye'),
-    express = require('express');
-
+    express = require('express')
+    
+var auth = require('./auth')
+console.log(auth)
+console.log(auth.ServerAuth)
 var port = 8080
 var server = new faye.NodeAdapter({mount: '/boxxy', timeout: 45})
 
-server.addExtension({
-    incoming: function(message, callback) {
-        // Hier kunnen inkomende messages van de views tegengehouden worden,
-        // zodat ze geen foute informatie kunnen publishen
-        callback(message)
-    }
-})
+server.addExtension(auth.ServerAuth)
+server.getClient().addExtension(auth.ClientAuth)
 
 var app = express.createServer()
 app.configure(function(){
