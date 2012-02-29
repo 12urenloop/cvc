@@ -34,19 +34,24 @@ app.put('/cvc/position', function(req, res){
 })
 
 app.all('/', function(req, res) {
-    console.log("test");
+    console.log("test/");
+    res.send(200);
 })
 
-app.put('/:teamid/position/',function(req,res){
-    console.log("test");
+app.put('/:teamid/position',function(req,res){
+    console.log("teamid");
+    res.send(200);
+
 });
 
-app.put('/teamid/laps', function(req, res) {
+app.put('/:teamid/laps', function(req, res) {
     console.log('lap!')
+    res.send(200);
 })
 
 app.put('/config', function(req, res) {
     console.log('config!')
+    res.send(200);
 })
 
 server.attach(app)
