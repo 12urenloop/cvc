@@ -53,3 +53,9 @@ stations:
     - name:     "gyrid-4"
       mac:      "00:00:00:00:04:00"
       position: 300
+
+boxxies:
+    - host: "127.0.0.1"
+      port: 8888
+      path: ""
+      key:  "tetten"
