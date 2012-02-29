@@ -1,26 +1,41 @@
-var http = require("http");
-var faye = require("faye");
-var faye_server = new faye.NodeAdapter({mount: '/boxxy',timeout: 45});
+/**
+ * Een kleine proof of concept voor Boxxy met Faye
+ */
 
-var url = require("url");
-var t_eventParser;
-var t_parseEvent;
-var t_handler;
+var http = require('http'),
+    faye = require('faye'),
+    express = require('express');
 
-function start(eventParser,handler){
-    function onRequest(request,response){
-	//BOXXY
-	//register view client
-	var pathname = url.parse(request.url).pathname;
+var port = 9000
+var server = new faye.NodeAdapter({mount: '/boxxy', timeout: 45})
 
-
-	response.writeHead(200,{"Content-Type": "text/plain"});
-	response.write(eventParser(pathname,handler));		     
-	response.end();
+server.addExtension({
+    incoming: function(message, callback) {
+        // Hier kunnen inkomende messages van de views tegengehouden worden,
+        // zodat ze geen foute informatie kunnen publishen
+        callback(message)
     }
-    var server=http.createServer(onRequest).listen(8888);
-    faye_server.attach(server);
-    console.log("Server started");
-}
-console.log("server started at port 8888");
-exports.start = start;
+})
+
+var app = express.createServer()
+app.configure(function(){
+    app.use(express.bodyParser())
+})
+
+app.put('/cvc/position', function(req, res){
+    console.log('position!')
+    server.getClient().publish('/checkpoint', {
+        type: 'checkpoint',
+        checkpoint: req.body.position,
+        name: req.body.team,
+        speed: req.body.speed
+    })
+    res.send({status: 'ok'})
+})
+
+app.all('/', function(req, res) {
+    
+})
+server.attach(app)
+app.listen(port)
+console.log("Boxxy running on port " + port)
