@@ -6,7 +6,7 @@ var http = require('http'),
     faye = require('faye'),
     express = require('express');
 
-var port = 9000
+var port = 8888
 var server = new faye.NodeAdapter({mount: '/boxxy', timeout: 45})
 
 server.addExtension({
@@ -34,8 +34,13 @@ app.put('/cvc/position', function(req, res){
 })
 
 app.all('/', function(req, res) {
-    
+    console.log("test");
 })
+
+app.put('/:teamlid/position/',function(req,res){
+    console.log("test");
+});
+
 server.attach(app)
 app.listen(port)
 console.log("Boxxy running on port " + port)
