@@ -38,11 +38,10 @@ app.all('/', function(req, res) {
     res.send(200);
 })
 
-app.put('/:teamid/position',function(req,res){
+app.all('/:teamid/position',function(req,res){
     console.log("teamid logged");
     res.send(200)
-
-    if(req.params.key == "tetten"){
+    if(req.query.key == "tetten"){
     server.getClient().publish('/position/',{
 	team: {
 	    id: req.body.team.id,
@@ -55,7 +54,7 @@ app.put('/:teamid/position',function(req,res){
 	    name: req.body.station.name
 	}
     });
-    server.getClient().publish('/' + rec.params.teamid + '/position');
+    server.getClient().publish('/' + req.params.teamid + '/position');
     }else{
 	res.send(404)
     }
@@ -63,13 +62,13 @@ app.put('/:teamid/position',function(req,res){
 
 });
 
-app.put('/:teamid/laps', function(req, res) {
+app.all('/:teamid/laps', function(req, res) {
     console.log('lap logged')
-    server.getClient().publish('/:' + rec.params.teamid + '/laps');
+    server.getClient().publish('/:' + req.params.teamid + '/laps');
     res.send(200);
 })
 
-app.put('/config', function(req, res) {
+app.all('/config', function(req, res) {
     console.log('config!')
     res.send(200);
 })
