@@ -1,4 +1,4 @@
-# 12UrenLoop
+# 12UrenLoop [![Build Status](https://secure.travis-ci.org/ZeusWPI/12Urenloop.png)](http://travis-ci.org/ZeusWPI/12Urenloop)
 
 **TL;DR**: People run laps. We count, give them points and monitor it all.
 

@@ -14,10 +14,12 @@ Executable count-von-count
   Ghc-options:    -Wall -O2 -threaded -rtsopts
 
   Other-modules:
+    CountVonCount.Boxxy
     CountVonCount.Config
     CountVonCount.Counter
     CountVonCount.Counter.Core
     CountVonCount.Counter.Map
+    CountVonCount.Counter.Modulo
     CountVonCount.Feed
     CountVonCount.Log
     CountVonCount.Persistence
@@ -37,8 +39,10 @@ Executable count-von-count
     base                  >= 4       && < 5,
     blaze-html            >= 0.4     && < 0.5,
     bytestring            >= 0.9     && < 0.10,
+    conduit               >= 0.2     && < 0.3,
     containers            >= 0.3     && < 0.5,
     enumerator            >= 0.4     && < 0.5,
+    http-conduit          >= 1.2     && < 1.3,
     mongoDB               >= 1.2     && < 1.3,
     mtl                   >= 2.0     && < 2.1,
     network               >= 2.3     && < 2.4,

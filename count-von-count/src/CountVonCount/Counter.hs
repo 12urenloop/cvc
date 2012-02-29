@@ -37,24 +37,27 @@ newCounter = Counter <$> newMVar emptyCounterMap
 
 runCounter :: Counter
            -> Double
+           -> Double
            -> Log
            -> (P.Team -> CounterEvent -> IO ())
            -> Chan SensorEvent
            -> IO ()
-runCounter counter cl logger handler chan = forever $ do
+runCounter counter cl ms logger handler chan = forever $ do
     event <- readChan chan
     modifyMVar_ (unCounter counter) (step' event)
   where
-    step' = step cl logger handler
+    step' = step cl ms logger handler
 
-step :: Double
+step :: Double  -- ^ Circuit length
+     -> Double  -- ^ Max speed
      -> Log
      -> (P.Team -> CounterEvent -> IO ())
      -> SensorEvent
      -> CounterMap
      -> IO CounterMap
-step cl logger handler event cmap = do
-    let (events, cmap') = stepCounterMap cl event cmap
+step cl ms logger handler event cmap = do
+    let (events, tells, cmap') = stepCounterMap cl ms event cmap
+    forM_ tells $ Log.string logger
     process events
     return cmap'
   where

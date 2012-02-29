@@ -4,12 +4,20 @@ module CountVonCount.Counter.Core
     , isLap
     , CounterState
     , emptyCounterState
+    , CounterM
+    , runCounterM
     , stepCounterState
     ) where
 
-import Data.Fixed (mod')
+import Control.Monad (when)
+import Control.Monad.State (State, get, put, runState)
+import Control.Monad.Writer (WriterT, runWriterT, tell)
+import Data.List (minimumBy)
+import Data.Ord (comparing)
 import Data.Time (UTCTime, diffUTCTime)
+import Text.Printf (printf)
 
+import CountVonCount.Counter.Modulo
 import CountVonCount.Sensor.Filter
 import CountVonCount.Types
 
@@ -22,54 +30,87 @@ isLap :: CounterEvent -> Bool
 isLap (Lap _ _) = True
 isLap _         = False
 
-data CounterState = CounterState
-    { sensorEvents :: [SensorEvent]
-    } deriving (Show)
+data CounterState
+    -- | No data for now
+    = NoCounterState
+    -- | First, previous event, current speed
+    | CounterState SensorEvent SensorEvent Double
+    deriving (Show)
 
 emptyCounterState :: CounterState
-emptyCounterState = CounterState {sensorEvents = []}
+emptyCounterState = NoCounterState
 
-stepCounterState :: Double
-                 -> SensorEvent
-                 -> CounterState
-                 -> ([CounterEvent], CounterState)
-stepCounterState circuitLength event state
-    -- First event received
-    | null events             =
-        ([], CounterState [event])
-    -- Still at the same station. Do nothing.
-    | station == lastStation  =
-        ([], state)
-    -- Advanced at least one station, update.
-    | position > lastPosition =
-        ([Progression time station speed], CounterState (event : events))
-    -- At a lower position. Either a lap was made, or the sensor event was
-    -- foobar. For a lap to be made, we consider a minimum number of stations
-    -- and a minimum timespan.
-    | falseLap                =
-        ([], state)
-    -- We have an actual lap! Send two events.
-    | otherwise               =
-        let es = [Progression time station speed, Lap time lapTime]
-        in (es, CounterState [event])
+type CounterM a = WriterT [String] (State CounterState) a
+
+runCounterM :: CounterM a -> CounterState -> (a, [String], CounterState)
+runCounterM c cs =
+    let state             = (runWriterT c)
+        ((x, tells), cs') = runState state cs
+    in (x, tells, cs')
+
+tell' :: String -> CounterM ()
+tell' x = tell [x]
+
+stepCounterState :: Double                   -- ^ Length of the circuit
+                 -> Double                   -- ^ Absolute maximum speed
+                 -> SensorEvent              -- ^ Incoming event
+                 -> CounterM [CounterEvent]  -- ^ Outgoing events
+stepCounterState len maxSpeed event = do
+    state <- get
+    case state of
+        NoCounterState               -> do
+            put $ CounterState event event 0
+            let position = stationPosition $ sensorStation event
+            tell' $ printf "Initialized counter state (%.2fm)" position
+            return []
+        CounterState first prev prevSpeed
+            -- At the same station, do nothing.
+            | station == prevStation -> return []
+            -- Refused sensor event
+            | null possibilities     -> do
+                tell' "Impossibru!"
+                return []
+            | otherwise              -> do
+                tell' $ printf "Average speed: %.2fm/s" prevSpeed
+                tell' $ printf "%.2fm -> %.2fm (%.2fs)" prevPosition position dt
+                tell' $ printf "Most likely: moved %.2fm at %.2fm/s" dx speed
+                tell' $ printf "Updated average speed: %.2fm/s" speed'
+                when (numLaps > 0) $ tell' $ printf "Adding %d laps" numLaps
+                put $ CounterState first event speed'
+                return $
+                    Progression time station speed :
+                    replicate numLaps (Lap time 0)  -- lapTime is TODO
+          where
+            SensorEvent time     station     _ = event
+            SensorEvent prevTime prevStation _ = prev
+            Station _ _ position               = station
+            Station _ _ prevPosition           = prevStation
+
+            dt            = time `diffTime` prevTime
+            possibilities = solve len maxSpeed prevPosition position dt
+
+            -- Pick the (dx, speed) so that speed close to the previously
+            -- known speed
+            (dx, speed) = minimumBy
+                (comparing $ \(_, sp) -> abs (sp - prevSpeed))
+                possibilities
+
+            -- Update exponentially moving average
+            speed' = prevSpeed * 0.7 + speed * 0.3
+
+            -- Calculate number of laps to emit (usually 0)
+            numLaps :: Int
+            numLaps = floor $ (prevPosition + dx) / len
+
+            diffTime t1 t2 = fromRational $ toRational $ t1 `diffUTCTime` t2
+
+solve :: Double              -- ^ Length of the circuit
+      -> Double              -- ^ Absolute maximum speed
+      -> Double              -- ^ Previous position
+      -> Double              -- ^ Current position
+      -> Double              -- ^ Delta time
+      -> [(Double, Double)]  -- ^ Possible (delta position, speed) values
+solve len max' x1 x2 dt = takeWhile ((< max') . snd)
+    [(dx, sp) | dx <- dxs, let sp = dx / dt, sp > 0]
   where
-    CounterState events                     = state
-    SensorEvent time station _         = event
-    SensorEvent lastTime lastStation _ = head events
-    Station _ _ position               = station
-    Station _ _ lastPosition           = lastStation
-    SensorEvent lapStart _ _           = last events
-
-    lapTime = fromRational $ toRational $
-        time `diffUTCTime` lapStart
-
-    falseLap = (lastPosition - position) < minimumDrop ||
-        lapTime < minimumLapTime
-
-    speed = ((position - lastPosition) `mod'` circuitLength) /
-        (time `diffTime` lastTime)
-
-    minimumDrop    = circuitLength / 2   -- TODO: configurable
-    minimumLapTime = 10                  -- TODO: configurable
-
-    diffTime t1 t2 = fromRational $ toRational $ t1 `diffUTCTime` t2
+    dxs = fromModulo (toModulo x2 .-. toModulo x1) len

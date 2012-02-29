@@ -11,11 +11,15 @@ import qualified Data.Aeson as A
 import qualified Network.WebSockets as WS
 import qualified Network.WebSockets.Util.PubSub as WS
 
+import CountVonCount.Boxxy
 import CountVonCount.Config
 import CountVonCount.Counter
+import CountVonCount.Counter.Core
 import CountVonCount.Feed
+import CountVonCount.Persistence (Team (..), getAll, runPersistence)
 import CountVonCount.Sensor
 import CountVonCount.Sensor.Filter
+import CountVonCount.Util
 import qualified CountVonCount.Log as Log
 import qualified CountVonCount.Sensor as Sensor
 import qualified CountVonCount.Web as Web
@@ -30,12 +34,12 @@ main = do
 
     -- Create the pubsub system
     pubSub <- WS.newPubSub
-    let publish = WS.publish pubSub . WS.textData . A.encode
 
-    -- Connecting the counter to whatever (TODO)
-    let counterHandler team event = do
-            print (team, event)
-            publish $ CounterEvent team event
+    -- Initialize boxxy
+    isolate logger "Initialize boxxy" $ do
+        teams <- map snd <$> runPersistence getAll
+        forM_ (configBoxxies config) $ \boxxy -> putConfig boxxy
+            (configCircuitLength config) (configStations config) teams
 
     -- Connecting the sensor to the counter
     sensorChan <- newChan
@@ -53,10 +57,27 @@ main = do
     -- Start the counter
     counter <- newCounter
     _       <- forkIO $ runCounter counter (configCircuitLength config)
-        (Log.setModule "Counter" logger) counterHandler sensorChan
+        (configMaxSpeed config) (Log.setModule "Counter" logger)
+        (counterHandler (configBoxxies config) pubSub) sensorChan
 
     Web.listen config (Log.setModule "Web" logger) pubSub counter
 
     putStrLn "Closing..."
     Log.close replayLog
     Log.close logger
+
+counterHandler :: WS.TextProtocol p
+               => [BoxxyConfig] -> WS.PubSub p -> Team -> CounterEvent -> IO ()
+counterHandler boxxies pubSub team event = do
+    -- TODO: remove this
+    print (team, event)
+
+    -- Send to websockets pubsub
+    publish $ CounterEvent team event
+
+    -- Send to boxxies
+    forM_ boxxies $ \boxxy -> case event of
+        Lap _ _                     -> putLaps boxxy team Nothing Nothing
+        Progression _ station speed -> putPosition boxxy team station speed
+  where
+    publish = WS.publish pubSub . WS.textData . A.encode

@@ -3,76 +3,29 @@ module CountVonCount.Counter.Core.Tests
     ( tests
     ) where
 
-import Data.List (mapAccumL)
-import Data.Time (Day (..), UTCTime (..))
 import Test.Framework (Test, testGroup)
 import Test.Framework.Providers.HUnit (testCase)
-import Test.HUnit ((@=?))
-
-import Data.ByteString.Char8 ()
+import Test.HUnit (assert)
 
 import CountVonCount.Counter.Core
-import CountVonCount.Sensor.Filter
+import CountVonCount.Counter.Fixtures
+import CountVonCount.Counter.Fixtures.Internal
 import CountVonCount.Types
-
-station0 :: Station
-station0 = Station "station-0" "0" 10
-
-station1 :: Station
-station1 = Station "station-1" "1" 100
-
-station2 :: Station
-station2 = Station "station-2" "2" 180
-
-station3 :: Station
-station3 = Station "station-3" "3" 320
 
 tests :: Test
 tests = testGroup "CountVonCount.Counter.Core.Tests"
-    [ testCase "count test 01" $ 1 @=? simulate'
-        [ sensorEvent  0 station0
-        , sensorEvent 10 station1
-        , sensorEvent 20 station2
-        , sensorEvent 30 station3
-        , sensorEvent 40 station0
-        ]
-
-    , testCase "count test 02" $ 0 @=? simulate'
-        [ sensorEvent  0 station0
-        , sensorEvent 10 station1
-        , sensorEvent 11 station1
-        , sensorEvent 12 station1
-        , sensorEvent 15 station0
-        ]
-    , testCase "count test 03: running backwards" $ 1 @=? simulate'
-        [ sensorEvent  0 station3
-        , sensorEvent 10 station2
-        , sensorEvent 20 station1
-        , sensorEvent 30 station0
-        , sensorEvent 40 station3
-        ]
-    , testCase "count test 04: only passing 2 points" $ 1 @=? simulate'
-        [ sensorEvent 0 station3
-        , sensorEvent 10 station0
-        , sensorEvent 20 station3
-        , sensorEvent 30 station0
-        ]
+    [ testCase ("counter core: " ++ name) (assert $ testCounterFixtureM fixture)
+    | (name, fixture) <- fixtures
     ]
+
+testCounterFixtureM :: CounterFixtureM () -> Bool
+testCounterFixtureM cf = test emptyCounterState $
+    runCounterFixtureM cf time baton
   where
-    simulate' = numLaps . simulate
+    baton = Baton "Baton is irrelevant" 0
+    step  = stepCounterState circuitLength maxSpeed
 
-fromSeconds :: Int -> UTCTime
-fromSeconds = UTCTime (ModifiedJulianDay 0) . fromIntegral
-
-sensorEvent :: Int -> Station -> SensorEvent
-sensorEvent time station = SensorEvent (fromSeconds time) station $
-    error "Baton is irrelevant"
-
-simulate :: [SensorEvent] -> [CounterEvent]
-simulate = concat . snd . mapAccumL step emptyCounterState
-  where
-    stepCounter' = stepCounterState 400
-    step acc x   = let (ys, acc') = stepCounter' x acc in (acc', ys)
-
-numLaps :: [CounterEvent] -> Int
-numLaps = length . filter isLap
+    test _     []                                = True
+    test state (CounterFixture se expected : xs) =
+        let (es, _, state') = runCounterM (step se) state
+        in any isLap es == expected && test state' xs
