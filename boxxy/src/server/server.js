@@ -40,9 +40,26 @@ app.all('/', function(req, res) {
 
 app.put('/:teamid/position',function(req,res){
     console.log("teamid logged");
-    res.send(200);
-    //rec.params.teamid
-    server.getClient().publish('/:' + rec.params.teamid + '/position');
+    res.send(200)
+
+    if(req.params.key == "tetten"){
+    server.getClient().publish('/position/',{
+	team: {
+	    id: req.body.team.id,
+	    name: req.body.team.name,
+	    laps: req.body.team.laps
+	},
+	speed: req.body.speed,
+	station: {
+	    position: req.body.station.position,
+	    name: req.body.station.name
+	}
+    });
+    server.getClient().publish('/' + rec.params.teamid + '/position');
+    }else{
+	res.send(404)
+    }
+    
 
 });
 
