@@ -53,14 +53,3 @@ stations:
     - name:     "gyrid-4"
       mac:      "00:00:00:00:04:00"
       position: 300
-
-boxxies:
-    - host: "127.0.0.1"
-      port: 8000
-      path: ""
-      key:  "What is a fish with no eyes? A fsh."
-
-    - host: "127.0.0.1"
-      port: 8001
-      path: ""
-      key:  "What is a fish with no eyes? A fsh."

@@ -1,13 +1,19 @@
 -- | Communication with boxxy
 {-# LANGUAGE OverloadedStrings #-}
 module CountVonCount.Boxxy
-    ( BoxxyConfig (..)
+    ( -- * Configuration
+      BoxxyConfig (..)
     , defaultBoxxyConfig
-    , initialize
+
+      -- * Talking to boxxy
+    , putInitialization
+    , putLaps
+    , putPosition
     ) where
 
 import Control.Applicative ((<$>),(<*>))
 import Control.Monad (mzero)
+import Data.Maybe (fromMaybe)
 
 import Data.Aeson (FromJSON (..), ToJSON (..), (.=), (.:?), (.!=))
 import Data.Text (Text)
@@ -18,6 +24,7 @@ import qualified Data.Text.Encoding as T
 import qualified Network.HTTP.Conduit as Http
 
 import CountVonCount.Persistence
+import CountVonCount.Types
 
 data BoxxyConfig = BoxxyConfig
     { boxxyHost :: Text
@@ -54,16 +61,36 @@ defaultBoxxyConfig = BoxxyConfig
 makeRequest :: ToJSON a => BoxxyConfig -> Text -> a -> IO ()
 makeRequest config path body = do
     let rq = Http.def
-            { Http.method      = "PUT"
-            , Http.host        = T.encodeUtf8 (boxxyHost config)
-            , Http.port        = boxxyPort config
-            , Http.path        = T.encodeUtf8 (boxxyPath config `T.append` path)
-            , Http.requestBody = Http.RequestBodyLBS (A.encode body)
+            { Http.method         = "PUT"
+            , Http.host           = T.encodeUtf8 (boxxyHost config)
+            , Http.port           = boxxyPort config
+            , Http.path           = T.encodeUtf8 path'
+            , Http.requestBody    = Http.RequestBodyLBS (A.encode body)
+            , Http.requestHeaders = [("Connection", "Close")]
             }
 
     manager <- Http.newManager Http.def
     _       <- C.runResourceT $ Http.httpLbs rq manager
     Http.closeManager manager
+  where
+    path' = boxxyPath config `T.append` path
 
-initialize :: BoxxyConfig -> [Team] -> IO ()
-initialize config teams = makeRequest config "/teams" teams
+putInitialization :: BoxxyConfig -> [Team] -> IO ()
+putInitialization config teams = makeRequest config "/teams" teams
+
+putLaps :: BoxxyConfig -> Team -> Maybe Text -> Maybe Int -> IO ()
+putLaps config team reason count = makeRequest config path $ A.object
+    [ "team"   .= team
+    , "reason" .= reason
+    , "count"  .= fromMaybe 1 count
+    ]
+  where
+    path = T.concat ["/", T.pack (show $ teamId team), "/laps"]
+
+putPosition :: BoxxyConfig -> Team -> Station -> Double -> IO ()
+putPosition config team station speed = makeRequest config path $ A.object
+    [ "station" .= station
+    , "speed"   .= speed
+    ]
+  where
+    path = T.concat ["/", T.pack (show $ teamId team), "/position"]
