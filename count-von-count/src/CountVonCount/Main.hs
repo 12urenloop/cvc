@@ -16,9 +16,10 @@ import CountVonCount.Config
 import CountVonCount.Counter
 import CountVonCount.Counter.Core
 import CountVonCount.Feed
-import CountVonCount.Persistence (Team (..))
+import CountVonCount.Persistence (Team (..), getAll, runPersistence)
 import CountVonCount.Sensor
 import CountVonCount.Sensor.Filter
+import CountVonCount.Util
 import qualified CountVonCount.Log as Log
 import qualified CountVonCount.Sensor as Sensor
 import qualified CountVonCount.Web as Web
@@ -33,6 +34,11 @@ main = do
 
     -- Create the pubsub system
     pubSub <- WS.newPubSub
+
+    -- Initialize boxxy
+    isolate logger "Initialize boxxy" $ do
+        teams <- map snd <$> runPersistence getAll
+        forM_ (configBoxxies config) $ \boxxy -> putInitialization boxxy teams
 
     -- Connecting the sensor to the counter
     sensorChan <- newChan

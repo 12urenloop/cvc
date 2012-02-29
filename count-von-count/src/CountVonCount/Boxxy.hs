@@ -89,7 +89,8 @@ putLaps config team reason count = makeRequest config path $ A.object
 
 putPosition :: BoxxyConfig -> Team -> Station -> Double -> IO ()
 putPosition config team station speed = makeRequest config path $ A.object
-    [ "station" .= station
+    [ "team"    .= team
+    , "station" .= station
     , "speed"   .= speed
     ]
   where
