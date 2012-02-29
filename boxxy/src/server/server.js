@@ -6,7 +6,7 @@ var http = require('http'),
     faye = require('faye'),
     express = require('express');
 
-var port = 8888
+var port = 8080
 var server = new faye.NodeAdapter({mount: '/boxxy', timeout: 45})
 
 server.addExtension({
@@ -42,10 +42,14 @@ app.put('/:teamid/position',function(req,res){
     console.log("teamid");
     res.send(200);
 
+    //rec.params.teamid
+    server.getClient().publish('/:' + rec.params.teamid + '/position');
+
 });
 
 app.put('/:teamid/laps', function(req, res) {
     console.log('lap!')
+    server.getClient().publish('/:' + rec.params.teamid + '/laps');
     res.send(200);
 })
 
