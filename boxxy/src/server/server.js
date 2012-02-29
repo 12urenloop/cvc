@@ -39,16 +39,15 @@ app.all('/', function(req, res) {
 })
 
 app.put('/:teamid/position',function(req,res){
-    console.log("teamid");
+    console.log("teamid logged");
     res.send(200);
-
     //rec.params.teamid
     server.getClient().publish('/:' + rec.params.teamid + '/position');
 
 });
 
 app.put('/:teamid/laps', function(req, res) {
-    console.log('lap!')
+    console.log('lap logged')
     server.getClient().publish('/:' + rec.params.teamid + '/laps');
     res.send(200);
 })
