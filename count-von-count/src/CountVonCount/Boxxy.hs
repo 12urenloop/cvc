@@ -66,14 +66,19 @@ makeRequest config path body = do
             , Http.port           = boxxyPort config
             , Http.path           = T.encodeUtf8 path'
             , Http.requestBody    = Http.RequestBodyLBS (A.encode body)
-            , Http.requestHeaders = [("Connection", "Close")]
+            , Http.queryString    = T.encodeUtf8 queryString
+            , Http.requestHeaders =
+                [ ("Connection", "Close")
+                , ("Content-Type", "application/json")
+                ]
             }
 
     manager <- Http.newManager Http.def
     _       <- C.runResourceT $ Http.httpLbs rq manager
     Http.closeManager manager
   where
-    path' = boxxyPath config `T.append` path
+    path'       = boxxyPath config `T.append` path
+    queryString = "key=" `T.append` boxxyKey config
 
 putInitialization :: BoxxyConfig -> [Team] -> IO ()
 putInitialization config teams = makeRequest config "/teams" teams

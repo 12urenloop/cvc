@@ -9,6 +9,11 @@ should never pull for information.
 The rest of this section is a description of the different API calls which are
 made to boxxy.
 
+A few comments:
+
+- All data sent is in JSON format (`Content-Type` set to `application/json`)
+- A query string always includes a `key` param, e.g. `PUT /teams?key=tetten`
+
 ### Initialization
 
     PUT /teams
