@@ -37,9 +37,17 @@ app.all('/', function(req, res) {
     console.log("test");
 })
 
-app.put('/:teamlid/position/',function(req,res){
+app.put('/:teamid/position/',function(req,res){
     console.log("test");
 });
+
+app.put('/teamid/laps', function(req, res) {
+    console.log('lap!')
+})
+
+app.put('/config', function(req, res) {
+    console.log('config!')
+})
 
 server.attach(app)
 app.listen(port)
