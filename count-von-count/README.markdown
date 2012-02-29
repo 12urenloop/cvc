@@ -13,6 +13,8 @@ A few comments:
 
 - All data sent is in JSON format (`Content-Type` set to `application/json`)
 - A query string always includes a `key` param, e.g. `PUT /teams?key=tetten`
+- As for units, all positions are in meters, all times in seconds, and speed is
+  expressed in meter/seconds
 
 ### Initialization
 
