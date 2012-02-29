@@ -38,7 +38,8 @@ main = do
     -- Initialize boxxy
     isolate logger "Initialize boxxy" $ do
         teams <- map snd <$> runPersistence getAll
-        forM_ (configBoxxies config) $ \boxxy -> putInitialization boxxy teams
+        forM_ (configBoxxies config) $ \boxxy -> putConfig boxxy
+            (configCircuitLength config) (configStations config) teams
 
     -- Connecting the sensor to the counter
     sensorChan <- newChan

@@ -18,19 +18,30 @@ A few comments:
 
 ### Initialization
 
-    PUT /teams
+    PUT /config
 
 Body:
 
-    [
-      {
-        "id": 1,
-        "name": "Bulbasaur",
-        "baton": "00:00:00:00:00:01",
-        "laps": 0
-      },
-      ...
-    ]
+    {
+      "stations": [
+        {
+          "position": 0.0,
+          "name": "localhost",
+          "mac": "00:00:00:00:01:00"
+        },
+        ...
+      ],
+      "circuitLength": 400.0,
+      "teams": [
+        {
+          "id": 1,
+          "name": "Bulbasaur",
+          "baton": "00:00:00:00:00:01",
+          "laps": 0
+        },
+        ...
+      ]
+    }
 
 ### Laps
 

@@ -6,7 +6,7 @@ module CountVonCount.Boxxy
     , defaultBoxxyConfig
 
       -- * Talking to boxxy
-    , putInitialization
+    , putConfig
     , putLaps
     , putPosition
     ) where
@@ -80,8 +80,13 @@ makeRequest config path body = do
     path'       = boxxyPath config `T.append` path
     queryString = "key=" `T.append` boxxyKey config
 
-putInitialization :: BoxxyConfig -> [Team] -> IO ()
-putInitialization config teams = makeRequest config "/teams" teams
+putConfig :: BoxxyConfig -> Double -> [Station] -> [Team] -> IO ()
+putConfig config circuitLength stations teams =
+    makeRequest config "/config" $ A.object
+        [ "circuitLength" .= circuitLength
+        , "stations"      .= stations
+        , "teams"         .= teams
+        ]
 
 putLaps :: BoxxyConfig -> Team -> Maybe Text -> Maybe Int -> IO ()
 putLaps config team reason count = makeRequest config path $ A.object
