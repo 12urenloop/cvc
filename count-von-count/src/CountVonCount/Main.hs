@@ -16,6 +16,7 @@ import CountVonCount.Config
 import CountVonCount.Counter
 import CountVonCount.Counter.Core
 import CountVonCount.Feed
+import CountVonCount.Log (Log)
 import CountVonCount.Persistence (Team (..), getAll, runPersistence)
 import CountVonCount.Sensor
 import CountVonCount.Sensor.Filter
@@ -58,7 +59,7 @@ main = do
     counter <- newCounter
     _       <- forkIO $ runCounter counter (configCircuitLength config)
         (configMaxSpeed config) (Log.setModule "Counter" logger)
-        (counterHandler (configBoxxies config) pubSub) sensorChan
+        (counterHandler logger (configBoxxies config) pubSub) sensorChan
 
     Web.listen config (Log.setModule "Web" logger) pubSub counter
 
@@ -67,8 +68,9 @@ main = do
     Log.close logger
 
 counterHandler :: WS.TextProtocol p
-               => [BoxxyConfig] -> WS.PubSub p -> Team -> CounterEvent -> IO ()
-counterHandler boxxies pubSub team event = do
+               => Log -> [BoxxyConfig] -> WS.PubSub p -> Team -> CounterEvent
+               -> IO ()
+counterHandler logger boxxies pubSub team event = do
     -- TODO: remove this
     print (team, event)
 
@@ -76,8 +78,9 @@ counterHandler boxxies pubSub team event = do
     publish $ CounterEvent team event
 
     -- Send to boxxies
-    forM_ boxxies $ \boxxy -> case event of
-        Lap _ _                     -> putLaps boxxy team Nothing Nothing
-        Progression _ station speed -> putPosition boxxy team station speed
+    forM_ boxxies $ \boxxy -> isolate logger ("Calling boxxy: " ++ show boxxy) $
+        case event of
+            Lap _ _                     -> putLaps boxxy team Nothing Nothing
+            Progression _ station speed -> putPosition boxxy team station speed
   where
     publish = WS.publish pubSub . WS.textData . A.encode
