@@ -5,11 +5,14 @@ module CountVonCount.Counter.Map
     , emptyCounterMap
     , stepCounterMap
     , resetCounterMapFor
+    , lastUpdatedBefore
     ) where
 
 import Data.Map (Map)
 import Data.Maybe (fromMaybe)
 import qualified Data.Map as M
+
+import Data.Time (UTCTime)
 
 import CountVonCount.Counter.Core
 import CountVonCount.Sensor.Filter
@@ -39,3 +42,11 @@ resetCounterMapFor :: Baton
                    -> CounterMap
                    -> CounterMap
 resetCounterMapFor = flip M.insert emptyCounterState
+
+-- | Get a list of batons which were last updated before the given time
+lastUpdatedBefore :: UTCTime -> CounterMap -> [Baton]
+lastUpdatedBefore time cmap =
+    [ baton
+    | (baton, cstate) <- M.toList cmap
+    , maybe False (< time) (counterLastUpdate cstate)
+    ]
