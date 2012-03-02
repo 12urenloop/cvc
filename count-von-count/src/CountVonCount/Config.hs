@@ -4,15 +4,11 @@ module CountVonCount.Config
     , Config (..)
     , defaultConfig
     , readConfigFile
-
-      -- * Utility
-    , findBaton
     ) where
 
 import Control.Applicative ((<$>),(<*>))
 import Control.Monad (mzero)
 import Data.Maybe (fromMaybe)
-import Data.List (find)
 
 import Data.Aeson (FromJSON (..), ToJSON (..), (.=), (.:?), (.!=))
 import Data.Yaml (decodeFile)
@@ -76,6 +72,3 @@ defaultConfig = Config
 readConfigFile :: FilePath -> IO Config
 readConfigFile filePath = fromMaybe
     (error $ "Could not read config: " ++ filePath) <$> decodeFile filePath
-
-findBaton :: Mac -> Config -> Maybe Baton
-findBaton mac = find ((== mac) . batonMac) . configBatons

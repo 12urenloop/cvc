@@ -8,7 +8,7 @@ import Control.Arrow ((&&&))
 import Control.Monad (forM, unless)
 import Control.Monad.Reader (ReaderT, ask, runReaderT)
 import Control.Monad.Trans (liftIO)
-import Data.List (find, sort, sortBy)
+import Data.List (sort, sortBy)
 import Data.Maybe (mapMaybe)
 import Data.Ord (comparing)
 import qualified Data.Map as M
@@ -28,6 +28,7 @@ import qualified Snap.Util.FileServe as Snap
 import CountVonCount.Config
 import CountVonCount.Counter
 import CountVonCount.Log (Log)
+import CountVonCount.Management
 import CountVonCount.Persistence
 import CountVonCount.Types
 import CountVonCount.Web.Util
@@ -93,16 +94,12 @@ assign :: Web ()
 assign = do
     Just mac <- fmap T.decodeUtf8 <$> Snap.getParam "baton"
     counter  <- webCounter <$> ask
+    batons   <- configBatons . webConfig <$> ask
+
     unless (T.null mac) $ do
+        let Just baton = findBaton mac batons
         Just teamRef <- refFromParam "id"
-        logger       <- webLog <$> ask
-        Just baton   <- findBaton mac . webConfig <$> ask
-        runPersistence $ do
-            team <- get teamRef
-            liftIO $ Log.string logger $
-                "assigning " ++ show mac ++ " to " ++ show team
-            liftIO $ resetCounterFor baton counter
-            put teamRef team {teamBaton = Just mac}
+        liftIO $ assignBaton counter batons baton  teamRef
 
     Snap.redirect "/management"
 
@@ -132,7 +129,7 @@ reset = do
         team <- get teamRef
         case teamBaton team of
             Just mac -> do
-                let Just baton = find (\x -> batonMac x == mac) batons
+                let Just baton = findBaton mac batons
                 liftIO $ resetCounterFor baton counter
                 liftIO $ Log.string logger $
                     "Resetting counter for " ++ show team

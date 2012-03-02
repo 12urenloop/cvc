@@ -22,6 +22,7 @@ Executable count-von-count
     CountVonCount.Counter.Modulo
     CountVonCount.Feed
     CountVonCount.Log
+    CountVonCount.Management
     CountVonCount.Persistence
     CountVonCount.Persistence.Core
     CountVonCount.Sensor
