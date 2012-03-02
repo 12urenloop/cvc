@@ -57,7 +57,7 @@ $(document).ready(function() {
             plotSpeedData(id);
         });
 
-        var ws = createWebSocket('/feed');
+        var ws = createWebSocket('/monitor/feed');
         ws.onmessage = function(event) {
             try {
                 var json = JSON.parse(event.data);

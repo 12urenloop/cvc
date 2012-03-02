@@ -25,7 +25,7 @@ import Control.Monad (forever)
 import Control.Monad.Trans (liftIO)
 import Data.Foldable (forM_)
 
-import Data.Time (UTCTime, addUTCTime, getCurrentTime)
+import Data.Time (addUTCTime, getCurrentTime)
 
 import CountVonCount.Counter.Core
 import CountVonCount.Counter.Map
@@ -89,8 +89,13 @@ resetCounterFor :: Baton -> Counter -> IO ()
 resetCounterFor baton counter =
     modifyMVar_ (unCounter counter) $ return . resetCounterMapFor baton
 
-findDeadBatons :: UTCTime -> Counter -> IO [Baton]
-findDeadBatons time = fmap (lastUpdatedBefore time) . readMVar . unCounter
+findDeadBatons :: Int -> Counter -> IO [Baton]
+findDeadBatons lifespan counter = do
+    now  <- getCurrentTime
+    cmap <- readMVar (unCounter counter)
+    return $ lastUpdatedBefore (negate lifespan' `addUTCTime` now) cmap
+  where
+    lifespan' = fromInteger $ fromIntegral lifespan
 
 watchdog :: Counter             -- ^ Counter handle
          -> Log                 -- ^ Log handle
@@ -98,10 +103,7 @@ watchdog :: Counter             -- ^ Counter handle
          -> Int                 -- ^ Seconds after a baton is declared dead
          -> ([Baton] -> IO ())  -- ^ Dead baton handler
          -> IO ()               -- ^ Blocks forever
-watchdog counter logger interval diff handler = forever $ do
-    now  <- getCurrentTime
-    dead <- findDeadBatons (negate diff' `addUTCTime` now) counter
+watchdog counter logger interval lifespan handler = forever $ do
+    dead <- findDeadBatons lifespan counter
     isolate logger "Counter watchdog handler" $ handler dead
     threadDelay $ interval * 1000 * 1000
-  where
-    diff' = fromInteger $ fromIntegral diff

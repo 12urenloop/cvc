@@ -14,7 +14,6 @@ import Data.Ord (comparing)
 import qualified Data.Map as M
 
 import Data.Time (getCurrentTime)
-import qualified Data.Aeson as A
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Network.WebSockets as WS
@@ -48,18 +47,15 @@ index :: Web ()
 index = Snap.redirect "/monitor"
 
 config :: Web ()
-config = do
-    conf <- webConfig <$> ask
-    Snap.modifyResponse $ Snap.setContentType "application/json"
-    Snap.writeLBS $ A.encode conf
+config = ask >>= json . webConfig
 
 monitor :: Web ()
 monitor = do
     teams <- sort . map snd <$> runPersistence getAll
     Snap.blaze $ Views.monitor teams
 
-feed :: Web ()
-feed = do
+monitorFeed :: Web ()
+monitorFeed = do
     pubSub <- webPubSub <$> ask
     Snap.liftSnap $ WS.runWebSocketsSnap $ wsApp pubSub
   where
@@ -67,6 +63,13 @@ feed = do
     wsApp pubSub req = do
         WS.acceptRequest req
         WS.subscribe pubSub
+
+monitorBatons :: Web ()
+monitorBatons = do
+    counter  <- webCounter <$> ask
+    lifespan <- configBatonWatchdogLifespan . webConfig <$> ask
+    dead     <- liftIO $ findDeadBatons lifespan counter
+    json dead
 
 management :: Web ()
 management = do
@@ -138,15 +141,16 @@ reset = do
 
 site :: Web ()
 site = Snap.route
-    [ ("",                 Snap.ifTop index)
-    , ("/config.json",     config)
-    , ("/monitor",         monitor)
-    , ("/feed",            feed)
-    , ("/management",      management)
-    , ("/laps",            laps)
-    , ("/team/:id/assign", assign)
-    , ("/team/:id/bonus",  bonus)
-    , ("/team/:id/reset",  reset)
+    [ ("",                     Snap.ifTop index)
+    , ("/config.json",         config)
+    , ("/monitor",             monitor)
+    , ("/monitor/feed",        monitorFeed)
+    , ("/monitor/batons.json", monitorBatons)
+    , ("/management",          management)
+    , ("/laps",                laps)
+    , ("/team/:id/assign",     assign)
+    , ("/team/:id/bonus",      bonus)
+    , ("/team/:id/reset",      reset)
     ] <|> Snap.serveDirectory "static"
 
 listen :: Config -> Log -> WS.PubSub WS.Hybi00 -> Counter -> IO ()
