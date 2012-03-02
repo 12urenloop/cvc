@@ -61,6 +61,11 @@ main = do
         (configMaxSpeed config) (Log.setModule "Counter" logger)
         (counterHandler logger (configBoxxies config) pubSub) sensorChan
 
+    -- Start the baton watchdog
+    _ <- forkIO $ watchdog counter logger (configBatonWatchdogInterval config)
+        (configBatonWatchdogLifespan config)
+        (WS.publish pubSub . WS.textData .  A.encode . BatonWatchdog)
+
     Web.listen config (Log.setModule "Web" logger) pubSub counter
 
     putStrLn "Closing..."
