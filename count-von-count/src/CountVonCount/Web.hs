@@ -15,7 +15,7 @@ import qualified Data.Map as M
 
 import Data.Time (getCurrentTime)
 import qualified Data.Aeson as A
-import qualified Data.ByteString as B
+import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Network.WebSockets as WS
 import qualified Network.WebSockets.Snap as WS
@@ -91,15 +91,18 @@ laps = do
 
 assign :: Web ()
 assign = do
-    Just mac <- Snap.getParam "baton"
-    unless (B.null mac) $ do
+    Just mac <- fmap T.decodeUtf8 <$> Snap.getParam "baton"
+    counter  <- webCounter <$> ask
+    unless (T.null mac) $ do
         Just teamRef <- refFromParam "id"
         logger       <- webLog <$> ask
+        Just baton   <- findBaton mac . webConfig <$> ask
         runPersistence $ do
-            team  <- get teamRef
+            team <- get teamRef
             liftIO $ Log.string logger $
                 "assigning " ++ show mac ++ " to " ++ show team
-            put teamRef team {teamBaton = Just (T.decodeUtf8 mac)}
+            liftIO $ resetCounterFor baton counter
+            put teamRef team {teamBaton = Just mac}
 
     Snap.redirect "/management"
 
