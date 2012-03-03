@@ -2,21 +2,22 @@
  * Een kleine proof of concept voor Boxxy met Faye
  */
 
-var http = require('http'),
+var express = require('express'),
     faye = require('faye'),
-    express = require('express'),
+    http = require('http'),
+
     auth = require('./auth')
 
 var port = 8080
-var server = new Faye.NodeAdapter({mount: '/boxxy', timeout: 45})
+var server = new faye.NodeAdapter({mount: '/boxxy', timeout: 45})
 
 server.addExtension(auth.ServerAuth)
 server.getClient().addExtension(auth.ClientAuth)
 
-var app = Express.createServer()
-app.configure(function(){
-    app.use(Express.bodyParser())
-})
+var app = express.createServer();
+app.configure(function() {
+    app.use(express.bodyParser());
+});
 
 app.put('/cvc/position', function(req, res){
     console.log('position!')
@@ -37,25 +38,27 @@ app.all('/', function(req, res) {
 app.all('/:teamid/position',function(req,res){
     console.log("teamid logged");
     res.send(200)
-    if(req.query.key == "tetten"){
-    server.getClient().publish('/position/',{
-	team: {
-	    id: req.body.team.id,
-	    name: req.body.team.name,
-	    laps: req.body.team.laps
-	},
-	speed: req.body.speed,
-	station: {
-	    position: req.body.station.position,
-	    name: req.body.station.name
-	}
-    });
-    server.getClient().publish('/' + req.params.teamid + '/position');
-    }else{
-	res.send(404)
+
+    // TODO: generalize authentication
+    if(req.query.key == "tetten") {
+      server.getClient().publish('/position',{
+        team: {
+          id: req.body.team.id,
+          name: req.body.team.name,
+          laps: req.body.team.laps
+        },
+        speed: req.body.speed,
+        station: {
+          position: req.body.station.position,
+          name: req.body.station.name
+        }
+      });
+
+      // server.getClient().publish('/' + req.params.teamid + '/position');
     }
-
-
+    else {
+      res.send(403)
+    }
 });
 
 app.all('/:teamid/laps', function(req, res) {

@@ -2,13 +2,16 @@
 <html>
     <head>
         <title>Boxxy Testvisualisatie</title>
-        <!-- TODO: using the correct hostname would be handy for debugging -->
-        <script type="text/javascript" src="live.12urenloop.be:8080/boxxy.js"></script>
+        <!-- TODO: using the correct hostname would be handy for debugging/deployment -->
+        <script type="text/javascript" src="http://localhost:8080/boxxy.js"></script>
         <script type="text/javascript">
-            var client = new Faye.Client('http://live.12urenloop.be:8080/boxxy');
-            client.subscribe('/position', function(message) {
-                console.log(message)
-            })
+            window.onload = function() {
+                // TODO: apply a timeout when failing to connect
+                var client = new Faye.Client('http://localhost:8080/boxxy');
+                client.subscribe('/position', function(message) {
+                    console.log(message);
+                })
+            }
         </script>
     </head>
     <body>

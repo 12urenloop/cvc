@@ -1,5 +1,5 @@
-var SERVER_PASSWORD = "michiel is ne coole kerel",
-    Faye = require('faye')
+var SERVER_PASSWORD = 'tetten',
+    faye = require('faye')
 
 exports.ServerAuth = {
   incoming: function(message, callback) {
@@ -8,13 +8,13 @@ exports.ServerAuth = {
     }
 
     var password = message.ext && message.ext.password
-
     if (password !== SERVER_PASSWORD) {
-      message.error = Faye.Error.extMismatch()
+      message.error = faye.Error.extMismatch()
     }
-
-    if (password) delete message.ext.password
-    callback(message)
+    else {
+      delete message.ext.password;
+      callback(message)
+    }
   }
 }
 

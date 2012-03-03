@@ -55,7 +55,7 @@ stations:
       position: 300
 
 boxxies:
-    - host: "127.0.0.1"
+    - host: "live.12urenloop.be"
       port: 8080
       path: ""
       key:  "tetten"
