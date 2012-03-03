@@ -2,22 +2,18 @@
 <html>
     <head>
         <title>Boxxy Testvisualisatie</title>
-        <script type="text/javascript" src="faye-browser.js"></script>
-        <script type="text/javascript" src="http://localhost:8080/boxxy.js"></script>
-
+        <!-- TODO: using the correct hostname would be handy for debugging -->
+        <script type="text/javascript" src="live.12urenloop.be:8080/boxxy.js"></script>
         <script type="text/javascript">
-            window.onload = function() {
-                var client = new Faye.Client('http://localhost:80/boxxy')
-                client.subscribe('/position', function(message) {
-                    console.log(message)
-                })
-            }
+            var client = new Faye.Client('http://live.12urenloop.be:8080/boxxy');
+            client.subscribe('/position', function(message) {
+                console.log(message)
+            })
         </script>
     </head>
     <body>
         <table id="laps">
             <tr><th>Loper</th><th>Gemiddelde snelheid</th></tr>
-            
         </table>
     </body>
 </html>

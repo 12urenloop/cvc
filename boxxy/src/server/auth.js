@@ -1,4 +1,5 @@
-var SERVER_PASSWORD = "michiel is ne coole kerel"
+var SERVER_PASSWORD = "michiel is ne coole kerel",
+    Faye = require('faye')
 
 exports.ServerAuth = {
   incoming: function(message, callback) {

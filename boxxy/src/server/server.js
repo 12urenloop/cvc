@@ -4,20 +4,18 @@
 
 var http = require('http'),
     faye = require('faye'),
-    express = require('express')
-    
-var auth = require('./auth')
-console.log(auth)
-console.log(auth.ServerAuth)
+    express = require('express'),
+    auth = require('./auth')
+
 var port = 8080
-var server = new faye.NodeAdapter({mount: '/boxxy', timeout: 45})
+var server = new Faye.NodeAdapter({mount: '/boxxy', timeout: 45})
 
 server.addExtension(auth.ServerAuth)
 server.getClient().addExtension(auth.ClientAuth)
 
-var app = express.createServer()
+var app = Express.createServer()
 app.configure(function(){
-    app.use(express.bodyParser())
+    app.use(Express.bodyParser())
 })
 
 app.put('/cvc/position', function(req, res){
@@ -56,7 +54,7 @@ app.all('/:teamid/position',function(req,res){
     }else{
 	res.send(404)
     }
-    
+
 
 });
 

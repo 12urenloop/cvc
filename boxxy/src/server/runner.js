@@ -1,7 +1,7 @@
 exports.Runner = Runner
 
-events = require('events')
-util = require('util')
+var events = require('events'),
+    util = require('util')
 
 function Runner(name) {
     events.EventEmitter.call(this)
@@ -11,7 +11,7 @@ function Runner(name) {
     // snelheid in radialen. Drie keer random zodat het een normaalverdeling
     // benadert :)
     this.speed = (Math.random() + Math.random() + Math.random()) / 3
-    
+
     this.start = function() {
         var self = this
         setInterval(function() {
