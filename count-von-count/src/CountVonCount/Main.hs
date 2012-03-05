@@ -76,9 +76,6 @@ counterHandler :: WS.TextProtocol p
                => Log -> [BoxxyConfig] -> WS.PubSub p -> Team -> CounterEvent
                -> IO ()
 counterHandler logger boxxies pubSub team event = do
-    -- TODO: remove this
-    print (team, event)
-
     -- Send to websockets pubsub
     publish $ CounterEvent team event
 
