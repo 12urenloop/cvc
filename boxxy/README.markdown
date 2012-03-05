@@ -13,7 +13,17 @@ Vier lopers doen rondjes, een voorbeeldvisualisatie geeft aan wanneer ze een ron
 De server: "node fayeserver.js" in de server directory
 De visualisatie: client/index.html openen in jouw favoriete browser
 
-## Boxxy API
+
+## Client Debug
+If you want to connect the example client to a server different from live.12urenloop.be, add a config.js file
+in the same directory containing
+
+    var config = {
+        host: <server>,
+        port: <port>
+    }
+
+## Count Von Count - Boxxy Interface
 
 Most data calculated in count-von-count is forwarded to boxxy, which is a
 front-end web server. All data is pushed by count-von-count to boxxy, boxxy
