@@ -1,27 +1,39 @@
 var SERVER_PASSWORD = 'tetten',
+    CVC_PASSWORD = 'tetten'
     faye = require('faye')
 
-exports.ServerAuth = {
-  incoming: function(message, callback) {
-    if (/^\/meta\//.test(message.channel)) {
-      callback(message)
-    }
+// Checks published messages for the publishing key. Only clients with the
+// publishing key can publish messages to avoid malicious messages
+exports.serverAuth = {
+    incoming: function(message, callback) {
+        if (/^\/meta\//.test(message.channel)) {
+            return callback(message)
+        }
 
-    var password = message.ext && message.ext.password
-    if (password !== SERVER_PASSWORD) {
-      message.error = faye.Error.extMismatch()
+        var password = message.ext && message.ext.password
+        if (password !== SERVER_PASSWORD) {
+            message.error = faye.Error.extMismatch()
+        } else {
+            delete message.ext.password;
+            callback(message)
+        }
     }
-    else {
-      delete message.ext.password;
-      callback(message)
-    }
-  }
 }
 
-exports.ClientAuth = {
-  outgoing: function(message, callback) {
-    message.ext = message.ext || {};
-    message.ext.password = SERVER_PASSWORD;
-    callback(message);
-  }
+// Adds the publishing key to the message
+exports.clientAuth = {
+    outgoing: function(message, callback) {
+        message.ext = message.ext || {};
+        message.ext.password = SERVER_PASSWORD;
+        callback(message);
+    }
 };
+
+// Authenticates Count Von Count
+exports.cvcAuth = function(req, res, next) {
+    if(req.query.key === CVC_PASSWORD) {
+        next();
+    } else {
+        res.send(403) // Unauthorized
+    }
+}

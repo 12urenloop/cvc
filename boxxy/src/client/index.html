@@ -11,6 +11,9 @@
                 client.subscribe('/position', function(message) {
                     console.log(message);
                 })
+                client.subscribe('/laps', function(message) {
+                    console.log(message)
+                })
             }
         </script>
     </head>

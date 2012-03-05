@@ -8,67 +8,50 @@ var express = require('express'),
 
     auth = require('./auth')
 
+// Temporary, better state management is next
+var config = {}
+
 var port = 8080
 var server = new faye.NodeAdapter({mount: '/boxxy', timeout: 45})
 
-server.addExtension(auth.ServerAuth)
-server.getClient().addExtension(auth.ClientAuth)
+// Makes the server check for the publishing key
+server.addExtension(auth.serverAuth)
+// Makes the server's client add the publishing key
+server.getClient().addExtension(auth.clientAuth)
 
-var app = express.createServer();
+var app = express.createServer()
 app.configure(function() {
-    app.use(express.bodyParser());
+    // Parses JSON body
+    app.use(express.bodyParser())
 });
 
-app.put('/cvc/position', function(req, res){
-    console.log('position!')
-    server.getClient().publish('/checkpoint', {
-        type: 'checkpoint',
-        checkpoint: req.body.position,
-        name: req.body.team,
-        speed: req.body.speed
-    })
-    res.send({status: 'ok'})
-})
-
-app.all('/', function(req, res) {
-    console.log("test/");
-    res.send(200);
-})
-
-app.all('/:teamid/position',function(req,res){
-    console.log("teamid logged");
-    res.send(200)
-
-    // TODO: generalize authentication
-    if(req.query.key == "tetten") {
-      server.getClient().publish('/position',{
+//                            /- Express middleware to authenticate cvc
+app.put('/:teamid/position', auth.cvcAuth, function(req,res){
+    console.log("position")
+    server.getClient().publish('/position',{
         team: {
-          id: req.body.team.id,
-          name: req.body.team.name,
-          laps: req.body.team.laps
+            id: req.body.team.id,
+            name: req.body.team.name,
+            laps: req.body.team.laps
         },
         speed: req.body.speed,
         station: {
-          position: req.body.station.position,
-          name: req.body.station.name
+            position: req.body.station.position,
+            name: req.body.station.name
         }
-      });
-
-      // server.getClient().publish('/' + req.params.teamid + '/position');
-    }
-    else {
-      res.send(403)
-    }
+    });
+    res.send(200)
 });
 
-app.all('/:teamid/laps', function(req, res) {
-    console.log('lap logged')
-    server.getClient().publish('/:' + req.params.teamid + '/laps');
+app.put('/:teamid/laps', auth.cvcAuth, function(req, res) {
+    console.log('lap')
+    server.getClient().publish('/laps', req.body);
     res.send(200);
 })
 
-app.all('/config', function(req, res) {
-    console.log('config!')
+app.put('/config', auth.cvcAuth, function(req, res) {
+    console.log('config')
+    config = req.body
     res.send(200);
 })
 
