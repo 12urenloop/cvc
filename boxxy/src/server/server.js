@@ -4,10 +4,9 @@
 
 var express = require('express'),
     faye = require('faye'),
-    http = require('http'),
 
     auth = require('./auth')
-
+    
 // Temporary, better state management is next
 var config = {}
 
@@ -25,7 +24,7 @@ app.configure(function() {
     app.use(express.bodyParser())
 });
 
-//                            /- Express middleware to authenticate cvc
+                              // Express middleware to authenticate cvc
 app.put('/:teamid/position', auth.cvcAuth, function(req,res){
     console.log("position")
     server.getClient().publish('/position',{
