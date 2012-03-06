@@ -1,6 +1,7 @@
-var SERVER_PASSWORD = 'tetten',
-    CVC_PASSWORD = 'tetten'
-    faye = require('faye')
+var faye = require('faye')
+
+var SERVER_PASSWORD = 'tetten', // key required to publish message
+    CVC_PASSWORD = 'tetten'     // shared key with count-von-count
 
 // Checks published messages for the publishing key. Only clients with the
 // publishing key can publish messages to avoid malicious messages

@@ -1,33 +1,44 @@
-/**
- * Een kleine proof of concept voor Boxxy met Faye
- */
-
 var express = require('express'),
     faye = require('faye'),
 
     auth = require('./auth')
 
+run = function(port) {
+    var server = express.createServer(),
+        bayeux = new faye.NodeAdapter({mount: '/boxxy', timeout: 45})
+    bayeux.attach(server)
+
+    // Configure the faye server to use the correct keys
+    bayeux.addExtension(auth.serverAuth)
+    bayeux.getClient().addExtension(auth.clientAuth)
+
+    // Parse messages as JSON
+    server.use(express.bodyParser())
+
+    // Set up routes used by count-von-count
+    var cvcRoutes = {
+        '/config'           : configHandler,
+        '/:teamid/position' : positionHandler,
+        '/:teamid/laps'     : lapsHandler
+    }
+    for(route in cvcRoutes) {
+        server.put(route, auth.cvcAuth, cvcRoutes[route])
+    }
+
+    // Run the server
+    server.listen(port)
+}
+exports.run = run
+
 // Temporary, better state management is next
 var config = {}
 
-var port = 8080
-var server = new faye.NodeAdapter({mount: '/boxxy', timeout: 45})
+var configHandler = function(req, res) {
+    config = req.body
+    res.send(200);
+}
 
-// Makes the server check for the publishing key
-server.addExtension(auth.serverAuth)
-// Makes the server's client add the publishing key
-server.getClient().addExtension(auth.clientAuth)
-
-var app = express.createServer()
-
-// Configure server to parse JSON
-app.configure(function() {
-    app.use(express.bodyParser())
-});
-
-// Express middleware to authenticate cvc
-app.put('/:teamid/position', auth.cvcAuth, function(req,res){
-    console.log("position")
+var positionHandler = function(req, res) {
     server.getClient().publish('/position',{
         team: {
             id: req.body.team.id,
@@ -41,21 +52,9 @@ app.put('/:teamid/position', auth.cvcAuth, function(req,res){
         }
     });
     res.send(200)
-});
+}
 
-app.put('/:teamid/laps', auth.cvcAuth, function(req, res) {
-    console.log('lap')
+var lapsHandler = function(req, res) {
     server.getClient().publish('/laps', req.body);
     res.send(200);
-})
-
-// TODO: client needs config too
-app.put('/config', auth.cvcAuth, function(req, res) {
-    console.log('config')
-    config = req.body
-    res.send(200);
-})
-
-server.attach(app)
-app.listen(port)
-console.log("Boxxy running on port " + port)
+}

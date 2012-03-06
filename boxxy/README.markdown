@@ -1,6 +1,6 @@
-# Boxxy
+![Boxxy](http://i.imgur.com/5Wet3.png)
 
-## Description
+### Description
 
 This directory currently contains a small interface called Boxxy which
 the counting software will send information too. The purpose of this interface
@@ -8,17 +8,17 @@ is to be the construction base for building visualisations.
 
 TODO: we need a styleguide for Javascript
 
-## Dependencies
+### Dependencies
 
 * Node.js >= v6
 * [Faye](http://faye.jcoglan.com/), install using `npm install faye`
 
-## Running
+### Running
 
 From the server directory, run `node server.js`. Open the demo application
 `demo.html` in your favorite webbrowser.
 
-## Count Von Count - Boxxy Interface
+### Count Von Count - Boxxy Interface
 
 Most data calculated in count-von-count is forwarded to boxxy, which is a
 front-end web server. All data is pushed by count-von-count to boxxy, boxxy
@@ -34,7 +34,7 @@ A few comments:
 - As for units, all positions are in meters, all times in seconds, and speed is
   expressed in meter/seconds
 
-### Initialization
+#### Initialization
 
     PUT /config
 
