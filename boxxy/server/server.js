@@ -3,9 +3,10 @@ var express = require('express'),
 
     auth = require('./auth')
 
+var server, bayeux
 run = function(port) {
-    var server = express.createServer(),
-        bayeux = new faye.NodeAdapter({mount: '/boxxy', timeout: 45})
+    server = express.createServer(),
+    bayeux = new faye.NodeAdapter({mount: '/boxxy', timeout: 45})
     bayeux.attach(server)
 
     // Configure the faye server to use the correct keys
@@ -39,7 +40,7 @@ var configHandler = function(req, res) {
 }
 
 var positionHandler = function(req, res) {
-    server.getClient().publish('/position',{
+    bayeux.getClient().publish('/position',{
         team: {
             id: req.body.team.id,
             name: req.body.team.name,
@@ -55,6 +56,6 @@ var positionHandler = function(req, res) {
 }
 
 var lapsHandler = function(req, res) {
-    server.getClient().publish('/laps', req.body);
+    bayeux.getClient().publish('/laps', req.body);
     res.send(200);
 }
