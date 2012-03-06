@@ -1,27 +1,22 @@
 # Boxxy
 
-## Beschrijving
-Dit is een kleine proof of concept voor een Boxxy gebaseerd op Node en Faye.
-Vier lopers doen rondjes, een voorbeeldvisualisatie geeft aan wanneer ze een rondje voltooien en wat hun gemiddelde snelheid voor het rondje was.
+## Description
+
+This directory currently contains a small interface called Boxxy which
+the counting software will send information too. The purpose of this interface
+is to be the construction base for building visualisations.
+
+TODO: we need a styleguide for Javascript
 
 ## Dependencies
+
 * Node.js >= v6
-* Een moderne versie van Faye (http://faye.jcoglan.com/)
-  Faye is eenvoudig te installeren mbv "npm install faye"
+* [Faye](http://faye.jcoglan.com/), install using `npm install faye`
 
-## Runnen
-De server: "node fayeserver.js" in de server directory
-De visualisatie: client/index.html openen in jouw favoriete browser
+## Running
 
-
-## Client Debug
-If you want to connect the example client to a server different from live.12urenloop.be, add a config.js file
-in the same directory containing
-
-    var config = {
-        host: <server>,
-        port: <port>
-    }
+From the server directory, run `node server.js`. Open the demo application
+`demo.html` in your favorite webbrowser.
 
 ## Count Von Count - Boxxy Interface
 
@@ -70,9 +65,7 @@ Body:
 
     PUT /:teamid/laps
 
-E.g.
-
-    PUT /1/laps
+E.g. `PUT /1/laps`
 
 Body:
 
@@ -90,9 +83,7 @@ Body:
 
     PUT /:teamid/position
 
-E.g.
-
-    PUT /1/position
+E.g. `PUT /1/position`
 
 Body:
 

@@ -6,7 +6,7 @@ var express = require('express'),
     faye = require('faye'),
 
     auth = require('./auth')
-    
+
 // Temporary, better state management is next
 var config = {}
 
@@ -19,12 +19,13 @@ server.addExtension(auth.serverAuth)
 server.getClient().addExtension(auth.clientAuth)
 
 var app = express.createServer()
+
+// Configure server to parse JSON
 app.configure(function() {
-    // Parses JSON body
     app.use(express.bodyParser())
 });
 
-                              // Express middleware to authenticate cvc
+// Express middleware to authenticate cvc
 app.put('/:teamid/position', auth.cvcAuth, function(req,res){
     console.log("position")
     server.getClient().publish('/position',{
@@ -48,6 +49,7 @@ app.put('/:teamid/laps', auth.cvcAuth, function(req, res) {
     res.send(200);
 })
 
+// TODO: client needs config too
 app.put('/config', auth.cvcAuth, function(req, res) {
     console.log('config')
     config = req.body
