@@ -1,7 +1,8 @@
 var express = require('express'),
     faye = require('faye'),
 
-    auth = require('./auth')
+    auth = require('./auth'),
+    state = require('./state')
 
 var server, bayeux
 run = function(port) {
@@ -25,21 +26,20 @@ run = function(port) {
     for(route in cvcRoutes) {
         server.put(route, auth.cvcAuth, cvcRoutes[route])
     }
-
+    
+    server.get('/init', initHandler)
     // Run the server
     server.listen(port)
 }
 exports.run = run
 
-// Temporary, better state management is next
-var config = {}
-
 var configHandler = function(req, res) {
-    config = req.body
+    state.initialize(req.body)
     res.send(200);
 }
 
 var positionHandler = function(req, res) {
+    state.updatePosition(req.body)
     bayeux.getClient().publish('/position',{
         team: {
             id: req.body.team.id,
@@ -56,6 +56,11 @@ var positionHandler = function(req, res) {
 }
 
 var lapsHandler = function(req, res) {
+    state.updateLaps(req.body)
     bayeux.getClient().publish('/laps', req.body);
     res.send(200);
+}
+
+var initHandler = function(req, res) {
+    res.send(JSON.stringify(state.get()))
 }

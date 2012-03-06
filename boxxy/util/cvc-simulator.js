@@ -29,8 +29,6 @@ var config = {
     teams: []
 }
 
-toBoxxy('/config', config)
-
 for(var idx in names) {
     var r = new runner.Runner(parseInt(idx), names[idx])
     config.teams.push({
@@ -50,6 +48,8 @@ for(var idx in names) {
     r.start()
     runners.push(runner)
 }
+
+toBoxxy('/config', config)
 
 function toBoxxy(path, message) {
     var options = {
