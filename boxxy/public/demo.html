@@ -11,16 +11,24 @@
     </script>
     <script type="text/javascript" src="boxxy-interface.js"></script>
 
-    <!-- Usage demo -->
+    <!--
+      To test without a local boxxy server, use the following script tags
+
+        <script type="text/javascript" src="http://live.12urenloop.be:8080/boxxy.js"></script>
+        <script type="text/javascript" src="http://live.12urenloop.be/boxxy-interface.js"></script>
+    -->
+
+    <!-- Use the boxxy information as follows -->
     <script type="text/javascript">
         window.onload = function() {
             var client = new Boxxy();
-            var update = function(message) {
-                var log = document.getElementById('boxxy-log')
-                log.innerHTML = JSON.stringify(message) + "\n" + log.innerHTML;
+            var log = document.getElementById('boxxy-log');
+            client.position = function(message) {
+                log.innerHTML = "[POSITION] " + JSON.stringify(message) + "\n" + log.innerHTML;
             }
-            client.position = update;
-            client.lap = update;
+            client.lap = function(message) {
+                log.innerHTML = "[LAP] " + JSON.stringify(message) + "\n" + log.innerHTML;
+            }
             client.connect();
         }
     </script>
