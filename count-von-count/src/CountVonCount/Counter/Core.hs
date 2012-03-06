@@ -4,6 +4,7 @@ module CountVonCount.Counter.Core
     , isLap
     , CounterState
     , emptyCounterState
+    , counterLastUpdate
     , CounterM
     , runCounterM
     , stepCounterState
@@ -33,12 +34,16 @@ isLap _         = False
 data CounterState
     -- | No data for now
     = NoCounterState
-    -- | First, previous event, current speed
-    | CounterState SensorEvent SensorEvent Double
+    -- | First, previous event, current speed, last seen
+    | CounterState SensorEvent SensorEvent Double UTCTime
     deriving (Show)
 
 emptyCounterState :: CounterState
 emptyCounterState = NoCounterState
+
+counterLastUpdate :: CounterState -> Maybe UTCTime
+counterLastUpdate NoCounterState         = Nothing
+counterLastUpdate (CounterState _ _ _ t) = Just t
 
 type CounterM a = WriterT [String] (State CounterState) a
 
@@ -59,13 +64,15 @@ stepCounterState len maxSpeed event = do
     state <- get
     case state of
         NoCounterState               -> do
-            put $ CounterState event event 0
+            put $ CounterState event event 0 (sensorTime event)
             let position = stationPosition $ sensorStation event
             tell' $ printf "Initialized counter state (%.2fm)" position
             return []
-        CounterState first prev prevSpeed
+        CounterState first prev prevSpeed _
             -- At the same station, do nothing.
-            | station == prevStation -> return []
+            | station == prevStation -> do
+                put $ CounterState first prev prevSpeed time
+                return []
             -- Refused sensor event
             | null possibilities     -> do
                 tell' "Impossibru!"
@@ -76,7 +83,7 @@ stepCounterState len maxSpeed event = do
                 tell' $ printf "Most likely: moved %.2fm at %.2fm/s" dx speed
                 tell' $ printf "Updated average speed: %.2fm/s" speed'
                 when (numLaps > 0) $ tell' $ printf "Adding %d laps" numLaps
-                put $ CounterState first event speed'
+                put $ CounterState first event speed' time
                 return $
                     Progression time station speed :
                     replicate numLaps (Lap time 0)  -- lapTime is TODO

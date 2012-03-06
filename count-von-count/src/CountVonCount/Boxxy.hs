@@ -31,7 +31,11 @@ data BoxxyConfig = BoxxyConfig
     , boxxyPort :: Int
     , boxxyPath :: Text
     , boxxyKey  :: Text
-    } deriving (Show)
+    }
+
+instance Show BoxxyConfig where
+    show (BoxxyConfig host port path key) = T.unpack host ++ ":" ++
+        show port ++ "/" ++ T.unpack path ++ " (" ++ show key ++ ")"
 
 instance ToJSON BoxxyConfig where
     toJSON conf = A.object

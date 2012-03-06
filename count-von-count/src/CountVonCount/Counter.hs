@@ -10,25 +10,31 @@ module CountVonCount.Counter
     ( Counter
     , newCounter
     , runCounter
+
     , resetCounterFor
+
+    , findDeadBatons
+    , watchdog
     ) where
 
 import Control.Applicative ((<$>))
+import Control.Concurrent (threadDelay)
 import Control.Concurrent.Chan (Chan, readChan)
-import Control.Concurrent.MVar (MVar, newMVar, modifyMVar_)
+import Control.Concurrent.MVar (MVar, newMVar, modifyMVar_, readMVar)
 import Control.Monad (forever)
 import Control.Monad.Trans (liftIO)
 import Data.Foldable (forM_)
 
+import Data.Time (addUTCTime, getCurrentTime)
+
 import CountVonCount.Counter.Core
 import CountVonCount.Counter.Map
 import CountVonCount.Log (Log)
+import CountVonCount.Sensor.Filter
 import CountVonCount.Types
+import CountVonCount.Util
 import qualified CountVonCount.Log as Log
 import qualified CountVonCount.Persistence as P
-
-import CountVonCount.Sensor.Filter
-import CountVonCount.Util
 
 newtype Counter = Counter {unCounter :: MVar CounterMap}
 
@@ -82,3 +88,22 @@ step cl ms logger handler event cmap = do
 resetCounterFor :: Baton -> Counter -> IO ()
 resetCounterFor baton counter =
     modifyMVar_ (unCounter counter) $ return . resetCounterMapFor baton
+
+findDeadBatons :: Int -> Counter -> IO [Baton]
+findDeadBatons lifespan counter = do
+    now  <- getCurrentTime
+    cmap <- readMVar (unCounter counter)
+    return $ lastUpdatedBefore (negate lifespan' `addUTCTime` now) cmap
+  where
+    lifespan' = fromInteger $ fromIntegral lifespan
+
+watchdog :: Counter             -- ^ Counter handle
+         -> Log                 -- ^ Log handle
+         -> Int                 -- ^ Interval (seconds) to check for dead batons
+         -> Int                 -- ^ Seconds after a baton is declared dead
+         -> ([Baton] -> IO ())  -- ^ Dead baton handler
+         -> IO ()               -- ^ Blocks forever
+watchdog counter logger interval lifespan handler = forever $ do
+    dead <- findDeadBatons lifespan counter
+    isolate logger "Counter watchdog handler" $ handler dead
+    threadDelay $ interval * 1000 * 1000

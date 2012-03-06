@@ -8,14 +8,13 @@ import Control.Arrow ((&&&))
 import Control.Monad (forM, unless)
 import Control.Monad.Reader (ReaderT, ask, runReaderT)
 import Control.Monad.Trans (liftIO)
-import Data.List (find, sort, sortBy)
+import Data.List (sort, sortBy)
 import Data.Maybe (mapMaybe)
 import Data.Ord (comparing)
 import qualified Data.Map as M
 
 import Data.Time (getCurrentTime)
-import qualified Data.Aeson as A
-import qualified Data.ByteString as B
+import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Network.WebSockets as WS
 import qualified Network.WebSockets.Snap as WS
@@ -28,6 +27,7 @@ import qualified Snap.Util.FileServe as Snap
 import CountVonCount.Config
 import CountVonCount.Counter
 import CountVonCount.Log (Log)
+import CountVonCount.Management
 import CountVonCount.Persistence
 import CountVonCount.Types
 import CountVonCount.Web.Util
@@ -47,18 +47,15 @@ index :: Web ()
 index = Snap.redirect "/monitor"
 
 config :: Web ()
-config = do
-    conf <- webConfig <$> ask
-    Snap.modifyResponse $ Snap.setContentType "application/json"
-    Snap.writeLBS $ A.encode conf
+config = ask >>= json . webConfig
 
 monitor :: Web ()
 monitor = do
     teams <- sort . map snd <$> runPersistence getAll
     Snap.blaze $ Views.monitor teams
 
-feed :: Web ()
-feed = do
+monitorFeed :: Web ()
+monitorFeed = do
     pubSub <- webPubSub <$> ask
     Snap.liftSnap $ WS.runWebSocketsSnap $ wsApp pubSub
   where
@@ -66,6 +63,13 @@ feed = do
     wsApp pubSub req = do
         WS.acceptRequest req
         WS.subscribe pubSub
+
+monitorBatons :: Web ()
+monitorBatons = do
+    counter  <- webCounter <$> ask
+    lifespan <- configBatonWatchdogLifespan . webConfig <$> ask
+    dead     <- liftIO $ findDeadBatons lifespan counter
+    json dead
 
 management :: Web ()
 management = do
@@ -91,15 +95,14 @@ laps = do
 
 assign :: Web ()
 assign = do
-    Just mac <- Snap.getParam "baton"
-    unless (B.null mac) $ do
+    Just mac <- fmap T.decodeUtf8 <$> Snap.getParam "baton"
+    counter  <- webCounter <$> ask
+    batons   <- configBatons . webConfig <$> ask
+
+    unless (T.null mac) $ do
+        let Just baton = findBaton mac batons
         Just teamRef <- refFromParam "id"
-        logger       <- webLog <$> ask
-        runPersistence $ do
-            team  <- get teamRef
-            liftIO $ Log.string logger $
-                "assigning " ++ show mac ++ " to " ++ show team
-            put teamRef team {teamBaton = Just (T.decodeUtf8 mac)}
+        liftIO $ assignBaton counter batons baton  teamRef
 
     Snap.redirect "/management"
 
@@ -129,7 +132,7 @@ reset = do
         team <- get teamRef
         case teamBaton team of
             Just mac -> do
-                let Just baton = find (\x -> batonMac x == mac) batons
+                let Just baton = findBaton mac batons
                 liftIO $ resetCounterFor baton counter
                 liftIO $ Log.string logger $
                     "Resetting counter for " ++ show team
@@ -138,15 +141,16 @@ reset = do
 
 site :: Web ()
 site = Snap.route
-    [ ("",                 Snap.ifTop index)
-    , ("/config.json",     config)
-    , ("/monitor",         monitor)
-    , ("/feed",            feed)
-    , ("/management",      management)
-    , ("/laps",            laps)
-    , ("/team/:id/assign", assign)
-    , ("/team/:id/bonus",  bonus)
-    , ("/team/:id/reset",  reset)
+    [ ("",                     Snap.ifTop index)
+    , ("/config.json",         config)
+    , ("/monitor",             monitor)
+    , ("/monitor/feed",        monitorFeed)
+    , ("/monitor/batons.json", monitorBatons)
+    , ("/management",          management)
+    , ("/laps",                laps)
+    , ("/team/:id/assign",     assign)
+    , ("/team/:id/bonus",      bonus)
+    , ("/team/:id/reset",      reset)
     ] <|> Snap.serveDirectory "static"
 
 listen :: Config -> Log -> WS.PubSub WS.Hybi00 -> Counter -> IO ()

@@ -43,6 +43,8 @@ index = template "Home" "Hello world"
 
 monitor :: [Team] -> Html
 monitor teams = template "Monitor" $ block "monitor" $ do
+    block "secondary" $ block "batons" ""
+
     H.h1 "Scores"
     forM_ teams $ \team -> H.div
             ! A.class_ "team"

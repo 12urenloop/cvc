@@ -1,6 +1,8 @@
 circuitLength: 400
 maxSpeed: 50
 
+batonWatchdogLifespan: 1
+
 sensorPort: 9001
 
 log:       log/count-von-count.log

@@ -1,3 +1,4 @@
+language: erlang
 script: "runghc -isrc -itests tests/CountVonCount/TestSuite.hs --plain"
 before_install:
     - "cd count-von-count"

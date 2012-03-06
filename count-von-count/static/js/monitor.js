@@ -26,6 +26,21 @@ function plotSpeedData(id) {
     });
 }
 
+function setDeadBatons(batons) {
+    $('#batons').empty();
+
+    if(batons.length > 0) {
+        var h1 = $(document.createElement('h1')).text('Batons down!');
+        $('#batons').append(h1);
+
+        for(var i in batons) {
+            var div = $(document.createElement('div'));
+            div.text('Baton ' + batons[i].nr + ' (' + batons[i].mac + ')');
+            $('#batons').append(div);
+        }
+    }
+}
+
 var handlers = {
     lap: function(event) {
         var id = event.team.id;
@@ -44,10 +59,18 @@ var handlers = {
 
         speedData[id].push([position, event.speed]);
         plotSpeedData(id);
+    },
+
+    batons: function(event) {
+        setDeadBatons(event.dead);
     }
 };
 
 $(document).ready(function() {
+    $.get('/monitor/batons.json', function(batons) {
+        setDeadBatons(batons); 
+    });
+
     $.get('/config.json', function(data) {
         config = data;
 
@@ -57,7 +80,7 @@ $(document).ready(function() {
             plotSpeedData(id);
         });
 
-        var ws = createWebSocket('/feed');
+        var ws = createWebSocket('/monitor/feed');
         ws.onmessage = function(event) {
             try {
                 var json = JSON.parse(event.data);
