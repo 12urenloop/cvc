@@ -160,7 +160,7 @@ counterState circuitLength team cs = partial selector $ H.div
                     H.div ! A.class_ "fill" ! A.style (H.toValue style) $ ""
   where
     selector = T.concat
-        ["[data-team-id = \"", T.pack (show $ teamId team), "\"]"]
+        ["[data-team-id = \"", teamId team, "\"]"]
 
 deadBatons :: [Baton] -> Partial
 deadBatons [] = partial "#batons" $ H.h1 "Batons OK"

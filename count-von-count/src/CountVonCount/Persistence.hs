@@ -41,7 +41,7 @@ instance IsDocument Lap where
         (MDB.at "count" doc)
 
 data Team = Team
-    { teamId    :: Int
+    { teamId    :: Text
     , teamName  :: Text
     , teamLaps  :: Int
     , teamBaton :: Maybe Mac
@@ -57,13 +57,13 @@ instance ToJSON Team where
 instance IsDocument Team where
     collection _     = "teams"
     toDocument team  =
-        [ "id"    MDB.=: teamId team
+        [ "id"    MDB.=: T.unpack (teamId team)
         , "name"  MDB.=: T.unpack (teamName team)
         , "laps"  MDB.=: teamLaps team
         , "baton" MDB.=: fmap T.unpack (teamBaton team)
         ]
     fromDocument doc = Team
-        (MDB.at "id" doc)
+        (T.pack $ MDB.at "id" doc)
         (T.pack $ MDB.at "name" doc)
         (MDB.at "laps" doc)
         (fmap T.pack $ MDB.at "baton" doc)

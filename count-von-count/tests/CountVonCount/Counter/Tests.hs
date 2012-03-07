@@ -70,8 +70,9 @@ counterTest = do
 
 teams :: [Team]
 teams =
-    [ Team i name 0 (Just mac)
+    [ Team id' name 0 (Just mac)
     | i <- [0 :: Int .. 99]
+    , let id'  = "team-" `T.append` T.pack (show i)
     , let name = "Team " `T.append` T.pack (show i)
-    , let mac = "01:02:03:00:00" `T.append` T.pack (printf "%2d" i)
+    , let mac  = "01:02:03:00:00" `T.append` T.pack (printf "%2d" i)
     ]

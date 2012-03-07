@@ -52,7 +52,7 @@ Body:
       "circuitLength": 400.0,
       "teams": [
         {
-          "id": 1,
+          "id": "team-1",
           "name": "Bulbasaur",
           "baton": "00:00:00:00:00:01",
           "laps": 0
@@ -72,7 +72,7 @@ Body:
     {
       "count": 1,
       "team": {
-        "id": 1,
+        "id": "team-1",
         "name": "Bulbasaur",
         "baton": "00:00:00:00:00:01",
         "laps": 0
@@ -95,7 +95,7 @@ Body:
         "mac": "00:00:00:00:02:00"
       },
       "team": {
-        "id": 1,
+        "id": "team-1",
         "name": "Bulbasaur",
         "baton": "00:00:00:00:00:01",
         "laps": 0

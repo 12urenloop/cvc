@@ -14,7 +14,7 @@ import Test.HUnit (Assertion, assert)
 import CountVonCount.Persistence
 
 wina :: Team
-wina = Team 1 "wina" 4 (Just "00:40:10:07:00:09")
+wina = Team "homos" "wina" 4 (Just "00:40:10:07:00:09")
 
 tests :: Test
 tests = testGroup "CountVonCount.Persistence.Tests"
