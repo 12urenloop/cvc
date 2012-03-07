@@ -20,5 +20,12 @@ $(document).ready(function() {
                 alert(err);
             }
         };
+
+        setInterval(function () {
+            $('.last-update').each(function () {
+                var number = parseInt($(this).html());
+                $(this).html(number + 1);
+            });
+        }, 1000);
     });
 });
