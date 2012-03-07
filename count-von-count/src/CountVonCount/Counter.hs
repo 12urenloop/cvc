@@ -12,6 +12,7 @@ module CountVonCount.Counter
     , runCounter
 
     , resetCounterFor
+    , couterStateFor
 
     , findDeadBatons
     , watchdog
@@ -45,7 +46,7 @@ runCounter :: Counter
            -> Double
            -> Double
            -> Log
-           -> (P.Team -> CounterEvent -> IO ())
+           -> (P.Team -> CounterState -> CounterEvent -> IO ())
            -> Chan SensorEvent
            -> IO ()
 runCounter counter cl ms logger handler chan = forever $ do
@@ -57,25 +58,26 @@ runCounter counter cl ms logger handler chan = forever $ do
 step :: Double  -- ^ Circuit length
      -> Double  -- ^ Max speed
      -> Log
-     -> (P.Team -> CounterEvent -> IO ())
+     -> (P.Team -> CounterState -> CounterEvent -> IO ())
      -> SensorEvent
      -> CounterMap
      -> IO CounterMap
 step cl ms logger handler event cmap = do
     let (events, tells, cmap') = stepCounterMap cl ms event cmap
+        cstate                 = lookupCounterState (sensorBaton event) cmap
     forM_ tells $ Log.string logger
-    process events
+    process cstate events
     return cmap'
   where
-    process []     = return ()
-    process events = isolate logger "CounterEvent process" $ do
-        mteam <- P.runPersistence $
+    process _      []     = return ()
+    process cstate events = isolate logger "CounterEvent process" $ do
+        mteam  <- P.runPersistence $
             P.getTeamByMac (batonMac . sensorBaton $ event)
 
         forM_ mteam $ \(ref, team) ->
             forM_ events $ \event' -> do
                 liftIO $ isolate logger "CounterEvent handler" $ do
-                    handler team event'
+                    handler team cstate event'
                     Log.string logger $ case event' of
                         Progression _ s _ -> show team ++ " @ " ++ show s
                         Lap _ _           -> "Lap for " ++ show team
@@ -88,6 +90,10 @@ step cl ms logger handler event cmap = do
 resetCounterFor :: Baton -> Counter -> IO ()
 resetCounterFor baton counter =
     modifyMVar_ (unCounter counter) $ return . resetCounterMapFor baton
+
+couterStateFor :: Baton -> Counter -> IO CounterState
+couterStateFor baton counter =
+    lookupCounterState baton <$> readMVar (unCounter counter)
 
 findDeadBatons :: Int -> Counter -> IO [Baton]
 findDeadBatons lifespan counter = do

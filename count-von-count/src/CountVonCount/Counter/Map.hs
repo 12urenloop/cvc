@@ -5,6 +5,7 @@ module CountVonCount.Counter.Map
     , emptyCounterMap
     , stepCounterMap
     , resetCounterMapFor
+    , lookupCounterState
     , lastUpdatedBefore
     ) where
 
@@ -29,7 +30,7 @@ stepCounterMap :: Double
                -> CounterMap
                -> ([CounterEvent], [String], CounterMap)
 stepCounterMap circuitLength maxSpeed event !cmap =
-    let state                = fromMaybe emptyCounterState $ M.lookup baton cmap
+    let state                = lookupCounterState baton cmap
         app                  = stepCounterState circuitLength maxSpeed event
         (es, tells, !state') = runCounterM app state
     in (es, map prepend tells, M.insert baton state' cmap)
@@ -42,6 +43,11 @@ resetCounterMapFor :: Baton
                    -> CounterMap
                    -> CounterMap
 resetCounterMapFor = flip M.insert emptyCounterState
+
+lookupCounterState :: Baton
+                   -> CounterMap
+                   -> CounterState
+lookupCounterState baton = fromMaybe emptyCounterState . M.lookup baton
 
 -- | Get a list of batons which were last updated before the given time
 lastUpdatedBefore :: UTCTime -> CounterMap -> [Baton]

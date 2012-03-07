@@ -15,7 +15,6 @@ import CountVonCount.Boxxy
 import CountVonCount.Config
 import CountVonCount.Counter
 import CountVonCount.Counter.Core
-import CountVonCount.Feed
 import CountVonCount.Log (Log)
 import CountVonCount.Persistence (Team (..), getAll, runPersistence)
 import CountVonCount.Sensor
@@ -74,11 +73,12 @@ main = do
     Log.close logger
 
 counterHandler :: WS.TextProtocol p
-               => Log -> [BoxxyConfig] -> WS.PubSub p -> Team -> CounterEvent
+               => Log -> [BoxxyConfig] -> WS.PubSub p
+               -> Team -> CounterState -> CounterEvent
                -> IO ()
-counterHandler logger boxxies pubSub team event = do
+counterHandler logger boxxies pubSub team cstate event = do
     -- Send to websockets pubsub
-    publish $ CounterEvent team event
+    publish $ Views.counterState team (Just cstate)
 
     -- Send to boxxies
     forM_ boxxies $ \boxxy -> isolate logger ("Calling boxxy: " ++ show boxxy) $

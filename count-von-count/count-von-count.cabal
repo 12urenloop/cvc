@@ -20,7 +20,6 @@ Executable count-von-count
     CountVonCount.Counter.Core
     CountVonCount.Counter.Map
     CountVonCount.Counter.Modulo
-    CountVonCount.Feed
     CountVonCount.Log
     CountVonCount.Management
     CountVonCount.Persistence
@@ -29,6 +28,7 @@ Executable count-von-count
     CountVonCount.Types
     CountVonCount.Util
     CountVonCount.Web
+    CountVonCount.Web.Partial
     CountVonCount.Web.Util
     CountVonCount.Web.Views
     CountVonCount.Web.Views.Util

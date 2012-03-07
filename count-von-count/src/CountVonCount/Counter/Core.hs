@@ -2,7 +2,7 @@
 module CountVonCount.Counter.Core
     ( CounterEvent (..)
     , isLap
-    , CounterState
+    , CounterState (..)
     , emptyCounterState
     , counterLastUpdate
     , CounterM

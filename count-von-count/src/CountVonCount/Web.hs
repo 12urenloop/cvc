@@ -53,9 +53,14 @@ monitor :: Web ()
 monitor = do
     teams    <- sort . map snd <$> runPersistence getAll
     counter  <- webCounter <$> ask
+    batons   <- configBatons . webConfig <$> ask
+    states   <- forM teams $ \team -> liftIO $
+        case teamBaton team >>= flip findBaton batons of
+            Nothing -> return (team, Nothing)
+            Just b  -> couterStateFor b counter >>= \s -> return (team, Just s)
     lifespan <- configBatonWatchdogLifespan . webConfig <$> ask
     dead     <- liftIO $ findDeadBatons lifespan counter
-    Snap.blaze $ Views.monitor teams dead
+    Snap.blaze $ Views.monitor states dead
 
 monitorFeed :: Web ()
 monitorFeed = do

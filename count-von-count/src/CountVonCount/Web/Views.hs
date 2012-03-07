@@ -8,16 +8,20 @@ module CountVonCount.Web.Views
     , bonus
 
       -- * Partials
+    , counterState
     , deadBatons
     ) where
 
 import Control.Monad (forM_)
 import Prelude hiding (div)
+import Text.Printf (printf)
 
 import Text.Blaze (Html, (!))
+import qualified Data.Text as T
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 
+import CountVonCount.Counter.Core
 import CountVonCount.Persistence
 import CountVonCount.Types
 import CountVonCount.Web.Partial
@@ -46,17 +50,19 @@ template title content = H.docTypeHtml $ do
 index :: Html
 index = template "Home" "Hello world"
 
-monitor :: [Team] -> [Baton] -> Html
+monitor :: [(Team, Maybe CounterState)] -> [Baton] -> Html
 monitor teams deadBatons' = template "Monitor" $ block "monitor" $ do
     block "secondary" $ block "batons" $ H.toHtml $ deadBatons deadBatons'
 
-    H.h1 "Scores"
-    forM_ teams $ \team -> H.div
+    H.h1 "Teams"
+    block "teams" $ forM_ teams $ H.toHtml . uncurry counterState
+    {-
             ! A.class_ "team"
             ! H.dataAttribute "team-id" (H.toValue $ teamId team) $ do
         H.h2 $ H.toHtml $ teamName team
         H.div ! A.class_ "laps" $ H.toHtml $ teamLaps team
         H.div ! A.class_ "speed" $ ""
+    -}
     javascript "/js/monitor.js"
 
 management :: [(Ref Team, Team, Maybe Baton)] -> [Baton] -> Html
@@ -132,6 +138,24 @@ bonus ref team = template "Add bonus" $ block "bonus" $ do
             ! A.type_ "text" ! A.size "30" ! A.value ""
         H.br
         H.input ! A.type_ "submit" ! A.value "Add bonus"
+
+counterState :: Team -> Maybe CounterState -> Partial
+counterState team cs = partial selector $ H.div
+    ! A.class_ "team"
+    ! H.dataAttribute "team-id" (H.toValue $ teamId team) $ do
+        H.h2 $ H.toHtml $ teamName team
+        H.span ! A.class_ "laps" $ H.toHtml $ teamLaps team
+        " laps "
+        case cs of
+            Nothing                         -> "No baton assigned."
+            Just NoCounterState             -> "Unitialized."
+            Just (CounterState _ _ speed _) -> do
+                H.span ! A.class_ "speed" $
+                    H.toHtml (printf "%.2f" speed :: String)
+                " m/s"
+  where
+    selector = T.concat
+        ["[data-team-id = \"", T.pack (show $ teamId team), "\"]"]
 
 deadBatons :: [Baton] -> Partial
 deadBatons [] = partial "#batons" $ H.h1 "Batons OK"

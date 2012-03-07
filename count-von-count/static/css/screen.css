@@ -68,18 +68,22 @@ span.soft {
 * Monitor                                                                      *
 *******************************************************************************/
 
-div#monitor div.team {
+div#monitor div#teams {
     width: 450px;
 }
 
-div#monitor div.team div.speed {
-    width: 400px;
-    height: 50px;
+div#monitor div.team {
+    float: left;
+    margin-right: 20px;
+    width: 200px;
 }
 
-div#monitor div.team div.laps {
+div#monitor div.team span.speed {
     font-size: 24px;
-    float: right;
+}
+
+div#monitor div.team span.laps {
+    font-size: 24px;
 }
 
 /*******************************************************************************
