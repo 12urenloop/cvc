@@ -33,7 +33,6 @@ template title content = H.docTypeHtml $ do
     H.head $ do
         H.title title
         javascript "/js/jquery-1.7.1.min.js"
-        javascript "/js/jquery.flot.min.js"
         javascript "/js/partial.js"
         stylesheet "/css/screen.css"
 
