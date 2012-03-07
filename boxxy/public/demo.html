@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Boxxy interface demo</title>
+    <!-- Copy the following lines into your visualisation to use the Boxxy API -->
+    <script type="text/javascript">
+        var g = document.createElement('script'),
+            s = document.getElementsByTagName('script')[0];
+        g.src = 'http://' + window.location.hostname + ':8080/boxxy.js';
+        s.parentNode.insertBefore(g, s);
+    </script>
+    <script type="text/javascript" src="boxxy-interface.js"></script>
+
+    <!--
+      To test without a local boxxy server, use the following script tags
+
+        <script type="text/javascript" src="http://live.12urenloop.be:8080/boxxy.js"></script>
+        <script type="text/javascript" src="http://live.12urenloop.be/boxxy-interface.js"></script>
+    -->
+
+    <!-- Use the boxxy information as follows -->
+    <script type="text/javascript">
+        window.onload = function() {
+            var client = new Boxxy();
+            var log = document.getElementById('boxxy-log');
+            client.receivedConfig = function(config) {
+                log.innerHTML = "[CONFIG] " + JSON.stringify(config) + "\n" + log.innerHTML
+            }
+            client.updatedPosition = function(message) {
+                log.innerHTML = "[POSITION] " + JSON.stringify(message) + "\n" + log.innerHTML;
+            }
+            client.addedLap = function(message) {
+                log.innerHTML = "[LAP] " + JSON.stringify(message) + "\n" + log.innerHTML;
+            }
+            client.connect('live.12urenloop.be');
+        }
+    </script>
+</head>
+<body>
+    <h1>Boxxy interface demo</h1>
+    <pre id="boxxy-log">
+
+    </pre>
+</body>
+</html>

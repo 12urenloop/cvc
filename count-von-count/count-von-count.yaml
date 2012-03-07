@@ -58,6 +58,6 @@ stations:
 
 boxxies:
     - host: "localhost"
-      port: 8888
+      port: 8080
       path: ""
       key:  "tetten"

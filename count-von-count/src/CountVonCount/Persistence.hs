@@ -69,7 +69,7 @@ instance IsDocument Team where
         (fmap T.pack $ MDB.at "baton" doc)
 
 addLap :: Ref Team -> UTCTime -> Persistence ()
-addLap team timestamp = addLaps team timestamp "counted lap" 1
+addLap team timestamp = addLaps team timestamp "Full lap detected" 1
 
 addLaps :: Ref Team -> UTCTime -> Text -> Int -> Persistence ()
 addLaps !ref !timestamp !reason !c = do
