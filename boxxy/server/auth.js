@@ -15,7 +15,7 @@ exports.serverAuth = {
         if (password !== SERVER_PASSWORD) {
             message.error = faye.Error.extMismatch()
         } else {
-            delete message.ext.password;
+            delete message.ext.password
             callback(message)
         }
     }
@@ -24,16 +24,16 @@ exports.serverAuth = {
 // Adds the publishing key to the message
 exports.clientAuth = {
     outgoing: function(message, callback) {
-        message.ext = message.ext || {};
-        message.ext.password = SERVER_PASSWORD;
-        callback(message);
+        message.ext = message.ext || {}
+        message.ext.password = SERVER_PASSWORD
+        callback(message)
     }
-};
+}
 
 // Authenticates Count Von Count
 exports.cvcAuth = function(req, res, next) {
     if(req.query.key === CVC_PASSWORD) {
-        next();
+        next()
     } else {
         res.send(403) // Unauthorized
     }

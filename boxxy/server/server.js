@@ -5,9 +5,9 @@ var express = require('express'),
     state = require('./state')
 
 var server, bayeux
-run = function(port) {
+var run = function(port) {
     server = express.createServer(),
-    bayeux = new faye.NodeAdapter({mount: '/boxxy', timeout: 45})
+    bayeux = new faye.NodeAdapter({ mount: '/boxxy', timeout: 45 })
     bayeux.attach(server)
 
     // Configure the faye server to use the correct keys
@@ -26,16 +26,18 @@ run = function(port) {
     for(route in cvcRoutes) {
         server.put(route, auth.cvcAuth, cvcRoutes[route])
     }
-    
+
+    // Information to initialize clients
     server.get('/init', initHandler)
+
     // Run the server
     server.listen(port)
 }
 exports.run = run
 
 var configHandler = function(req, res) {
-    state.initialize(req.body)
-    res.send(200);
+    state.initialize(req.body);
+    res.send(200)
 }
 
 var positionHandler = function(req, res) {
@@ -57,10 +59,12 @@ var positionHandler = function(req, res) {
 
 var lapsHandler = function(req, res) {
     state.updateLaps(req.body)
-    bayeux.getClient().publish('/laps', req.body);
-    res.send(200);
+    bayeux.getClient().publish('/laps', req.body)
+    res.send(200)
 }
 
 var initHandler = function(req, res) {
+    // required for cross-domain requests
+    res.header('Access-Control-Allow-Origin', '*')
     res.send(JSON.stringify(state.get()))
 }

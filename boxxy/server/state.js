@@ -3,7 +3,6 @@
 // var STARTING_SPEED = 2.0 // Michiel Van den Berghe
 var STARTING_SPEED = 4.0 // USAIN BOLT!!!
 
-
 var state = {
     teams: {}
 }

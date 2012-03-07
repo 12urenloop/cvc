@@ -1,26 +1,37 @@
 function Boxxy() {
-    var self = this
+    var self = this,
+        state = {};
 
-    // connection callbacks
-    this.connected = function() {}
-    this.disconnected = function() {}
-    this.timeout = function() {}
-
-    // new information
-    this.position = function(m) {}
-    this.lap = function(m) {}
+    // information hooks
+    this.receivedConfig = function(c) {}
+    this.updatedPosition = function(m) {}
+    this.addedLap = function(m) {}
 
     // connect
-    this.connect = function() {
-        var url = 'http://' + window.location.hostname + ':8080'
-        this.client = new Faye.Client(url + '/boxxy')
-        this.connected()
+    this.connect = function(domain) {
+        var url = 'http://' + (domain || window.location.hostname) + ':8080',
+            http = null;
+        console.log(url);
 
-        this.client.subscribe('/laps', function(message) {
-            self.lap(message)
-        })
-        this.client.subscribe('/position', function(message) {
-            self.position(message)
-        })
+        if(window.XMLHttpRequest) http = new XMLHttpRequest();
+        else http = new ActiveXObject('Microsoft.XMLHTTP');
+
+        // Get config
+        http.open('GET', url + '/init?t=' + new Date().getTime());
+        http.onreadystatechange = function() {
+            if(http.readyState != 4 || http.status != 200) return;
+            self.state = eval('(' + http.responseText + ')');
+            self.receivedConfig(self.state);
+        }
+        http.send(null);
+
+        // Setup websocket
+        self.client = new Faye.Client(url + '/boxxy');
+        self.client.subscribe('/laps', function(message) {
+            self.addedLap(message);
+        });
+        self.client.subscribe('/position', function(message) {
+            self.updatedPosition(message);
+        });
     }
 }

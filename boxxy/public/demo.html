@@ -23,13 +23,16 @@
         window.onload = function() {
             var client = new Boxxy();
             var log = document.getElementById('boxxy-log');
-            client.position = function(message) {
+            client.receivedConfig = function(config) {
+                log.innerHTML = "[CONFIG] " + JSON.stringify(config) + "\n" + log.innerHTML
+            }
+            client.updatedPosition = function(message) {
                 log.innerHTML = "[POSITION] " + JSON.stringify(message) + "\n" + log.innerHTML;
             }
-            client.lap = function(message) {
+            client.addedLap = function(message) {
                 log.innerHTML = "[LAP] " + JSON.stringify(message) + "\n" + log.innerHTML;
             }
-            client.connect();
+            client.connect('live.12urenloop.be');
         }
     </script>
 </head>
