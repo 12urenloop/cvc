@@ -69,13 +69,13 @@ span.soft {
 *******************************************************************************/
 
 div#monitor div#teams {
-    width: 450px;
+    width: 460px;
 }
 
 div#monitor div.team {
     float: left;
     margin-right: 20px;
-    width: 200px;
+    width: 210px;
 }
 
 div#monitor div.team span.speed {

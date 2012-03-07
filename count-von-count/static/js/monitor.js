@@ -21,11 +21,12 @@ $(document).ready(function() {
             }
         };
 
+        var interval = 5;
         setInterval(function () {
             $('.last-update').each(function () {
                 var number = parseInt($(this).html());
-                $(this).html(number + 1);
+                $(this).html(number + interval);
             });
-        }, 1000);
+        }, interval * 1000);
     });
 });
