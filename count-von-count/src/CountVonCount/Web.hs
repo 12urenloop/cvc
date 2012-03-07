@@ -51,8 +51,11 @@ config = ask >>= json . webConfig
 
 monitor :: Web ()
 monitor = do
-    teams <- sort . map snd <$> runPersistence getAll
-    Snap.blaze $ Views.monitor teams
+    teams    <- sort . map snd <$> runPersistence getAll
+    counter  <- webCounter <$> ask
+    lifespan <- configBatonWatchdogLifespan . webConfig <$> ask
+    dead     <- liftIO $ findDeadBatons lifespan counter
+    Snap.blaze $ Views.monitor teams dead
 
 monitorFeed :: Web ()
 monitorFeed = do
@@ -63,13 +66,6 @@ monitorFeed = do
     wsApp pubSub req = do
         WS.acceptRequest req
         WS.subscribe pubSub
-
-monitorBatons :: Web ()
-monitorBatons = do
-    counter  <- webCounter <$> ask
-    lifespan <- configBatonWatchdogLifespan . webConfig <$> ask
-    dead     <- liftIO $ findDeadBatons lifespan counter
-    json dead
 
 management :: Web ()
 management = do
@@ -145,7 +141,6 @@ site = Snap.route
     , ("/config.json",         config)
     , ("/monitor",             monitor)
     , ("/monitor/feed",        monitorFeed)
-    , ("/monitor/batons.json", monitorBatons)
     , ("/management",          management)
     , ("/laps",                laps)
     , ("/team/:id/assign",     assign)

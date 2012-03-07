@@ -48,7 +48,7 @@ data Baton = Baton
     } deriving (Eq)
 
 instance Show Baton where
-    show (Baton mac nr) = show nr ++ " (" ++ T.unpack mac ++ ")"
+    show b = batonName b ++ " (" ++ T.unpack (batonMac b) ++ ")"
 
 instance Ord Baton where
     compare = comparing batonNr

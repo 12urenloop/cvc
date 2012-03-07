@@ -6,6 +6,9 @@ module CountVonCount.Web.Views
     , management
     , laps
     , bonus
+
+      -- * Partials
+    , deadBatons
     ) where
 
 import Control.Monad (forM_)
@@ -17,6 +20,7 @@ import qualified Text.Blaze.Html5.Attributes as A
 
 import CountVonCount.Persistence
 import CountVonCount.Types
+import CountVonCount.Web.Partial
 import CountVonCount.Web.Views.Util
 
 template :: Html -> Html -> Html
@@ -25,6 +29,7 @@ template title content = H.docTypeHtml $ do
         H.title title
         javascript "/js/jquery-1.7.1.min.js"
         javascript "/js/jquery.flot.min.js"
+        javascript "/js/partial.js"
         stylesheet "/css/screen.css"
 
     H.body $ do
@@ -41,9 +46,9 @@ template title content = H.docTypeHtml $ do
 index :: Html
 index = template "Home" "Hello world"
 
-monitor :: [Team] -> Html
-monitor teams = template "Monitor" $ block "monitor" $ do
-    block "secondary" $ block "batons" ""
+monitor :: [Team] -> [Baton] -> Html
+monitor teams deadBatons' = template "Monitor" $ block "monitor" $ do
+    block "secondary" $ block "batons" $ H.toHtml $ deadBatons deadBatons'
 
     H.h1 "Scores"
     forM_ teams $ \team -> H.div
@@ -58,11 +63,8 @@ management :: [(Ref Team, Team, Maybe Baton)] -> [Baton] -> Html
 management teams batons = template "Teams" $ block "management" $ do
     block "secondary" $ do
         H.h1 "Free batons"
-        forM_ batons $ \baton -> H.div ! A.class_ "baton" $ do
-            H.toHtml $ batonName baton
-            " ("
-            H.toHtml $ batonMac baton
-            ")"
+        forM_ batons $ \baton -> H.div ! A.class_ "baton" $
+            H.toHtml $ show baton
 
     H.h1 "Teams"
     forM_ teams $ \(ref, team, assigned) -> H.div ! A.class_ "team" $ do
@@ -130,3 +132,9 @@ bonus ref team = template "Add bonus" $ block "bonus" $ do
             ! A.type_ "text" ! A.size "30" ! A.value ""
         H.br
         H.input ! A.type_ "submit" ! A.value "Add bonus"
+
+deadBatons :: [Baton] -> Partial
+deadBatons [] = partial "#batons" $ H.h1 "Batons OK"
+deadBatons bs = partial "#batons" $ do
+    H.h1 "Batons down!"
+    forM_ bs $ H.div . H.toHtml . show

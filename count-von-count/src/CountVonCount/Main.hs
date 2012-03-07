@@ -24,6 +24,7 @@ import CountVonCount.Util
 import qualified CountVonCount.Log as Log
 import qualified CountVonCount.Sensor as Sensor
 import qualified CountVonCount.Web as Web
+import qualified CountVonCount.Web.Views as Views
 
 main :: IO ()
 main = do
@@ -64,7 +65,7 @@ main = do
     -- Start the baton watchdog
     _ <- forkIO $ watchdog counter logger (configBatonWatchdogInterval config)
         (configBatonWatchdogLifespan config)
-        (WS.publish pubSub . WS.textData .  A.encode . BatonWatchdog)
+        (WS.publish pubSub . WS.textData .  A.encode . Views.deadBatons)
 
     Web.listen config (Log.setModule "Web" logger) pubSub counter
 
