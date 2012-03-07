@@ -99,7 +99,7 @@ putLaps config team reason count = makeRequest config path $ A.object
     , "count"  .= fromMaybe 1 count
     ]
   where
-    path = T.concat ["/", T.pack (show $ teamId team), "/laps"]
+    path = T.concat ["/", teamId team, "/laps"]
 
 putPosition :: BoxxyConfig -> Team -> Station -> Double -> IO ()
 putPosition config team station speed = makeRequest config path $ A.object
@@ -108,4 +108,4 @@ putPosition config team station speed = makeRequest config path $ A.object
     , "speed"   .= speed
     ]
   where
-    path = T.concat ["/", T.pack (show $ teamId team), "/position"]
+    path = T.concat ["/", teamId team, "/position"]
