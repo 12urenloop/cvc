@@ -11,12 +11,11 @@ function Boxxy() {
     this.connect = function(domain) {
         var url = 'http://' + (domain || window.location.hostname) + ':8080',
             http = null;
-        console.log(url);
 
         if(window.XMLHttpRequest) http = new XMLHttpRequest();
         else http = new ActiveXObject('Microsoft.XMLHTTP');
 
-        // Get config
+        // Get config, uncached
         http.open('GET', url + '/init?t=' + new Date().getTime());
         http.onreadystatechange = function() {
             if(http.readyState != 4 || http.status != 200) return;

@@ -149,6 +149,11 @@ counterState circuitLength team cs = partial selector $ H.div
                     H.toHtml (printf "%.2f" speed :: String)
                 " m/s"
 
+                H.div $ do
+                    "Last updated "
+                    H.span ! A.class_ "last-update" $ "0"
+                    " seconds ago"
+
                 let progress = stationPosition (sensorStation e) / circuitLength
                     style    = printf "width: %.0f%%" (progress * 100) :: String
                 H.div ! A.class_ "progress" $

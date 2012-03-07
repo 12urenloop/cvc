@@ -20,5 +20,13 @@ $(document).ready(function() {
                 alert(err);
             }
         };
+
+        var interval = 5;
+        setInterval(function () {
+            $('.last-update').each(function () {
+                var number = parseInt($(this).html());
+                $(this).html(number + interval);
+            });
+        }, interval * 1000);
     });
 });

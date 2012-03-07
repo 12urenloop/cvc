@@ -20,6 +20,7 @@ end
 
 function Team:new(mac, sprite, circuitLength)
   local team = {}
+  setmetatable(team, mt)
   team.mac = mac
   team.sprite = sprite
   team.circuitLength = circuitLength
@@ -27,7 +28,6 @@ function Team:new(mac, sprite, circuitLength)
   team.speed = MIN_SPEED
   team.acceleration = 0
   team.laps = 0
-  setmetatable(team, mt)
   return team
 end
 
