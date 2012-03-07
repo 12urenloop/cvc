@@ -60,7 +60,8 @@ monitor = do
             Just b  -> couterStateFor b counter >>= \s -> return (team, Just s)
     lifespan <- configBatonWatchdogLifespan . webConfig <$> ask
     dead     <- liftIO $ findDeadBatons lifespan counter
-    Snap.blaze $ Views.monitor states dead
+    clen     <- configCircuitLength . webConfig <$> ask
+    Snap.blaze $ Views.monitor clen states dead
 
 monitorFeed :: Web ()
 monitorFeed = do

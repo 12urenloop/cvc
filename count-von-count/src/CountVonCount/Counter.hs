@@ -64,7 +64,7 @@ step :: Double  -- ^ Circuit length
      -> IO CounterMap
 step cl ms logger handler event cmap = do
     let (events, tells, cmap') = stepCounterMap cl ms event cmap
-        cstate                 = lookupCounterState (sensorBaton event) cmap
+        cstate                 = lookupCounterState (sensorBaton event) cmap'
     forM_ tells $ Log.string logger
     process cstate events
     return cmap'

@@ -59,7 +59,8 @@ main = do
     counter <- newCounter
     _       <- forkIO $ runCounter counter (configCircuitLength config)
         (configMaxSpeed config) (Log.setModule "Counter" logger)
-        (counterHandler logger (configBoxxies config) pubSub) sensorChan
+        (counterHandler (configCircuitLength config) logger
+            (configBoxxies config) pubSub) sensorChan
 
     -- Start the baton watchdog
     _ <- forkIO $ watchdog counter logger (configBatonWatchdogInterval config)
@@ -73,12 +74,12 @@ main = do
     Log.close logger
 
 counterHandler :: WS.TextProtocol p
-               => Log -> [BoxxyConfig] -> WS.PubSub p
+               => Double -> Log -> [BoxxyConfig] -> WS.PubSub p
                -> Team -> CounterState -> CounterEvent
                -> IO ()
-counterHandler logger boxxies pubSub team cstate event = do
+counterHandler circuitLength logger boxxies pubSub team cstate event = do
     -- Send to websockets pubsub
-    publish $ Views.counterState team (Just cstate)
+    publish $ Views.counterState circuitLength team (Just cstate)
 
     -- Send to boxxies
     forM_ boxxies $ \boxxy -> isolate logger ("Calling boxxy: " ++ show boxxy) $

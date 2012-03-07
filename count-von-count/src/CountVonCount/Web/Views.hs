@@ -23,6 +23,7 @@ import qualified Text.Blaze.Html5.Attributes as A
 
 import CountVonCount.Counter.Core
 import CountVonCount.Persistence
+import CountVonCount.Sensor.Filter
 import CountVonCount.Types
 import CountVonCount.Web.Partial
 import CountVonCount.Web.Views.Util
@@ -50,20 +51,15 @@ template title content = H.docTypeHtml $ do
 index :: Html
 index = template "Home" "Hello world"
 
-monitor :: [(Team, Maybe CounterState)] -> [Baton] -> Html
-monitor teams deadBatons' = template "Monitor" $ block "monitor" $ do
-    block "secondary" $ block "batons" $ H.toHtml $ deadBatons deadBatons'
+monitor :: Double -> [(Team, Maybe CounterState)] -> [Baton] -> Html
+monitor circuitLength teams deadBatons' =
+    template "Monitor" $ block "monitor" $ do
+        block "secondary" $ block "batons" $ H.toHtml $ deadBatons deadBatons'
 
-    H.h1 "Teams"
-    block "teams" $ forM_ teams $ H.toHtml . uncurry counterState
-    {-
-            ! A.class_ "team"
-            ! H.dataAttribute "team-id" (H.toValue $ teamId team) $ do
-        H.h2 $ H.toHtml $ teamName team
-        H.div ! A.class_ "laps" $ H.toHtml $ teamLaps team
-        H.div ! A.class_ "speed" $ ""
-    -}
-    javascript "/js/monitor.js"
+        H.h1 "Teams"
+        block "teams" $ forM_ teams $
+            H.toHtml . uncurry (counterState circuitLength)
+        javascript "/js/monitor.js"
 
 management :: [(Ref Team, Team, Maybe Baton)] -> [Baton] -> Html
 management teams batons = template "Teams" $ block "management" $ do
@@ -139,8 +135,8 @@ bonus ref team = template "Add bonus" $ block "bonus" $ do
         H.br
         H.input ! A.type_ "submit" ! A.value "Add bonus"
 
-counterState :: Team -> Maybe CounterState -> Partial
-counterState team cs = partial selector $ H.div
+counterState :: Double -> Team -> Maybe CounterState -> Partial
+counterState circuitLength team cs = partial selector $ H.div
     ! A.class_ "team"
     ! H.dataAttribute "team-id" (H.toValue $ teamId team) $ do
         H.h2 $ H.toHtml $ teamName team
@@ -149,10 +145,15 @@ counterState team cs = partial selector $ H.div
         case cs of
             Nothing                         -> "No baton assigned."
             Just NoCounterState             -> "Unitialized."
-            Just (CounterState _ _ speed _) -> do
+            Just (CounterState _ e speed _) -> do
                 H.span ! A.class_ "speed" $
                     H.toHtml (printf "%.2f" speed :: String)
                 " m/s"
+
+                let progress = stationPosition (sensorStation e) / circuitLength
+                    style    = printf "width: %.0f%%" (progress * 100) :: String
+                H.div ! A.class_ "progress" $
+                    H.div ! A.class_ "fill" ! A.style (H.toValue style) $ ""
   where
     selector = T.concat
         ["[data-team-id = \"", T.pack (show $ teamId team), "\"]"]
