@@ -84,7 +84,9 @@ counterHandler circuitLength logger boxxies pubSub team cstate event = do
     -- Send to boxxies
     forM_ boxxies $ \boxxy -> isolate logger ("Calling boxxy: " ++ show boxxy) $
         case event of
-            Lap _ _                     -> putLaps boxxy team Nothing Nothing
-            Progression _ station speed -> putPosition boxxy team station speed
+            Lap time speed                ->
+                putLaps boxxy team time 1 (Just speed) Nothing
+            Progression time station speed ->
+                putPosition boxxy team time station speed
   where
     publish = WS.publish pubSub . WS.textData . A.encode

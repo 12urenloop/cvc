@@ -120,7 +120,7 @@ bonus = do
             runPersistence $ addLaps teamRef timestamp reason laps'
             Snap.redirect "/management"
         -- Render form
-        _                -> do
+        _ -> do
             team <- runPersistence $ get teamRef
             Snap.blaze $ Views.bonus teamRef team
 

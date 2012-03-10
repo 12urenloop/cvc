@@ -13,7 +13,7 @@ module CountVonCount.Boxxy
 
 import Control.Applicative ((<$>),(<*>))
 import Control.Monad (mzero)
-import Data.Maybe (fromMaybe)
+import Data.Time (UTCTime)
 
 import Data.Aeson (FromJSON (..), ToJSON (..), (.=), (.:?), (.!=))
 import Data.Text (Text)
@@ -92,20 +92,29 @@ putConfig config circuitLength stations teams =
         , "teams"         .= teams
         ]
 
-putLaps :: BoxxyConfig -> Team -> Maybe Text -> Maybe Int -> IO ()
-putLaps config team reason count = makeRequest config path $ A.object
+putLaps :: BoxxyConfig   -- ^ Boxxy instance to notify
+        -> Team          -- ^ Applicable team
+        -> UTCTime       -- ^ Time of event
+        -> Int           -- ^ Number of points added
+        -> Maybe Double  -- ^ Average lap speed
+        -> Maybe Text    -- ^ Lap reason (for bonus rounds)
+        -> IO ()
+putLaps config team time count speed reason = makeRequest config path $ A.object
     [ "team"   .= team
+    , "time"   .= time
+    , "count"  .= count
+    , "speed"  .= speed
     , "reason" .= reason
-    , "count"  .= fromMaybe 1 count
     ]
   where
     path = T.concat ["/", teamId team, "/laps"]
 
-putPosition :: BoxxyConfig -> Team -> Station -> Double -> IO ()
-putPosition config team station speed = makeRequest config path $ A.object
+putPosition :: BoxxyConfig -> Team -> UTCTime -> Station -> Double -> IO ()
+putPosition config team time station speed = makeRequest config path $ A.object
     [ "team"    .= team
     , "station" .= station
     , "speed"   .= speed
+    , "time"    .= time
     ]
   where
     path = T.concat ["/", teamId team, "/position"]
