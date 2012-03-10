@@ -29,6 +29,7 @@ data Config = Config
     , configBatons                :: [Baton]
     , configRssiThreshold         :: Double
     , configBoxxies               :: [BoxxyConfig]
+    , configWebPort               :: Int
     } deriving (Show)
 
 instance ToJSON Config where
@@ -44,6 +45,7 @@ instance ToJSON Config where
         , "batons"                .= configBatons                conf
         , "rssiThreshold"         .= configRssiThreshold         conf
         , "boxxies"               .= configBoxxies               conf
+        , "webPort"               .= configWebPort               conf
         ]
 
 instance FromJSON Config where
@@ -58,7 +60,8 @@ instance FromJSON Config where
         o .:? "stations"              .!= configStations              d <*>
         o .:? "batons"                .!= configBatons                d <*>
         o .:? "rssiThreshold"         .!= configRssiThreshold         d <*>
-        o .:? "boxxies"               .!= configBoxxies               d
+        o .:? "boxxies"               .!= configBoxxies               d <*>
+        o .:? "webPort"               .!= configWebPort               d
       where
         d = defaultConfig
 
@@ -77,6 +80,7 @@ defaultConfig = Config
     , configBatons                = []
     , configRssiThreshold         = -81
     , configBoxxies               = [defaultBoxxyConfig]
+    , configWebPort               = 8000
     }
 
 readConfigFile :: FilePath -> IO Config

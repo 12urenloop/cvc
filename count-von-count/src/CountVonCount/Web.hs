@@ -156,7 +156,7 @@ site = Snap.route
 
 listen :: Config -> Log -> WS.PubSub WS.Hybi00 -> Counter -> IO ()
 listen conf logger pubSub counter =
-    Snap.httpServe Snap.defaultConfig $ runReaderT site env
+    Snap.httpServe snapConfig $ runReaderT site env
   where
     env = WebEnv
         { webConfig  = conf
@@ -164,3 +164,5 @@ listen conf logger pubSub counter =
         , webPubSub  = pubSub
         , webCounter = counter
         }
+
+    snapConfig = Snap.setPort (configWebPort conf) Snap.defaultConfig
