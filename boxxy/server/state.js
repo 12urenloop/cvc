@@ -4,11 +4,13 @@
 var STARTING_SPEED = 4.0 // USAIN BOLT!!!
 
 var state = {
-    teams: {}
+    stations: [],
+    teams:    {}
 }
 
 exports.initialize = function(config) {
     state.stations = config.stations
+
     for(var teamIdx in config.teams) {
         var team = config.teams[teamIdx]
         team.speed = STARTING_SPEED

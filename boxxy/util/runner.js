@@ -49,13 +49,13 @@ function Runner(id, name) {
             }
         }, 100)
     }
-    
+
     this.updateSpeed = function() {
         var speed = 0
         for(var it = 0; it < 10; it++) {
             speed += Math.random()
         }
-        this.speed = speed * 5
+        this.speed = speed * 10
     }
 }
 util.inherits(Runner, events.EventEmitter)

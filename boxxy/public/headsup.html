@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>Boxxy runner view</title>
+    <script type="text/javascript">
+        var g = document.createElement('script'),
+            s = document.getElementsByTagName('script')[0];
+        g.src = 'http://' + window.location.hostname + ':8080/boxxy.js';
+        s.parentNode.insertBefore(g, s);
+    </script>
+    <script type="text/javascript" src="boxxy-interface.js"></script>
+    <script type="text/javascript" src="jquery-1.7.1.min.js"></script>
+    <script type="text/javascript">
+        window.onload = function() {
+            var boxxy = new Boxxy();
+            boxxy.debug = true;
+
+            var container = $('#boxxy-log');
+            boxxy.addedLap = function(message) {
+                var li = $('<li>').text(message.team.name +
+                    ' (' + message.team.ranking + '/' + boxxy.getTeams().length + ')');
+
+                // TODO: show lap time
+                // TODO: update ranking on other teams as well
+                if (container.children().length >= 5) {
+                    container.children(':last-child').remove();
+                }
+                container.prepend(li);
+            }
+            boxxy.connect('live.12urenloop.be');
+        }
+    </script>
+</head>
+<body>
+    <ul id="boxxy-log"></ul>
+</body>
+</html>
