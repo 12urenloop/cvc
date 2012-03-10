@@ -38,6 +38,7 @@ fixtures =
     , ("fixture 02", fixture02)
     , ("fixture 03", fixture03)
     , ("fixture 04", fixture04)
+    , ("fixture 05", fixture05)
     ]
 
 fixture01 :: CounterFixtureM ()
@@ -72,3 +73,16 @@ fixture04 = do
     lap   10 station0
     noLap 20 station3
     noLap 30 station0
+
+-- Taking a nap
+fixture05 :: CounterFixtureM ()
+fixture05 = do
+    noLap   0 station0
+    noLap  10 station1
+    noLap  20 station2
+    noLap  30 station3
+    lap    40 station0
+    noLap  50 station1
+    noLap 200 station2
+    noLap 210 station3
+    lap   220 station0
