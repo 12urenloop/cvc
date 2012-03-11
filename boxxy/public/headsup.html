@@ -8,30 +8,77 @@
         g.src = 'http://' + window.location.hostname + ':8080/boxxy.js';
         s.parentNode.insertBefore(g, s);
     </script>
-    <script type="text/javascript" src="boxxy-interface.js"></script>
-    <script type="text/javascript" src="jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="lib/boxxy-interface.js"></script>
+    <script type="text/javascript" src="lib/jquery-1.7.1.min.js"></script>
     <script type="text/javascript">
         window.onload = function() {
             var boxxy = new Boxxy();
             boxxy.debug = true;
 
-            var container = $('#boxxy-log');
+            var container = $('#last-laps');
             boxxy.addedLap = function(message) {
-                var li = $('<li>').text(message.team.name +
-                    ' (' + message.team.ranking + '/' + boxxy.getTeams().length + ')');
+                var row = $('<li>').text(message.team.name);
 
                 // TODO: show lap time
-                // TODO: update ranking on other teams as well
-                if (container.children().length >= 5) {
-                    container.children(':last-child').remove();
-                }
-                container.prepend(li);
+                // TODO: update rankings on other teams as well
+
+                //if (container.children().length >= 6) {
+                //    container.children().last().remove();
+                //}
+                container.prepend(row);
             }
             boxxy.connect('live.12urenloop.be');
         }
     </script>
+    <link rel="stylesheet" type="text/css" href="style.css" media="screen" />
+    <style type="text/css">
+        #container {
+            width: 600px;
+        }
+
+        #logo {
+            display: block;
+            margin: 30px auto;
+        }
+
+        #last-laps li {
+            list-style: none;
+            text-align: center;
+        }
+
+        #last-laps li:nth-child(1) {
+            font-size: 92px;
+            margin: 0 0 24px;
+        }
+        #last-laps li:nth-child(2) {
+            font-size: 72px;
+            margin: 0 0 18px;
+        }
+        #last-laps li:nth-child(3) {
+            font-size: 58px;
+            margin: 0 0 18px;
+        }
+        #last-laps li:nth-child(4) {
+            font-size: 42px;
+        }
+        #last-laps li {
+            font-size: 34px;
+            margin: 14px 0;
+        }
+    </style>
 </head>
 <body>
-    <ul id="boxxy-log"></ul>
+    <div id="container">
+        <img id="logo" src="assets/logo-200.png" />
+        <ul id="last-laps">
+            <li>Eerste team</li>
+            <li>Tweede team</li>
+            <li>Derde team</li>
+            <li>Vierde team</li>
+            <li>Vijfde team</li>
+            <li>Zesde team</li>
+        </ul>
+    </div>
+    <div class="fade"></div>
 </body>
 </html>
