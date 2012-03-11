@@ -78,10 +78,11 @@ stepCounterState len maxSpeed event = do
                 tell' "Impossibru!"
                 return []
             | otherwise              -> do
-                tell' $ printf "Average speed: %.2fm/s" prevSpeed
-                tell' $ printf "%.2fm -> %.2fm (%.2fs)" prevPosition position dt
+                tell' $ printf "New position: %.2fm (last: %.2fm, %0fs ago)"
+                            position prevPosition dt
                 tell' $ printf "Most likely: moved %.2fm at %.2fm/s" dx speed
-                tell' $ printf "Updated average speed: %.2fm/s" speed'
+                tell' $ printf "Updated average speed from %.2fm/s to %.2fm/s"
+                            prevSpeed speed'
                 when (numLaps > 0) $ tell' $ printf "Adding %d laps" numLaps
                 put $ CounterState first event speed' time
                 return $

@@ -39,16 +39,19 @@ fixtures =
     , ("fixture 03", fixture03)
     , ("fixture 04", fixture04)
     , ("fixture 05", fixture05)
+    , ("fixture 05", fixture06)
     ]
 
+-- Normal lap
 fixture01 :: CounterFixtureM ()
 fixture01 = do
     noLap  0 station0
     noLap 10 station1
     noLap 20 station2
-    noLap 30 station3
+    noLap 30 station3 -- This gives an "Impossibru!", why?
     lap   40 station0
 
+-- Multiple detections
 fixture02 :: CounterFixtureM ()
 fixture02 = do
     noLap  0 station0
@@ -74,9 +77,18 @@ fixture04 = do
     noLap 20 station3
     noLap 30 station0
 
--- Taking a nap
+-- Only passing 2 points
 fixture05 :: CounterFixtureM ()
 fixture05 = do
+    noLap  0 station1
+    noLap 20 station3
+    lap   40 station1
+    noLap 60 station3
+    lap   80 station1
+
+-- Taking a nap
+fixture06 :: CounterFixtureM ()
+fixture06 = do
     noLap   0 station0
     noLap  10 station1
     noLap  20 station2
