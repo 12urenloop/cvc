@@ -25,7 +25,9 @@
                 var box = $('<div>').addClass('team').text(message.team.name);
                 var item = box.wrap('<li>').parent().addClass('first');
 
-                var lapTime = Math.floor(message.lapTime / 60) + ':' + (message.lapTime % 60);
+                var seconds = message.lapTime % 60;
+                if(seconds < 10) seconds = '0' + seconds;
+                var lapTime = Math.floor(message.lapTime / 60) + ':' + seconds;
                 $('<span>').addClass('time').text(lapTime).appendTo(box);
                 // TODO: show nr of laps or position?
                 // TODO: update rankings on other teams as well
