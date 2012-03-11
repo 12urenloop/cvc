@@ -1,5 +1,4 @@
-var runner = require('./runner'),
-    team = require('./team')
+var team = require('./team')
     http = require('http')
 
 var names = ["Michiel", "Sander", "Pieter"]
