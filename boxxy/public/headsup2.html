@@ -13,29 +13,32 @@
     <script type="text/javascript">
         window.onload = function() {
             var boxxy = new Boxxy();
-            //boxxy.debug = true;
+            boxxy.debug = true;
 
             var container = $('#lap-history');
-            var busy = false;
+            var dummyLock = false;
             boxxy.addedLap = function(message) {
-                // TODO: queue updates so there is a minimum amount of
-                // time between them
-                if(busy) return;
-                else busy = true;
+                // TODO: queue updates so there is a minimum amount of time between them
+                if(dummyLock) return;
+                else dummyLock = true;
 
                 var box = $('<div>').addClass('team').text(message.team.name);
                 var item = box.wrap('<li>').parent().addClass('first');
-                $('<span>').addClass('time').text('0:00').appendTo(box);
-                $('<span>').addClass('position').text('1/20').appendTo(box);
 
+                var lapTime = Math.floor(message.lapTime / 60) + ':' + (message.lapTime % 60);
+                $('<span>').addClass('time').text(lapTime).appendTo(box);
+                // TODO: show nr of laps or position?
                 // TODO: update rankings on other teams as well
+                var position = message.team.ranking + '/' + boxxy.getTeams().length;
+                $('<span>').addClass('position').text(position).appendTo(box);
 
                 // animate transition
-                var last = $('.first', container);
-                var nextToLast = $('.first + li', container);
-                var duration = 800;
+                var last = $(container.children()[0])
+                var nextToLast = $(container.children()[1])
+                var duration = 600;
 
-                last.css({'height': last.height() });
+                // animate the <li>
+                last.css('height', last.height());
                 last.animate({
                     'top': nextToLast.position().top,
                     'width': '33%',
@@ -43,40 +46,46 @@
                     'font-size': '50px',
                     'margin-left': '0'
                 }, duration, 'swing', function() {
-                    // restore
+                    // restore and set some final properties
                     last.css({
                         'top': 0, 'height': 'auto',
-                        'float': 'left', 'margin': '0 0 25px 0'
+                        'float': 'left', 'margin': '0 0 30px 0'
                     });
-                    last.removeClass('first');
                     item.css('position', 'relative');
 
                     // remove elements that are invisible
-                    if (container.children().length > 14) {
+                    if (container.children().length > 10) {
                         container.children().last().remove();
                     }
 
-                    busy = false;
+                    dummyLock = false;
                 });
-                nextToLast.animate({ 'margin-left': '33%' }, duration, function() {
-                    nextToLast.css('margin-left', 0);
-                });
+
+                // animate the <div class="team">
                 $('.team', last).animate({
                     'padding-bottom': '32px',
                     'min-width': '200px'
                 }, duration);
+
+                // animate the icon <span>'s
                 $('span', last).animate({
-                    'color': '#AAA',
+                    'color': '#888',
                     'font-size': '32px',
-                    'padding-left': '30px',
+                    'padding-left': '32px',
                     'background-size': '26px',
                     'line-height': '0.9'
                 }, duration);
 
+                // animate the neighbouring element
+                nextToLast.animate({ 'margin-left': '33%' }, duration, function() {
+                    nextToLast.css('margin-left', 0);
+                });
+
+                // insert the new element
                 item.css('position', 'absolute');
                 container.prepend(item);
             }
-            boxxy.connect('live.12urenloop.be');
+            boxxy.connect();
         }
     </script>
     <link rel="stylesheet" type="text/css" href="style.css" media="screen" />
@@ -90,15 +99,15 @@
             margin: 20px auto;
         }
 
-        @-webkit-keyframes fade-in {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
-        }
-
         #lap-history {
             overflow: hidden;
             margin: 30px;
             position: relative;
+        }
+
+        @-webkit-keyframes fade-in {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
         }
 
         #lap-history > li {
@@ -109,7 +118,7 @@
             color: #000;
             float: none; width: 100%;
             font-size: 120px;
-            margin: 0 auto 60px;
+            margin: 0 auto 55px;
             -webkit-animation-name: fade-in;
             -webkit-animation-duration: 0.6s;
             -webkit-animation-timing-function: ease-in;
@@ -118,28 +127,28 @@
         .team {
             position: relative;
             display: inline-block;
-            padding-bottom: 55px;
+            padding-bottom: 60px;
             min-width: 450px;
         }
 
         .team > span {
             position: absolute;
             bottom: 0;
-            color: #999;
+            color: #555;
             font-size: 70px;
             padding-left: 60px;
             background-size: 50px;
-            line-height: 0.7;
+            line-height: 0.85;
         }
 
         .team > .time {
             left: 0;
-            background: url('assets/icons/clock.png') no-repeat left bottom;
+            background: url('assets/icons/clock.png') no-repeat left center;
         }
 
         .team > .position {
             right: 0;
-            background: url('assets/icons/flag.png') no-repeat left bottom;
+            background: url('assets/icons/flag.png') no-repeat left center;
         }
     </style>
 </head>
@@ -147,11 +156,11 @@
     <div id="container">
         <img id="logo" src="assets/logo-200.png" />
         <ul id="lap-history">
-            <li class="first">
+            <li>
                 <div class="team">
-                    Eerste team
-                    <span class="time">1:35</span>
-                    <span class="position">1/20</span>
+                    Dummy-team
+                    <span class="time">0:00</span>
+                    <span class="position">0/0</span>
                 </div>
             </li>
             <!-- offset box, do not remove -->

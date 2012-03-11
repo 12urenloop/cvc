@@ -13,6 +13,7 @@ exports.initialize = function(config) {
 
     for(var teamIdx in config.teams) {
         var team = config.teams[teamIdx]
+        team.lastLapCompleted = new Date()
         team.speed = STARTING_SPEED
         team.station = state.stations[0]
         state.teams[team.id] = team
@@ -25,7 +26,12 @@ exports.updatePosition = function(message) {
 }
 
 exports.updateLaps = function(message) {
-    state.teams[message.team.id].laps = message.team.laps
+    var team = state.teams[message.team.id]
+    var previousLap = team.lastLapCompleted
+    team.lastLapCompleted = new Date(message.time)
+    team.laps = message.team.laps
+
+    message.lapTime = Math.round((team.lastLapCompleted - previousLap) / 1000)
 }
 
 exports.get = function() {
