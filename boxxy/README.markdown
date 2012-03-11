@@ -33,6 +33,9 @@ A few comments:
 - A query string always includes a `key` param, e.g. `PUT /teams?key=tetten`
 - As for units, all positions are in meters, all times in seconds, and speed is
   expressed in meter/seconds
+- Time stamps are formatted according to the [ISO 8601] standard
+
+[ISO 8601]: http://en.wikipedia.org/wiki/ISO_8601
 
 #### Initialization
 
@@ -76,7 +79,8 @@ Body:
         "name": "Bulbasaur",
         "baton": "00:00:00:00:00:01",
         "laps": 0
-      }
+      },
+      "time": "2012-03-11T10:55:53.814Z"
     }
 
 ### Position updates
@@ -99,5 +103,6 @@ Body:
         "name": "Bulbasaur",
         "baton": "00:00:00:00:00:01",
         "laps": 0
-      }
+      },
+      "time": "2012-03-11T10:55:53.814Z"
     }
