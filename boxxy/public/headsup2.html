@@ -15,13 +15,18 @@
             var boxxy = new Boxxy();
             boxxy.debug = true;
 
-            var container = $('#lap-history');
-            var dummyLock = false;
+            var queue = [];
             boxxy.addedLap = function(message) {
-                // TODO: queue updates so there is a minimum amount of time between them
-                if(dummyLock) return;
-                else dummyLock = true;
+                queue.push(message);
+                console.log(queue);
 
+                // queue active?
+                if(queue.length > 1) return;
+                else process(message);
+            }
+
+            var container = $('#lap-history');
+            var process = function(message) {
                 var box = $('<div>').addClass('team').text(message.team.name);
                 var item = box.wrap('<li>').parent().addClass('first');
 
@@ -32,6 +37,7 @@
                 // TODO: show nr of laps or position?
                 // TODO: update rankings on other teams as well
                 var position = message.team.ranking + '/' + boxxy.getTeams().length;
+                //var position = message.team.laps;
                 $('<span>').addClass('position').text(position).appendTo(box);
 
                 // animate transition
@@ -59,8 +65,6 @@
                     if (container.children().length > 10) {
                         container.children().last().remove();
                     }
-
-                    dummyLock = false;
                 });
 
                 // animate the <div class="team">
@@ -86,6 +90,12 @@
                 // insert the new element
                 item.css('position', 'absolute');
                 container.prepend(item);
+
+                // pop the item from the queue
+                setTimeout(function() {
+                    queue.shift();
+                    if(queue.length > 0) process(queue[0]);
+                }, 1000);
             }
             boxxy.connect();
         }
