@@ -19,15 +19,17 @@
             boxxy.addedLap = function(message) {
                 var row = $('<li>').text(message.team.name);
 
-                // TODO: show lap time
+                // TODO: show lap time and ranking
                 // TODO: update rankings on other teams as well
+                // TODO: queue updates so there is a minimum amount of
+                // time between them
 
-                //if (container.children().length >= 6) {
-                //    container.children().last().remove();
-                //}
-                container.prepend(row);
+                if (container.children().length >= 6) {
+                    container.children().last().remove();
+                }
+                container.prepend(row).slideDown();
             }
-            boxxy.connect('live.12urenloop.be');
+            boxxy.connect();
         }
     </script>
     <link rel="stylesheet" type="text/css" href="style.css" media="screen" />
@@ -44,11 +46,24 @@
         #last-laps li {
             list-style: none;
             text-align: center;
+            -webkit-transition: all 0.4s ease-out;
+            -moz-transition: all 0.4s ease-out;
+            -o-transition: all 0.4s ease-out;
+            -ms-transition: all 0.4s ease-out;
+        }
+
+        @-webkit-keyframes fade-in {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
         }
 
         #last-laps li:nth-child(1) {
             font-size: 92px;
-            margin: 0 0 24px;
+            margin: 0 0 20px;
+            -webkit-transition: none;
+            -webkit-animation-name: fade-in;
+            -webkit-animation-duration: 0.4s;
+            -webkit-animation-timing-function: ease-in;
         }
         #last-laps li:nth-child(2) {
             font-size: 72px;
