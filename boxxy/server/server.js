@@ -43,6 +43,7 @@ var configHandler = function(req, res) {
 var positionHandler = function(req, res) {
     state.updatePosition(req.body)
     bayeux.getClient().publish('/position',{
+        time: req.body.time,
         team: {
             id: req.body.team.id,
             name: req.body.team.name,

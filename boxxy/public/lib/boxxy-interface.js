@@ -1,10 +1,10 @@
 function Boxxy() {
-    var self = this,
-        teams = {},
-        ranking = [];
-
+    var self = this;
+    this.teams = {};
+    this.ranking = [];
+    this.stations = {};
     // log everything to console
-    this.debug = false;
+    this.debug = true;
 
     // information hooks
     this.receivedConfig = function(c) {}
@@ -27,7 +27,13 @@ function Boxxy() {
             config = eval('(' + http.responseText + ')');
             if(self.debug) console.log("[CONFIG] " + JSON.stringify(config))
             self.teams = config.teams;
-            self.ranking = [];
+            
+            for(var stationIdx = 0; stationIdx < config.stations.length; stationIdx++) {
+                var station = config.stations[stationIdx];
+                var nextStation = config.stations[(stationIdx + 1) % config.stations.length];
+                station.next = nextStation;
+                self.stations[station.name] = station;
+            }
 
             // Store the order of each team
             for(var idx in self.teams) {
@@ -54,13 +60,17 @@ function Boxxy() {
             self.addedLap(message);
         });
         self.client.subscribe('/position', function(message) {
-            if(self.debug) console.log("[POSITION] " + JSON.stringify(message))
+            if(self.debug) console.log("[POSITION] " + JSON.stringify(message));
             self.updatedPosition(message);
         });
     }
 
     this.getTeams = function() {
         return self.ranking;
+    }
+    
+    this.getStations = function() {
+        return self.stations;
     }
 
     // Utility methods
@@ -70,4 +80,6 @@ function Boxxy() {
             self.ranking[i].ranking = i + 1;
         };
     }
+    
+    
 }
