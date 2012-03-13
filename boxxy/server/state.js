@@ -18,11 +18,15 @@ exports.initialize = function(config) {
         team.station = state.stations[0]
         state.teams[team.id] = team
     }
+    
+    state.circuitLength = config.circuitLength
 }
 
 exports.updatePosition = function(message) {
-    state.teams[message.team.id].station = message.station
-    state.teams[message.team.id].speed = message.speed
+    var team = state.teams[message.team.id]
+    team.station = message.station
+    team.speed = message.speed
+    team.time = message.time
 }
 
 exports.updateLaps = function(message) {
@@ -30,7 +34,6 @@ exports.updateLaps = function(message) {
     var previousLap = team.lastLapCompleted
     team.lastLapCompleted = new Date(message.time)
     team.laps = message.team.laps
-
     message.lapTime = Math.round((team.lastLapCompleted - previousLap) / 1000)
 }
 

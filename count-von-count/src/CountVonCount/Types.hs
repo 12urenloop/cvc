@@ -4,6 +4,9 @@ module CountVonCount.Types
     , Station (..)
     , Baton (..)
     , batonName
+    , Handler
+    , handler
+    , callHandler
     ) where
 
 import Control.Applicative ((<$>),(<*>))
@@ -15,6 +18,9 @@ import Data.Aeson (FromJSON (..), ToJSON (..), (.:), (.=))
 import Data.Text (Text)
 import qualified Data.Aeson as A
 import qualified Data.Text as T
+
+import CountVonCount.Util
+import CountVonCount.Log
 
 type Mac = Text
 
@@ -62,3 +68,11 @@ instance FromJSON Baton where
 
 batonName :: Baton -> String
 batonName = ("Baton " ++) . show . batonNr
+
+data Handler a = Handler (Log -> a -> IO ())
+
+handler :: String -> (a -> IO ()) -> Handler a
+handler name f = Handler $ \logger -> isolate logger ("Handler " ++ name) . f
+
+callHandler :: Log -> Handler a -> a -> IO ()
+callHandler logger (Handler f) = f logger
