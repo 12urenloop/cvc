@@ -46,23 +46,23 @@ runCounter :: Counter
            -> Double
            -> Double
            -> Log
-           -> (P.Team -> CounterState -> CounterEvent -> IO ())
+           -> Handler (P.Team, CounterState, CounterEvent)
            -> Chan SensorEvent
            -> IO ()
-runCounter counter cl ms logger handler chan = forever $ do
+runCounter counter cl ms logger handler' chan = forever $ do
     event <- readChan chan
     modifyMVar_ (unCounter counter) (step' event)
   where
-    step' = step cl ms logger handler
+    step' = step cl ms logger handler'
 
 step :: Double  -- ^ Circuit length
      -> Double  -- ^ Max speed
      -> Log
-     -> (P.Team -> CounterState -> CounterEvent -> IO ())
+     -> Handler (P.Team, CounterState, CounterEvent)
      -> SensorEvent
      -> CounterMap
      -> IO CounterMap
-step cl ms logger handler event cmap = do
+step cl ms logger handler' event cmap = do
     let (events, tells, cmap') = stepCounterMap cl ms event cmap
         cstate                 = lookupCounterState (sensorBaton event) cmap'
     forM_ tells $ Log.string logger
@@ -76,11 +76,10 @@ step cl ms logger handler event cmap = do
 
         forM_ mteam $ \(ref, team) ->
             forM_ events $ \event' -> do
-                liftIO $ isolate logger "CounterEvent handler" $ do
-                    handler team cstate event'
-                    Log.string logger $ case event' of
-                        Progression _ s _ -> show team ++ " @ " ++ show s
-                        Lap _ _           -> "Lap for " ++ show team
+                liftIO $ callHandler logger handler' (team, cstate, event')
+                liftIO $ Log.string logger $ case event' of
+                    Progression _ s _ -> show team ++ " @ " ++ show s
+                    Lap _ _           -> "Lap for " ++ show team
 
                 -- Add the lap in the database
                 case event' of
@@ -103,13 +102,13 @@ findDeadBatons lifespan counter = do
   where
     lifespan' = fromInteger $ fromIntegral lifespan
 
-watchdog :: Counter             -- ^ Counter handle
-         -> Log                 -- ^ Log handle
-         -> Int                 -- ^ Interval (seconds) to check for dead batons
-         -> Int                 -- ^ Seconds after a baton is declared dead
-         -> ([Baton] -> IO ())  -- ^ Dead baton handler
-         -> IO ()               -- ^ Blocks forever
-watchdog counter logger interval lifespan handler = forever $ do
+watchdog :: Counter          -- ^ Counter handle
+         -> Log              -- ^ Log handle
+         -> Int              -- ^ Interval (seconds) to check for dead batons
+         -> Int              -- ^ Seconds after a baton is declared dead
+         -> Handler [Baton]  -- ^ Dead baton handler
+         -> IO ()            -- ^ Blocks forever
+watchdog counter logger interval lifespan handler' = forever $ do
     dead <- findDeadBatons lifespan counter
-    isolate logger "Counter watchdog handler" $ handler dead
+    callHandler logger handler' dead
     threadDelay $ interval * 1000 * 1000

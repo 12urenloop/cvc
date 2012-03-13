@@ -19,6 +19,7 @@ import CountVonCount.Log (Log)
 import CountVonCount.Persistence (Team (..), getAll, runPersistence)
 import CountVonCount.Sensor
 import CountVonCount.Sensor.Filter
+import CountVonCount.Types
 import CountVonCount.Util
 import qualified CountVonCount.Log as Log
 import qualified CountVonCount.Sensor as Sensor
@@ -47,7 +48,7 @@ main = do
     let filterSensorEvent' = filterSensorEvent
             (configRssiThreshold config) (configStations config)
             (configBatons config)
-        sensorHandler event = do
+        sensorHandler = handler "sensorHandler" $ \event -> do
             Log.raw replayLog $ toReplay event
             forM_ (filterSensorEvent' event) $ writeChan sensorChan
 
@@ -65,7 +66,8 @@ main = do
     -- Start the baton watchdog
     _ <- forkIO $ watchdog counter logger (configBatonWatchdogInterval config)
         (configBatonWatchdogLifespan config)
-        (WS.publish pubSub . WS.textData .  A.encode . Views.deadBatons)
+        (handler "batonHandler" $
+            WS.publish pubSub . WS.textData .  A.encode . Views.deadBatons)
 
     Web.listen config (Log.setModule "Web" logger) pubSub counter
 
@@ -75,18 +77,18 @@ main = do
 
 counterHandler :: WS.TextProtocol p
                => Double -> Log -> [BoxxyConfig] -> WS.PubSub p
-               -> Team -> CounterState -> CounterEvent
-               -> IO ()
-counterHandler circuitLength logger boxxies pubSub team cstate event = do
-    -- Send to websockets pubsub
-    publish $ Views.counterState circuitLength team (Just cstate)
+               -> Handler (Team, CounterState, CounterEvent)
+counterHandler circuitLength logger boxxies pubSub = handler "counterHandler" $
+    \(team, cstate, event) -> do
+        -- Send to websockets pubsub
+        publish $ Views.counterState circuitLength team (Just cstate)
 
-    -- Send to boxxies
-    forM_ boxxies $ \boxxy -> isolate logger ("Calling boxxy: " ++ show boxxy) $
-        case event of
-            Lap time speed                ->
-                putLaps boxxy team time 1 (Just speed) Nothing
-            Progression time station speed ->
-                putPosition boxxy team time station speed
+        -- Send to boxxies
+        forM_ boxxies $ \boxxy -> isolate logger ("Hi boxxy: " ++ show boxxy) $
+            case event of
+                Lap time speed                ->
+                    putLaps boxxy team time 1 (Just speed) Nothing
+                Progression time station speed ->
+                    putPosition boxxy team time station speed
   where
     publish = WS.publish pubSub . WS.textData . A.encode

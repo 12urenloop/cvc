@@ -15,6 +15,7 @@ import Test.Framework.Providers.HUnit (testCase)
 import Test.HUnit (assert)
 
 import CountVonCount.Sensor
+import CountVonCount.Types
 import qualified CountVonCount.Log as Log
 
 tests :: Test
@@ -36,7 +37,8 @@ sensorTest = do
     killThread threadId
     return $ and $ zipWith (=~=) outputs expected
   where
-    prepend ref raw = atomicModifyIORef ref $ \rs -> (raw : rs, ())
+    prepend ref = handler "test handler" $ \raw ->
+        atomicModifyIORef ref $ \rs -> (raw : rs, ())
 
     port = 12390
 

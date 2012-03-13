@@ -56,9 +56,9 @@ toReplay (RawSensorEvent time station baton rssi) = intercalate ","
 
 listen :: Log
        -> Int
-       -> (RawSensorEvent -> IO ())
+       -> Handler RawSensorEvent
        -> IO ()
-listen logger port handler = do
+listen logger port handler' = do
     sock <- N.listenOn (PortNumber $ fromIntegral port)
 
     forever $ do
@@ -68,14 +68,14 @@ listen logger port handler = do
             S.sendAll conn "MSG,enable_cache,false\r\n"
         _ <- forkIO $ isolate logger "Sensor receive" $ do
             E.run_ $ SE.enumSocket 256 conn $$
-                E.sequence (AE.iterParser gyrid) =$ receive logger handler
+                E.sequence (AE.iterParser gyrid) =$ receive logger handler'
             S.sClose conn
         return ()
 
 receive :: Log
-        -> (RawSensorEvent -> IO ())
+        -> Handler RawSensorEvent
         -> Iteratee Gyrid IO ()
-receive logger handler = do
+receive logger handler' = do
     g <- EL.head
     case g of
         Nothing    -> liftIO $ string logger "Socket gracefully disconnected"
@@ -85,9 +85,8 @@ receive logger handler = do
                     Replay t s b r -> Just $ RawSensorEvent t s b r
                     Event s b r    -> Just $ RawSensorEvent time s b r
                     Ignored        -> Nothing
-            forM_ sensorEvent $
-                liftIO . isolate logger "Sensor handler" . handler
-            receive logger handler
+            forM_ sensorEvent $ liftIO . callHandler logger handler'
+            receive logger handler'
 
 data Gyrid
     = Event Mac Mac Double

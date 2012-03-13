@@ -36,7 +36,7 @@ counterTest = do
     counter  <- newCounter
     chan     <- newChan
     threadId <- forkIO $ runCounter counter circuitLength maxSpeed
-        logger handler chan
+        logger handler' chan
 
     -- Add teams, calculate expected output
     ts <- runPersistence $
@@ -62,7 +62,7 @@ counterTest = do
     killThread threadId
     return $ and results
   where
-    handler _ _ = error "Errors in handlers should break this test"
+    handler' = error "Errors in handlers should not break this test"
 
     clean = do
         deleteAll (undefined :: Team)
