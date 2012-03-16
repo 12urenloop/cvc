@@ -62,7 +62,8 @@ counterTest = do
     killThread threadId
     return $ and results
   where
-    handler' = error "Errors in handlers should not break this test"
+    handler' = handler "Crashing handler" $
+        error "Errors in handlers should not break this test"
 
     clean = do
         deleteAll (undefined :: Team)
