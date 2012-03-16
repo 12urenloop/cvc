@@ -6,7 +6,7 @@
     <script type="text/javascript">
         var g = document.createElement('script'),
             s = document.getElementsByTagName('script')[0];
-        g.src = 'http://' + window.location.hostname + ':8080/boxxy.js';
+        g.src = 'http://' + (window.location.hostname || 'localhost') + ':8080/boxxy.js';
         s.parentNode.insertBefore(g, s);
     </script>
     <script type="text/javascript" src="lib/boxxy-interface.js"></script>

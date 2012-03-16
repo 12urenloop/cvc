@@ -3,8 +3,9 @@ function Boxxy() {
     this.teams = {};
     this.ranking = [];
     this.stations = {};
+
     // log everything to console
-    this.debug = true;
+    this.debug = false;
 
     // information hooks
     this.receivedConfig = function(c) {}
@@ -13,7 +14,8 @@ function Boxxy() {
 
     // connect
     this.connect = function(domain) {
-        var url = 'http://' + (domain || window.location.hostname) + ':8080',
+        var domain = domain || window.location.hostname || 'localhost'
+            url = 'http://' + domain + ':8080',
             http = null;
 
         if(window.XMLHttpRequest) http = new XMLHttpRequest();
@@ -27,7 +29,7 @@ function Boxxy() {
             config = eval('(' + http.responseText + ')');
             if(self.debug) console.log("[CONFIG] " + JSON.stringify(config))
             self.teams = config.teams;
-            
+
             for(var stationIdx = 0; stationIdx < config.stations.length; stationIdx++) {
                 var station = config.stations[stationIdx];
                 var nextStation = config.stations[(stationIdx + 1) % config.stations.length];
@@ -68,7 +70,7 @@ function Boxxy() {
     this.getTeams = function() {
         return self.ranking;
     }
-    
+
     this.getStations = function() {
         return self.stations;
     }
@@ -80,6 +82,6 @@ function Boxxy() {
             self.ranking[i].ranking = i + 1;
         };
     }
-    
-    
+
+
 }
