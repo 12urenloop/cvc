@@ -3,7 +3,6 @@ module CountVonCount.Counter.Core.Tests
     ( tests
     ) where
 
-import Debug.Trace (trace)
 import Test.Framework (Test, testGroup)
 import Test.Framework.Providers.HUnit (testCase)
 import Test.HUnit (assert)
@@ -28,5 +27,5 @@ testCounterFixtureM cf = test emptyCounterState $
 
     test _     []                                = True
     test state (CounterFixture se expected : xs) =
-        let (es, debug, state') = runCounterM (step se) state
-        in trace (unlines debug) $ any isLap es == expected && test state' xs
+        let (es, _, state') = runCounterM (step se) state
+        in any isLap es == expected && test state' xs
