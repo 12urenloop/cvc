@@ -40,16 +40,17 @@ fixtures =
     , ("fixture 04", fixture04)
     , ("fixture 05", fixture05)
     , ("fixture 06", fixture06)
+    , ("fixture 07", fixture07)
     ]
 
 -- Normal lap
 fixture01 :: CounterFixtureM ()
 fixture01 = do
     noLap  0 station0
-    noLap 10 station1
-    noLap 20 station2
-    noLap 30 station3 -- This gives an "Impossibru!", why?
-    lap   40 station0
+    noLap 20 station1
+    noLap 40 station2
+    noLap 60 station3
+    lap   80 station0
 
 -- Multiple detections
 fixture02 :: CounterFixtureM ()
@@ -90,11 +91,26 @@ fixture05 = do
 fixture06 :: CounterFixtureM ()
 fixture06 = do
     noLap   0 station0
+    noLap  15 station1
+    noLap  30 station2
+    noLap  45 station3
+    lap    60 station0
+    noLap  75 station1
+    noLap 300 station2
+    noLap 315 station3
+    lap   330 station0
+
+-- Riding a fast unicorn
+fixture07 :: CounterFixtureM ()
+fixture07 = do
+    noLap   0 station0
+    noLap   2 station1
+    noLap   4 station2
+    noLap   6 station3
+    noLap   8 station0
     noLap  10 station1
-    noLap  20 station2
-    noLap  30 station3
-    lap    40 station0
-    noLap  50 station1
-    noLap 200 station2
-    noLap 210 station3
-    lap   220 station0
+    noLap  12 station2
+    noLap  14 station3
+    noLap  16 station0
+    noLap  18 station0
+    noLap  20 station0

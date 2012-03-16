@@ -99,9 +99,14 @@ stepCounterState len maxSpeed event = do
 
             -- Pick the (dx, speed) so that speed close to the previously
             -- known speed
+            {-
             (dx, speed) = minimumBy
                 (comparing $ \(_, sp) -> abs (sp - prevSpeed))
                 possibilities
+            -}
+            -- This allows a team to take a nap and score some extra points in
+            -- the meanwhile. Hence, we just take the minimum speed for noew.
+            (dx, speed) = minimumBy (comparing snd) possibilities
 
             -- Update exponentially moving average
             speed' = prevSpeed * 0.7 + speed * 0.3
