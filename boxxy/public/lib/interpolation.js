@@ -1,6 +1,6 @@
 function Interpolation() {
     var self = this;
-    
+
     this.init = function(config) {
         self.stations = {};
 
@@ -24,7 +24,7 @@ function Interpolation() {
         self.circuitLength = config.circuitLength;
         self.timeOffset = 0;
     }
-    
+
     this.update = function(message) {
         var team = self.teams[message.team.id],
             predictedPosition = self.getPosition(team.id, new Date(message.time)),
@@ -47,11 +47,12 @@ function Interpolation() {
             distanceTravelled = (time - team.time) / 1000 * team.speed;
         return self.mod(team.lastPosition + distanceTravelled);
     }
-    
+
     this.getSpeed = function(teamid) {
         return self.teams[teamid].speed;
     }
-    
+
+    // Floating point modulo
     this.mod = function(position) {
         while(position > self.circuitLength) {
             position -= self.circuitLength;

@@ -39,7 +39,7 @@ fixtures =
     , ("fixture 03", fixture03)
     , ("fixture 04", fixture04)
     , ("fixture 05", fixture05)
-    , ("fixture 05", fixture06)
+    , ("fixture 06", fixture06)
     ]
 
 -- Normal lap
