@@ -11,11 +11,12 @@ TODO: we need a styleguide for Javascript
 ### Dependencies
 
 * Node.js >= v6
+* [Express](http://expressjs.com/), install using `npm install express`
 * [Faye](http://faye.jcoglan.com/), install using `npm install faye`
 
 ### Running
 
-From the server directory, run `node server.js`. Open the demo application
+From the server directory, run `node main.js`. Open the demo application
 `demo.html` in your favorite webbrowser.
 
 ### Count Von Count - Boxxy Interface
