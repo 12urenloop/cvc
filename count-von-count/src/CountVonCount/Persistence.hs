@@ -73,9 +73,11 @@ addLap team timestamp = addLaps team timestamp "Full lap detected" 1
 
 addLaps :: Ref Team -> UTCTime -> Text -> Int -> Persistence ()
 addLaps !ref !timestamp !reason !c = do
-    team <- get ref
-    add $ Lap ref timestamp reason c
-    put ref $ team {teamLaps = teamLaps team + c}
+    _ <- add $ Lap ref timestamp reason c
+    MDB.modify (MDB.select ["_id" MDB.:= ref] (collection team))
+        ["$inc" MDB.=: ["laps" MDB.=: c]]
+  where
+    team = undefined :: Team
 
 getTeamByMac :: Mac -> Persistence (Maybe (Ref Team, Team))
 getTeamByMac m = do
