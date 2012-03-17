@@ -1,8 +1,9 @@
 language: haskell
 before_install:
     - "cd count-von-count"
+    - "cabal update"
     - "cabal install test-framework-hunit"
 notifications:
-  email: false
+  email: true
   irc:
     - "wina.ugent.be#zeus"
