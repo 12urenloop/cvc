@@ -1,9 +1,6 @@
 language: haskell
-script: "runghc -isrc -itests tests/CountVonCount/TestSuite.hs --plain"
 before_install:
     - "cd count-von-count"
-    - "cabal update"
-    - "cabal install"
     - "cabal install test-framework-hunit"
 notifications:
   email: false

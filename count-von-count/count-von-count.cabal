@@ -57,3 +57,40 @@ Executable count-von-count
     websockets            >= 0.6  && < 0.7,
     websockets-snap       >= 0.6  && < 0.7,
     yaml                  >= 0.5  && < 0.6
+
+Test-suite count-von-count-tests
+  Type:           exitcode-stdio-1.0
+  Hs-source-dirs: src tests
+  Main-is:        CountVonCount/TestSuite.hs
+  Ghc-options:    -Wall
+
+  Build-depends:
+    HUnit                      >= 1.2    && < 1.3,
+    QuickCheck                 >= 2.4    && < 2.5,
+    test-framework             >= 0.4    && < 0.7,
+    test-framework-hunit       >= 0.2    && < 0.3,
+    test-framework-quickcheck2 >= 0.2    && < 0.3,
+    -- Copied from regular dependencies...
+    aeson                 >= 0.5  && < 0.7,
+    attoparsec            >= 0.9  && < 0.11,
+    attoparsec-enumerator >= 0.2  && < 0.4,
+    base                  >= 4    && < 5,
+    blaze-html            >= 0.4  && < 0.5,
+    bytestring            >= 0.9  && < 0.10,
+    conduit               >= 0.2  && < 0.3,
+    containers            >= 0.3  && < 0.5,
+    enumerator            >= 0.4  && < 0.5,
+    http-conduit          >= 1.2  && < 1.3,
+    mongoDB               >= 1.2  && < 1.3,
+    mtl                   >= 2.0  && < 2.1,
+    network               >= 2.3  && < 2.4,
+    network-enumerator    >= 0.1  && < 0.2,
+    old-locale            >= 1.0  && < 1.1,
+    snap-blaze            >= 0.1  && < 0.2,
+    snap-core             >= 0.8  && < 0.9,
+    snap-server           >= 0.8  && < 0.9,
+    text                  >= 0.10 && < 0.12,
+    time                  >= 1.2  && < 1.5,
+    websockets            >= 0.6  && < 0.7,
+    websockets-snap       >= 0.6  && < 0.7,
+    yaml                  >= 0.5  && < 0.6
