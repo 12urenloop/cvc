@@ -20,6 +20,8 @@ import Text.Blaze (Html, (!))
 import qualified Data.Text as T
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
+import qualified Text.Digestive as D
+import qualified Text.Digestive.Blaze.Html5 as D
 
 import CountVonCount.Counter.Core
 import CountVonCount.Persistence
@@ -83,7 +85,7 @@ management teams batons = template "Teams" $ block "management" $ do
             ")"
 
         H.div ! A.class_ "controls" $ do
-            postForm bonusUri $
+            H.form ! A.action (H.toValue bonusUri) ! A.method "GET" $
                 H.input ! A.type_ "submit" ! A.value "Add bonus"
 
             postForm assignUri $ do
@@ -114,8 +116,8 @@ laps laps' = template "Laps" $ block "laps" $ do
             H.td $ H.toHtml $ lapReason lap
             H.td $ H.toHtml $ lapCount lap
 
-bonus :: Ref Team -> Team -> Html
-bonus ref team = template "Add bonus" $ block "bonus" $ do
+bonus :: Ref Team -> Team -> D.View Html -> Html
+bonus ref team view = template "Add bonus" $ block "bonus" $ do
     let bonusUri  = "/team/" ++ refToString ref ++ "/bonus"  -- TODO: cleanup
 
     H.h1 "Add bonus"
@@ -123,16 +125,18 @@ bonus ref team = template "Add bonus" $ block "bonus" $ do
         "Specify bonus for "
         H.toHtml $ teamName team
         ":"
-    postForm bonusUri $ do
-        H.label ! A.for "laps" $ "Laps:"
-        H.input ! A.name "laps" ! A.id "laps"
-            ! A.type_ "text" ! A.size "5" ! A.value "1"
+    D.form view (T.pack bonusUri) $ do
+        D.childErrorList "" view
+
+        D.label     "laps" view "Laps: "
+        D.inputText "laps" view ! A.size "5"
         H.br
-        H.label ! A.for "reason" $ "Because:"
-        H.input ! A.name "reason" ! A.id "reason"
-            ! A.type_ "text" ! A.size "30" ! A.value ""
+
+        D.label     "reason" view "Because: "
+        D.inputText "reason" view ! A.size "30"
         H.br
-        H.input ! A.type_ "submit" ! A.value "Add bonus"
+
+        D.inputSubmit "Add bonus"
 
 counterState :: Double -> Team -> Maybe CounterState -> Partial
 counterState circuitLength team cs = partial selector $ H.div

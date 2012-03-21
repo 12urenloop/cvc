@@ -3,7 +3,7 @@ module CountVonCount.Web
     ( listen
     ) where
 
-import Control.Applicative ((<$>), (<|>))
+import Control.Applicative ((<$>), (<*>), (<|>))
 import Control.Arrow ((&&&))
 import Control.Monad (forM, unless)
 import Control.Monad.Reader (ReaderT, ask, runReaderT)
@@ -13,7 +13,11 @@ import Data.Maybe (mapMaybe)
 import Data.Ord (comparing)
 import qualified Data.Map as M
 
+import Data.Text (Text)
+import Text.Blaze (Html)
 import Data.Time (getCurrentTime)
+import Text.Digestive (Form, stringRead, text, (.:))
+import Text.Digestive.Snap (runForm)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Network.WebSockets as WS
@@ -108,21 +112,26 @@ assign = do
 
     Snap.redirect "/management"
 
+data BonusForm = BonusForm Int Text
+    deriving (Show)
+
+bonusForm :: Monad m => Form Html m BonusForm
+bonusForm = BonusForm
+    <$> "laps"   .: stringRead "Can't read number of laps" Nothing
+    <*> "reason" .: text Nothing
+
 bonus :: Web ()
 bonus = do
-    Just teamRef <- refFromParam "id"
-    mlaps        <- readParam "laps"
-    mreason      <- readParam "reason"
-    case (mlaps, mreason) of
-        -- Success
-        (Just laps', Just reason) -> do
+    Just teamRef   <- refFromParam "id"
+    (view, result) <- runForm "bonus" bonusForm
+    case result of
+        Just (BonusForm laps' reason) -> do
             timestamp <- liftIO getCurrentTime
             runPersistence $ addLaps teamRef timestamp reason laps'
             Snap.redirect "/management"
-        -- Render form
         _ -> do
             team <- runPersistence $ get teamRef
-            Snap.blaze $ Views.bonus teamRef team
+            Snap.blaze $ Views.bonus teamRef team view
 
 reset :: Web ()
 reset = do
