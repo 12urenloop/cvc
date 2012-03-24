@@ -9,9 +9,9 @@ import Data.Maybe (fromJust)
 import Data.Time (diffUTCTime, getCurrentTime)
 import Test.Framework (Test, testGroup)
 import Test.Framework.Providers.HUnit (testCase)
-import Test.HUnit (Assertion, assert)
 
 import CountVonCount.Persistence
+import CountVonCount.Persistence.Tests.Util
 
 wina :: Team
 wina = Team "homos" "wina" 4 (Just "00:40:10:07:00:09")
@@ -44,13 +44,3 @@ tests = testGroup "CountVonCount.Persistence.Tests"
             lapReason lap == reason &&
             lapCount lap == laps
     ]
-
-testPersistence :: Persistence Bool -> Assertion
-testPersistence x = assert x'
-  where
-    x' :: IO Bool
-    x' = runPersistence $ do
-        r <- x
-        deleteAll (undefined :: Team)
-        deleteAll (undefined :: Lap)
-        return r

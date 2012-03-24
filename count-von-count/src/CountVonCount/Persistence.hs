@@ -45,7 +45,10 @@ data Team = Team
     , teamName  :: Text
     , teamLaps  :: Int
     , teamBaton :: Maybe Mac
-    } deriving (Eq, Ord)
+    } deriving (Ord)
+
+instance Eq Team where
+    t1 == t2 = teamId t1 == teamId t2
 
 instance Show Team where
     show = T.unpack . teamName
