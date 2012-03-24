@@ -4,14 +4,10 @@ module CountVonCount.Web
     ) where
 
 import Control.Applicative ((<$>), (<*>), (<|>))
-import Control.Arrow ((&&&))
 import Control.Monad (forM, unless)
 import Control.Monad.Reader (ReaderT, ask, runReaderT)
 import Control.Monad.Trans (liftIO)
-import Data.List (sort, sortBy)
-import Data.Maybe (mapMaybe)
-import Data.Ord (comparing)
-import qualified Data.Map as M
+import Data.List (sort)
 
 import Data.Text (Text)
 import Text.Blaze (Html)
@@ -33,7 +29,6 @@ import CountVonCount.Counter
 import CountVonCount.Log (Log)
 import CountVonCount.Management
 import CountVonCount.Persistence
-import CountVonCount.Types
 import CountVonCount.Web.Util
 import qualified CountVonCount.Log as Log
 import qualified CountVonCount.Web.Views as Views
@@ -79,14 +74,8 @@ monitorFeed = do
 
 management :: Web ()
 management = do
-    batons <- configBatons . webConfig <$> ask
-    teams  <- sortBy (comparing snd) <$> runPersistence getAll
-    let batonMap   = M.fromList $ map (batonMac &&& id) batons
-        withBatons = flip map teams $ \(ref, team) ->
-            (ref, team, teamBaton team >>= flip M.lookup batonMap)
-        freeBatons = map snd $ M.toList $ foldl (flip M.delete) batonMap $
-            mapMaybe (teamBaton . snd) teams
-
+    batons                   <- configBatons . webConfig <$> ask
+    (withBatons, freeBatons) <- liftIO $ assignment batons
     Snap.blaze $ Views.management withBatons freeBatons
 
 laps :: Web ()
