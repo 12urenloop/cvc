@@ -31,6 +31,7 @@ import CountVonCount.Management
 import CountVonCount.Persistence
 import CountVonCount.Web.Util
 import CountVonCount.Boxxy
+import CountVonCount.Types
 import qualified CountVonCount.Log as Log
 import qualified CountVonCount.Web.Views as Views
 
@@ -121,8 +122,11 @@ bonus = do
 
             runPersistence $ addLaps teamRef timestamp reason laps'
             boxxies <- configBoxxies . webConfig <$> ask
-            liftIO $ forM_ boxxies $ \c -> do
-                putLaps c team timestamp laps' Nothing (Just reason)
+            log     <- webLog <$> ask
+            liftIO $ forM_ boxxies $ \boxxy -> do
+                let h = handler "Boxxy Bonus" $ \c ->
+                    putLaps c team timestamp laps' Nothing (Just reason)
+                callHandler log h boxxy
 
             Snap.redirect "/management"
         _ -> do
