@@ -3,16 +3,17 @@ module CountVonCount.Web
     ( listen
     ) where
 
-import Control.Applicative ((<$>), (<*>), (<|>))
+import Control.Applicative (pure, (<$>), (<*>), (<|>))
 import Control.Monad (forM, unless)
 import Control.Monad.Reader (ReaderT, ask, runReaderT)
 import Control.Monad.Trans (liftIO)
+import Data.Char (isAlphaNum, isLower)
 import Data.List (sort)
 
 import Data.Text (Text)
 import Text.Blaze (Html)
 import Data.Time (getCurrentTime)
-import Text.Digestive (Form, stringRead, text, (.:))
+import Text.Digestive (Form, check, checkM, stringRead, text, (.:))
 import Text.Digestive.Snap (runForm)
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
@@ -88,8 +89,32 @@ laps = do
 
     Snap.blaze $ Views.laps laps'
 
-assign :: Web ()
-assign = do
+teamForm :: Form Html Web Team
+teamForm = Team
+    <$> "id"    .: uniqueId (validId (notNull (text Nothing)))
+    <*> "name"  .: notNull (text Nothing)
+    <*> "laps"  .: pure 0
+    <*> "baton" .: pure Nothing
+  where
+    validId = check "Should be in lowercase and alphanumeric" $
+        T.all $ \c -> isAlphaNum c && isLower c
+    uniqueId = checkM "Should be unique" $ \id' -> do
+        teams <- map snd <$> runPersistence getAll
+        return $ not $ any ((== id') . teamId) teams
+    notNull = check "Can't be empty" $ not . T.null
+
+teamNew :: Web ()
+teamNew = do
+    (view, result) <- runForm "team" teamForm
+    case result of
+        Just team -> do
+            _ <- liftIO $ runPersistence $ add team
+            Snap.redirect "/management"
+        _         ->
+            Snap.blaze $ Views.teamNew view
+
+teamAssign :: Web ()
+teamAssign = do
     Just mac <- fmap T.decodeUtf8 <$> Snap.getParam "baton"
     counter  <- webCounter <$> ask
     batons   <- configBatons . webConfig <$> ask
@@ -97,7 +122,7 @@ assign = do
     unless (T.null mac) $ do
         let Just baton = findBaton mac batons
         Just teamRef <- refFromParam "id"
-        liftIO $ assignBaton counter batons baton  teamRef
+        liftIO $ assignBaton counter batons baton teamRef
 
     Snap.redirect "/management"
 
@@ -109,8 +134,8 @@ bonusForm = BonusForm
     <$> "laps"   .: stringRead "Can't read number of laps" Nothing
     <*> "reason" .: text Nothing
 
-bonus :: Web ()
-bonus = do
+teamBonus :: Web ()
+teamBonus = do
     Just teamRef   <- refFromParam "id"
     (view, result) <- runForm "bonus" bonusForm
     case result of
@@ -120,10 +145,10 @@ bonus = do
             Snap.redirect "/management"
         _ -> do
             team <- runPersistence $ get teamRef
-            Snap.blaze $ Views.bonus teamRef team view
+            Snap.blaze $ Views.teamBonus teamRef team view
 
-reset :: Web ()
-reset = do
+teamReset :: Web ()
+teamReset = do
     Just teamRef <- refFromParam "id"
     counter      <- webCounter <$> ask
     logger       <- webLog <$> ask
@@ -147,9 +172,10 @@ site = Snap.route
     , ("/monitor/feed",        monitorFeed)
     , ("/management",          management)
     , ("/laps",                laps)
-    , ("/team/:id/assign",     assign)
-    , ("/team/:id/bonus",      bonus)
-    , ("/team/:id/reset",      reset)
+    , ("/team/new",            teamNew)
+    , ("/team/:id/assign",     teamAssign)
+    , ("/team/:id/bonus",      teamBonus)
+    , ("/team/:id/reset",      teamReset)
     ] <|> Snap.serveDirectory "static"
 
 listen :: Config -> Log -> WS.PubSub WS.Hybi00 -> Counter -> IO ()

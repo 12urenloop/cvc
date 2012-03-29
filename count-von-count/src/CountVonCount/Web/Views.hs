@@ -5,7 +5,8 @@ module CountVonCount.Web.Views
     , monitor
     , management
     , laps
-    , bonus
+    , teamNew
+    , teamBonus
 
       -- * Partials
     , counterState
@@ -100,6 +101,8 @@ management teams batons = template "Teams" $ block "management" $ do
 
             postForm resetUri $
                 H.input ! A.type_ "submit" ! A.value "Reset counter"
+
+    linkTo "/team/new" "Add new team"
   where
     macValue = H.toValue . batonMac
 
@@ -116,8 +119,23 @@ laps laps' = template "Laps" $ block "laps" $ do
             H.td $ H.toHtml $ lapReason lap
             H.td $ H.toHtml $ lapCount lap
 
-bonus :: Ref Team -> Team -> D.View Html -> Html
-bonus ref team view = template "Add bonus" $ block "bonus" $ do
+teamNew :: D.View Html -> Html
+teamNew view = template "Add team" $ do
+    H.h1 "Add team"
+    D.form view "/team/new" $ do
+
+        D.label     "id" view "Id: " >> H.br
+        D.inputText "id" view        >> H.br
+        D.errorList "id" view
+
+        D.label     "name" view "Name: " >> H.br
+        D.inputText "name" view          >> H.br
+        D.errorList "name" view
+
+        D.inputSubmit "Add team"
+
+teamBonus :: Ref Team -> Team -> D.View Html -> Html
+teamBonus ref team view = template "Add bonus" $ block "bonus" $ do
     let bonusUri  = "/team/" ++ refToString ref ++ "/bonus"  -- TODO: cleanup
 
     H.h1 "Add bonus"
