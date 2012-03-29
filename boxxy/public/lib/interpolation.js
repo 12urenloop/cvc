@@ -36,7 +36,11 @@ function Interpolation() {
         team.time = new Date(message.time);
         team.speed = targetSpeed;
         team.station = message.station;
-        self.timeOffset = (new Date()) - team.time;
+        // Only correct time once. Can cause jumps otherwise.
+        // TODO: use timestamp from config message
+        if(self.timeOffset == 0) {
+            self.timeOffset = (new Date()) - team.time;
+        }
     }
 
     this.getPosition = function(teamid, time) {
@@ -48,6 +52,14 @@ function Interpolation() {
         return self.mod(team.lastPosition + distanceTravelled);
     }
 
+    this.getCoords = function(teamid, shape, time) {
+        if(shape == undefined) {
+            shape = shapes.line;
+        }
+        var pos = self.getPosition(teamid, time);
+        return shape(pos / self.circuitLength);
+    }
+    
     this.getSpeed = function(teamid) {
         return self.teams[teamid].speed;
     }
@@ -59,4 +71,47 @@ function Interpolation() {
         }
         return position;
     }
+}
+
+var shapes = {
+    // returns a simple line normalized to [0, 1]
+    line: function(pos) {
+        return {
+            x: pos,
+            y: 0
+        };
+    },
+    // Example of a slightly more complex circuit: a rectangle with width 1
+    rect: function(pos) {
+        var ratio = 1.61803, // It's art!
+            width = 1.0,
+            height = 1.0 / ratio,
+            total = 2 * (width + height),
+            progress = pos * total;
+        // Bottom
+        if(progress < width) {
+            return {
+                x: progress,
+                y: 0
+            };
+        // Right
+        } else if(progress < width + height) {
+            return {
+                x: width,
+                y: progress - width
+            };
+        // Top
+        } else if(progress < 2 * width + height) {
+            return {
+                x: width - (progress - width - height),
+                y: height
+            }
+        // Left
+        } else {
+            return {
+                x: 0,
+                y: total - progress
+            }
+        }
+    } 
 }

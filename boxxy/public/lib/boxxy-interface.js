@@ -41,6 +41,8 @@ function Boxxy() {
             for(var idx in self.teams) {
                 self.ranking.push(self.teams[idx]);
             }
+            
+            self.circuitLength = config.circuitLength;
             updateRanking();
 
             self.receivedConfig(config);
