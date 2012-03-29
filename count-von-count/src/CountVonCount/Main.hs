@@ -16,7 +16,7 @@ import CountVonCount.Config
 import CountVonCount.Counter
 import CountVonCount.Counter.Core
 import CountVonCount.Log (Log)
-import CountVonCount.Persistence (Team (..), getAll, runPersistence)
+import CountVonCount.Persistence (Team (..), getAllTeams, runPersistence)
 import CountVonCount.Sensor
 import CountVonCount.Sensor.Filter
 import CountVonCount.Types
@@ -39,7 +39,7 @@ main = do
 
     -- Initialize boxxy
     isolate logger "Initialize boxxy" $ do
-        teams <- map snd <$> runPersistence getAll
+        teams <- map snd <$> runPersistence getAllTeams
         forM_ (configBoxxies config) $ \boxxy -> putConfig boxxy
             (configCircuitLength config) (configStations config) teams
 

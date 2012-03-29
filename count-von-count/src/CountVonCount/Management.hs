@@ -24,7 +24,7 @@ findBaton mac = find ((== mac) . batonMac)
 
 assignBaton :: Counter -> [Baton] -> Baton -> Ref Team -> IO ()
 assignBaton counter batons baton teamRef = runPersistence $ do
-    team <- get teamRef
+    team <- getTeam teamRef
 
     -- Reset the old baton, if needed
     forM_ (teamBaton team >>= flip findBaton batons) $ \b ->
@@ -33,11 +33,11 @@ assignBaton counter batons baton teamRef = runPersistence $ do
     -- Reset the new baton
     liftIO $ resetCounterFor baton counter
 
-    put teamRef $ team {teamBaton = Just (batonMac baton)}
+    setTeamBaton teamRef $ Just baton
 
 assignment :: [Baton] -> IO ([(Ref Team, Team, Maybe Baton)], [Baton])
 assignment batons = do
-    teams  <- sortBy (comparing snd) <$> runPersistence getAll
+    teams  <- sortBy (comparing snd) <$> runPersistence getAllTeams
     let batonMap   = M.fromList $ map (batonMac &&& id) batons
         withBatons = flip map teams $ \(ref, team) ->
             (ref, team, teamBaton team >>= flip M.lookup batonMap)

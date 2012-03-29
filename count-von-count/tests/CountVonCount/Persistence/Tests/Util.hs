@@ -12,6 +12,5 @@ testPersistence x = assert x'
     x' :: IO Bool
     x' = runPersistence $ do
         r <- x
-        deleteAll (undefined :: Team)
-        deleteAll (undefined :: Lap)
+        deleteAll
         return r

@@ -41,7 +41,7 @@ counterTest = do
     -- Add teams, calculate expected output
     ts <- runPersistence $
         forM (zip [1 ..] (zip teams fixtures)) $ \(i, (t, f)) -> do
-            r <- add t
+            r <- addTeam t
             let baton = Baton (fromJust (teamBaton t)) i
                 fs    = runCounterFixtureM (snd f) time baton
             return (r, sensorEvents fs, numLaps fs)
@@ -54,20 +54,16 @@ counterTest = do
 
     -- Check the laps for each team
     results <- runPersistence $ forM ts $ \(ref, _, laps) -> do
-        team <- get ref
+        team <- getTeam ref
         return $ teamLaps team == laps
 
     -- Check the output
-    runPersistence clean
+    runPersistence deleteAll
     killThread threadId
     return $ and results
   where
     handler' = handler "Crashing handler" $
         error "Errors in handlers should not break this test"
-
-    clean = do
-        deleteAll (undefined :: Team)
-        deleteAll (undefined :: Lap)
 
 teams :: [Team]
 teams =

@@ -23,7 +23,6 @@ Executable count-von-count
     CountVonCount.Log
     CountVonCount.Management
     CountVonCount.Persistence
-    CountVonCount.Persistence.Core
     CountVonCount.Sensor
     CountVonCount.Types
     CountVonCount.Util

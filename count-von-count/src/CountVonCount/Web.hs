@@ -53,7 +53,7 @@ config = ask >>= json . webConfig
 
 monitor :: Web ()
 monitor = do
-    teams    <- sort . map snd <$> runPersistence getAll
+    teams    <- sort . map snd <$> runPersistence getAllTeams
     counter  <- webCounter <$> ask
     batons   <- configBatons . webConfig <$> ask
     states   <- forM teams $ \team -> liftIO $
@@ -83,12 +83,7 @@ management = do
 
 laps :: Web ()
 laps = do
-    laps' <- runPersistence $ do
-        laps' <- getLaps 0 20
-        forM laps' $ \lap -> do
-            team <- get $ lapTeam lap
-            return (lap, team)
-
+    laps' <- return []  -- TODO: fix
     Snap.blaze $ Views.laps laps'
 
 teamForm :: Form Html Web Team
@@ -101,7 +96,7 @@ teamForm = Team
     validId = check "Should be in lowercase and alphanumeric" $
         T.all $ \c -> isAlphaNum c && isLower c
     uniqueId = checkM "Should be unique" $ \id' -> do
-        teams <- map snd <$> runPersistence getAll
+        teams <- map snd <$> runPersistence getAllTeams
         return $ not $ any ((== id') . teamId) teams
     notNull = check "Can't be empty" $ not . T.null
 
@@ -110,7 +105,7 @@ teamNew = do
     (view, result) <- runForm "team" teamForm
     case result of
         Just team -> do
-            _ <- liftIO $ runPersistence $ add team
+            _ <- liftIO $ runPersistence $ addTeam team
             Snap.redirect "/management"
         _         ->
             Snap.blaze $ Views.teamNew view
@@ -140,7 +135,7 @@ teamBonus :: Web ()
 teamBonus = do
     Just teamRef   <- refFromParam "id"
     (view, result) <- runForm "bonus" bonusForm
-    team           <- runPersistence $ get teamRef
+    team           <- runPersistence $ getTeam teamRef
     case result of
         Just (BonusForm laps' reason) -> do
             timestamp <- liftIO getCurrentTime
@@ -164,7 +159,7 @@ teamReset = do
     logger       <- webLog <$> ask
     batons       <- configBatons . webConfig <$> ask
     runPersistence $ do
-        team <- get teamRef
+        team <- getTeam teamRef
         case teamBaton team of
             Just mac -> do
                 let Just baton = findBaton mac batons

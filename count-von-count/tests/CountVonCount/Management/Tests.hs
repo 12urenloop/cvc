@@ -36,7 +36,7 @@ tests = testGroup "CountVonCount.Management.Tests"
 
     , testCase "assignBaton/assignment" $ testPersistence $ do
         counter <- liftIO newCounter
-        refs    <- mapM add teams
+        refs    <- mapM addTeam teams
 
         liftIO $ assignBaton counter batons (batons !! 1) (refs !! 2)
         liftIO $ assignBaton counter batons (batons !! 2) (refs !! 1)
