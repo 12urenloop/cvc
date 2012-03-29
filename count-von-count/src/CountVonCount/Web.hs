@@ -4,7 +4,7 @@ module CountVonCount.Web
     ) where
 
 import Control.Applicative ((<$>), (<*>), (<|>))
-import Control.Monad (forM, unless)
+import Control.Monad (forM, unless, forM_)
 import Control.Monad.Reader (ReaderT, ask, runReaderT)
 import Control.Monad.Trans (liftIO)
 import Data.List (sort)
@@ -30,6 +30,7 @@ import CountVonCount.Log (Log)
 import CountVonCount.Management
 import CountVonCount.Persistence
 import CountVonCount.Web.Util
+import CountVonCount.Boxxy
 import qualified CountVonCount.Log as Log
 import qualified CountVonCount.Web.Views as Views
 
@@ -113,13 +114,18 @@ bonus :: Web ()
 bonus = do
     Just teamRef   <- refFromParam "id"
     (view, result) <- runForm "bonus" bonusForm
+    team           <- runPersistence $ get teamRef
     case result of
         Just (BonusForm laps' reason) -> do
             timestamp <- liftIO getCurrentTime
+
             runPersistence $ addLaps teamRef timestamp reason laps'
+            boxxies <- configBoxxies . webConfig <$> ask
+            liftIO $ forM_ boxxies $ \c -> do
+                putLaps c team timestamp laps' Nothing (Just reason)
+
             Snap.redirect "/management"
         _ -> do
-            team <- runPersistence $ get teamRef
             Snap.blaze $ Views.bonus teamRef team view
 
 reset :: Web ()
