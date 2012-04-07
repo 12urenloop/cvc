@@ -158,7 +158,8 @@ latestNLaps :: Ref Team -> Int -> Persistence [Lap]
 latestNLaps !ref n = do
     -- NOTE: i have to use the project modifier here, because there is no other way for me to specify this
     team <- MDB.fetch $ (MDB.select ["_id" MDB.:= ref] "teams") {MDB.project = ["laps_" MDB.=: ["$slice" MDB.=: n]]}
-    traceShow team $ return $ fmap fromDocument laps
+    let laps = MDB.at "laps_" team
+    return $ fmap fromDocument laps
 
 latestLap :: Ref Team -> Persistence Lap
 latestLap ref = head <$> latestNLaps ref 1
