@@ -19,6 +19,7 @@ module CountVonCount.Persistence
     , addLap
     , addLaps
     , getLaps
+    , latestLap
 
     , deleteAll
     ) where
@@ -27,6 +28,7 @@ import Control.Applicative ((<$>))
 import Control.Arrow ((&&&))
 import Control.Monad.Trans (MonadIO, liftIO)
 import Data.Ord (comparing)
+import Data.Maybe (fromJust)
 
 import Data.Aeson (ToJSON (..), object, (.=))
 import Data.Text (Text)
@@ -149,6 +151,12 @@ getLaps :: Int                -- ^ Offset (0-based)
         -> Int                -- ^ Count
         -> Persistence [Lap]  -- ^ Matching laps
 getLaps _ _ = return []  -- TODO: fix
+
+
+latestLap :: Ref Team -> Persistence Lap
+latestLap !ref = do
+    cursor <- MDB.find $ MDB.select ["team" MDB.:= ref] "laps"
+    fromDocument . fromJust <$> MDB.next cursor
 
 -- | You probably don't want to use this
 deleteAll :: Persistence ()

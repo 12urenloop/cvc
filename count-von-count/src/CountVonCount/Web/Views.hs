@@ -106,7 +106,7 @@ management teams batons = template "Teams" $ block "management" $ do
   where
     macValue = H.toValue . batonMac
 
-laps :: [(Lap, Team)] -> Html
+laps :: [(Team, Lap)] -> Html
 laps laps' = template "Laps" $ block "laps" $ do
     H.h1 "Laps"
     H.table $ do
@@ -114,10 +114,12 @@ laps laps' = template "Laps" $ block "laps" $ do
             H.th "Team name"
             H.th "Reason given"
             H.th "Count"
-        forM_ laps' $ \(lap, team) -> H.tr $ do
+            H.th "Timestamp"
+        forM_ laps' $ \(team, lap) -> H.tr $ do
             H.td $ H.toHtml $ teamName team
             H.td $ H.toHtml $ lapReason lap
             H.td $ H.toHtml $ lapCount lap
+            H.td $ H.toHtml $ show $ lapTimestamp lap
 
 teamNew :: D.View Html -> Html
 teamNew view = template "Add team" $ do
