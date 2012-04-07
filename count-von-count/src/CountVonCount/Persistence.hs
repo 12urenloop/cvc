@@ -20,6 +20,7 @@ module CountVonCount.Persistence
     , addLaps
     , getLaps
     , latestLap
+    , latestNLaps
 
     , deleteAll
     ) where
@@ -28,7 +29,6 @@ import Control.Applicative ((<$>))
 import Control.Arrow ((&&&))
 import Control.Monad.Trans (MonadIO, liftIO)
 import Data.Ord (comparing)
-import Data.Maybe (fromJust)
 
 import Data.Aeson (ToJSON (..), object, (.=))
 import Data.Text (Text)
@@ -37,6 +37,7 @@ import qualified Data.Text as T
 import qualified Database.MongoDB as MDB
 
 import CountVonCount.Types
+import Debug.Trace
 
 type Persistence = MDB.Action IO
 
@@ -153,13 +154,18 @@ getLaps :: Int                -- ^ Offset (0-based)
 getLaps _ _ = return []  -- TODO: fix
 
 
+latestNLaps :: Ref Team -> Int -> Persistence [Lap]
+latestNLaps !ref n = do
+    -- NOTE: i have to use the project modifier here, because there is no other way for me to specify this
+    team <- MDB.fetch $ (MDB.select ["_id" MDB.:= ref] "teams") {MDB.project = ["laps_" MDB.=: ["$slice" MDB.=: n]]}
+    traceShow team $ return $ fmap fromDocument laps
+
 latestLap :: Ref Team -> Persistence Lap
-latestLap !ref = do
-    cursor <- MDB.find $ MDB.select ["team" MDB.:= ref] "laps"
-    fromDocument . fromJust <$> MDB.next cursor
+latestLap ref = head <$> latestNLaps ref 1
 
 -- | You probably don't want to use this
 deleteAll :: Persistence ()
 deleteAll = do
     _ <- MDB.dropCollection "teams"
     return ()
+
