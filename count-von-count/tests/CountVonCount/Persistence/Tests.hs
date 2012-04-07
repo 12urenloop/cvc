@@ -3,7 +3,9 @@ module CountVonCount.Persistence.Tests
     ( tests
     ) where
 
+import Control.Monad.Trans (liftIO)
 import Data.Maybe (fromJust)
+import Data.Time (diffUTCTime, getCurrentTime)
 
 import Test.Framework (Test, testGroup)
 import Test.Framework.Providers.HUnit (testCase)
@@ -26,22 +28,19 @@ tests = testGroup "CountVonCount.Persistence.Tests"
         x' <- getTeamByMac $ fromJust $ teamBaton wina
         return $ Just (r, wina) == x'
 
-    , testCase "addLaps/getLaps" $ testPersistence $
-        return True  -- TODO: fix
-        {- 
+    , testCase "addLaps/latestLap" $ testPersistence $ do
         r    <- addTeam wina
         time <- liftIO getCurrentTime
         let reason = "Because they're gay" 
             laps   = 10
 
         addLaps r time reason laps
-        (lap : _) <- getLaps 0 10
+        lap <- latestLap r
 
-        return $ lapTeam lap == r &&
+        return $
             -- Might a marginal difference in the times due to conversion,
             -- should never be more than one second
             abs (lapTimestamp lap `diffUTCTime` time) < 1 &&
             lapReason lap == reason &&
             lapCount lap == laps
-        -}
     ]

@@ -37,7 +37,6 @@ import qualified Data.Text as T
 import qualified Database.MongoDB as MDB
 
 import CountVonCount.Types
-import Debug.Trace
 
 type Persistence = MDB.Action IO
 
@@ -156,8 +155,10 @@ getLaps _ _ = return []  -- TODO: fix
 
 latestNLaps :: Ref Team -> Int -> Persistence [Lap]
 latestNLaps !ref n = do
-    -- NOTE: i have to use the project modifier here, because there is no other way for me to specify this
-    team <- MDB.fetch $ (MDB.select ["_id" MDB.:= ref] "teams") {MDB.project = ["laps_" MDB.=: ["$slice" MDB.=: n]]}
+    -- NOTE: I have to use the project modifier here, because there is no other
+    -- way for me to specify this
+    team <- MDB.fetch $ (MDB.select ["_id" MDB.:= ref] "teams")
+        {MDB.project = ["laps_" MDB.=: ["$slice" MDB.=: n]]}
     let laps = MDB.at "laps_" team
     return $ fmap fromDocument laps
 
