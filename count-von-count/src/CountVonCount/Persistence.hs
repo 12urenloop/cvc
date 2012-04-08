@@ -131,15 +131,15 @@ instance FromDocument Lap where
         (T.pack $ MDB.at "reason" doc)
         (MDB.at "count" doc)
 
-addLap :: Ref Team -> Team -> UTCTime -> Persistence Team
-addLap ref team timestamp = addLaps ref team timestamp "Full lap detected" 1
+addLap :: Ref Team -> UTCTime -> Persistence Team
+addLap ref timestamp = addLaps ref timestamp "Full lap detected" 1
 
-addLaps :: Ref Team -> Team -> UTCTime -> Text -> Int -> Persistence Team
-addLaps !ref !team !timestamp !reason !c = MDB.modify
+addLaps :: Ref Team -> UTCTime -> Text -> Int -> Persistence Team
+addLaps !ref !timestamp !reason !c = MDB.modify
     (MDB.select ["_id" MDB.:= ref] "teams")
     [ "$inc"  MDB.=: ["laps" MDB.=: c]
     , "$push" MDB.=: ["laps_" MDB.=: lapDoc]
-    ] >> return team { teamLaps = teamLaps team + c }
+    ] >> getTeam ref
   where
     lapDoc =
         [ "timestamp" MDB.=: timestamp
