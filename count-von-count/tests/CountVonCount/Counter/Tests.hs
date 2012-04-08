@@ -32,7 +32,7 @@ tests = testGroup "CountVonCount.Counter.Tests"
 counterTest :: IO Bool
 counterTest = do
     -- Initialize stuffs
-    logger   <- Log.open "/dev/null"
+    logger   <- Log.open "/dev/null" False
     counter  <- newCounter
     chan     <- newChan
     threadId <- forkIO $ runCounter counter circuitLength maxSpeed

@@ -31,10 +31,10 @@ tests = testGroup "CountVonCount.Persistence.Tests"
     , testCase "addLaps/latestLap" $ testPersistence $ do
         r    <- addTeam wina
         time <- liftIO getCurrentTime
-        let reason = "Because they're gay" 
+        let reason = "Because they're gay"
             laps   = 10
 
-        addLaps r time reason laps
+        _   <- addLaps r wina time reason laps
         lap <- latestLap r
 
         return $

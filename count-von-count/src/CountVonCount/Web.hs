@@ -7,7 +7,7 @@ import Control.Applicative (pure, (<$>), (<*>), (<|>))
 import Control.Monad (forM, unless, forM_)
 import Control.Monad.Reader (ReaderT, ask, runReaderT)
 import Control.Monad.Trans (liftIO)
-import Data.Char (isAlphaNum, isLower)
+import Data.Char (isDigit, isLower)
 import Data.List (sort)
 
 import Data.Text (Text)
@@ -32,7 +32,7 @@ import CountVonCount.Management
 import CountVonCount.Persistence
 import CountVonCount.Web.Util
 import CountVonCount.Boxxy
-import CountVonCount.Types
+import CountVonCount.Util
 import qualified CountVonCount.Log as Log
 import qualified CountVonCount.Web.Views as Views
 
@@ -92,17 +92,17 @@ laps = do
 
 teamForm :: Form Html Web Team
 teamForm = Team
-    <$> "id"    .: uniqueId (validId (notNull (text Nothing)))
+    <$> "id"    .: (uniqueId . validId . notNull $ text Nothing)
     <*> "name"  .: notNull (text Nothing)
     <*> "laps"  .: pure 0
     <*> "baton" .: pure Nothing
   where
-    validId = check "Should be in lowercase and alphanumeric" $
-        T.all $ \c -> isAlphaNum c && isLower c
+    notNull = check "Can't be empty" $ not . T.null
+    validId = check "Should only contain lowercase letters, numbers or -" $
+        T.all $ \c -> isLower c || isDigit c || c == '-'
     uniqueId = checkM "Should be unique" $ \id' -> do
         teams <- map snd <$> runPersistence getAllTeams
         return $ not $ any ((== id') . teamId) teams
-    notNull = check "Can't be empty" $ not . T.null
 
 teamNew :: Web ()
 teamNew = do
@@ -138,23 +138,21 @@ bonusForm = BonusForm
 teamBonus :: Web ()
 teamBonus = do
     Just teamRef   <- refFromParam "id"
-    (view, result) <- runForm "bonus" bonusForm
     team           <- runPersistence $ getTeam teamRef
+    (view, result) <- runForm "bonus" bonusForm
     case result of
         Just (BonusForm laps' reason) -> do
-            timestamp <- liftIO getCurrentTime
-
-            runPersistence $ addLaps teamRef timestamp reason laps'
             boxxies <- configBoxxies . webConfig <$> ask
             logger  <- webLog <$> ask
-            liftIO $ forM_ boxxies $ \boxxy -> do
-                let h = handler "Boxxy Bonus" $ \c -> putLaps c team
-                            timestamp laps' Nothing (Just reason)
-                callHandler logger h boxxy
+
+            timestamp <- liftIO getCurrentTime
+            team'   <- runPersistence $ addLaps teamRef team timestamp reason laps'
+            liftIO $ forM_ boxxies $ \boxxy ->
+                isolate logger ("Boxxy " ++ show boxxy ++ " (bonus)") $
+                    putLaps boxxy team' timestamp laps' Nothing (Just reason)
 
             Snap.redirect "/management"
-        _ -> do
-            Snap.blaze $ Views.teamBonus teamRef team view
+        _ -> Snap.blaze $ Views.teamBonus teamRef team view
 
 teamReset :: Web ()
 teamReset = do

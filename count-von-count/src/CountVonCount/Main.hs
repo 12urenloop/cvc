@@ -30,8 +30,8 @@ main :: IO ()
 main = do
     putStrLn "Count Von Count starting in 1..2..3..."
     config    <- readConfigFile "count-von-count.yaml"
-    logger    <- Log.setModule "Main" <$> Log.open (configLog config)
-    replayLog <- Log.open $ configReplayLog config
+    logger    <- Log.setModule "Main" <$> Log.open (configLog config) True
+    replayLog <- Log.open (configReplayLog config) False
     Log.string logger "count-von-count started"
 
     -- Create the pubsub system
@@ -84,7 +84,7 @@ counterHandler circuitLength logger boxxies pubSub = handler "counterHandler" $
         publish $ Views.counterState circuitLength team (Just cstate)
 
         -- Send to boxxies
-        forM_ boxxies $ \boxxy -> isolate logger ("Hi boxxy: " ++ show boxxy) $
+        forM_ boxxies $ \boxxy -> isolate logger ("Boxxy " ++ show boxxy) $
             case event of
                 Lap time speed                ->
                     putLaps boxxy team time 1 (Just speed) Nothing

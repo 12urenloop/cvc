@@ -79,7 +79,7 @@ Body:
         "id": "team-1",
         "name": "Bulbasaur",
         "baton": "00:00:00:00:00:01",
-        "laps": 0
+        "laps": 1
       },
       "time": "2012-03-11T10:55:53.814Z"
     }

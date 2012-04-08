@@ -76,16 +76,17 @@ step cl ms logger handler' event cmap = do
 
         forM_ mteam $ \(ref, team) ->
             forM_ events $ \event' -> do
-                -- Add the lap in the database
-                case event' of
-                    Lap timestamp _ -> P.runPersistence $ P.addLap ref timestamp
-                    _               -> return ()
+                -- Add the lap in the database and update team record
+                team' <- case event' of
+                    Lap timestamp _ -> P.runPersistence $
+                                       P.addLap ref team timestamp
+                    _               -> return team
 
                 -- Call handlers, log
-                liftIO $ callHandler logger handler' (team, cstate, event')
+                liftIO $ callHandler logger handler' (team', cstate, event')
                 liftIO $ Log.string logger $ case event' of
-                    Progression _ s _ -> show team ++ " @ " ++ show s
-                    Lap _ _           -> "Lap for " ++ show team
+                    Progression _ s _ -> show team' ++ " @ " ++ show s
+                    Lap _ _           -> "Lap for " ++ show team'
 
 resetCounterFor :: Baton -> Counter -> IO ()
 resetCounterFor baton counter =

@@ -117,7 +117,7 @@ getAllTeams = do
 setTeamBaton :: Ref Team -> Maybe Baton -> Persistence ()
 setTeamBaton ref baton = MDB.modify
     (MDB.select ["_id" MDB.:= ref] "teams")
-    ["$set" MDB.=: ["baton" MDB.=: (fmap (T.unpack . batonMac) baton)]]
+    ["$set" MDB.=: ["baton" MDB.=: fmap (T.unpack . batonMac) baton]]
 
 data Lap = Lap
     { lapTimestamp :: UTCTime
@@ -131,15 +131,15 @@ instance FromDocument Lap where
         (T.pack $ MDB.at "reason" doc)
         (MDB.at "count" doc)
 
-addLap :: Ref Team -> UTCTime -> Persistence ()
-addLap team timestamp = addLaps team timestamp "Full lap detected" 1
+addLap :: Ref Team -> Team -> UTCTime -> Persistence Team
+addLap ref team timestamp = addLaps ref team timestamp "Full lap detected" 1
 
-addLaps :: Ref Team -> UTCTime -> Text -> Int -> Persistence ()
-addLaps !ref !timestamp !reason !c = MDB.modify
+addLaps :: Ref Team -> Team -> UTCTime -> Text -> Int -> Persistence Team
+addLaps !ref !team !timestamp !reason !c = MDB.modify
     (MDB.select ["_id" MDB.:= ref] "teams")
     [ "$inc"  MDB.=: ["laps" MDB.=: c]
     , "$push" MDB.=: ["laps_" MDB.=: lapDoc]
-    ]
+    ] >> return team { teamLaps = teamLaps team + c }
   where
     lapDoc =
         [ "timestamp" MDB.=: timestamp

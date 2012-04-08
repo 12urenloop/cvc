@@ -13,7 +13,7 @@ import qualified CountVonCount.Log as Log
 tests :: Test
 tests = testGroup "CountVonCount.Util.Tests"
     [ testCase "isolate test" $ assert $ do
-        logger <- Log.open "/dev/null"
+        logger <- Log.open "/dev/null" False
         isolate logger "isolate test" $ fail "Sup guys"
         return True
     ]

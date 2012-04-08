@@ -25,7 +25,7 @@ tests = testGroup "CountVonCount.Sensor.Tests"
 
 sensorTest :: IO Bool
 sensorTest = do
-    logger   <- Log.open "/dev/null"
+    logger   <- Log.open "/dev/null" False
     ref      <- newIORef []
     threadId <- forkIO $ listen logger port $ prepend ref
     threadDelay 100000

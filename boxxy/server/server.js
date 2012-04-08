@@ -36,11 +36,13 @@ var run = function(port) {
 exports.run = run
 
 var configHandler = function(req, res) {
-    state.initialize(req.body);
+    console.log('[CONFIG]', req.body)
+    state.initialize(req.body)
     res.send(200)
 }
 
 var positionHandler = function(req, res) {
+    console.log('[POSITION]', req.body)
     state.updatePosition(req.body)
     bayeux.getClient().publish('/position',{
         time: req.body.time,
@@ -54,11 +56,12 @@ var positionHandler = function(req, res) {
             position: req.body.station.position,
             name: req.body.station.name
         }
-    });
+    })
     res.send(200)
 }
 
 var lapsHandler = function(req, res) {
+    console.log('[LAP]', req.body)
     state.updateLaps(req.body)
     bayeux.getClient().publish('/laps', req.body)
     res.send(200)

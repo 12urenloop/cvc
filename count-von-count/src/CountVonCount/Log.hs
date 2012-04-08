@@ -11,6 +11,7 @@ import Control.Applicative (pure, (<$>), (<*>))
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Chan (Chan, newChan, readChan, writeChan)
 import Control.Concurrent.MVar (MVar, newEmptyMVar, putMVar, takeMVar)
+import Control.Monad (when)
 import System.Locale (defaultTimeLocale)
 import qualified System.IO as IO
 
@@ -28,24 +29,28 @@ data Log = Log
     , logModule :: Maybe String
     }
 
--- | Open a new log file. New content is appended.
-open :: FilePath -> IO Log
-open filePath = do
+-- | Open a new log file. New content is appended and optionally also
+-- printed to stdout
+open :: FilePath -> Bool -> IO Log
+open filePath logStdout = do
     logger <- Log <$> newChan <*> newEmptyMVar <*> pure Nothing
     handle <- IO.openFile filePath IO.AppendMode
-    _      <- forkIO $ writer logger handle
+    _      <- forkIO $ writer logger handle logStdout
     return logger
 
 -- | Worker thread to write to the log
-writer :: Log -> IO.Handle -> IO ()
-writer logger handle = do
+writer :: Log -> IO.Handle -> Bool -> IO ()
+writer logger handle logStdout = do
     IO.hSetBuffering handle IO.LineBuffering
     loop
   where
     loop = do
         step <- readChan $ logChan logger
         case step of
-            LogString str -> IO.hPutStrLn handle str >> loop
+            LogString str -> do
+                when logStdout $ IO.putStrLn str
+                IO.hPutStrLn handle str
+                loop
             LogStop       -> IO.hClose handle >> putMVar (logStop logger) ()
 
 -- | Close a log. This method blocks until all queued messages have been
