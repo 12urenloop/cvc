@@ -14,7 +14,7 @@
         var teams = (<?= json_encode(getTeams()); ?>);
     </script>
 </head>
-<body>
+<body ontouchmove="event.preventDefault();" >
     <header>
         <h1>Manuele telling</h1>
         <button id="viewSwitcher">iPad 1/2</button>

@@ -1,5 +1,6 @@
-body, html, ul, li {
+body, html {
   padding: 0; margin: 0;
+  height: 100%;
 }
 
 body {
@@ -33,16 +34,15 @@ h1 {
 
 #buttonHolder {
   width: 740px;
-  margin: 20px auto 0;
+  margin: 40px auto 0; padding: 0;
 }
 
 #buttonHolder > li {
   list-style: none;
   width: 200px; height: 180px;
-  margin: 24px 12px; padding: 10px;
+  margin: 0 12px 36px; padding: 10px;
   display: block; float: left;
   text-align: center;
-
   border: rgba(0, 0, 0, .2) 1px solid;
   border-bottom:rgba(0, 0, 0, .4) 1px solid;
   box-shadow: 0 1px 2px rgba(0,0,0,.2);
@@ -67,6 +67,12 @@ h1 {
   );
   background-color: #333;
   -webkit-transition: none;
+}
+
+#buttonHolder > li:nth-child(7) {
+  clear: both;
+  float: none;
+  margin: 24px auto;
 }
 
 h2 {

@@ -1,5 +1,4 @@
-var DELAY = 5; // delay to prevent accidental double taps
-var DEFAULT_VIEW = 0;
+var DELAY = 30; // delay to prevent accidental double taps
 var BUTTONS_PER_VIEW = 7;
 
 // Detect local storage
@@ -93,7 +92,7 @@ function processQueue() {
         data: queue[0],
         error: errorHandler,
         success: function(data) {
-            if(parseInt(data) == 0) errorHandler();
+            if(parseInt(data) != 1) errorHandler();
             else {
                 var queue = JSON.parse(storage.getItem('requestQueue') || "[]");
                 queue.shift();
@@ -107,7 +106,7 @@ function processQueue() {
 $(function() {
     initStorage();
 
-    currentView = DEFAULT_VIEW;
+    currentView = 0;
     createView(currentView);
     $('#viewSwitcher').click(function() {
         currentView = currentView == 0 ? 1 : 0;
