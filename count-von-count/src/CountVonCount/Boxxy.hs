@@ -17,8 +17,9 @@ module CountVonCount.Boxxy
     ) where
 
 import Control.Applicative (pure, (<$>),(<*>))
-import Control.Concurrent.MVar (MVar, newMVar, modifyMVar_)
-import Control.Monad (mzero, when)
+import Control.Concurrent (forkIO)
+import Control.Monad (forM, forM_, mzero, void, when)
+import Data.IORef (IORef, newIORef, readIORef, writeIORef)
 import Data.Maybe (isNothing)
 import Data.Time (UTCTime)
 
@@ -133,31 +134,33 @@ data State = Up | Down
     deriving (Eq, Show)
 
 data Boxxies = Boxxies
-    { boxxiesState :: MVar [(BoxxyConfig, State)]
+    { boxxiesState :: [(BoxxyConfig, IORef State)]
     , boxxiesInit  :: BoxxyConfig -> IO ()
     }
 
 newBoxxies :: [BoxxyConfig] -> (BoxxyConfig -> IO ()) -> IO Boxxies
 newBoxxies configs init' = Boxxies
-    <$> newMVar (map (flip (,) Down) configs)
+    <$> forM configs (\c -> (,) c <$> newIORef Down)
     <*> pure init'
 
 withBoxxies :: Log
             -> Boxxies
             -> (BoxxyConfig -> IO ())
             -> IO ()
-withBoxxies logger bs f = modifyMVar_ (boxxiesState bs) $ mapM $ \(c, s) -> do
-    Log.string logger $ "Calling " ++ show c ++ ", currently " ++ show s
-    -- Try to init if needed
-    r <- case s of
-        Down -> isolate logger "boxxy init" $ boxxiesInit bs c
-        Up   -> return Nothing
+withBoxxies logger bs f = forM_ (boxxiesState bs) $ \(c, rs) ->
+    void $ forkIO $ do
+        s <- readIORef rs
+        Log.string logger $ "Calling " ++ show c ++ ", currently " ++ show s
+        -- Try to init if needed
+        r <- case s of
+            Down -> isolate logger ("init " ++ show c) $ boxxiesInit bs c
+            Up   -> return Nothing
 
-    -- Make the call if up
-    r' <- case r of
-        Nothing -> isolate logger "boxxy call" $ f c
-        Just _  -> return r
+        -- Make the call if up
+        r' <- case r of
+            Nothing -> isolate logger ("call " ++ show c) $ f c
+            Just _  -> return r
 
-    let s' = if isNothing r' then Up else Down
-    when (s /= s') $ Log.string logger $ show c ++ " is now " ++ show s'
-    return (c, if isNothing r' then Up else Down)
+        let s' = if isNothing r' then Up else Down
+        when (s /= s') $ Log.string logger $ show c ++ " is now " ++ show s'
+        writeIORef rs s'
