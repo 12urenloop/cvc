@@ -78,8 +78,7 @@ step cl ms logger handler' event cmap = do
             forM_ events $ \event' -> do
                 -- Add the lap in the database and update team record
                 team' <- case event' of
-                    Lap timestamp _ -> P.runPersistence $
-                                       P.addLap ref team timestamp
+                    Lap timestamp _ -> P.runPersistence $ P.addLap ref timestamp
                     _               -> return team
 
                 -- Call handlers, log

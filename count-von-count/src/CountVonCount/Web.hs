@@ -146,7 +146,7 @@ teamBonus = do
             logger  <- webLog <$> ask
 
             timestamp <- liftIO getCurrentTime
-            team'   <- runPersistence $ addLaps teamRef team timestamp reason laps'
+            team'     <- runPersistence $ addLaps teamRef timestamp reason laps'
             liftIO $ forM_ boxxies $ \boxxy ->
                 isolate logger ("Boxxy " ++ show boxxy ++ " (bonus)") $
                     putLaps boxxy team' timestamp laps' Nothing (Just reason)

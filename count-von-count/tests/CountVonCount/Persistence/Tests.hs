@@ -34,7 +34,7 @@ tests = testGroup "CountVonCount.Persistence.Tests"
         let reason = "Because they're gay"
             laps   = 10
 
-        _   <- addLaps r wina time reason laps
+        _   <- addLaps r time reason laps
         lap <- latestLap r
 
         return $
