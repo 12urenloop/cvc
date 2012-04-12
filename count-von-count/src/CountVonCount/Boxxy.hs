@@ -5,6 +5,10 @@ module CountVonCount.Boxxy
       BoxxyConfig (..)
     , defaultBoxxyConfig
 
+      -- * State
+    , Boxxies
+    , newBoxxies
+
       -- * Talking to boxxy
     , putConfig
     , putLaps
@@ -12,6 +16,7 @@ module CountVonCount.Boxxy
     ) where
 
 import Control.Applicative ((<$>),(<*>))
+import Control.Concurrent.MVar (MVar, newMVar, modifyMVar_, readMVar)
 import Control.Monad (mzero)
 import Data.Time (UTCTime)
 
@@ -61,6 +66,11 @@ defaultBoxxyConfig = BoxxyConfig
     , boxxyPath = ""
     , boxxyKey  = "tetten"
     }
+
+type Boxxies = MVar [(BoxxyConfig, Bool)]
+
+newBoxxies :: [BoxxyConfig] -> IO Boxxies
+newBoxxies = newMVar . map (flip (,) False)
 
 makeRequest :: ToJSON a => BoxxyConfig -> Text -> a -> IO ()
 makeRequest config path body = do
