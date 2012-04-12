@@ -4,7 +4,7 @@ module CountVonCount.Web
     ) where
 
 import Control.Applicative (pure, (<$>), (<*>), (<|>))
-import Control.Monad (forM, unless, forM_)
+import Control.Monad (forM, unless)
 import Control.Monad.Reader (ReaderT, ask, runReaderT)
 import Control.Monad.Trans (liftIO)
 import Data.Char (isDigit, isLower)
@@ -32,7 +32,6 @@ import CountVonCount.Management
 import CountVonCount.Persistence
 import CountVonCount.Web.Util
 import CountVonCount.Boxxy
-import CountVonCount.Util
 import qualified CountVonCount.Log as Log
 import qualified CountVonCount.Web.Views as Views
 
@@ -41,6 +40,7 @@ data WebEnv = WebEnv
     , webLog     :: Log
     , webPubSub  :: WS.PubSub WS.Hybi00
     , webCounter :: Counter
+    , webBoxxies :: Boxxies
     }
 
 type Web = ReaderT WebEnv Snap.Snap
@@ -142,14 +142,13 @@ teamBonus = do
     (view, result) <- runForm "bonus" bonusForm
     case result of
         Just (BonusForm laps' reason) -> do
-            boxxies <- configBoxxies . webConfig <$> ask
+            boxxies <- webBoxxies <$> ask
             logger  <- webLog <$> ask
 
             timestamp <- liftIO getCurrentTime
             team'     <- runPersistence $ addLaps teamRef timestamp reason laps'
-            liftIO $ forM_ boxxies $ \boxxy ->
-                isolate logger ("Boxxy " ++ show boxxy ++ " (bonus)") $
-                    putLaps boxxy team' timestamp laps' Nothing (Just reason)
+            liftIO $ withBoxxies logger boxxies $ \b ->
+                putLaps b team' timestamp laps' Nothing (Just reason)
 
             Snap.redirect "/management"
         _ -> Snap.blaze $ Views.teamBonus teamRef team view
@@ -185,8 +184,8 @@ site = Snap.route
     , ("/team/:id/reset",      teamReset)
     ] <|> Snap.serveDirectory "static"
 
-listen :: Config -> Log -> WS.PubSub WS.Hybi00 -> Counter -> IO ()
-listen conf logger pubSub counter =
+listen :: Config -> Log -> WS.PubSub WS.Hybi00 -> Counter -> Boxxies -> IO ()
+listen conf logger pubSub counter boxxies =
     Snap.httpServe snapConfig $ runReaderT site env
   where
     env = WebEnv
@@ -194,6 +193,7 @@ listen conf logger pubSub counter =
         , webLog     = logger
         , webPubSub  = pubSub
         , webCounter = counter
+        , webBoxxies = boxxies
         }
 
     snapConfig = Snap.setPort (configWebPort conf) Snap.defaultConfig

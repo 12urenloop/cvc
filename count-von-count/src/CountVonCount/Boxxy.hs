@@ -5,19 +5,21 @@ module CountVonCount.Boxxy
       BoxxyConfig (..)
     , defaultBoxxyConfig
 
-      -- * State
-    , Boxxies
-    , newBoxxies
-
       -- * Talking to boxxy
     , putConfig
     , putLaps
     , putPosition
+
+      -- * Stateful talking
+    , Boxxies
+    , newBoxxies
+    , withBoxxies
     ) where
 
-import Control.Applicative ((<$>),(<*>))
-import Control.Concurrent.MVar (MVar, newMVar, modifyMVar_, readMVar)
-import Control.Monad (mzero)
+import Control.Applicative (pure, (<$>),(<*>))
+import Control.Concurrent.MVar (MVar, newMVar, modifyMVar_)
+import Control.Monad (mzero, when)
+import Data.Maybe (isNothing)
 import Data.Time (UTCTime)
 
 import Data.Aeson (FromJSON (..), ToJSON (..), (.=), (.:?), (.!=))
@@ -28,8 +30,11 @@ import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Network.HTTP.Conduit as Http
 
+import CountVonCount.Log (Log)
 import CountVonCount.Persistence
 import CountVonCount.Types
+import CountVonCount.Util
+import qualified CountVonCount.Log as Log
 
 data BoxxyConfig = BoxxyConfig
     { boxxyHost :: Text
@@ -66,11 +71,6 @@ defaultBoxxyConfig = BoxxyConfig
     , boxxyPath = ""
     , boxxyKey  = "tetten"
     }
-
-type Boxxies = MVar [(BoxxyConfig, Bool)]
-
-newBoxxies :: [BoxxyConfig] -> IO Boxxies
-newBoxxies = newMVar . map (flip (,) False)
 
 makeRequest :: ToJSON a => BoxxyConfig -> Text -> a -> IO ()
 makeRequest config path body = do
@@ -128,3 +128,36 @@ putPosition config team time station speed = makeRequest config path $ A.object
     ]
   where
     path = T.concat ["/", teamId team, "/position"]
+
+data State = Up | Down
+    deriving (Eq, Show)
+
+data Boxxies = Boxxies
+    { boxxiesState :: MVar [(BoxxyConfig, State)]
+    , boxxiesInit  :: BoxxyConfig -> IO ()
+    }
+
+newBoxxies :: [BoxxyConfig] -> (BoxxyConfig -> IO ()) -> IO Boxxies
+newBoxxies configs init' = Boxxies
+    <$> newMVar (map (flip (,) Down) configs)
+    <*> pure init'
+
+withBoxxies :: Log
+            -> Boxxies
+            -> (BoxxyConfig -> IO ())
+            -> IO ()
+withBoxxies logger bs f = modifyMVar_ (boxxiesState bs) $ mapM $ \(c, s) -> do
+    Log.string logger $ "Calling " ++ show c ++ ", currently " ++ show s
+    -- Try to init if needed
+    r <- case s of
+        Down -> isolate logger "boxxy init" $ boxxiesInit bs c
+        Up   -> return Nothing
+
+    -- Make the call if up
+    r' <- case r of
+        Nothing -> isolate logger "boxxy call" $ f c
+        Just _  -> return r
+
+    let s' = if isNothing r' then Up else Down
+    when (s /= s') $ Log.string logger $ show c ++ " is now " ++ show s'
+    return (c, if isNothing r' then Up else Down)
