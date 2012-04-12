@@ -6,6 +6,7 @@ import Control.Applicative ((<$>))
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Chan (newChan, writeChan)
 import Data.Foldable (forM_)
+import Data.Time (getCurrentTime)
 
 import qualified Data.Aeson as A
 import qualified Network.WebSockets as WS
@@ -39,7 +40,8 @@ main = do
     -- Initialize boxxy
     boxxies <- newBoxxies (configBoxxies config) $ \b -> do
         ts <- map snd <$> runPersistence getAllTeams
-        putConfig b (configCircuitLength config) (configStations config) ts
+        t  <- getCurrentTime
+        putConfig b (configCircuitLength config) (configStations config) ts t
 
     -- Connecting the sensor to the counter
     sensorChan <- newChan
