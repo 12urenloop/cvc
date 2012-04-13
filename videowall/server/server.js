@@ -10,6 +10,8 @@ var currentIndex = -1
 var currentItem;
 var currentLoop;
 
+var NO_ITEM_TIMEOUT = 5000;
+
 /*
 var loopA = [ {url: 'http://www.reddit.com', duration: 30}
             , {url: 'http://news.ycombinator.com', duration: 60}
