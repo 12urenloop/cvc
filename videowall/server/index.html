@@ -1,0 +1,157 @@
+<html>
+<head>
+    <title>Videowall Configuration</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script type="text/javascript" 
+        src="http://localhost:8000/faye/client.js">
+    </script>
+    <script type="text/javascript">
+        var client = new Faye.Client('http://localhost:8000/faye');
+
+        client.subscribe('/config', configHandler);
+
+        function configHandler(item) {
+            if (item.response === 'loops') {
+                render(item.loops, item.currentLoop);
+            }
+        }
+
+        var pullLoops = function() {
+            client.publish('/config', {request: "loops"});
+        }
+
+        var pushLoops = function() {
+            var loops = {};
+
+            $('#loops').children('.loop').each(function() {
+                var loop = [];
+                $(this).children('.item').each(function() {
+                    var item = {};
+                    item["url"] = $(this).children('.url').attr('value');
+                    item["duration"] = parseInt($(this).children('.duration').attr('value'));
+
+                    if (item.url !== '' && item.duration !== null) {
+                        loop.push(item);
+                    } else {
+
+                    }
+                });
+
+                loops[$(this).attr('id')] = loop;
+            });
+
+            client.publish('/config', {request: "new-loops", loops: loops});
+        }
+
+        var changeLoop = function() {
+            var loop = $('#currentLoop').children('.loop:checked').attr('value');
+            client.publish('/config', {request: "new-currentLoop", newCurrentLoop: loop})
+        }
+
+        var newLoop = function() {
+            var name = $('#newLoopName').attr('value');
+
+            if (name === '') {
+                $('#newLoopError').text('Name please');
+            } else if ($('#' + name).length !== 0) {
+                $('#newLoopError').text('Name is not unique');
+            } else {
+                $('#newLoopError').text('');
+
+                $('#loops').append('<div class="loop" id="' + name + '"><h4>' + name + '</h4></div>');
+                $('#' + name).append('<input type="submit" value="New item"' +
+                               'onClick="javascript:addItemTo(\'' + name + '\', null);" />');
+            }
+        }
+
+        var addItemTo = function(name, item) {
+            var div = $('#' + name);
+            if (div.length !== 0) {
+                div.append(itemString(item));
+            }
+        }
+
+        var loopString = function(name, loop) {
+            var div = '<div class="loop" id="' + name + '">';
+            div += '<h4>' + name + '</h4>';
+            div += '<input type="submit" value="New item"';
+            div += 'onClick="javascript:addItemTo(\'' + name + '\', null);" />';
+
+            for (index in loop) {
+                div += itemString(loop[index]);
+            }
+
+            div += '</div>';
+
+            return div;
+        }
+
+        var itemString = function(item) {
+            var url, duration
+            if (item === null) {
+                url = '';
+                duration = ''
+            } else {
+                url = item.url;
+                duration = item.duration;
+            }
+
+            var div = '<div class="item">';
+            div += 'URL: <input class="url" type="text" value="' + url +'"/>';
+            div += 'Duration: <input class="duration" type="text" value="' + duration +'"/>';
+            div += '<input type="submit" value="Delete"';
+            div += 'onClick="javascript:$(this).parent().remove();" />';
+            div += '</div>';
+
+            return div;
+        }
+
+        var currentLoopString = function(name, currentLoop) {
+            var radio = '<input type="radio" name="nowplaying" ';
+            radio += 'class="loop" ';
+            radio += 'value="' + name + '" ';
+            if (name === currentLoop) {
+                radio += 'checked '
+            }
+            radio += '>' + name + '</input><br />';
+
+            return radio;
+        }
+
+        var render = function(loops, currentLoop) {
+            $('#loops').html('');
+            $('#currentLoop').html('');
+
+            for (var name in loops) {
+                $('#loops').append(loopString(name, loops[name]));
+                $('#currentLoop').append(currentLoopString(name, currentLoop));
+            }
+        }
+
+        pullLoops();
+    </script>
+</head>
+<body>
+    <p>
+        Name: <input id="newLoopName" type="text" />
+        <input type="submit" value="New loop" onClick="javascript:newLoop();" />
+        <span id="newLoopError" style="background-color:red;"></span>
+    </p>
+    <p>
+        <input type="submit" value="Pull loops" onClick="javascript:pullLoops();" />
+    </p>
+    <p>
+        <input type="submit" value="Push loops" onClick="javascript:pushLoops();" />
+    </p>
+
+    <div id="current">
+        <h4>Current loop</h4>
+        <div id="currentLoop">
+        </div>
+        <input type="submit" value="Change loop" onClick="javascript:changeLoop();" />
+    </div>
+
+    <div id="loops">
+    </div>
+</body>
+</html>
