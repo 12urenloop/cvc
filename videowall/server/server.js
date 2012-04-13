@@ -21,7 +21,9 @@ var run = function(port) {
 
     bayeux.attach(server);
 
-    server.listen(8000);
+    server.listen(port);
+
+    console.log('Started listening on port ' + port);
 
     client = bayeux.getClient();
     client.subscribe('/whatson', whatsonHandler);
@@ -31,7 +33,7 @@ var run = function(port) {
 }
 
 var publishLoop = function() {
-    if (loops[currentLoop].length > 0) {
+    if (currentLoop !== undefined && loops[currentLoop].length > 0) {
         currentIndex = (currentIndex + 1) % loops[currentLoop].length
         currentItem = loops[currentLoop][currentIndex];
 
@@ -39,21 +41,15 @@ var publishLoop = function() {
         console.log('Published ' + currentItem.url + ' for ' + currentItem.duration + ' seconds.');
 
         timer = setTimeout(function() { publishLoop() }, currentItem.duration * 1000);
-    } else {
-        timer = setTimeout(function() { publishLoop() }, NO_ITEM_TIMEOUT);
     }
 }
 
-var restart = function() {
-    currentIndex = -1;
-    clearTimeout(timer);
-    publishLoop();
-}
-
 var whatsonHandler = function(msg) {
-    var currentItem = loops[currentLoop][currentIndex];
-    client.publish('/publications', currentItem);
-    console.log('Whats\'on? ' + currentItem.url + ' for ' + currentItem.duration + ' seconds.');
+    if (currentLoop !== undefined && loops[currentLoop].length > 0) {
+        var currentItem = loops[currentLoop][currentIndex];
+        client.publish('/publications', currentItem);
+        console.log('Whats\'on? ' + currentItem.url + ' for ' + currentItem.duration + ' seconds.');
+    }
 }
 
 var configHandler = function(msg) {
@@ -63,8 +59,11 @@ var configHandler = function(msg) {
     } else if (msg.request === 'new-loops') {
         console.log('Config: new loops: ' + JSON.stringify(msg.loops));
         loops = msg.loops;
+        if (loops[currentLoop] === undefined) {
+            console.log("Config: deleted current loop, stopping timer");
+            clearTimeout(timer);
+        }
         client.publish('/config', {response: 'loops', loops: loops, currentLoop: currentLoop});
-        restart();
     } else if (msg.request === 'new-currentLoop') {
         if (msg.newCurrentLoop !== currentLoop) {
             console.log('Config: loopchange: ' + msg.newCurrentLoop)
@@ -75,24 +74,14 @@ var configHandler = function(msg) {
     }
 }
 
-/** Random data */
-var siteA = {
-    url: './a.html',
-    duration: 10
-};
-
-var siteB = {
-    url: './b.html',
-    duration: 5
-};
-
-var siteC = {
-    url: './c.html',
-    duration: 20
+var restart = function() {
+    currentIndex = -1;
+    clearTimeout(timer);
+    publishLoop();
 }
 
-loops["testloop1"] = [siteA, siteB, siteC];
-loops["testloop2"] = [siteC, siteB, siteA];
-currentLoop = "testloop1";
+var loopA = [{url: './a.html', duration: 15}, {url: './b.html', duration: 10}];
+loops["loopA"] = loopA;
+currentLoop = "loopA";
 
-run()
+run(8000)

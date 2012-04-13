@@ -32,12 +32,12 @@
 
                     if (item.url !== '' && item.duration !== null) {
                         loop.push(item);
-                    } else {
-
                     }
                 });
 
-                loops[$(this).attr('id')] = loop;
+                if (loop.length > 0) {
+                    loops[$(this).attr('id')] = loop;
+                }
             });
 
             client.publish('/config', {request: "new-loops", loops: loops});
@@ -58,37 +58,47 @@
             } else {
                 $('#newLoopError').text('');
 
-                $('#loops').append('<div class="loop" id="' + name + '"><h4>' + name + '</h4></div>');
-                $('#' + name).append('<input type="submit" value="New item"' +
-                               'onClick="javascript:addItemTo(\'' + name + '\', null);" />');
+                $('#loops').append(loopString(name, [], null));
             }
         }
 
         var addItemTo = function(name, item) {
             var div = $('#' + name);
             if (div.length !== 0) {
-                div.append(itemString(item));
+                div.children('input:first').before(itemString(item));
             }
         }
 
-        var loopString = function(name, loop) {
+        var deleteLoop = function(name) {
+            $('#' + name).remove();
+        }
+
+        var loopString = function(name, loop, currentLoop) {
             var div = '<div class="loop" id="' + name + '">';
-            div += '<h4>' + name + '</h4>';
-            div += '<input type="submit" value="New item"';
-            div += 'onClick="javascript:addItemTo(\'' + name + '\', null);" />';
+            div += '<h4>' + name;
+            if (name === currentLoop) {
+                div += ' (now playing)';
+            }
+            div += '</h4>';
 
             for (index in loop) {
                 div += itemString(loop[index]);
             }
+
+            div += '<input type="submit" value="New item"';
+            div += 'onClick="javascript:addItemTo(\'' + name + '\', null);" />';
+
+            div += '<input type="submit" value="Delete loop"';
+            div += 'onClick ="javascript:deleteLoop(\'' + name + '\');" />';
 
             div += '</div>';
 
             return div;
         }
 
-        var itemString = function(item) {
+        var itemString = function( item) {
             var url, duration
-            if (item === null) {
+            if (item === null || item === undefined) {
                 url = '';
                 duration = ''
             } else {
@@ -123,7 +133,7 @@
             $('#currentLoop').html('');
 
             for (var name in loops) {
-                $('#loops').append(loopString(name, loops[name]));
+                $('#loops').append(loopString(name, loops[name], currentLoop));
                 $('#currentLoop').append(currentLoopString(name, currentLoop));
             }
         }
@@ -132,26 +142,26 @@
     </script>
 </head>
 <body>
-    <p>
-        Name: <input id="newLoopName" type="text" />
-        <input type="submit" value="New loop" onClick="javascript:newLoop();" />
-        <span id="newLoopError" style="background-color:red;"></span>
-    </p>
-    <p>
-        <input type="submit" value="Pull loops" onClick="javascript:pullLoops();" />
-    </p>
-    <p>
-        <input type="submit" value="Push loops" onClick="javascript:pushLoops();" />
-    </p>
-
     <div id="current">
-        <h4>Current loop</h4>
+        <h3>Current loop</h3>
         <div id="currentLoop">
         </div>
         <input type="submit" value="Change loop" onClick="javascript:changeLoop();" />
     </div>
 
-    <div id="loops">
+    <div id="#loopConfig">
+        <h3>Configure loops</h3>
+        <p>
+            <input type="submit" value="Pull loops" onClick="javascript:pullLoops();" />
+            <input type="submit" value="Push loops" onClick="javascript:pushLoops();" />
+        </p>
+        <p>
+            Name: <input id="newLoopName" type="text" />
+            <input type="submit" value="New loop" onClick="javascript:newLoop();" />
+            <span id="newLoopError" style="background-color:red;"></span>
+        </p>
+        <div id="loops">
+        </div>
     </div>
 </body>
 </html>

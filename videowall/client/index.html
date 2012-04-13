@@ -6,7 +6,7 @@
         src="http://localhost:8000/faye/client.js">
     </script>
     <script type="text/javascript">
-        var client = new Faye.Client('http://localhost:8000/faye');
+        var client = new Faye.Client('http://localhost:8000/faye', { retry: 5 });
 
         client.subscribe('/publications', publicationsHandler);
 
@@ -22,7 +22,7 @@
     <iframe
         style="width: 100%; height: 100%; border: 0px; padding: 0px;margin: 0px"
         id="content"
-        src="" >
+        src="./backup.html" >
     </iframe>
 </body>
 </html>
