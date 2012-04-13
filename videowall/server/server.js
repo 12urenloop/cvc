@@ -1,53 +1,59 @@
 var http = require('http'),
-    Faye = require('faye'),
+    Faye = require('faye')
+
+var bayeux, server, client
+var queue, currentItem, publishedAt
+
+var run = function(port) {
     bayeux = new Faye.NodeAdapter({mount: '/faye'});
 
-var server = http.createServer(function(request, response) {
-    response.writeHead(200, {'Content-Type': 'text/plain'});
-    response.write('Hello, non-Bayeux request');
-    response.end();
-});
+    server = http.createServer(function(request, response) {
+        response.writeHead(200, {'Content-Type': 'text/plain'});
+        response.write('Please go away :(');
+        response.end();
+    });
 
-bayeux.attach(server);
+    bayeux.attach(server);
 
-server.listen(8000);
+    server.listen(8000);
 
-var client = bayeux.getClient();
+    client = bayeux.getClient();
+    client.subscribe('/whatson', whatsonHandler);
 
-client.subscribe('/whatson', whatsonHandler);
-function whatsonHandler(msg) {
-    client.publish('/publications', currentItem);
-    console.log('Whats\'on? ' + currentItem.url + ' for ' + currentItem.duration + ' seconds.');
-};
-
-var hackernews = {
-    url: './a.html',
-    duration: 10
-};
-
-var redditAll = {
-    url: './b.html',
-    duration: 5
-};
-
-var redditPics = {
-    url: './c.html',
-    duration: 20
+    publishLoop();
 }
 
-var queue = [hackernews, redditAll, redditPics];
-var currentItem;
-
-function publishLoop() {
-    publishItem();
-};
-function publishItem() {
+var publishLoop = function() {
     currentItem = queue.shift();
     queue.push(currentItem);
 
     client.publish('/publications', currentItem);
     console.log('Published ' + currentItem.url + ' for ' + currentItem.duration + ' seconds.');
 
-    setTimeout(publishLoop, currentItem.duration * 1000);
+    setTimeout(function() { publishLoop() }, currentItem.duration * 1000);
+}
+
+var whatsonHandler = function(msg) {
+    client.publish('/publications', currentItem);
+    console.log('Whats\'on? ' + currentItem.url + ' for ' + currentItem.duration + ' seconds.');
+}
+
+/** Random data */
+var siteA = {
+    url: './a.html',
+    duration: 10
 };
-publishLoop();
+
+var siteB = {
+    url: './b.html',
+    duration: 5
+};
+
+var siteC = {
+    url: './c.html',
+    duration: 20
+}
+
+queue = [siteA, siteB, siteC];
+
+run()
