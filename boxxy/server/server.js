@@ -8,7 +8,6 @@ var server, bayeux
 var run = function(port) {
     server = express.createServer(),
     bayeux = new faye.NodeAdapter({ mount: '/boxxy', timeout: 45 })
-    bayeux.attach(server)
 
     // Configure the faye server to use the correct keys
     bayeux.addExtension(auth.serverAuth)
@@ -32,6 +31,7 @@ var run = function(port) {
     server.get('/init', initHandler)
 
     // Run the server
+    bayeux.attach(server)
     server.listen(port)
 }
 exports.run = run
