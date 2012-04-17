@@ -1,0 +1,27 @@
+#admin {
+}
+#display {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 50%;
+    height: 100%;
+    border: 0px;
+}
+
+.url {
+    width: 200px;
+}
+
+.duration {
+    width: 30px;
+    text-align: right;
+}
+
+span {
+    margin-left: 5px;
+}
+
+.error {
+    background-color: red;
+}

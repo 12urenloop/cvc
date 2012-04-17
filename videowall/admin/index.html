@@ -1,0 +1,53 @@
+<html>
+<head>
+    <title>12UL - Videowall - Admin</title>
+    <link href="css/main.css" rel="stylesheet" type="text/css" />
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://localhost:8000/faye/client.js"></script>
+    <script src="js/admin.js"></script>
+    <script type="text/javascript">
+    var duration = 1;
+    var timer;
+
+    client.subscribe('/publications', publicationsHandler);
+
+    client.bind('transport:down', function() {
+        console.log("Disconnected");
+        timer = setTimeout(function() {
+            $('#content').attr('src', './backup.html');
+        }, duration * 1000);
+    });
+
+    client.bind('transport:up', function() {
+        console.log("Connected");
+        clearTimeout(timer);
+        client.publish('/whatson', {text: "Teh fuck is on?"});
+    });
+
+    function publicationsHandler(item) {
+        console.log("[" + (new Date()) + "] Item: " + JSON.stringify(item));
+        duration = item.duration;
+        $('#display').attr('src', item.url);
+    }
+    </script>
+</head>
+<body>
+    <div id="#admin">
+        <h1>12UL - Videowall - Admin</h1>
+
+        <div id="#manage-loops">
+            <h2>Loops</h2>
+            <div id="loops">
+            </div>
+            <h2>New loop</h2>
+            <div id="newLoop">
+                <input type="text" id="name" />
+                <input type="submit" value="New loop" onClick="javascript:newLoop()"/>
+                <span class="error"></span>
+            </div>
+        </div>
+    </div>
+    <iframe id="display" src="../client/index.html">
+    </iframe>
+</body>
+</html>

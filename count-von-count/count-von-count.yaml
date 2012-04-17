@@ -1,7 +1,8 @@
-circuitLength: 400
-maxSpeed: 50
+startTime:     "2012-04-25T08:00:00.000Z"
+circuitLength: 480
+maxSpeed:      20
 
-batonWatchdogLifespan: 1
+batonWatchdogLifespan: 30
 
 sensorPort: 9001
 
@@ -10,51 +11,86 @@ replayLog: log/replay.log
 
 batons:
     - nr:  1
-      mac: "00:00:00:00:00:01"
+      mac: "20:11:02:15:01:80"
 
     - nr:  2
-      mac: "00:00:00:00:00:02"
+      mac: "20:11:02:15:01:42"
 
     - nr:  3
-      mac: "00:00:00:00:00:03"
+      mac: "20:11:02:15:01:15"
 
     - nr:  4
-      mac: "00:00:00:00:00:04"
+      mac: "20:11:02:15:01:75"
 
     - nr:  5
-      mac: "00:00:00:00:00:05"
+      mac: "20:11:02:15:01:77"
 
     - nr:  6
-      mac: "00:00:00:00:00:06"
+      mac: "20:11:02:15:01:51"
 
     - nr:  7
-      mac: "00:00:00:00:00:07"
+      mac: "20:11:02:15:01:93"
 
     - nr:  8
-      mac: "00:00:00:00:00:08"
+      mac: "00:12:02:01:07:82"
 
     - nr:  9
-      mac: "00:00:00:00:00:09"
+      mac: "00:12:02:01:00:04"
 
     - nr:  10
-      mac: "00:00:00:00:00:0a"
+      mac: "20:11:02:15:01:17"
+
+    - nr:  11
+      mac: "00:12:02:01:06:25"
+
+    - nr:  12
+      mac: "20:11:02:15:01:50"
+
+    - nr:  13
+      mac: "00:12:02:01:08:76"
+
+    - nr:  14
+      mac: "20:11:02:15:01:34"
+
+    - nr:  15
+      mac: "20:11:02:15:01:90"
+
+    - nr:  16
+      mac: "00:11:72:14:01:98"
+
+    - nr:  17
+      mac: "20:11:02:15:01:67"
+
+    - nr:  18
+      mac: "20:11:02:15:01:83"
+
+    - nr:  19
+      mac: "20:11:02:15:01:79"
 
 stations:
-    - name:     "localhost"
-      mac:      "00:00:00:00:01:00"
+    - name:     "gyrid-1"
+      mac:      "00:1C:F0:6C:39:32"
       position: 0
 
     - name:     "gyrid-2"
-      mac:      "00:00:00:00:02:00"
-      position: 100
+      mac:      "00:21:91:F1:EA:0A"
+      position: 120
 
     - name:     "gyrid-3"
-      mac:      "00:00:00:00:03:00"
-      position: 200
+      mac:      "00:22:B0:D0:61:1F"
+      position: 240
 
     - name:     "gyrid-4"
-      mac:      "00:00:00:00:04:00"
-      position: 300
+      mac:      "00:21:91:F1:EA:11"
+      position: 360
+
+    # - name:     "gyrid-5"
+    #   mac:      "00:21:91:F1:EA:0E"
+    #   position: 400
+
+    # - name:     "gyrid-6"
+    #   mac:      "00:24:01:EB:C2:65"
+    #   position: 500
 
 boxxies:
     - host: "127.0.0.1"

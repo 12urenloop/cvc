@@ -10,7 +10,7 @@ import Control.Applicative ((<$>))
 import Control.Arrow ((&&&))
 import Control.Monad.Trans (liftIO)
 import Data.Foldable (forM_)
-import Data.List (find, sortBy)
+import Data.List (find, sort, sortBy)
 import Data.Maybe (mapMaybe)
 import Data.Ord (comparing)
 import qualified Data.Map as M
@@ -44,4 +44,4 @@ assignment batons = do
         freeBatons = map snd $ M.toList $ foldl (flip M.delete) batonMap $
             mapMaybe (teamBaton . snd) teams
 
-    return (withBatons, freeBatons)
+    return (withBatons, sort freeBatons)

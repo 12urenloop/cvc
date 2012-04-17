@@ -5,19 +5,22 @@ module CountVonCount.Boxxy
       BoxxyConfig (..)
     , defaultBoxxyConfig
 
-      -- * State
-    , Boxxies
-    , newBoxxies
-
       -- * Talking to boxxy
     , putConfig
     , putLaps
     , putPosition
+
+      -- * Stateful talking
+    , Boxxies
+    , newBoxxies
+    , withBoxxies
     ) where
 
-import Control.Applicative ((<$>),(<*>))
-import Control.Concurrent.MVar (MVar, newMVar, modifyMVar_, readMVar)
-import Control.Monad (mzero)
+import Control.Applicative (pure, (<$>),(<*>))
+import Control.Concurrent (forkIO)
+import Control.Monad (forM, forM_, mzero, void, when)
+import Data.IORef (IORef, newIORef, readIORef, writeIORef)
+import Data.Maybe (isNothing)
 import Data.Time (UTCTime)
 
 import Data.Aeson (FromJSON (..), ToJSON (..), (.=), (.:?), (.!=))
@@ -28,8 +31,11 @@ import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import qualified Network.HTTP.Conduit as Http
 
+import CountVonCount.Log (Log)
 import CountVonCount.Persistence
 import CountVonCount.Types
+import CountVonCount.Util
+import qualified CountVonCount.Log as Log
 
 data BoxxyConfig = BoxxyConfig
     { boxxyHost :: Text
@@ -67,11 +73,6 @@ defaultBoxxyConfig = BoxxyConfig
     , boxxyKey  = "tetten"
     }
 
-type Boxxies = MVar [(BoxxyConfig, Bool)]
-
-newBoxxies :: [BoxxyConfig] -> IO Boxxies
-newBoxxies = newMVar . map (flip (,) False)
-
 makeRequest :: ToJSON a => BoxxyConfig -> Text -> a -> IO ()
 makeRequest config path body = do
     let rq = Http.def
@@ -94,12 +95,15 @@ makeRequest config path body = do
     path'       = boxxyPath config `T.append` path
     queryString = "key=" `T.append` boxxyKey config
 
-putConfig :: BoxxyConfig -> Double -> [Station] -> [Team] -> IO ()
-putConfig config circuitLength stations teams =
+putConfig :: BoxxyConfig -> UTCTime -> Double -> [Station] -> [Team] -> UTCTime
+          -> IO ()
+putConfig config startTime circuitLength stations teams time =
     makeRequest config "/config" $ A.object
-        [ "circuitLength" .= circuitLength
+        [ "startTime"     .= startTime
+        , "circuitLength" .= circuitLength
         , "stations"      .= stations
         , "teams"         .= teams
+        , "time"          .= time
         ]
 
 putLaps :: BoxxyConfig   -- ^ Boxxy instance to notify
@@ -128,3 +132,38 @@ putPosition config team time station speed = makeRequest config path $ A.object
     ]
   where
     path = T.concat ["/", teamId team, "/position"]
+
+data State = Up | Down
+    deriving (Eq, Show)
+
+data Boxxies = Boxxies
+    { boxxiesState :: [(BoxxyConfig, IORef State)]
+    , boxxiesInit  :: BoxxyConfig -> IO ()
+    }
+
+newBoxxies :: [BoxxyConfig] -> (BoxxyConfig -> IO ()) -> IO Boxxies
+newBoxxies configs init' = Boxxies
+    <$> forM configs (\c -> (,) c <$> newIORef Down)
+    <*> pure init'
+
+withBoxxies :: Log
+            -> Boxxies
+            -> (BoxxyConfig -> IO ())
+            -> IO ()
+withBoxxies logger bs f = forM_ (boxxiesState bs) $ \(c, rs) ->
+    void $ forkIO $ do
+        s <- readIORef rs
+        Log.string logger $ "Calling " ++ show c ++ ", currently " ++ show s
+        -- Try to init if needed
+        r <- case s of
+            Down -> isolate logger ("init " ++ show c) $ boxxiesInit bs c
+            Up   -> return Nothing
+
+        -- Make the call if up
+        r' <- case r of
+            Nothing -> isolate logger ("call " ++ show c) $ f c
+            Just _  -> return r
+
+        let s' = if isNothing r' then Up else Down
+        when (s /= s') $ Log.string logger $ show c ++ " is now " ++ show s'
+        writeIORef rs s'
