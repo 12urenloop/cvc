@@ -95,10 +95,12 @@ makeRequest config path body = do
     path'       = boxxyPath config `T.append` path
     queryString = "key=" `T.append` boxxyKey config
 
-putConfig :: BoxxyConfig -> Double -> [Station] -> [Team] -> UTCTime -> IO ()
-putConfig config circuitLength stations teams time =
+putConfig :: BoxxyConfig -> UTCTime -> Double -> [Station] -> [Team] -> UTCTime
+          -> IO ()
+putConfig config startTime circuitLength stations teams time =
     makeRequest config "/config" $ A.object
-        [ "circuitLength" .= circuitLength
+        [ "startTime"     .= startTime
+        , "circuitLength" .= circuitLength
         , "stations"      .= stations
         , "teams"         .= teams
         , "time"          .= time

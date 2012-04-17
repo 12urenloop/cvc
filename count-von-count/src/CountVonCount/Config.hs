@@ -9,6 +9,7 @@ module CountVonCount.Config
 import Control.Applicative ((<$>),(<*>))
 import Control.Monad (mzero)
 import Data.Maybe (fromMaybe)
+import Data.Time (UTCTime)
 
 import Data.Aeson (FromJSON (..), ToJSON (..), (.=), (.:?), (.!=))
 import Data.Yaml (decodeFile)
@@ -18,7 +19,8 @@ import CountVonCount.Types
 import CountVonCount.Boxxy
 
 data Config = Config
-    { configCircuitLength         :: Double
+    { configStartTime             :: UTCTime
+    , configCircuitLength         :: Double
     , configMaxSpeed              :: Double
     , configBatonWatchdogLifespan :: Int
     , configBatonWatchdogInterval :: Int
@@ -34,7 +36,8 @@ data Config = Config
 
 instance ToJSON Config where
     toJSON conf = A.object
-        [ "circuitLength"         .= configCircuitLength         conf
+        [ "startTime"             .= configStartTime             conf
+        , "circuitLength"         .= configCircuitLength         conf
         , "maxSpeed"              .= configMaxSpeed              conf
         , "batonWatchdogLifespan" .= configBatonWatchdogLifespan conf
         , "batonWatchdogInterval" .= configBatonWatchdogInterval conf
@@ -50,6 +53,7 @@ instance ToJSON Config where
 
 instance FromJSON Config where
     parseJSON (A.Object o) = Config <$>
+        o .:? "startTime"             .!= configStartTime             d <*>
         o .:? "circuitLength"         .!= configCircuitLength         d <*>
         o .:? "maxSpeed"              .!= configMaxSpeed              d <*>
         o .:? "batonWatchdogLifespan" .!= configBatonWatchdogLifespan d <*>
@@ -69,7 +73,8 @@ instance FromJSON Config where
 
 defaultConfig :: Config
 defaultConfig = Config
-    { configCircuitLength         = 400
+    { configStartTime             = undefined
+    , configCircuitLength         = 400
     , configMaxSpeed              = 12  -- 12m/s should be plenty?
     , configBatonWatchdogLifespan = 30
     , configBatonWatchdogInterval = 5

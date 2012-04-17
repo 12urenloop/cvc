@@ -1,7 +1,8 @@
+startTime:     "2012-04-25T08:00:00.000Z"
 circuitLength: 400
-maxSpeed: 50
+maxSpeed:      50
 
-batonWatchdogLifespan: 1
+batonWatchdogLifespan: 20
 
 sensorPort: 9001
 

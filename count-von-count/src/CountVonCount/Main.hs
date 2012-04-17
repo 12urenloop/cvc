@@ -39,9 +39,10 @@ main = do
 
     -- Initialize boxxy
     boxxies <- newBoxxies (configBoxxies config) $ \b -> do
-        ts <- map snd <$> runPersistence getAllTeams
-        t  <- getCurrentTime
-        putConfig b (configCircuitLength config) (configStations config) ts t
+        teams <- map snd <$> runPersistence getAllTeams
+        time  <- getCurrentTime
+        putConfig b (configStartTime config) (configCircuitLength config)
+                (configStations config) teams time
 
     -- Connecting the sensor to the counter
     sensorChan <- newChan
