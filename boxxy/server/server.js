@@ -16,6 +16,7 @@ var run = function(port) {
 
     // Parse messages as JSON
     server.use(express.bodyParser())
+    server.use(express.static(__dirname + '/../public'))
 
     // Set up routes used by count-von-count
     var cvcRoutes = {
