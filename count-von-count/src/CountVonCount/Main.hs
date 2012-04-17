@@ -6,6 +6,7 @@ import Control.Applicative ((<$>))
 import Control.Concurrent (forkIO)
 import Control.Concurrent.Chan (newChan, writeChan)
 import Data.Foldable (forM_)
+import Data.Time (getCurrentTime)
 
 import qualified Data.Aeson as A
 import qualified Network.WebSockets as WS
@@ -20,7 +21,6 @@ import CountVonCount.Persistence (Team (..), getAllTeams, runPersistence)
 import CountVonCount.Sensor
 import CountVonCount.Sensor.Filter
 import CountVonCount.Types
-import CountVonCount.Util
 import qualified CountVonCount.Log as Log
 import qualified CountVonCount.Sensor as Sensor
 import qualified CountVonCount.Web as Web
@@ -38,10 +38,10 @@ main = do
     pubSub <- WS.newPubSub
 
     -- Initialize boxxy
-    isolate logger "Initialize boxxy" $ do
-        teams <- map snd <$> runPersistence getAllTeams
-        forM_ (configBoxxies config) $ \boxxy -> putConfig boxxy
-            (configCircuitLength config) (configStations config) teams
+    boxxies <- newBoxxies (configBoxxies config) $ \b -> do
+        ts <- map snd <$> runPersistence getAllTeams
+        t  <- getCurrentTime
+        putConfig b (configCircuitLength config) (configStations config) ts t
 
     -- Connecting the sensor to the counter
     sensorChan <- newChan
@@ -61,7 +61,7 @@ main = do
     _       <- forkIO $ runCounter counter (configCircuitLength config)
         (configMaxSpeed config) (Log.setModule "Counter" logger)
         (counterHandler (configCircuitLength config) logger
-            (configBoxxies config) pubSub) sensorChan
+            boxxies pubSub) sensorChan
 
     -- Start the baton watchdog
     _ <- forkIO $ watchdog counter logger (configBatonWatchdogInterval config)
@@ -69,14 +69,14 @@ main = do
         (handler "batonHandler" $
             WS.publish pubSub . WS.textData .  A.encode . Views.deadBatons)
 
-    Web.listen config (Log.setModule "Web" logger) pubSub counter
+    Web.listen config (Log.setModule "Web" logger) pubSub counter boxxies
 
     putStrLn "Closing..."
     Log.close replayLog
     Log.close logger
 
 counterHandler :: WS.TextProtocol p
-               => Double -> Log -> [BoxxyConfig] -> WS.PubSub p
+               => Double -> Log -> Boxxies -> WS.PubSub p
                -> Handler (Team, CounterState, CounterEvent)
 counterHandler circuitLength logger boxxies pubSub = handler "counterHandler" $
     \(team, cstate, event) -> do
@@ -84,11 +84,10 @@ counterHandler circuitLength logger boxxies pubSub = handler "counterHandler" $
         publish $ Views.counterState circuitLength team (Just cstate)
 
         -- Send to boxxies
-        forM_ boxxies $ \boxxy -> isolate logger ("Boxxy " ++ show boxxy) $
-            case event of
-                Lap time speed                ->
-                    putLaps boxxy team time 1 (Just speed) Nothing
-                Progression time station speed ->
-                    putPosition boxxy team time station speed
+        withBoxxies logger boxxies $ \b -> case event of
+            Lap time speed                 ->
+                putLaps b team time 1 (Just speed) Nothing
+            Progression time station speed ->
+                putPosition b team time station speed
   where
     publish = WS.publish pubSub . WS.textData . A.encode

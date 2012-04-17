@@ -61,3 +61,8 @@ boxxies:
       port: 8080
       path: ""
       key:  "tetten"
+
+    - host: "10.1.1.200"
+      port: 8120
+      path: ""
+      key:  "sup"

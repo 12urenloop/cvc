@@ -63,10 +63,10 @@ listen logger port handler' = do
 
     forever $ do
         (conn, _) <- S.accept sock
-        _ <- forkIO $ isolate logger "Sensor send config" $ do
+        _ <- forkIO $ isolate_ logger "Sensor send config" $ do
             S.sendAll conn "MSG,enable_rssi,true\r\n"
             S.sendAll conn "MSG,enable_cache,false\r\n"
-        _ <- forkIO $ isolate logger "Sensor receive" $ do
+        _ <- forkIO $ isolate_ logger "Sensor receive" $ do
             E.run_ $ SE.enumSocket 256 conn $$
                 E.sequence (AE.iterParser gyrid) =$ receive logger handler'
             S.sClose conn

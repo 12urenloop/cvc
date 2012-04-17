@@ -72,7 +72,7 @@ batonName = ("Baton " ++) . show . batonNr
 data Handler a = Handler (Log -> a -> IO ())
 
 handler :: String -> (a -> IO ()) -> Handler a
-handler name f = Handler $ \logger -> isolate logger ("Handler " ++ name) . f
+handler name f = Handler $ \logger -> isolate_ logger ("Handler " ++ name) . f
 
 callHandler :: Log -> Handler a -> a -> IO ()
 callHandler logger (Handler f) = f logger
