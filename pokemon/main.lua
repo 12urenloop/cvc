@@ -7,10 +7,10 @@ local function makeTeam(mac, spritePath)
 end
 
 local teams = {
-  makeTeam('00:00:00:00:00:01', 'pokemon/bulbasaur.png', circuitLength),
-  makeTeam('00:00:00:00:00:02', 'pokemon/machop.png', circuitLength),
-  makeTeam('00:00:00:00:00:03', 'pokemon/mankey.png', circuitLength),
-  makeTeam('00:00:00:00:00:04', 'pokemon/charmander.png', circuitLength)
+  makeTeam('20:11:02:15:01:80', 'pokemon/bulbasaur.png', circuitLength),
+  makeTeam('20:11:02:15:01:42', 'pokemon/machop.png', circuitLength),
+  makeTeam('20:11:02:15:01:15', 'pokemon/mankey.png', circuitLength),
+  makeTeam('20:11:02:15:01:75', 'pokemon/charmander.png', circuitLength)
 }
 
 local stationSprite = love.graphics.newImage('pokemon/station.png')
