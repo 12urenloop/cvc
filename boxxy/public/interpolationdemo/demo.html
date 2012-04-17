@@ -54,11 +54,14 @@
                     error = predictedPosition - message.station.position;
                 error = Math.min(error, 400 - error);
                 interpolation.update(message);
+                var newPredictedPosition = interpolation.getPosition(message.team.id),
+                    calcError = newPredictedPosition - predictedPosition;
                 $('#' + message.team.id).children().eq(1).html(message.station.position);
                 $('#' + message.team.id).children().eq(3).html(message.speed);
                 $('#' + message.team.id).children().eq(4).html(interpolation.getSpeed(message.team.id));
                 $('#' + message.team.id).children().eq(5).html(error);
                 log.innerHTML = "[POSITION] " + JSON.stringify(message) + "\n" + log.innerHTML;
+                log.innerHTML = "[ERROR] " + calcError + "\n" + log.innerHTML;
                 
             }
             client.connect();

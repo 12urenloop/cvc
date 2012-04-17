@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <title>12 Urenloop :: Minimap</title>
+    <script type="text/javascript">
+        var g = document.createElement('script'),
+            s = document.getElementsByTagName('script')[0];
+        g.src = 'http://' + window.location.hostname + ':8080/boxxy.js';
+        s.parentNode.insertBefore(g, s);
+    </script>
+    <script type="text/javascript" src="/lib/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="/lib/boxxy-interface.js"></script>
+    <script type="text/javascript" src="/lib/interpolation.js"></script>
+
+    <script type="text/javascript" src="drawing.js"></script>
+
+    <script type="text/javascript">
+        window.onload = function() {
+            var client = new Boxxy(),
+                interpolation = new Interpolation(),
+                context = document.getElementById('minimap').getContext('2d');
+
+            client.receivedConfig = function(config) {
+                interpolation.init(config);
+                draw.init(context, client, interpolation);
+                draw.start();
+                
+            }
+            client.updatedPosition = function(message) {
+                interpolation.update(message);
+                
+            }
+            client.connect();
+            
+            
+        }
+    </script>
+    <script type="text/javascript" src="drawing.js"></script>
+</head>
+<body>
+    <canvas id="minimap" width="288" height="160"></canvas>
+</body>
+</html>

@@ -17,7 +17,8 @@ function Interpolation() {
                 speed: team.speed,
                 station: team.station,
                 time: new Date(team.time),
-                lastPosition: team.station.position
+                lastPosition: team.station.position,
+                correction: 0
             }
         }
 
@@ -26,6 +27,13 @@ function Interpolation() {
     }
 
     this.update = function(message) {
+        // Only correct time once. Can cause jumps otherwise.
+        // TODO: use timestamp from config message
+        if(self.timeOffset == 0) {
+            console.log(message.time);
+            self.timeOffset = new Date() - new Date(message.time);
+            console.log(self.timeOffset);
+        }
         var team = self.teams[message.team.id],
             predictedPosition = self.getPosition(team.id, new Date(message.time)),
             actualPosition = message.station.position,
@@ -36,17 +44,13 @@ function Interpolation() {
         team.time = new Date(message.time);
         team.speed = targetSpeed;
         team.station = message.station;
-        // Only correct time once. Can cause jumps otherwise.
-        // TODO: use timestamp from config message
-        if(self.timeOffset == 0) {
-            self.timeOffset = (new Date()) - team.time;
-        }
     }
 
     this.getPosition = function(teamid, time) {
         if(time == undefined) {
-            time = (new Date() - self.timeOffset);
+            time = new Date();
         }
+        time -= self.timeOffset;
         var team = self.teams[teamid],
             distanceTravelled = (time - team.time) / 1000 * team.speed;
         return self.mod(team.lastPosition + distanceTravelled);
@@ -85,33 +89,56 @@ var shapes = {
     rect: function(pos) {
         var ratio = 1.61803, // It's art!
             width = 1.0,
-            height = 1.0 / ratio,
-            total = 2 * (width + height),
-            progress = pos * total;
-        // Bottom
-        if(progress < width) {
-            return {
-                x: progress,
-                y: 0
-            };
-        // Right
-        } else if(progress < width + height) {
-            return {
-                x: width,
-                y: progress - width
-            };
-        // Top
-        } else if(progress < 2 * width + height) {
-            return {
-                x: width - (progress - width - height),
-                y: height
-            }
-        // Left
-        } else {
-            return {
-                x: 0,
-                y: total - progress
-            }
+            height = 1.0 / ratio;
+            
+        return shapes.segmented(pos, [
+            {x: 0, y: 0},
+            {x: width, y: 0},
+            {x: width, y: height},
+            {x: 0, y: height}
+        ]);
+    },
+    
+    // Approximation of the real octagonal circuit
+    real: function(pos) {
+        return shapes.segmented(pos, [
+            {x: 0, y: 0.07},
+            {x: 0.1, y: 0},
+            {x: 0.9, y: 0},
+            {x: 1, y: 0.07},
+            {x: 1, y: 0.28},
+            {x: 0.9, y: 0.35},
+            {x: 0.1, y: 0.35},
+            {x: 0, y: 0.28}
+        ]);
+    },
+    
+    segmented: function(pos, segments) {
+        var totalLength = 0;
+        // make it a linked list, store length of each segment and
+        // calculate total circuit length.
+        for(var idx = 0; idx < segments.length; idx++) {
+            var last = segments[idx],
+                next = segments[(idx + 1) % segments.length];
+            last.length = Math.sqrt((next.x - last.x) * (next.x - last.x) + (next.y - last.y) * (next.y - last.y));
+            last.next = next;
+            totalLength += last.length;
         }
-    } 
+        
+        var progressLeft = totalLength * pos,
+            segment = segments[0];
+
+        while(progressLeft > segment.length) {
+            progressLeft -= segment.length;
+            segment = segment.next;
+        }
+        
+        var diffY = (segment.next.y - segment.y),
+            diffX = (segment.next.x - segment.x),
+            segmentPercentage = progressLeft / segment.length;
+        return {
+            x: segment.x + segmentPercentage * diffX,
+            y: segment.y + segmentPercentage * diffY
+        }
+    }
 }

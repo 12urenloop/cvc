@@ -32,6 +32,34 @@ function drawCircuit() {
     context.stroke();
 }
 
+function drawRealCircuit() {
+    var canvas = document.getElementById("boxxy-interpolation"),
+        context = canvas.getContext("2d"),
+        scale = 300,
+        offsetX = 50,
+        offsetY = 50,
+        shape = [
+            {x: 0, y: 0.07},
+            {x: 0.1, y: 0},
+            {x: 0.9, y: 0},
+            {x: 1, y: 0.07},
+            {x: 1, y: 0.28},
+            {x: 0.9, y: 0.35},
+            {x: 0.1, y: 0.35},
+            {x: 0, y: 0.28}
+        ];
+    context.beginPath();
+    context.moveTo(shape[0].x * scale + offsetX, shape[0].y * scale + offsetY)
+    for(var idx = 1; idx <= shape.length; idx++) {
+        var pos = shape[idx % shape.length];
+        context.lineTo(pos.x * scale + offsetX, pos.y * scale + offsetY);
+    }
+    context.lineWidth = 10;
+    context.strokeStyle = "#8ED6FF";
+    context.lineCap = 'round';
+    context.stroke();
+}
+
 function initCanvas(boxxy, interpolation) {
     var fps = 30;
 
@@ -50,17 +78,17 @@ function initCanvas(boxxy, interpolation) {
         clearCanvas()
 
         // draw everything!
-        drawCircuit();
+        drawRealCircuit();
 
         var stations = boxxy.getStations();
         for(var name in stations) {
             var station = stations[name];
-            var pos = shapes.rect(station.position / boxxy.circuitLength);
+            var pos = shapes.real(station.position / boxxy.circuitLength);
             drawStation(station.name[station.name.length - 1], pos);
         }
         var teams = boxxy.getTeams();
         for(var idx in teams) {
-            var coords = interpolation.getCoords(teams[idx].id, shapes.rect);
+            var coords = interpolation.getCoords(teams[idx].id, shapes.real);
             drawTeam(teams[idx].name, coords);
         }
 

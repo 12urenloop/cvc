@@ -1,18 +1,19 @@
 exports.Team = Team
-
+exports.ISODateString = ISODateString
 var events = require('events'),
     util = require('util')
 
 // From Mozilla Developer Network
 function ISODateString(d){
   function pad(n){return n<10 ? '0'+n : n}
+  function padm(n){return (n < 100 ? '0' : '') + pad(n)}
   return d.getUTCFullYear()+'-'
       + pad(d.getUTCMonth()+1)+'-'
       + pad(d.getUTCDate())+'T'
       + pad(d.getUTCHours())+':'
       + pad(d.getUTCMinutes())+':'
       + pad(d.getUTCSeconds())+'.'
-      + pad(d.getUTCMilliseconds()) + 'Z'
+      + padm(d.getUTCMilliseconds()) + 'Z'
 }
 
 function Team(id, name, config) {

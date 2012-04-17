@@ -4,6 +4,7 @@ var team = require('./team')
 var names = ["Michiel", "Sander", "Pieter"]
 var runners = [];
 var config = {
+    startTime: team.ISODateString(new Date()),
     stations: [
         {
             position: 0.0,

@@ -33,7 +33,7 @@ exports.updateLaps = function(message) {
     var team = state.teams[message.team.id]
     var previousLap = team.lastLapCompleted
     team.lastLapCompleted = new Date(message.time)
-    team.laps = message.team.laps
+    team.laps = message.team.laps + parseInt(message.laps)
     message.lapTime = Math.round((team.lastLapCompleted - previousLap) / 1000)
 }
 
