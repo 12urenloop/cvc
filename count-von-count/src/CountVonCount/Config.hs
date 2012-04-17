@@ -9,7 +9,7 @@ module CountVonCount.Config
 import Control.Applicative ((<$>),(<*>))
 import Control.Monad (mzero)
 import Data.Maybe (fromMaybe)
-import Data.Time (UTCTime)
+import Data.Time (UTCTime (..))
 
 import Data.Aeson (FromJSON (..), ToJSON (..), (.=), (.:?), (.!=))
 import Data.Yaml (decodeFile)
@@ -73,7 +73,7 @@ instance FromJSON Config where
 
 defaultConfig :: Config
 defaultConfig = Config
-    { configStartTime             = undefined
+    { configStartTime             = UTCTime (toEnum 0) 0
     , configCircuitLength         = 400
     , configMaxSpeed              = 12  -- 12m/s should be plenty?
     , configBatonWatchdogLifespan = 30
