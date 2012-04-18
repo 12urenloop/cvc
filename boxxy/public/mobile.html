@@ -1,0 +1,67 @@
+<!DOCTYPE html> 
+<html> 
+	<head> 
+	<title>12Urenloop mobile</title> 
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1"> 
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.css" />
+	<script src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js"></script>
+	    <!-- Copy the following lines into your visualisation to use the Boxxy API 
+    <script type="text/javascript">
+        var g = document.createElement('script'),
+            s = document.getElementsByTagName('script')[0];
+        g.src = 'http://' + (window.location.hostname || 'localhost') + ':8080/boxxy.js';
+        s.parentNode.insertBefore(g, s);
+    </script>
+    <script type="text/javascript" src="lib/boxxy-interface.js"></script>
+    -->
+    <!--
+      To test without a local boxxy server, use the following script tags-->
+
+        <script type="text/javascript" src="http://live.12urenloop.be:8080/boxxy.js"></script>
+        <script type="text/javascript" src="http://live.12urenloop.be/lib/boxxy-interface.js"></script>
+
+    <!-- Use the boxxy information as follows -->
+    <script type="text/javascript">
+        window.onload = function() {
+        	var jList = $( "#list" );
+            var clientBoxxy = new Boxxy();
+            clientBoxxy.receivedConfig = function(config) {
+            	for ( var i = 0; i<clientBoxxy.getTeams().length; i++ ){
+				console.log(clientBoxxy.getTeams()[i].name);
+				var team = clientBoxxy.getTeams()[i];
+				var name = team.name;
+				var laps = team.laps;
+				if( i === 0 )
+				jList.append($('<li class="ui-li ui-li-static ui-body-c ui-li-has-count ui-corner-top" >' + name +'<span class="ui-li-count ui-btn-up-c ui-btn-corner-all">' + laps + ' punten</span></li>'));
+				else if ( i === clientBoxxy.getTeams().length - 1 )
+				jList.append($('<li class="ui-li ui-li-static ui-body-c ui-li-has-count ui-corner-bottom" >' + name +'<span class="ui-li-count ui-btn-up-c ui-btn-corner-all">' + laps + ' punten</span></li>'));
+				else
+				jList.append($('<li  class="ui-li ui-li-static ui-body-c ui-li-has-count" >' + name +'<span class="ui-li-count ui-btn-up-c ui-btn-corner-all">' + laps + ' punten</span></li>'));
+
+				}
+			}
+			
+            clientBoxxy.connect('live.12urenloop.be');
+        }
+        
+    </script>
+</head> 
+<body> 
+
+<div data-role="page">
+
+	<div data-role="header">
+		<h1>12urenloop Universiteit Gent </h1>
+	</div><!-- /header -->
+	<div data-role="content">   
+		<ul data-role="listview" data-inset="true" id="list">
+<!--- List items will be added dynamically. --->
+</ul>
+	    </div>
+
+
+
+</body>
+</html>
