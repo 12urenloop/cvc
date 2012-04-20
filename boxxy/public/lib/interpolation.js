@@ -23,17 +23,10 @@ function Interpolation() {
         }
 
         self.circuitLength = config.circuitLength;
-        self.timeOffset = 0;
+        self.timeOffset = new Date() - new Date(config.time);
     }
 
     this.update = function(message) {
-        // Only correct time once. Can cause jumps otherwise.
-        // TODO: use timestamp from config message
-        if(self.timeOffset == 0) {
-            console.log(message.time);
-            self.timeOffset = new Date() - new Date(message.time);
-            console.log(self.timeOffset);
-        }
         var team = self.teams[message.team.id],
             predictedPosition = self.getPosition(team.id, new Date(message.time)),
             actualPosition = message.station.position,

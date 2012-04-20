@@ -6,6 +6,7 @@ function Boxxy() {
 
     // log everything to console
     this.debug = false;
+    this.initialized = false;
 
     // information hooks
     this.receivedConfig = function(c) {}
@@ -29,7 +30,8 @@ function Boxxy() {
             config = eval('(' + http.responseText + ')');
             if(self.debug) console.log("[CONFIG] " + JSON.stringify(config))
             self.teams = config.teams;
-
+            self.configTime = new Date(config.time);
+            self.timeOffset = new Date() - self.configTime;
             for(var stationIdx = 0; stationIdx < config.stations.length; stationIdx++) {
                 var station = config.stations[stationIdx];
                 var nextStation = config.stations[(stationIdx + 1) % config.stations.length];
@@ -43,10 +45,11 @@ function Boxxy() {
             }
             
             self.circuitLength = config.circuitLength;
-            self.startTime = config.startTime;
+            self.startTime = new Date(config.startTime);
             updateRanking();
-
+            self.initialized = true;
             self.receivedConfig(config);
+            console.log(self.teams)
         }
         http.send(null);
 
@@ -78,6 +81,28 @@ function Boxxy() {
         return self.stations;
     }
 
+    this.time = function(date) {
+        date = date || new Date();
+        return new Date(date - self.timeOffset);
+    }
+    
+    this.timeSinceStart = function() {
+        return self.time() - self.startTime;
+    }
+    
+    this.countdown = function() {
+        var end = 12 * 60 * 60 * 1000,
+            now = self.timeSinceStart(),
+            diff = end - now,
+            hours = Math.floor(diff / (60 * 60 * 1000)),
+            minutes = Math.floor((diff % (60 * 60 * 1000)) / (60 * 1000)),
+            seconds = Math.floor((diff % (60 * 1000)) / (1000));
+        return {
+            h: Math.max(0, hours),
+            m: Math.max(0, minutes),
+            s: Math.max(0, seconds)
+        }
+    }
     // Utility methods
     var updateRanking = function() {
         self.ranking.sort(function(a, b) { return b.laps - a.laps; });
@@ -85,6 +110,5 @@ function Boxxy() {
             self.ranking[i].ranking = i + 1;
         };
     }
-
 
 }

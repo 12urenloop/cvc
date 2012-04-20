@@ -51,6 +51,12 @@ var config = {
             name: 'Jasper',
             baton: "00:00:00:00:00:04",
             laps: 0
+        },
+        {
+            id: 'team-5',
+            name: 'Wetenschappen & VLAK',
+            baton: "00:00:00:00:00:05",
+            laps: 0
         }
     ],
     circuitLength: 400.0
@@ -85,13 +91,14 @@ function toBoxxy(path, message) {
 
     var req = http.request(options, function(res) {
         // console.log(res)
-    });
+    })
 
     req.on('error', function(e) {
-        console.log('problem with request: ' + e.message);
-    });
+        console.log('problem with request: ' + e.message)
+    })
 
     // write data to request body
-    req.write(JSON.stringify(message));
-    req.end();
+    message.time = team.ISODateString(new Date())
+    req.write(JSON.stringify(message))
+    req.end()
 }

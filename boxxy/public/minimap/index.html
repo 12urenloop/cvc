@@ -11,18 +11,20 @@
     <script type="text/javascript" src="/lib/jquery-1.7.1.min.js"></script>
     <script type="text/javascript" src="/lib/boxxy-interface.js"></script>
     <script type="text/javascript" src="/lib/interpolation.js"></script>
-
+    <script type="text/javascript" src="facts.js"></script>
     <script type="text/javascript" src="drawing.js"></script>
 
     <script type="text/javascript">
         window.onload = function() {
             var client = new Boxxy(),
                 interpolation = new Interpolation(),
-                context = document.getElementById('minimap').getContext('2d');
+                canvas = document.getElementById('minimap'),
+                context = canvas.getContext('2d');
 
             client.receivedConfig = function(config) {
                 interpolation.init(config);
-                draw.init(context, client, interpolation);
+                facts.init(client);
+                draw.init(context, canvas.width, canvas.height, client, interpolation);
                 draw.start();
                 
             }
