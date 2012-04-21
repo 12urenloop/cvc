@@ -11,8 +11,8 @@ import Data.Char (isDigit, isLower)
 import Data.List (sort)
 
 import Data.Text (Text)
-import Text.Blaze (Html)
 import Data.Time (getCurrentTime)
+import Text.Blaze.Html (Html)
 import Text.Digestive (Form, check, checkM, stringRead, text, (.:))
 import Text.Digestive.Snap (runForm)
 import qualified Data.Text as T

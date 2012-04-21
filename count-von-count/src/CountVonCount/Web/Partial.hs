@@ -6,16 +6,17 @@ module CountVonCount.Web.Partial
 
 import Data.Aeson (ToJSON (..), object, (.=))
 import Data.Text (Text)
-import Text.Blaze (Html, ToHtml (..))
-import Text.Blaze.Renderer.Utf8 (renderHtml)
+import Text.Blaze (ToMarkup (..))
+import Text.Blaze.Html (Html)
+import Text.Blaze.Html.Renderer.Utf8 (renderHtml)
 
 data Partial = Partial
     { partialSelector :: Text
     , partialHtml     :: Html
     }
 
-instance ToHtml Partial where
-    toHtml = partialHtml
+instance ToMarkup Partial where
+    toMarkup = partialHtml
 
 instance ToJSON Partial where
     toJSON p = object

@@ -17,7 +17,7 @@ import Control.Monad (forM_)
 import Prelude hiding (div)
 import Text.Printf (printf)
 
-import Text.Blaze (Html, (!))
+import Text.Blaze.Html (Html, (!))
 import qualified Data.Text as T
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A

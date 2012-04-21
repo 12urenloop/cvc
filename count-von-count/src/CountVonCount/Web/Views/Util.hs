@@ -7,7 +7,7 @@ module CountVonCount.Web.Views.Util
     , postForm
     ) where
 
-import Text.Blaze ((!))
+import Text.Blaze.Html ((!))
 import qualified Text.Blaze.Html5 as H
 import qualified Text.Blaze.Html5.Attributes as A
 
