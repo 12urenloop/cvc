@@ -3,7 +3,7 @@ function Interpolation() {
 
     this.init = function(config) {
         self.stations = {};
-
+        self.start = config.stations[0];
         for(var stationIdx in config.stations) {
             var station = config.stations[stationIdx];
             self.stations[station.name] = station;
@@ -23,14 +23,25 @@ function Interpolation() {
         }
 
         self.circuitLength = config.circuitLength;
-        self.timeOffset = new Date() - new Date(config.time);
+        //self.timeOffset = new Date() - new Date(config.time);
+        self.timeOffset = 0;
     }
 
+    this.correctStation = function(predictedStation, actualPosition) {
+        var station = predictedStation,
+            demodulated = (station.next.position == 0 ? self.circuitLength : station.next.position);
+        while(actualPosition > demodulated) {
+            station = station.next;
+            demodulated = station.next.position == 0 ? self.circuitLength : station.next.position;
+        }
+        return station;
+    }
+    
     this.update = function(message) {
         var team = self.teams[message.team.id],
             predictedPosition = self.getPosition(team.id, new Date(message.time)),
             actualPosition = message.station.position,
-            targetPosition = self.stations[message.station.name].next.position,
+            targetPosition = self.correctStation(self.stations[message.station.name].next).position,
             targetTime = self.mod(targetPosition - actualPosition + self.circuitLength) / message.speed,
             targetSpeed = self.mod(targetPosition - predictedPosition + self.circuitLength) / targetTime;
         team.lastPosition = predictedPosition;

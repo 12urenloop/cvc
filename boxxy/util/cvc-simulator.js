@@ -3,6 +3,11 @@ var team = require('./team')
 
 var names = ["Michiel", "Sander", "Pieter"]
 var runners = [];
+var names = [
+    "HomeKonvent", "SeniorenKonvent", "Kofschipclubs", "VEK", "VTK", "VLK", 
+    "Blandinia", "Politeia", "VRG", "Wetenschappen & VLAK", "VPPK",
+    "VGK & GFK & VBK", "KVHV", "HILOK"
+];
 var config = {
     startTime: team.ISODateString(new Date()),
     stations: [
@@ -27,39 +32,17 @@ var config = {
             mac: "00:00:00:00:04:00" 
         }
     ],
-    teams: [
-        {
-            id: 'team-1',
-            name: 'Michiel',
-            baton: "00:00:00:00:00:01",
-            laps: 0
-        },
-        {
-            id: 'team-2',
-            name: 'Pieter',
-            baton: "00:00:00:00:00:02",
-            laps: 0
-        },
-        {
-            id: 'team-3',
-            name: 'Sander',
-            baton: "00:00:00:00:00:03",
-            laps: 0
-        },
-        {
-            id: 'team-4',
-            name: 'Jasper',
-            baton: "00:00:00:00:00:04",
-            laps: 0
-        },
-        {
-            id: 'team-5',
-            name: 'Wetenschappen & VLAK',
-            baton: "00:00:00:00:00:05",
-            laps: 0
-        }
-    ],
+    teams: [],
     circuitLength: 400.0
+}
+
+for(var idx in names) {
+    config.teams.push({
+        id: 'team-' + idx,
+        name: names[idx],
+        baton: "00:00:00:00:00:" + (idx < 10 ? "0" + idx : idx),
+        laps: 0
+    })
 }
 
 for(var idx in config.teams) {

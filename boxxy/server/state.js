@@ -23,7 +23,7 @@ exports.initialize = function(config) {
     }
     state.circuitLength = config.circuitLength
     state.startTime = config.startTime
-    time.synchronize(new Date(config.time))
+    //time.synchronize(new Date(config.time))
     state.time = config.time
 }
 

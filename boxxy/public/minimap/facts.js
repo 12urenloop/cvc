@@ -8,7 +8,7 @@ var facts = {
         facts.updateWeather();
         facts.next();
         setInterval(facts.next, 5000);
-        setInterval(facts.updateWeather, 600000);
+        setInterval(facts.updateWeather, 60000);
     },
     
     lap: function(message) {
@@ -28,7 +28,7 @@ var facts = {
         function() {
             var direction = facts.weather.winddir16Point,
                 speed = parseInt(facts.weather.windspeedKmph);
-            direction = direction.replace("S", "Z").replace("E", "O");
+            direction = direction.replace(/S/g, "Z").replace(/E/g, "O");
             
             return "Wind: " + speed.toFixed(0) + " km/u uit het " + direction;
         },

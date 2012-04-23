@@ -11,13 +11,14 @@ var draw = {
         {x: 0.1, y: 0.35},
         {x: 0, y: 0.28}
     ],
-    scale: 250,
+    scale: 650,
     circuitTop: 0.15,
     circuitHeight: 0.35,
     fps: 30,
     boxxy: undefined,
     interpolation: undefined,
-    highlight: 0,
+    highlightIdx: 0,
+    highlight: null,
     rankingTexts: ['eerste', 'tweede', 'derde', 'vierde', 'vijfde', 'zesde',
         'zevende', 'achtste', 'negende', 'tiende', 'elfde', 'twaalfde',
         'dertiende', 'veertiende', 'vijftiende', 'zestiende', 'zeventiende'
@@ -44,10 +45,10 @@ var draw = {
         
         draw.highlight = boxxy.getTeams()[0];
         window.setInterval(function() {
-            var teams = boxxy.getTeams(),
-                idx = Math.round(Math.random() * (teams.length - 1));
-            draw.highlight = teams[idx];
-        }, 3000);
+            var teams = boxxy.getTeams();
+            draw.highlightIdx = (draw.highlightIdx + 1) % teams.length;
+            draw.highlight = teams[draw.highlightIdx];
+        }, 7000);
     },
     
     clear: function() {
@@ -92,8 +93,8 @@ var draw = {
     },
     
     team: function(team) {
-        var teamFont = draw.font(12),
-            teamRadius = 0.04;
+        var teamFont = draw.font(7),
+            teamRadius = 0.025;
         
         // <3 transformations
         draw.context.save();
@@ -101,10 +102,13 @@ var draw = {
         draw.context.scale(draw.scale, draw.scale);
         
         draw.context.beginPath();
-        draw.context.fillStyle = "#FF6103"
-        draw.context.arc(team.coords.x, team.coords.y, teamRadius, 0, Math.PI*2, true); 
+        draw.context.fillStyle = "#FF6103";
+        draw.context.strokeStyle = "black";
+        draw.context.lineWidth = 0.002;
+        draw.context.arc(team.coords.x, team.coords.y, teamRadius, 0, Math.PI*2, true);
         draw.context.closePath();
         draw.context.fill();
+        draw.context.stroke();
         
         // scale back to regular. Highly scaled text is a no no.
         // draw.context.save();
@@ -117,28 +121,30 @@ var draw = {
         
         if(team.highlight) {
             var teamNameX = draw.scale / 2,
-                teamNameY = 0.08 * draw.scale,
+                teamNameY = 0.095 * draw.scale,
                 teamNameFont = draw.font(14),
                 teamStatsFont = draw.font(12),
-                highlightRadius = 0.06;
+                highlightRadius = 0.057;
 
             draw.context.textBaseline = "middle";
             draw.context.textAlign = "center";
             draw.context.font = teamNameFont;
             draw.context.fillText(team.name, teamNameX, teamNameY);
             draw.context.font = teamStatsFont;
-            draw.context.fillText(team.info.laps + ' rondjes, v = ' + team.info.speed.toFixed(1) + ' m/s', teamNameX, teamNameY + 0.07 * draw.scale);
-            draw.context.fillText(draw.rankingTexts[team.info.ranking - 1] + " plaats", teamNameX, teamNameY + 0.14 * draw.scale);
+            draw.context.fillText(team.info.laps + ' rondjes, v = ' + team.info.speed.toFixed(1) + ' m/s', teamNameX, teamNameY + 0.075 * draw.scale);
+            draw.context.fillText(draw.rankingTexts[team.info.ranking - 1] + " plaats", teamNameX, teamNameY + 0.15 * draw.scale);
             draw.context.scale(draw.scale, draw.scale);
             draw.context.beginPath();
-            draw.context.fillStyle = "#FF6103"
+            draw.context.fillStyle = "#FF6103";
+            draw.context.lineWidth = 0.005;
             draw.context.arc(team.coords.x, team.coords.y, highlightRadius, 0, Math.PI*2, true); 
             draw.context.closePath();
             draw.context.fill();
+            draw.context.stroke();
             
             draw.context.scale(1 / draw.scale, 1 / draw.scale);
             
-            draw.context.font = draw.font(20);
+            draw.context.font = draw.font(17);
             draw.context.textAlign = "center";
             draw.context.textBaseline = "middle";
             draw.context.fillStyle = "black";

@@ -49,7 +49,6 @@ function Boxxy() {
             updateRanking();
             self.initialized = true;
             self.receivedConfig(config);
-            console.log(self.teams)
         }
         http.send(null);
 
