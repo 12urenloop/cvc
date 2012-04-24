@@ -14,7 +14,9 @@ module CountVonCount.Web.Views
     ) where
 
 import Control.Monad (forM_)
+import Data.Time (TimeZone, formatTime, utcToLocalTime)
 import Prelude hiding (div)
+import System.Locale (defaultTimeLocale)
 import Text.Printf (printf)
 
 import Text.Blaze.Html (Html, (!))
@@ -106,20 +108,21 @@ management teams batons = template "Teams" $ block "management" $ do
   where
     macValue = H.toValue . batonMac
 
-laps :: [(Team, Lap)] -> Html
-laps laps' = template "Laps" $ block "laps" $ do
+laps :: [(Team, [Lap])] -> TimeZone -> Html
+laps teams tz = template "Laps" $ block "laps" $ do
     H.h1 "Laps"
-    H.table $ do
-        H.tr $ do
-            H.th "Team name"
-            H.th "Reason given"
-            H.th "Count"
-            H.th "Timestamp"
-        forM_ laps' $ \(team, lap) -> H.tr $ do
-            H.td $ H.toHtml $ teamName team
-            H.td $ H.toHtml $ lapReason lap
-            H.td $ H.toHtml $ lapCount lap
-            H.td $ H.toHtml $ show $ lapTimestamp lap
+    forM_ teams $ \(team, laps') -> do
+        H.h2 $ H.toHtml $ teamName team
+        H.table $ do
+            H.tr $ do
+                H.th "Timestamp"
+                H.th "Count"
+                H.th "Reason given"
+            forM_ laps' $ \lap -> H.tr $ do
+                let lt = utcToLocalTime tz (lapTimestamp lap)
+                H.td $ H.toHtml $ formatTime defaultTimeLocale "%H:%M:%S" lt
+                H.td $ H.toHtml $ lapCount lap
+                H.td $ H.toHtml $ lapReason lap
 
 teamNew :: D.View Html -> Html
 teamNew view = template "Add team" $ do

@@ -18,9 +18,7 @@ module CountVonCount.Persistence
     , Lap (..)
     , addLap
     , addLaps
-    , getLaps
-    , latestLap
-    , latestNLaps
+    , getLatestLaps
 
     , deleteAll
     ) where
@@ -147,23 +145,14 @@ addLaps !ref !timestamp !reason !c = MDB.modify
         , "count"     MDB.=: c
         ]
 
-getLaps :: Int                -- ^ Offset (0-based)
-        -> Int                -- ^ Count
-        -> Persistence [Lap]  -- ^ Matching laps
-getLaps _ _ = return []  -- TODO: fix
-
-
-latestNLaps :: Ref Team -> Int -> Persistence [Lap]
-latestNLaps !ref n = do
+getLatestLaps :: Ref Team -> Int -> Persistence [Lap]
+getLatestLaps !ref n = do
     -- NOTE: I have to use the project modifier here, because there is no other
     -- way for me to specify this
     team <- MDB.fetch $ (MDB.select ["_id" MDB.:= ref] "teams")
         {MDB.project = ["laps_" MDB.=: ["$slice" MDB.=: n]]}
     let laps = MDB.at "laps_" team
     return $ fmap fromDocument laps
-
-latestLap :: Ref Team -> Persistence Lap
-latestLap ref = head <$> latestNLaps ref 1
 
 -- | You probably don't want to use this
 deleteAll :: Persistence ()

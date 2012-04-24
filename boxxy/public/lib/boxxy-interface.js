@@ -45,7 +45,6 @@ function Boxxy() {
             }
             
             self.circuitLength = config.circuitLength;
-            self.startTime = new Date(config.startTime);
             updateRanking();
             self.initialized = true;
             self.receivedConfig(config);

@@ -11,7 +11,7 @@ import Data.Char (isDigit, isLower)
 import Data.List (sort)
 
 import Data.Text (Text)
-import Data.Time (getCurrentTime)
+import Data.Time (getCurrentTime, getCurrentTimeZone)
 import Text.Blaze.Html (Html)
 import Text.Digestive (Form, check, checkM, stringRead, text, (.:))
 import Text.Digestive.Snap (runForm)
@@ -83,12 +83,13 @@ management = do
 
 laps :: Web ()
 laps = do
+    tz    <- liftIO getCurrentTimeZone
     laps' <- runPersistence $ do
-                teams <- getAllTeams
-                forM teams $ \(r,t) -> do
-                    l <- latestLap r
-                    return (t, l)
-    Snap.blaze $ Views.laps laps'
+        teams <- getAllTeams
+        forM teams $ \(r, t) -> do
+            l <- getLatestLaps r 5
+            return (t, l)
+    Snap.blaze $ Views.laps laps' tz
 
 teamForm :: Form Html Web Team
 teamForm = Team

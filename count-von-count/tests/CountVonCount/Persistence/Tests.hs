@@ -28,14 +28,14 @@ tests = testGroup "CountVonCount.Persistence.Tests"
         x' <- getTeamByMac $ fromJust $ teamBaton wina
         return $ Just (r, wina) == x'
 
-    , testCase "addLaps/latestLap" $ testPersistence $ do
+    , testCase "addLaps/getLatestLaps" $ testPersistence $ do
         r    <- addTeam wina
         time <- liftIO getCurrentTime
         let reason = "Because they're gay"
             laps   = 10
 
-        _   <- addLaps r time reason laps
-        lap <- latestLap r
+        _     <- addLaps r time reason laps
+        [lap] <- getLatestLaps r 1
 
         return $
             -- Might a marginal difference in the times due to conversion,

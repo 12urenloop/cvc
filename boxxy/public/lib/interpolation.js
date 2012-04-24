@@ -68,6 +68,14 @@ function Interpolation() {
         return shape(pos / self.circuitLength);
     }
     
+    this.getCoords = function(teamid, shape, time) {
+        if(shape == undefined) {
+            shape = shapes.line;
+        }
+        var pos = self.getPosition(teamid, time);
+        return shape(pos / self.circuitLength);
+    }
+    
     this.getSpeed = function(teamid) {
         return self.teams[teamid].speed;
     }
