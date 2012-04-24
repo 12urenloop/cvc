@@ -81,7 +81,7 @@ class LoadCheck < Check
 end
 
 def main
-  sihemo = Sihemo.new('localhost', 8000)
+  sihemo = Sihemo.new('localhost', 8001)
   gyrids = File.open('gyrids').readlines.map(&:strip)
 
   checks = [
