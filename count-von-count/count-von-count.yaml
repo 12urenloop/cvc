@@ -1,8 +1,8 @@
 startTime:     "2012-04-25T08:00:00.000Z"
-circuitLength: 480
+circuitLength: 369
 maxSpeed:      20
 
-batonWatchdogLifespan: 30
+batonWatchdogLifespan: 50
 
 sensorPort: 9001
 
@@ -74,23 +74,23 @@ stations:
 
     - name:     "gyrid-2"
       mac:      "00:21:91:F1:EA:0A"
-      position: 120
+      position: 77
 
     - name:     "gyrid-3"
       mac:      "00:22:B0:D0:61:1F"
-      position: 240
+      position: 143
 
     - name:     "gyrid-4"
       mac:      "00:21:91:F1:EA:11"
-      position: 360
+      position: 195
 
-    # - name:     "gyrid-5"
-    #   mac:      "00:21:91:F1:EA:0E"
-    #   position: 400
+    - name:     "gyrid-5"
+      mac:      "00:21:91:F1:EA:0E"
+      position: 289
 
     # - name:     "gyrid-6"
     #   mac:      "00:24:01:EB:C2:65"
-    #   position: 500
+    #   position: ???
 
 boxxies:
     - host: "127.0.0.1"
