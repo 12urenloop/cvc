@@ -70,6 +70,19 @@ ul.digestive-functors-error-list {
     padding-left: 0px;
 }
 
+table {
+    border-spacing: 20px 6px;
+}
+
+th {
+    font-weight: normal;
+    color: #777;
+}
+
+th, td {
+    text-align: left;
+}
+
 /*******************************************************************************
 * Monitor                                                                      *
 *******************************************************************************/
