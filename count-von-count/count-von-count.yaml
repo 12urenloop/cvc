@@ -68,7 +68,7 @@ batons:
       mac: "20:11:02:15:01:79"
 
 stations:
-    - name:     "gyrid-1"
+    - name:     "gyrid-6"
       mac:      "00:1C:F0:6C:39:32"
       position: 0
 
