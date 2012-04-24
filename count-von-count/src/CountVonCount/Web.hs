@@ -84,10 +84,10 @@ management = do
 laps :: Web ()
 laps = do
     laps' <- runPersistence $ do
-                teams <- getAllTeams
-                forM teams $ \(r,t) -> do
-                    l <- latestLap r
-                    return (t, l)
+        teams <- getAllTeams
+        forM teams $ \(r, t) -> do
+            l <- getLatestLaps r 5
+            return (t, l)
     Snap.blaze $ Views.laps laps'
 
 teamForm :: Form Html Web Team
