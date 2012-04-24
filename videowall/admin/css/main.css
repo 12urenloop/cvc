@@ -11,6 +11,13 @@ div {
     height: 100%;
 }
 
+#manage-items {   
+}
+
+#manage-loops {
+    display: none;
+}
+
 #display {
     position: absolute;
     top: 0px;
