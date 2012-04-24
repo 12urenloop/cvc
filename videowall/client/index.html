@@ -6,12 +6,12 @@
         src="http://localhost:9000/faye/client.js">
     </script>
     <script type="text/javascript">
-        var client = new Faye.Client('http://localhost:9000/faye', { retry: 5, timeout: 120 });
+        var client = new Faye.Client('http://localhost:9000/faye');
 
         client.subscribe('/publications', publicationsHandler);
 
         client.bind('transport:up', function() {
-            console.log("Connected");
+            console.log("Client Connected");
             client.publish('/whatson', {text: "Teh fuck is on?"});
         });
 

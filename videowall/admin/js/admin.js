@@ -1,54 +1,54 @@
-var client = new Faye.Client('http://localhost:8000/faye');
+var client = new Faye.Client('http://localhost:9000/faye', { retry: 5, timeout: 120 });
 
-
-client.subscribe('/loops/updates', updateHandler);
+client.subscribe('/updates', updatesHandler);
 
 var loops;
 var currentLoop;
+var items;
 
-function updateHandler(msg) {
+function updatesHandler(msg) {
+    console.log('Update received');
+    JSON.stringify(msg);
     loops = msg.loops;
+    items = msg.items;
     currentLoop = msg.currentLoop;
 
     render();
 }
 
 client.bind('transport:up', function() {
-    client.publish('/loops', { type: 'updaterequest' })
+    console.log("Admin Connected");
+    client.publish('/status', { type: 'updaterequest' });
 });
 
-function addItemToLoop(name) {
-    $('#' + name + ' .items').append(itemDivString(null));
-}
+function newItem(name, tag) {
+    var name = $('#newItem #name').attr('value');    
 
-function saveLoop(name) {
-    var items = [];
-
-    $('#' + name + ' .items .item').each(function() {
-        var item = {}
-        item["url"] = $(this).children('.url').attr('value');
-        item["duration"] = parseInt($(this).children('.duration').attr('value'));
-
-        if (item.url !== '' && isFinite(item.duration)) {
-            items.push(item);
-        }
-    });
-
-    if (items.length > 0) {
-        $('#' + name).children('.error').text('');
-        client.publish('/loops/save', { items: items, loop: name })
+    if (name === '') {
+        $('#newItem .error').text('Name please');
+    } else if ($('#' + name).length !== 0) {
+        $('#newItem .error').text('Name is not unique');
     } else {
-        $('#' + name).children('.error').text('Won\'t save, no valid items');
+        $('#newItem .error').text('');
+        tag = $('#newItem').children(".tag:checked").val();
+
+        $('#items').append(itemDiv(name, null, tag));
     }
 }
 
-function deleteLoop(name) {
-    if (confirm('Are you sure')) {
-        client.publish('/loops/delete', { loop: name });
-    }
+function deleteItem(itemDiv) {
+    itemDiv.remove();
+
+    client.publish('/items/delete', { itemName:itemDiv.attr('id') })
 }
 
-function newLoop(name) {
+function deleteLoop(loopDiv) {
+    loopDiv.remove();
+
+    client.publish('/loops/delete', { loopName:loopDiv.attr('id') });
+}
+
+function newLoop() {
     var name = $('#newLoop #name').attr('value');
 
     if (name === '') {
@@ -58,12 +58,61 @@ function newLoop(name) {
     } else {
         $('#newLoop .error').text('');
 
-        $('#loops').append(loopDivString(name, [], undefined));
+        $('#loops').append(loopDiv(name, [], undefined));
     }
 }
 
-function playLoop(name) {
-    client.publish('/loops/play', { loop: name });
+function playLoop(loopDiv) {
+    var loopName = loopDiv.attr('id');
+    if (loopName != currentLoop) {
+        client.publish('/loops/play', { loopName:loopName });
+    }
+}
+
+function playItem(itemDiv) {
+    var itemName = itemDiv.attr('id');
+
+    client.publish('/items/play', { itemName:itemName });
+}
+
+function saveItem(itemDiv) {
+    var itemName = itemDiv.attr('id');
+    var itemTag = itemDiv.attr('class');
+    var content = itemDiv.children('.' + itemTag).val();
+
+    var item = { tag: itemTag };
+    item[itemTag] = content;
+
+    client.publish('/items/save', { itemName:itemName, item:item });
+}
+
+function saveLoop(loopDiv) {
+    var loopName = loopDiv.attr('id');
+    var loopItems = [];
+    var valid = true;
+    loopDiv.children('.items').children('.item').each(function() {
+        var item = {};
+        item.item = $(this).find('.loopItemName').val();
+        item.duration = parseInt($(this).find('.loopItemDuration').val());
+        if (item.item === '' || isNaN(item.duration)) {
+            loopDiv.children('.error').first().text('There is an invalid item'); // TODO: index?
+            valid = false;
+            return;
+        } else if (items[item.item] === undefined) {
+            valid = false;
+            loopDiv.children('.error').first().text('There is no item ' + item.item);
+            return;
+        } else {
+            loopItems.push(item);
+        }
+    });
+    if (valid && loopItems.length <= 0) {
+        loopDiv.children('.error').first().text('There are no items');
+    }
+    if (valid && loopItems.length > 0) {
+        loopDiv.children('.error').first().text('');
+        client.publish('/loops/save', { loop:loopName, items:loopItems })
+    }
 }
 
 function moveUp(item) {
@@ -74,67 +123,193 @@ function moveDown(item) {
     item.next().after(item);
 }
 
-function itemDivString(item) {
-    var url, duration
+function addItemToLoop(loop) {
+    loop.children('.items').append(loopItemDiv(null));
+}
+
+function itemDiv(name, item, tag) {
+    var url, html
     if (item === null) {
         url = '';
-        duration = '';
+        html = '';
     } else {
-        url = item.url;
-        duration = item.duration;
+        tag = item.tag;
+        if (tag === 'html') {
+            html = item.html;
+        } else if (tag === 'url') {
+            url = item.url;
+        }
     }
 
-    var div = '<div class="item">';
-    div += '<input type="text" class="url" value="' + url + '" />';
-    div += '<input type="text" class="duration" value="' + duration + '" />';
-    div += '<span onClick="javascript:$(this).parent().remove()">Delete</span>';
-    div += '<span onClick="javascript:moveUp($(this).parent())">Up</span>';
-    div += '<span onClick="javascript:moveDown($(this).parent())">Down</span>';
-    div += '</div>';
+    var div = $('<div>');
+    div.attr('class', 'item');
+    div.attr('id', name);
+    div.attr('class', tag);
+    div.append('<h4>' + name + ' (' + tag + ')</h4>');
+
+    var input = $('<input>');
+    if (tag === 'html') {
+        input = $('<textarea>');
+        input.css('display', 'block');
+    }
+    input.attr('name', tag);
+    input.attr('class', tag);
+    if (tag === 'html') {
+        input.attr('rows', '5');
+        input.attr('cols', '60');
+        input.attr('value', html);
+    } else if (tag === 'url') {
+        input.attr('type', 'text');
+        input.attr('value', url);
+    }
+    div.append(input);    
+
+    var saveButton = $('<input>');
+    saveButton.attr('type', 'submit');
+    saveButton.attr('value', 'Save');
+    saveButton.attr('onClick', 'javascript:saveItem($(this).parent())');
+    div.append(saveButton);
+
+    var cantDelete = false;
+    for (item in loops[currentLoop]) {
+        cantDelete = cantDelete || loops[currentLoop][item].item === name;
+    }
+    if (!cantDelete) {
+        div.append(getItemDelButton());   
+    }
+
+    var playButton = $('<input>');
+    playButton.attr('type', 'submit');
+    playButton.attr('value', 'Play');
+    playButton.attr('onClick', 'javascript:playItem($(this).parent())');
+    div.append(playButton);
+
     return div;
 }
 
-function loopDivString(name, loop, currentLoop) {
-    var div = '<div class="loop" ';
-    div += 'id="' + name + '" >'
-    div += '<h3>' + name;
-    console.log(currentLoop);
-    if (name === currentLoop) {
-        div += ' (playing)';
+function loopItemDiv(item) {
+    var itemDuration = '';
+    var itemName = '';
+    if (item !== null) {
+        itemDuration = item.duration;
+        itemName = item.item;
     }
-    div += '</h3>';
 
-    div += '<div class="items">';
-    for (item in loop) {
-        div += itemDivString(loop[item]);
+    var div = $('<div>');
+    div.attr('class', 'item');
+
+    div.append('Item: ');
+    var itemNameDiv = $('<input>');
+    itemNameDiv.attr('type', 'text');
+    itemNameDiv.attr('name', 'name');
+    itemNameDiv.attr('class', 'loopItemName');
+    itemNameDiv.attr('value', itemName);
+    div.append(itemNameDiv);
+
+    div.append('Duration: ');
+    var itemDurationDiv = $('<input>');
+    itemDurationDiv.attr('type', 'text');
+    itemDurationDiv.attr('name', 'duration');
+    itemDurationDiv.attr('class', 'loopItemDuration');
+    itemDurationDiv.attr('value', itemDuration);
+    div.append(itemDurationDiv);
+
+    div.append(getUpButton());
+    div.append(getDownButton());
+    div.append(getDelButton());
+
+    return div;
+}
+
+function loopDiv(name, loop) {
+    var div = $('<div>');
+    div.attr('class', 'loop');
+    div.attr('id', name);
+    div.append('<h3>' + name + '</h3>');
+
+    var itemsDiv = $('<div>');
+    itemsDiv.attr('class', 'items');
+    for (itemName in loop) {
+        itemsDiv.append(loopItemDiv(loop[itemName]));
     }
-    div += '</div>';
+    div.append(itemsDiv);
 
-    div += '<input type="submit" value="New Item"';
-    div += 'onClick="javascript:addItemToLoop(\'' + name + '\');" />'
+    var addItemButton = $('<input>');
 
-    div += '<input type="submit" value="Save Loop"';
-    div += 'onClick="javascript:saveLoop(\'' + name + '\');" />'
+    var saveButton = $('<input>');
+    saveButton.attr('type', 'submit');
+    saveButton.attr('value', 'New Item');
+    saveButton.attr('onClick', 'javascript:addItemToLoop($(this).parent())');
+    div.append(saveButton);
+
+    var saveButton = $('<input>');
+    saveButton.attr('type', 'submit');
+    saveButton.attr('value', 'Save');
+    saveButton.attr('onClick', 'javascript:saveLoop($(this).parent())');
+    div.append(saveButton);
 
     if (name !== currentLoop) {
-        div += '<input type="submit" value="Delete Loop"';
-        div += 'onClick="javascript:deleteLoop(\'' + name + '\');" />'
+        div.append(getLoopDelButton());
 
-        div += '<input type="submit" value="Play Loop"';
-        div += 'onClick="javascript:playLoop(\'' + name + '\');" />'
+        var playButton = $('<input>');
+        playButton.attr('type', 'submit');
+        playButton.attr('value', 'Play');
+        playButton.attr('onClick', 'javascript:playLoop($(this).parent())');
+        div.append(playButton);
     }
 
-    div += '<span class="error"></span>'
+    var error = $('<span class="error">');
+    div.append(error);
 
-    div += '</div>';
     return div;
+}
+
+function getDelButton() {
+    var del = $('<input>');
+    del.attr('type', 'submit');
+    del.attr('value', 'Delete');
+    del.attr('onClick', 'javascript:$(this).parent().remove()');
+    return del;
+}
+
+function getItemDelButton() {
+    var btn = getDelButton();
+    btn.attr('onClick', 'javascript:deleteItem($(this).parent());');
+    return btn;
+}
+
+function getLoopDelButton() {
+    var btn = getDelButton();
+    btn.attr('onClick', 'javascript:deleteLoop($(this).parent())');
+    return btn;
+}
+
+function getUpButton() {
+    var del = $('<input>');
+    del.attr('type', 'submit');
+    del.attr('value', 'Up');
+    del.attr('onClick', 'javascript:moveUp($(this).parent())');
+    return del;
+}
+
+function getDownButton() {
+    var del = $('<input>');
+    del.attr('type', 'submit');
+    del.attr('value', 'Down');
+    del.attr('onClick', 'javascript:moveDown($(this).parent())');
+    return del;
 }
 
 function render() {
     $('#loops').html('');
+    $('#items').html('');
 
     for (name in loops) {
-        $('#loops').append(loopDivString(name, loops[name], currentLoop));
+        $('#loops').append(loopDiv(name, loops[name]));
+    }
+
+    for (name in items) {
+        $('#items').append(itemDiv(name, items[name], items[name].tag));
     }
 }
 
