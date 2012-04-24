@@ -106,14 +106,14 @@ var shapes = {
     // Approximation of the real octagonal circuit
     real: function(pos) {
         return shapes.segmented(pos, [
-            {x: 0, y: 0.07},
-            {x: 0.1, y: 0},
-            {x: 0.9, y: 0},
-            {x: 1, y: 0.07},
-            {x: 1, y: 0.28},
             {x: 0.9, y: 0.35},
             {x: 0.1, y: 0.35},
-            {x: 0, y: 0.28}
+            {x: 0.0, y: 0.28},
+            {x: 0.0, y: 0.07},
+            {x: 0.1, y: 0.0},
+            {x: 0.9, y: 0.0},
+            {x: 1.0, y: 0.07},
+            {x: 1.0, y: 0.28}
         ]);
     },
     
@@ -142,7 +142,7 @@ var shapes = {
             segmentPercentage = progressLeft / segment.length;
         return {
             x: segment.x + segmentPercentage * diffX,
-            y: segment.y + segmentPercentage * diffY
+            y: 0.35 - (segment.y + segmentPercentage * diffY)
         }
     }
 }
