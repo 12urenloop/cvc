@@ -2,8 +2,7 @@
 <html> 
 <head> 
     <title>12Urenloop mobile</title>
-    <link rel="stylesheet" type="text/css" href="vstyle.css" />
-    
+    <link rel="stylesheet" type="text/css" href="videoscores.css" />
     <script type="text/javascript" src="lib/boxxy-interface.js"></script>
     <script type="text/javascript" src="http://live.12urenloop.be:8080/boxxy.js"></script>
     <script type="text/javascript" src="http://live.12urenloop.be/lib/boxxy-interface.js"></script>
@@ -11,16 +10,47 @@
     <script type="text/javascript">
         window.onload = function() {
             var client = new Boxxy(),
-                scoreboard = $('#scoreboard').children().first();
+                scoreboard = $('#scoreboard').children().first(),
+                loop = [
+                    {command: 'wait', amount: 1000},
+                    {command: 'scroll', amount: 1},
+                    {command: 'wait', amount: 1000},
+                    {command: 'scrollto', position: 0}
+                ], task, commandIdx = -1;
+            var nextCommand = function() {
+                commandIdx = (commandIdx + 1) % loop.length;
+                return loop[commandIdx];
+            }
+            
+            var executeCommand = function(command) {
+                if(command.command == 'wait') {
+                    task = setTimeout(function() {executeCommand(nextCommand());}, command.amount);
+                } else if(command.command == 'scroll') {
+                    var prevScroll = window.scrollY;
+                    task = setInterval(function() {
+                        window.scrollBy(0, command.amount);
+                        if(window.scrollY == prevScroll) {
+                            clearTimeout(task);
+                            executeCommand(nextCommand());
+                        }
+                        prevScroll = window.scrollY;
+                    }, 1)
+                } else if(command.command == 'scrollto') {
+                    window.scroll(0, command.position);
+                    executeCommand(nextCommand());
+                }
+            }
             client.receivedConfig = function(config) {
                 var teams = client.getTeams();
                 for(var idx in teams) {
                     var team = teams[idx];
                     var elem = $('<tr></tr>').attr('id', team.id);
+                    elem.append($('<td></td>').addClass('position').html(team.ranking));
                     elem.append($('<td></td>').addClass('name').html(team.name));
                     elem.append($('<td></td>').addClass('score').html(team.laps));
                     scoreboard.append(elem);
                 }
+                executeCommand(nextCommand());
             }
             
             client.updatedPosition = function(message) {
@@ -28,7 +58,12 @@
             }
             
             client.addedLap = function(message) {
-                
+                var teams = client.getTeams();
+                scoreboard.children().each(function(idx, elem) {
+                    console.log(elem)
+                    $(elem).find('.name').html(teams[idx].name);
+                    $(elem).find('.score').html(teams[idx].laps);
+                });
             }
             client.connect();
         }
@@ -37,18 +72,9 @@
 
 <body> 
 
-<div class="section-title">Scorebord</div>
-<div class="section-content">
-    <span style="width: 100%; display: inline-block; text-align: right;"><a id="autorefresh-toggle" href="#"> Toggle autorefresh</a></span>
+<div id="content">
     <table class="scoreboard" id="scoreboard">
-        <tbody>
-            <!-- for each team -->
-            <tr id="team-${team.id}">
-                <td class="name">${team.name}</td>
-                <td class="score">${team.score}</td>
-            </tr>
-            <!-- end for each  -->
-        </tbody>
+        <tbody> </tbody>
     </table>
 </div>
 
