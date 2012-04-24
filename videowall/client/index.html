@@ -3,40 +3,46 @@
     <title>Videowall</title>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
     <script type="text/javascript" 
-        src="http://localhost:8000/faye/client.js">
+        src="http://localhost:9000/faye/client.js">
     </script>
     <script type="text/javascript">
-        var client = new Faye.Client('http://localhost:8000/faye', { retry: 5 });
-        var duration = 1;
-        var timer;
+        var client = new Faye.Client('http://localhost:9000/faye', { retry: 5, timeout: 120 });
 
         client.subscribe('/publications', publicationsHandler);
 
-        client.bind('transport:down', function() {
-            console.log("Disconnected");
-            timer = setTimeout(function() {
-                $('#content').attr('src', './backup.html');
-            }, duration * 1000);
-        });
-
         client.bind('transport:up', function() {
             console.log("Connected");
-            clearTimeout(timer);
             client.publish('/whatson', {text: "Teh fuck is on?"});
         });
 
         function publicationsHandler(item) {
             console.log("[" + (new Date()) + "] Item: " + JSON.stringify(item));
-            duration = item.duration;
-            $('#content').attr('src', item.url);
+
+            if (item.tag === 'url') {
+                $('#div').hide();
+                $('#iframe').show();
+
+                $('#iframe').attr('src', item.url);
+            } else if (item.tag === 'html') {
+                $('#iframe').hide();
+                $('#div').show();
+
+                $('#div').html(item.html);
+            } else {
+                console.log("[" + (new Date()) + "] Unable to handle previous item");
+            }
         }
     </script>
 </head>
 <body style="overflow:hidden;padding: 0px; margin: 0px">
     <iframe
-        style="width: 100%; height: 100%; border: 0px; padding: 0px;margin: 0px"
-        id="content"
+        style="position:absolute; top:0px;left:0px;width: 100%; height: 100%; border: 0px; padding: 0px;margin: 0px;"
+        id="iframe"
         src="./backup.html" >
     </iframe>
+    <div 
+        style="position:absolute; top:0px;left:0px;width: 100%; height: 100%; border: 0px; padding: 0px;margin: 0px;"
+        id="div" >
+    </div>
 </body>
 </html>
