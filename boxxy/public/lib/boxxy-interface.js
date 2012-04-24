@@ -32,6 +32,7 @@ function Boxxy() {
             self.teams = config.teams;
             self.configTime = new Date(config.time);
             self.timeOffset = new Date() - self.configTime;
+            self.startTime = new Date(config.startTime);
             for(var stationIdx = 0; stationIdx < config.stations.length; stationIdx++) {
                 var station = config.stations[stationIdx];
                 var nextStation = config.stations[(stationIdx + 1) % config.stations.length];

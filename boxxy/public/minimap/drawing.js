@@ -88,7 +88,7 @@ var draw = {
         draw.context.textBaseline = "middle";
         draw.context.fillText(
             pad(time.h) + ":" + pad(time.m) + ":" + pad(time.s),
-            draw.width / 2, draw.circuitTop * draw.scale / 2
+            draw.width / 2, (draw.circuitTop - 0.02) * draw.scale / 2
         );
     },
     
@@ -131,7 +131,7 @@ var draw = {
             draw.context.font = teamNameFont;
             draw.context.fillText(team.name, teamNameX, teamNameY);
             draw.context.font = teamStatsFont;
-            draw.context.fillText(team.info.laps + ' rondjes, v = ' + team.info.speed.toFixed(1) + ' m/s', teamNameX, teamNameY + 0.075 * draw.scale);
+            draw.context.fillText(team.info.laps + ' rondjes aan ' + (team.info.speed * 3.6).toFixed(1) + ' km/u', teamNameX, teamNameY + 0.075 * draw.scale);
             draw.context.fillText(draw.rankingTexts[team.info.ranking - 1] + " plaats", teamNameX, teamNameY + 0.15 * draw.scale);
             draw.context.scale(draw.scale, draw.scale);
             draw.context.beginPath();
