@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SIHEMO="eva:8001"
+SIHEMO="localhost:8001"
 GROUP=$(hostname)
 ALIVE="30"
 
@@ -16,19 +16,19 @@ function sihemo {
 
 while [[ true ]]; do
   BLUETOOTH=$(hcitool dev | grep -v Devices)
-  test "$BLUETOOTH" = ""
+  test "$BLUETOOTH" != ""
   sihemo "Bluetooth" "$?"
 
   GYRID=$(pgrep gyrid)
-  test "$GYRID" = ""
+  test "$GYRID" != ""
   sihemo "Gyrid" "$?"
 
   CONN=$(netstat -t -n | tail -n +3 | tr -s ' ' | cut -d' ' -f5 | grep 9001)
-  test "$CONN" = ""
+  test "$CONN" != ""
   sihemo "Connection to count-von-count" "$?"
 
   LOAD=$(cat /proc/loadavg | cut -d' ' -f1 | awk '{print(int($0 * 100))}')
-  test "$LOAD" -ge 100
+  test "$LOAD" -lt 100
   sihemo "Load average OK" "$?"
 
   sleep 5
