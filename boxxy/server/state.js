@@ -6,6 +6,7 @@ var time = require('./time')
 var STARTING_SPEED = 4.0 // USAIN BOLT!!!
 
 var state = {
+    initialized: false,
     stations: [],
     teams:    {}
 }
@@ -25,9 +26,11 @@ exports.initialize = function(config) {
     state.startTime = config.startTime
     //time.synchronize(new Date(config.time))
     state.time = config.time
+    state.initialized = true;
 }
 
 exports.updatePosition = function(message) {
+    if(!state.initialized) { return }
     var team = state.teams[message.team.id]
     team.station = message.station
     team.speed = message.speed
@@ -35,6 +38,7 @@ exports.updatePosition = function(message) {
 }
 
 exports.updateLaps = function(message) {
+    if(!state.initialized) { return }
     var team = state.teams[message.team.id]
     var previousLap = team.lastLapCompleted
     team.lastLapCompleted = new Date(message.time)
