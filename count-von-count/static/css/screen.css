@@ -34,7 +34,7 @@ div#header {
 div#navigation {
     margin: 0px auto 0px auto;
     padding: 6px;
-    width: 700px;
+    width: 800px;
 }
 
 div#navigation a {
@@ -47,7 +47,7 @@ div#navigation a {
 div#content {
     margin: 18px auto 0px auto;
     padding: 6px;
-    width: 720px;
+    width: 820px;
 }
 
 div#secondary {
@@ -75,13 +75,13 @@ ul.digestive-functors-error-list {
 *******************************************************************************/
 
 div#monitor div#teams {
-    width: 460px;
+    width: 600px;
 }
 
 div#monitor div.team {
     float: left;
     margin-right: 20px;
-    width: 210px;
+    width: 280px;
 }
 
 div#monitor div.team span.speed {
