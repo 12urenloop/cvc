@@ -1,3 +1,4 @@
+<?php include('redirect.php'); ?>
 <!DOCTYPE html>
 <html>
 <head>
