@@ -2,7 +2,7 @@ startTime:     "2012-04-25T08:00:00.000Z"
 circuitLength: 369
 maxSpeed:      13
 
-batonWatchdogLifespan: 50
+batonWatchdogLifespan: 30
 
 sensorPort: 9001
 
