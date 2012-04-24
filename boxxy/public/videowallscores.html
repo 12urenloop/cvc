@@ -34,10 +34,17 @@
                             executeCommand(nextCommand());
                         }
                         prevScroll = window.scrollY;
-                    }, 1)
+                    }, 10)
                 } else if(command.command == 'scrollto') {
                     window.scroll(0, command.position);
+                    var teams = client.getTeams();
+                    scoreboard.children().each(function(idx, elem) {
+                        console.log(elem)
+                        $(elem).find('.name').html(teams[idx].name);
+                        $(elem).find('.score').html(teams[idx].laps);
+                    });
                     executeCommand(nextCommand());
+                    
                 }
             }
             client.receivedConfig = function(config) {
@@ -58,14 +65,9 @@
             }
             
             client.addedLap = function(message) {
-                var teams = client.getTeams();
-                scoreboard.children().each(function(idx, elem) {
-                    console.log(elem)
-                    $(elem).find('.name').html(teams[idx].name);
-                    $(elem).find('.score').html(teams[idx].laps);
-                });
+                
             }
-            client.connect();
+            client.connect('live.12urenloop.be');
         }
     </script>
 </head> 

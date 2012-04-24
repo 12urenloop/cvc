@@ -665,3 +665,27 @@ img.alignright, img.right {margin: 0 0 1em 1.5em;}
 
 .scoreboard { width: 100%; }
 .scoreboard .score {text-align: right;}
+
+span.teamName {
+    position: relative;
+    z-index: 1;
+}
+
+#scoreboard td {
+    position: relative;
+}
+
+span.progress {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    height: 25px;
+    background-color: rgba(221, 221, 221, 0.5);
+    border-radius: 4px;
+    z-index: 0;
+}
+
+#scoreboard tr {
+    position: relative;
+    z-index: -1;
+}

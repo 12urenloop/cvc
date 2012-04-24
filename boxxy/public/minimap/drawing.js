@@ -11,7 +11,7 @@ var draw = {
         {x: 0.1, y: 0.35},
         {x: 0, y: 0.28}
     ],
-    scale: 650,
+    scale: 850,
     circuitTop: 0.15,
     circuitHeight: 0.35,
     fps: 30,
@@ -29,7 +29,7 @@ var draw = {
         draw.height = height;
         draw.circuitMargin = (draw.width - draw.scale) / 2;
         draw.logo = new Image();
-        draw.logo.src = '/assets/logo.gif';
+        draw.logo.src = '../assets/logo.gif';
         draw.boxxy = boxxy;
         draw.interpolation = interpolation;
         window.requestAnimFrame = (function(callback){
@@ -52,7 +52,12 @@ var draw = {
     },
     
     clear: function() {
+//        draw.context.save();
         draw.context.clearRect(0, 0, draw.width, draw.height);
+//        draw.context.fillStyle = 'grey';
+//        draw.context.rect(0, 0, draw.width, draw.height);
+//        draw.context.fill();
+//        draw.context.restore();
     },
     
     circuit: function() {

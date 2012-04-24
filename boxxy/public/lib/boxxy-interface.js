@@ -31,7 +31,8 @@ function Boxxy() {
             if(self.debug) console.log("[CONFIG] " + JSON.stringify(config))
             self.teams = config.teams;
             self.configTime = new Date(config.time);
-            self.timeOffset = new Date() - self.configTime;
+            //self.timeOffset = new Date() - self.configTime;
+            self.timeOffset = 0;
             self.startTime = new Date(config.startTime);
             for(var stationIdx = 0; stationIdx < config.stations.length; stationIdx++) {
                 var station = config.stations[stationIdx];

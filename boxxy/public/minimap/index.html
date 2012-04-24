@@ -8,9 +8,13 @@
         g.src = 'http://' + window.location.hostname + ':8080/boxxy.js';
         s.parentNode.insertBefore(g, s);
     </script>
-    <script type="text/javascript" src="/lib/jquery-1.7.1.min.js"></script>
+    <!-- <script type="text/javascript" src="/lib/jquery-1.7.1.min.js"></script>
     <script type="text/javascript" src="/lib/boxxy-interface.js"></script>
-    <script type="text/javascript" src="/lib/interpolation.js"></script>
+    <script type="text/javascript" src="/lib/interpolation.js"></script> -->
+    <script type="text/javascript" src="http://live.12urenloop.be:8080/boxxy.js"></script>
+    <script type="text/javascript" src="http://live.12urenloop.be/lib/boxxy-interface.js"></script>
+    <script type="text/javascript" src="http://live.12urenloop.be/lib/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript" src="http://live.12urenloop.be/lib/interpolation.js"></script>
     <script type="text/javascript" src="facts.js"></script>
     <script type="text/javascript" src="drawing.js"></script>
 
@@ -32,7 +36,7 @@
                 interpolation.update(message);
                 
             }
-            client.connect();
+            client.connect('live.12urenloop.be');
             
             
         }
@@ -40,6 +44,6 @@
     <script type="text/javascript" src="drawing.js"></script>
 </head>
 <body>
-    <canvas id="minimap" width="800" height="600"></canvas>
+<center><canvas id="minimap" width="950" height="600"></canvas></center>
 </body>
 </html>

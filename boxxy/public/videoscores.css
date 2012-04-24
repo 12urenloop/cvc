@@ -8,7 +8,7 @@ body {
 
 #content {
     font-family: Verdana,Arial,Helvetica,sans-serif;
-    font-size: 80pt;
+    font-size: 60pt;
     padding: 0px 0px 0px 0px;
     width: 100%;
 }
@@ -22,4 +22,9 @@ body {
 
 #scoreboard td {
     padding: 20px;
+    position: relative;
+}
+
+td.score {
+    padding-right: 30px;
 }
