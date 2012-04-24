@@ -1,0 +1,57 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+    <title>12Urenloop mobile</title>
+    <link rel="stylesheet" type="text/css" href="vstyle.css" />
+    
+    <script type="text/javascript" src="lib/boxxy-interface.js"></script>
+    <script type="text/javascript" src="http://live.12urenloop.be:8080/boxxy.js"></script>
+    <script type="text/javascript" src="http://live.12urenloop.be/lib/boxxy-interface.js"></script>
+    <script type="text/javascript" src="http://live.12urenloop.be/lib/jquery-1.7.1.min.js"></script>
+    <script type="text/javascript">
+        window.onload = function() {
+            var client = new Boxxy(),
+                scoreboard = $('#scoreboard').children().first();
+            client.receivedConfig = function(config) {
+                var teams = client.getTeams();
+                for(var idx in teams) {
+                    var team = teams[idx];
+                    var elem = $('<tr></tr>').attr('id', team.id);
+                    elem.append($('<td></td>').addClass('name').html(team.name));
+                    elem.append($('<td></td>').addClass('score').html(team.laps));
+                    scoreboard.append(elem);
+                }
+            }
+            
+            client.updatedPosition = function(message) {
+                
+            }
+            
+            client.addedLap = function(message) {
+                
+            }
+            client.connect();
+        }
+    </script>
+</head> 
+
+<body> 
+
+<div class="section-title">Scorebord</div>
+<div class="section-content">
+    <span style="width: 100%; display: inline-block; text-align: right;"><a id="autorefresh-toggle" href="#"> Toggle autorefresh</a></span>
+    <table class="scoreboard" id="scoreboard">
+        <tbody>
+            <!-- for each team -->
+            <tr id="team-${team.id}">
+                <td class="name">${team.name}</td>
+                <td class="score">${team.score}</td>
+            </tr>
+            <!-- end for each  -->
+        </tbody>
+    </table>
+</div>
+
+</body>
+
+</html>

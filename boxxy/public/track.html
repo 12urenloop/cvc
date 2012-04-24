@@ -1,0 +1,102 @@
+<html>
+	<head>
+		<META NAME="AUTHOR" CONTENT="Jens 'I USE UPPERCASE TAGS' Timmerman">
+		<title>Track</title>
+		<SCRIPT LANGUAGE="JavaScript" SRC="lib/barchart.js"></SCRIPT>
+		<SCRIPT LANGUAGE="JavaScript" SRC="lib/jquery-1.7.1.min.js"></SCRIPT>
+		<SCRIPT LANGUAGE="JavaScript" SRC="lib/hsv.js"></SCRIPT>
+                <script type="text/javascript" src="lib/boxxy-interface.js"></script>
+                <script type="text/javascript" src="http://live.12urenloop.be:8080/boxxy.js"></script>
+                <script type="text/javascript" src="http://live.12urenloop.be/lib/boxxy-interface.js"></script>
+                <script type="text/javascript" src="http://live.12urenloop.be/lib/jquery-1.7.1.min.js"></script>
+                
+                <script type="text/javascript">
+                    var canvas, ctc, width, height, edgewidth;
+                    window.onload = function() {
+                        var client = new Boxxy(),
+                            teamColors = {};
+                            
+                        canvas = document.getElementById("track");
+                        ctx = canvas.getContext('2d');
+                        ctx.canvas.width  = window.innerWidth;
+                        ctx.canvas.height = window.innerHeight;
+                        width = ctx.canvas.width;
+                        height = ctx.canvas.height;
+                        edgewidth = Math.min(width,height)/30;
+                        if (width < height){
+                                height = width;
+                        }
+                        client.receivedConfig = function(config) {
+                            var teams = client.getTeams(),
+                                colors = [], labels = [], values = [];
+                            for(var i = 0; i < teams.length; i++) {
+                                teamColors[teams[i].id] = "#" + hsv2hex(client.circuitLength / teams.length * i, 75, 75);
+                                colors.push(teams[i].id); //evenly spaced out colors, not too bright
+                                labels.push(teams[i].name);
+                                values.push(teams[i].laps);
+                            }
+                            makeBarChart(values, labels, colors);
+                        }
+
+                        client.updatedPosition = function(message) {
+                            var teams = client.getTeams(),
+                                labels = [], values = [], colors = [];
+                            for(var idx in teams) {
+                                var team = teams[idx];
+                                labels.push(team.name);
+                                values.push(team.laps);
+                                colors.push(teamColors[team.id]);
+                            }
+                            makeBarChart(values, labels, colors);
+                        }
+
+                        client.addedLap = function(message) {
+
+                        }
+                        client.connect();
+                    }
+                </script>
+		<script type="text/javascript">
+			//window.onresize = refresh;
+			//global variables
+			var laps; //number of laps per team
+			var totaldist = 350; //total distance around the track
+
+			var width;
+			var height;
+			var edgewidth;
+			//returns a random color
+			function get_random_color() {
+				return "#"+((1<<24)*Math.random()|0).toString(16)
+			}
+			
+			//draws the bar chart in the middle of the canvas
+			function makeBarChart(data,labels,colors){
+				tdata=data;
+			//	alert(data);
+				var context = document.getElementById("track").getContext("2d");
+	
+				// Bar chart data
+				//TODO: testdata here, use global var laps once drawprogress is finished
+
+				  // Draw the bar chart
+				 //drawBarChart(context, data, startX, startY,chartWidth, chartHeight, markDataIncrementsIn,border,textsize,colors)
+				  drawBarChart(context, labels,data, edgewidth*2,height-edgewidth,(width-edgewidth*4), (height - edgewidth*2), 50,edgewidth,10,colors);
+                                  //drawBarChart(context, labels,data, edgewidth*2,height-edgewidth,(width-edgewidth*4), (height - edgewidth*2), 50,edgewidth,10,colors);
+			}
+			
+		</script>
+		<style type="text/css">
+			/* this is needed for auto filling full window */
+			html,body {
+			  width:  100%;
+  			  height: 100%;
+  			  margin: 0px;
+			}
+		</style> 
+	</head>
+	<body>
+		<!-- we need a canvas element to draw upon -->
+		<canvas width=901 height=301 id="track">This page needs support for the 'canvas' element</canvas>
+	</body>
+</html>
