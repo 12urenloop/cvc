@@ -1,13 +1,12 @@
-<!DOCTYPE html> 
-<html> 
-<head> 
+<!DOCTYPE html>
+<html>
+<head>
     <title>12Urenloop mobile</title>
     <link rel="stylesheet" type="text/css" href="vstyle.css" />
-    
+
+    <script type="text/javascript" src="lib/jquery-1.7.1.min.js"></script>
     <script type="text/javascript" src="lib/boxxy-interface.js"></script>
     <script type="text/javascript" src="http://live.12urenloop.be:8080/boxxy.js"></script>
-    <script type="text/javascript" src="http://live.12urenloop.be/lib/boxxy-interface.js"></script>
-    <script type="text/javascript" src="http://live.12urenloop.be/lib/jquery-1.7.1.min.js"></script>
     <script type="text/javascript">
         window.onload = function() {
             var client = new Boxxy(),
@@ -22,32 +21,28 @@
                     scoreboard.append(elem);
                 }
             }
-            
+
             client.updatedPosition = function(message) {
-                
+
             }
-            
+
             client.addedLap = function(message) {
-                
+
             }
-            client.connect();
+
+            client.connect('live.12urenloop.be');
         }
     </script>
-</head> 
+</head>
 
-<body> 
+<body>
 
-<div class="section-title">Scorebord</div>
+<a id="logo" href="http://12urenloop.be/"><img src="assets/logo-100.png" /></a>
+<div class="section-title">Volg live de score van de 12Urenloop!</div>
 <div class="section-content">
-    <span style="width: 100%; display: inline-block; text-align: right;"><a id="autorefresh-toggle" href="#"> Toggle autorefresh</a></span>
+    <!--<span style="width: 100%; display: inline-block; text-align: right;"><a id="autorefresh-toggle" href="#"> Toggle autorefresh</a></span>-->
     <table class="scoreboard" id="scoreboard">
         <tbody>
-            <!-- for each team -->
-            <tr id="team-${team.id}">
-                <td class="name">${team.name}</td>
-                <td class="score">${team.score}</td>
-            </tr>
-            <!-- end for each  -->
         </tbody>
     </table>
 </div>

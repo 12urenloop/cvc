@@ -5,17 +5,15 @@
 		<SCRIPT LANGUAGE="JavaScript" SRC="lib/barchart.js"></SCRIPT>
 		<SCRIPT LANGUAGE="JavaScript" SRC="lib/jquery-1.7.1.min.js"></SCRIPT>
 		<SCRIPT LANGUAGE="JavaScript" SRC="lib/hsv.js"></SCRIPT>
-                <script type="text/javascript" src="lib/boxxy-interface.js"></script>
-                <script type="text/javascript" src="http://live.12urenloop.be:8080/boxxy.js"></script>
-                <script type="text/javascript" src="http://live.12urenloop.be/lib/boxxy-interface.js"></script>
-                <script type="text/javascript" src="http://live.12urenloop.be/lib/jquery-1.7.1.min.js"></script>
-                
+            <script type="text/javascript" src="lib/boxxy-interface.js"></script>
+            <script type="text/javascript" src="http://live.12urenloop.be:8080/boxxy.js"></script>
+
                 <script type="text/javascript">
                     var canvas, ctc, width, height, edgewidth;
                     window.onload = function() {
                         var client = new Boxxy(),
                             teamColors = {};
-                            
+
                         canvas = document.getElementById("track");
                         ctx = canvas.getContext('2d');
                         ctx.canvas.width  = window.innerWidth;
@@ -55,7 +53,7 @@
                         client.addedLap = function(message) {
 
                         }
-                        client.connect();
+                        client.connect('live.12urenloop.be');
                     }
                 </script>
 		<script type="text/javascript">
@@ -71,13 +69,13 @@
 			function get_random_color() {
 				return "#"+((1<<24)*Math.random()|0).toString(16)
 			}
-			
+
 			//draws the bar chart in the middle of the canvas
 			function makeBarChart(data,labels,colors){
 				tdata=data;
 			//	alert(data);
 				var context = document.getElementById("track").getContext("2d");
-	
+
 				// Bar chart data
 				//TODO: testdata here, use global var laps once drawprogress is finished
 
@@ -86,7 +84,7 @@
 				  drawBarChart(context, labels,data, edgewidth*2,height-edgewidth,(width-edgewidth*4), (height - edgewidth*2), 50,edgewidth,10,colors);
                                   //drawBarChart(context, labels,data, edgewidth*2,height-edgewidth,(width-edgewidth*4), (height - edgewidth*2), 50,edgewidth,10,colors);
 			}
-			
+
 		</script>
 		<style type="text/css">
 			/* this is needed for auto filling full window */
@@ -95,7 +93,7 @@
   			  height: 100%;
   			  margin: 0px;
 			}
-		</style> 
+		</style>
 	</head>
 	<body>
 		<!-- we need a canvas element to draw upon -->
