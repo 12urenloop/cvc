@@ -4,42 +4,32 @@ SIHEMO="eva:8001"
 GROUP=$(hostname)
 ALIVE="30"
 
-function heartbeat {
-  wget -O - --post-data "alive=$ALIVE" "$SIHEMO/services/$GROUP/$1" >/dev/null 2>&1
-}
-
-function down {
-  wget -O - --post-data "state=down" "$SIHEMO/services/$GROUP/$1" >/dev/null 2>&1
+# Arguments: phrase, state (0 for OK)
+function sihemo {
+  URI="$SIHEMO/services/$GROUP/$1"
+  if [[ "$2" = 0 ]]; then
+      wget -O - --post-data "alive=$ALIVE" "$URI" >/dev/null 2>&1
+  else
+      wget -O - --post-data "state=down" "$URI" >/dev/null 2>&1
+  fi
 }
 
 while [[ true ]]; do
   BLUETOOTH=$(hcitool dev | grep -v Devices)
-  if [[ "$BLUETOOTH" = "" ]]; then
-    down "Bluetooth"
-  else
-    heartbeat "Bluetooth"
-  fi
+  test "$BLUETOOTH" != ""
+  sihemo "Bluetooth" "$?"
 
   GYRID=$(pgrep gyrid)
-  if [[ "$GYRID" = "" ]]; then
-    down "Gyrid"
-  else
-    heartbeat "Gyrid"
-  fi
+  test "$GYRID" != ""
+  sihemo "Gyrid" "$?"
 
   CONN=$(netstat -t -n | tail -n +3 | tr -s ' ' | cut -d' ' -f5 | grep 9001)
-  if [[ "$CONN" = "" ]]; then
-    down "Connection to count-von-count"
-  else
-    heartbeat "Connection to count-von-count"
-  fi
+  test "$CONN" != ""
+  sihemo "Connection to count-von-count" "$?"
 
   LOAD=$(cat /proc/loadavg | cut -d' ' -f1 | awk '{print(int($0 * 100))}')
-  if [[ "$LOAD" -ge 100 ]]; then
-    down "Load average OK"
-  else
-    heartbeat "Load average OK"
-  fi
+  test "$LOAD" -lt 100
+  sihemo "Load average OK" "$?"
 
   sleep 5
 done

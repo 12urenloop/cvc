@@ -18,11 +18,11 @@ items.item2 = { tag: 'html',
 items.item3 = { tag: 'url',
               url: './b.html' };
 
-loops.loop1 = [ { item: items.item1,
+loops.loop1 = [ { item: "item1",
                 duration: 5 },
-              { item: items.item2,
+              { item: "item2",
                 duration: 5 },
-              { item: items.item3,
+              { item: "item3",
                 duration: 5 } ];
 
 currentLoop = 'loop1';
@@ -30,7 +30,6 @@ currentLoop = 'loop1';
 
 var run = function(port) {
     bayeux = new Faye.NodeAdapter({ mount: '/faye' });
-
     server = http.createServer(function(request, response) {
         response.writeHead(200, {'Content-Type': 'text/plain'});
         response.write('Please go away :(');
@@ -39,6 +38,13 @@ var run = function(port) {
 
     client = bayeux.getClient();
     client.subscribe('/whatson', whatsonHandler);
+    client.subscribe('/status', statusHandler);
+    client.subscribe('/loops/save', saveLoopsHandler);
+    client.subscribe('/loops/play', playLoopHandler);
+    client.subscribe('/loops/delete', deleteLoopHandler);
+    client.subscribe('/items/save', saveItemsHandler);
+    client.subscribe('/items/play', playItemHandler);
+    client.subscribe('/items/delete', deleteItemHandler);
 
     bayeux.attach(server);
     server.listen(port);
@@ -55,7 +61,7 @@ var restart = function() {
 var publishLoop = function() {
     if (currentLoop !== undefined && loops[currentLoop].length > 0) {
         currentIndex = (currentIndex + 1) % loops[currentLoop].length;
-        currentItem = loops[currentLoop][currentIndex].item;
+        currentItem = items[loops[currentLoop][currentIndex].item];
         var duration = loops[currentLoop][currentIndex].duration;
 
         client.publish('/publications', currentItem);
@@ -69,6 +75,62 @@ var whatsonHandler = function(msg) {
         client.publish('/publications', currentItem);
         console.log('Whats\'on? ' + JSON.stringify(currentItem));
     }
+}
+var statusHandler = function(msg) {
+    pushUpdate();
+}
+
+var saveLoopsHandler = function(msg) {
+    console.log('Save loop request received: ' + JSON.stringify(msg));
+    loops[msg.loop] = msg.items;
+
+    pushUpdate();
+}
+
+var playLoopHandler = function(msg) {
+    console.log('Play loop request received: ' +JSON.stringify(msg));
+    currentLoop = msg.loopName;
+    restart();
+}
+
+var deleteLoopHandler = function(msg) {
+    console.log('Delete loop request received: ' + JSON.stringify(msg));
+    delete loops[msg.loopName];
+
+    pushUpdate();
+}
+
+var saveItemsHandler = function(msg) {
+    console.log('Save item request received: ' + JSON.stringify(msg));
+    items[msg.itemName] = msg.item;
+
+    pushUpdate();
+}
+
+var playItemHandler = function(msg) {
+    console.log('Play item request received: ' + JSON.stringify(msg));
+
+    clearTimeout(timer);
+    currentItem = items[msg.itemName];
+    currentLoop = undefined;
+    currentIndex = -1;
+    console.log(JSON.stringify(currentItem));
+
+    client.publish('/publications', currentItem);
+    console.log('Published ' + JSON.stringify(currentItem) + ' for EVER!');
+    pushUpdate();
+}
+
+var deleteItemHandler = function(msg) {
+    console.log('Delete item request received: ' + JSON.stringify(msg));
+    delete items[msg.itemName];
+
+    pushUpdate();
+}
+
+var pushUpdate = function() {
+    client.publish('/updates', { loops:loops, items:items, currentLoop:currentLoop });
+    console.log('Update pushed!');
 }
 
 run(9000);

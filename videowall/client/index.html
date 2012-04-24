@@ -1,17 +1,18 @@
 <html>
 <head>
     <title>Videowall</title>
+    <link rel="stylesheet" type="text/css" href="style.css" />
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
     <script type="text/javascript" 
         src="http://localhost:9000/faye/client.js">
     </script>
     <script type="text/javascript">
-        var client = new Faye.Client('http://localhost:9000/faye', { retry: 5, timeout: 120 });
+        var client = new Faye.Client('http://localhost:9000/faye');
 
         client.subscribe('/publications', publicationsHandler);
 
         client.bind('transport:up', function() {
-            console.log("Connected");
+            console.log("Client Connected");
             client.publish('/whatson', {text: "Teh fuck is on?"});
         });
 
@@ -40,9 +41,11 @@
         id="iframe"
         src="./backup.html" >
     </iframe>
-    <div 
-        style="position:absolute; top:0px;left:0px;width: 100%; height: 100%; border: 0px; padding: 0px;margin: 0px;"
-        id="div" >
+    <div id="client">
+        <div 
+            style="position:absolute; top:0px;left:0px;width: 100%; height: 100%; border: 0px; padding: 0px;margin: 0px;"
+            id="div" >
+        </div>
     </div>
 </body>
 </html>
