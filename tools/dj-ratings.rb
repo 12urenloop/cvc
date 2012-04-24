@@ -1,9 +1,9 @@
 require 'rubygems'
 require 'sqlite3'
 
-db = SQLite3::Database.new 'db.sqlite'
-rows = db.execute "select ReceivingDateTime,TextDecoded from inbox"
-r = rows.group_by { |t,_| DateTime.parse(t).hour }
+db = SQLite3::Database.new '/var/spool/gammu/db.sqlite'
+rows = db.execute "select ReceivingDateTime, TextDecoded from inbox"
+r = rows.group_by { |t, _| DateTime.parse(t).hour }
 
 require 'statistics2'
 
@@ -16,8 +16,10 @@ def ci_lower_bound(pos, n, confidence)
 end
 
 r = r.map do |k,v|
-  hot1 = v.select {|t,text| text =~ /hot/i }.size
-  not1 = v.select {|t,text| text =~ /not/i }.size
-  [k, ci_lower_bound(hot1, hot1 + not1, 0.95)]
+  pos = v.select {|t, text| text =~ /hot/i }.size
+  neg = v.select {|t, text| text =~ /not/i }.size
+  [k, ci_lower_bound(pos, pos + neg, 0.95)]
 end
-r.sort_by(&:last).reverse.each.with_index { |arr, i| puts "%2d: (%2dh) #{arr.last}" % [i + 1, arr.first] }
+r.sort_by(&:last).reverse.each.with_index do |arr, i|
+   puts "#{sprintf("%2d", i + 1)}: (#{sprintf("%2d", arr.first)}h) #{arr.last}"
+end
