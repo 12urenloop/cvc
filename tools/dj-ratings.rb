@@ -18,8 +18,15 @@ end
 r = r.map do |k,v|
   pos = v.select {|t, text| text =~ /hot/i }.size
   neg = v.select {|t, text| text =~ /not/i }.size
-  [k, ci_lower_bound(pos, pos + neg, 0.95)]
+  {
+    :hour => k,
+    :rating => ci_lower_bound(pos, pos + neg, 0.95),
+    :hot => pos,
+    :not => neg
+  }
 end
-r.sort_by(&:last).reverse.each.with_index do |arr, i|
-   puts "#{sprintf("%2d", i + 1)}: (#{sprintf("%2d", arr.first)}h) #{arr.last}"
+r.sort_by { |x| x[:rating] }.reverse.each.with_index do |dj, i|
+   puts "#{sprintf("%2d", i + 1)}: #{sprintf("%2d", dj[:hour])}h, " +
+     "(#{dj[:hot]} hot, #{dj[:not]} not, #{dj[:hot] + dj[:not]} " +
+     "total, #{dj[:rating]})"
 end
