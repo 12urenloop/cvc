@@ -85,10 +85,10 @@ def main
   gyrids = File.open('gyrids').readlines.map(&:strip)
 
   checks = [
-    BluetoothCheck.new(sihemo, 'bluetooth', 20),
-    GyridCheck.new(sihemo, 'gyrid', 20),
-    ConnCheck.new(sihemo, 'conn', 20),
-    LoadCheck.new(sihemo, 'load', 20),
+    BluetoothCheck.new(sihemo, 'bluetooth', 60),
+    GyridCheck.new(sihemo, 'gyrid', 60),
+    ConnCheck.new(sihemo, 'conn', 60),
+    LoadCheck.new(sihemo, 'load', 60),
   ]
 
   loop do
