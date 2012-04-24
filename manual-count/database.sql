@@ -19,15 +19,17 @@ CREATE TABLE  `urenloop`.`laps` (
 -- Sample teams
 
 INSERT INTO `teams` (`id`, `name`, `laps`) VALUES
-(1, 'FK 1', 13),
-(2, 'FK 2', 14),
-(3, 'FK 3', 15),
-(4, 'FK 4', 13),
-(5, 'Samson', 11),
-(6, 'Gert', 12),
-(7, 'De burgemeester', 14),
-(8, 'Albertoooo', 12),
-(9, 'Octaaf', 9),
-(10, 'Marlene', 11),
-(11, 'Bobientje', 11),
-(12, 'Van Leemhuyzen', 9);
+(1, 'HomeKonvent', 0),
+(2, 'SeniorenKonvent', 0),
+(3, 'Kofschipclubs', 0),
+(4, 'VEK', 0),
+(5, 'VTK', 0),
+(6, 'VLK', 0),
+(7, 'Blandinia', 0),
+(8, 'Politeia', 0),
+(9, 'VRG', 0),
+(10, 'Wetenschappen & VLAK', 0),
+(11, 'VPPK', 0),
+(12, 'VGK & GFK & VBK', 0),
+(13, 'KVHV', 0),
+(14, 'HILOK', 0)
