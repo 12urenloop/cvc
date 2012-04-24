@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SIHEMO="localhost:8001"
+SIHEMO="eva:8001"
 GROUP=$(hostname)
 ALIVE="30"
 
