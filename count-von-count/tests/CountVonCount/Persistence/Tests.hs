@@ -5,8 +5,9 @@ module CountVonCount.Persistence.Tests
 
 import Control.Monad.Trans (liftIO)
 import Data.Maybe (fromJust)
-import Data.Time (diffUTCTime, getCurrentTime)
+import Data.Time (UTCTime, diffUTCTime, getCurrentTime)
 
+import Data.Text (Text)
 import Test.Framework (Test, testGroup)
 import Test.Framework.Providers.HUnit (testCase)
 
@@ -31,16 +32,24 @@ tests = testGroup "CountVonCount.Persistence.Tests"
     , testCase "addLaps/getLatestLaps" $ testPersistence $ do
         r    <- addTeam wina
         time <- liftIO getCurrentTime
-        let reason = "Because they're gay"
-            laps   = 10
+        let reason1 = "Because they're gay"
+            laps1   = 10
+            reason2 = "Bousson = FAG"
+            laps2   = 2
 
-        _     <- addLaps r time reason laps
-        [lap] <- getLatestLaps r 1
+        _            <- addLaps r time reason1 laps1
+        _            <- addLaps r time reason2 laps2
+        [lap2, lap1] <- getLatestLaps r 2
 
         return $
             -- Might a marginal difference in the times due to conversion,
             -- should never be more than one second
-            abs (lapTimestamp lap `diffUTCTime` time) < 1 &&
-            lapReason lap == reason &&
-            lapCount lap == laps
+            ((time, reason1, laps1) `eqLap` lap1) &&
+            ((time, reason2, laps2) `eqLap` lap2)
     ]
+
+eqLap :: (UTCTime, Text, Int) -> Lap -> Bool
+eqLap (time, reason, laps) lap =
+    abs (lapTimestamp lap `diffUTCTime` time) < 1 &&
+    lapReason lap == reason &&
+    lapCount lap == laps
