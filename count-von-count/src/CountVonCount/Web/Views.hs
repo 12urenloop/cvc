@@ -5,6 +5,7 @@ module CountVonCount.Web.Views
     , monitor
     , management
     , laps
+    , boxxies
     , teamNew
     , teamBonus
 
@@ -26,6 +27,7 @@ import qualified Text.Blaze.Html5.Attributes as A
 import qualified Text.Digestive as D
 import qualified Text.Digestive.Blaze.Html5 as D
 
+import CountVonCount.Boxxy
 import CountVonCount.Counter.Core
 import CountVonCount.Persistence
 import CountVonCount.Sensor.Filter
@@ -47,6 +49,7 @@ template title content = H.docTypeHtml $ do
                 linkTo "/monitor"    "Monitor"
                 linkTo "/management" "Management"
                 linkTo "/laps"       "Laps"
+                linkTo "/boxxies"    "Boxxies"
 
         block "content" content
 
@@ -123,6 +126,13 @@ laps teams tz = template "Laps" $ block "laps" $ do
                 H.td $ H.toHtml $ formatTime defaultTimeLocale "%H:%M:%S" lt
                 H.td $ H.toHtml $ lapCount lap
                 H.td $ H.toHtml $ lapReason lap
+
+boxxies :: [(BoxxyConfig, BoxxyState)] -> Html
+boxxies boxxies' = template "Boxxies" $ block "boxxies" $ do
+    H.h1 "Boxxies"
+    H.table $ forM_ boxxies' $ \(b, c) -> H.tr $ do
+        H.td $ H.toHtml $ show b
+        H.td $ H.toHtml $ show c
 
 teamNew :: D.View Html -> Html
 teamNew view = template "Add team" $ do

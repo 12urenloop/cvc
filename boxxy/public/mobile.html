@@ -39,7 +39,6 @@
 				jList.append($('<li class="ui-li ui-li-static ui-body-c ui-li-has-count ui-corner-bottom" >' + name +'<span class="ui-li-count ui-btn-up-c ui-btn-corner-all">' + laps + ' punten</span></li>'));
 				else
 				jList.append($('<li  class="ui-li ui-li-static ui-body-c ui-li-has-count" >' + name +'<span class="ui-li-count ui-btn-up-c ui-btn-corner-all">' + laps + ' punten</span></li>'));
-
 				}
 			}
 			
@@ -59,10 +58,114 @@
 		<ul data-role="listview" data-inset="true" id="list">
 <!--- List items will be added dynamically. --->
 		</ul>
+		<h3>Speciale rondes</h3>
+		<a href="./specialerondesmobi.html">Speciale rondes</a>
+					<script type="text/javascript">
+			now = new Date();
+			uur = now.getHours();
+			if (now.getMinutes() < 60 && now.getMinutes() >=50){
+				uur+=1
+			}
+			function welkeRonde(uur){
+			  switch (uur) {
+				case 10:
+					return "Omgekeerde tweelingronde"
+					break;
+				case 11:
+					return "Slaapwandel ronde"
+					break;
+				case 12:
+					return "Proffen- & assistenronde"
+					break;
+				case 13:
+					return "Faculteitsronde"
+					break;
+				case 14:
+					return "SKIKOTronde"
+					break;
+				case 15:
+					return "Vikingronde"
+					break;
+				case 16:
+					return "Snelwandelronde"
+					break;
+				case 17:
+					return "Swingronde"
+					break;
+				case 18:
+					return "Banaanronde"
+					break;
+				case 19:
+					return "\"Draag de preases\"-ronde"
+					break;
+				case 20:
+					return "Schaarsgeklede vrouwen ronde"
+					break;
+				case 21:
+					return "Slipjesronde"
+					break;
+				default:
+					return "DJ-contest gedaan"
+					break;
+				}
+			}
+			document.write("<p>Huidige speciale ronde: <b>"+welkeRonde(uur)+"</b></p><p>Volgende speciale ronde: " + welkeRonde(uur+1) + "</p>");
+			</script>
+		<h3>DJ-contest</h3>
+		<p>Stemmem SMS <b>HOT</b> or <b>NOT</b> naar 0479 130 133</p>
+		<script type="text/javascript">
+			now = new Date();
+			uur = now.getHours();
+			if (now.getMinutes() < 60 && now.getMinutes() >=50){
+				uur+=1
+			}
+			function nowPlaying(uur){
+			  switch (uur) {
+				case 11:
+					return "Blueshades"
+					break;
+				case 12:
+					return "LSGHN"
+					break;
+				case 13:
+					return "SubAgenda"
+					break;
+				case 14:
+					return "Men of Luna"
+					break;
+				case 15:
+					return "Please the Panda"
+					break;
+				case 16:
+					return "T & J"
+					break;
+				case 17:
+					return "Tous les deux"
+					break;
+				case 18:
+					return "Fooonetik"
+					break;
+				case 19:
+					return "F*ck, Marry, Kill!"
+					break;
+				case 20:
+					return "Pulp Mixion"
+					break;
+				default:
+					return "DJ-contest gedaan"
+					break;
+				}
+			}
+			document.write("<p>Huidige DJ: <b>"+nowPlaying(uur)+"</b></p><p>Volgende DJ: " + nowPlaying(uur+1) + "</p>");
+		</script>
+
+		<a href="./djcontestmobi.html">Deelnemer rooster</a>
 	</div>
+	
 	<div data-role="footer">
 	   <a href="http://www.zeus.ugent.be">Zeus WPI </a> <a href="http://www.12Urenloop.be">12urenloop</a>
 	</div>
+	
 
 </div>
 </body>

@@ -48,7 +48,7 @@ fi
 # Scan for the mac address
 LINE=$(hcitool inq --length=3 | grep "$MAC")
 if [[ "$LINE" = "" ]]; then
-    echo "Baton $BATON ($MAC): $(tput bold)$(tput setaf 1)down!$(tput sgr0)"
+    echo "Baton $BATON ($MAC): down!"
 else
-    echo "Baton $BATON ($MAC): $(tput bold)$(tput setaf 2)ok.(tput sgr0)"
+    echo "Baton $BATON ($MAC): ok."
 fi
