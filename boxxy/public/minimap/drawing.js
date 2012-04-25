@@ -191,7 +191,7 @@ var draw = {
             var coords = draw.interpolation.getCoords(draw.highlight.id, shapes.real);
             draw.team({
                 name: draw.highlight.name,
-                id: draw.highlight.id.split('-')[1],
+                id: draw.highlight.name[0],
                 coords: coords,
                 info: draw.highlight,
                 highlight: true
