@@ -49,6 +49,9 @@ function Interpolation() {
         team.time = new Date(message.time);
         team.speed = targetSpeed;
         team.station = message.station;
+        var newPredictedPosition = self.getPosition(team.id, new Date(message.time));
+        team.lastPosition -= (newPredictedPosition - predictedPosition);
+        
     }
 
     this.getPosition = function(teamid, time) {
