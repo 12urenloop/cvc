@@ -94,7 +94,7 @@ div#monitor div#teams {
 div#monitor div.team {
     float: left;
     margin-right: 20px;
-    width: 280px;
+    width: 260px;
 }
 
 div#monitor div.team span.speed {
@@ -108,7 +108,7 @@ div#monitor div.team span.laps {
 div#monitor div.team div.progress {
     border: 1px solid black;
     height: 10px;
-    width: 200px;
+    width: 260px;
 }
 
 div#monitor div.team div.progress div.fill {
