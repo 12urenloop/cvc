@@ -136,7 +136,9 @@ var draw = {
             draw.context.font = teamNameFont;
             draw.context.fillText(team.name, teamNameX, teamNameY);
             draw.context.font = teamStatsFont;
-            draw.context.fillText(team.info.laps + ' rondjes aan ' + (team.info.speed * 3.6).toFixed(1) + ' km/u', teamNameX, teamNameY + 0.075 * draw.scale);
+            var meters = team.info.laps * draw.boxxy.circuitLength + team.info.station.position - 50,
+                speed = meters / (draw.boxxy.timeSinceStart() / 1000);
+            draw.context.fillText(team.info.laps + ' rondjes aan ' + (speed * 3.6).toFixed(1) + ' km/u', teamNameX, teamNameY + 0.075 * draw.scale);
             draw.context.fillText(draw.rankingTexts[team.info.ranking - 1] + " plaats", teamNameX, teamNameY + 0.15 * draw.scale);
             draw.context.scale(draw.scale, draw.scale);
             draw.context.beginPath();

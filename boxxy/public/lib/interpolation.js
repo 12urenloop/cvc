@@ -44,6 +44,7 @@ function Interpolation() {
             targetPosition = self.correctStation(self.stations[message.station.name].next).position,
             targetTime = self.mod(targetPosition - actualPosition + self.circuitLength) / message.speed,
             targetSpeed = self.mod(targetPosition - predictedPosition + self.circuitLength) / targetTime;
+        targetSpeed = Math.min(12, targetSpeed);
         team.lastPosition = predictedPosition;
         team.time = new Date(message.time);
         team.speed = targetSpeed;
