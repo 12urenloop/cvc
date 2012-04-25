@@ -38,8 +38,8 @@
                         jList.append($('<li  class="ui-li ui-li-static ui-body-c ui-li-has-count" >' + name +'<span class="ui-li-count ui-btn-up-c ui-btn-corner-all">' + laps + ' punten</span></li>'));
                     }
                 }
-            var km = (laps * 380 / 1000).toFixed(2);
-            $('#totalLaps').html('' + laps);
+            var km = (totalLaps * 380 / 1000).toFixed(2);
+            $('#totalLaps').html('' + totalLaps);
             $('#km').html('' + km);
             $('#moonDist').html('' + (km / 3800).toPrecision(5));
             $('#nyla').html('' + (km / 39.32).toFixed(2));
