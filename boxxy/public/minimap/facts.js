@@ -30,7 +30,7 @@ var facts = {
                 speed = parseInt(facts.weather.windspeedKmph);
             direction = direction.replace(/S/g, "Z").replace(/E/g, "O");
             
-            return "Wind: " + speed.toFixed(0) + " km/u uit het " + direction;
+            return "Wind: " + speed.toFixed(0) + " km/u " + direction;
         },
         function() {
             var teams = facts.boxxy.getTeams(),
@@ -40,13 +40,10 @@ var facts = {
             }
             var distance = totalLaps * facts.boxxy.circuitLength / 1000;
             
-            return "Er is in totaal al " + distance.toFixed(1) + " km afgelegd.";
+            return "Er is al " + distance.toFixed(1) + " km afgelegd.";
         },
         function() {
             return "Zeus WPI is de max.";
-        },
-        function() {
-            return "bousson = fag";
         }
     ],
     

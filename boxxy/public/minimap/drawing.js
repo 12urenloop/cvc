@@ -181,7 +181,7 @@ var draw = {
                 var coords = draw.interpolation.getCoords(teams[idx].id, shapes.real);
                 draw.team({
                     name: teams[idx].name,
-                    id: teams[idx].id.split('-')[1],
+                    id: teams[idx].name[0],
                     coords: coords,
                     info: teams[idx],
                     highlight: false
