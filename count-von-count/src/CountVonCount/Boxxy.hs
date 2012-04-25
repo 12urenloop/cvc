@@ -143,10 +143,11 @@ data Boxxies = Boxxies
     , boxxiesInit  :: BoxxyConfig -> IO ()
     }
 
-newBoxxies :: [BoxxyConfig] -> (BoxxyConfig -> IO ()) -> IO Boxxies
-newBoxxies configs init' = Boxxies
-    <$> forM configs (\c -> (,) c <$> newIORef Down)
-    <*> pure init'
+newBoxxies :: Log -> [BoxxyConfig] -> (BoxxyConfig -> IO ()) -> IO Boxxies
+newBoxxies logger configs ini = do
+    bs <- Boxxies <$> forM configs (\c -> (,) c <$> newIORef Down) <*> pure ini
+    withBoxxies logger bs (const $ return ())
+    return bs
 
 withBoxxies :: Log
             -> Boxxies

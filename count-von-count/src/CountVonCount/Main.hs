@@ -38,7 +38,7 @@ main = do
     pubSub <- WS.newPubSub
 
     -- Initialize boxxy
-    boxxies <- newBoxxies (configBoxxies config) $ \b -> do
+    boxxies <- newBoxxies logger (configBoxxies config) $ \b -> do
         teams <- map snd <$> runPersistence getAllTeams
         time  <- getCurrentTime
         putConfig b (configStartTime config) (configCircuitLength config)
