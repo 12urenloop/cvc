@@ -11,9 +11,11 @@ module CountVonCount.Boxxy
     , putPosition
 
       -- * Stateful talking
+    , BoxxyState (..)
     , Boxxies
     , newBoxxies
     , withBoxxies
+    , boxxiesToList
     ) where
 
 import Control.Applicative (pure, (<$>),(<*>))
@@ -133,11 +135,11 @@ putPosition config team time station speed = makeRequest config path $ A.object
   where
     path = T.concat ["/", teamId team, "/position"]
 
-data State = Up | Down
+data BoxxyState = Up | Down
     deriving (Eq, Show)
 
 data Boxxies = Boxxies
-    { boxxiesState :: [(BoxxyConfig, IORef State)]
+    { boxxiesState :: [(BoxxyConfig, IORef BoxxyState)]
     , boxxiesInit  :: BoxxyConfig -> IO ()
     }
 
@@ -167,3 +169,8 @@ withBoxxies logger bs f = forM_ (boxxiesState bs) $ \(c, rs) ->
         let s' = if isNothing r' then Up else Down
         when (s /= s') $ Log.string logger $ show c ++ " is now " ++ show s'
         writeIORef rs s'
+
+boxxiesToList :: Boxxies -> IO [(BoxxyConfig, BoxxyState)]
+boxxiesToList boxxies = forM (boxxiesState boxxies) $ \(c, rs) -> do
+    s <- readIORef rs
+    return (c, s)

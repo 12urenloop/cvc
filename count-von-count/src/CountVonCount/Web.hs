@@ -91,6 +91,11 @@ laps = do
             return (t, l)
     Snap.blaze $ Views.laps laps' tz
 
+boxxies :: Web ()
+boxxies = do
+    list <- liftIO . boxxiesToList . webBoxxies =<< ask
+    Snap.blaze $ Views.boxxies list
+
 teamForm :: Form Html Web Team
 teamForm = Team
     <$> "id"    .: (uniqueId . validId . notNull $ text Nothing)
@@ -143,12 +148,11 @@ teamBonus = do
     (view, result) <- runForm "bonus" bonusForm
     case result of
         Just (BonusForm laps' reason) -> do
-            boxxies <- webBoxxies <$> ask
-            logger  <- webLog <$> ask
-
+            boxxies'  <- webBoxxies <$> ask
+            logger    <- webLog <$> ask
             timestamp <- liftIO getCurrentTime
             team'     <- runPersistence $ addLaps teamRef timestamp reason laps'
-            liftIO $ withBoxxies logger boxxies $ \b ->
+            liftIO $ withBoxxies logger boxxies' $ \b ->
                 putLaps b team' timestamp laps' Nothing (Just reason)
 
             Snap.redirect "/management"
@@ -179,6 +183,7 @@ site = Snap.route
     , ("/monitor/feed",        monitorFeed)
     , ("/management",          management)
     , ("/laps",                laps)
+    , ("/boxxies",             boxxies)
     , ("/team/new",            teamNew)
     , ("/team/:id/assign",     teamAssign)
     , ("/team/:id/bonus",      teamBonus)
@@ -186,7 +191,7 @@ site = Snap.route
     ] <|> Snap.serveDirectory "static"
 
 listen :: Config -> Log -> WS.PubSub WS.Hybi00 -> Counter -> Boxxies -> IO ()
-listen conf logger pubSub counter boxxies =
+listen conf logger pubSub counter boxxies' =
     Snap.httpServe snapConfig $ runReaderT site env
   where
     env = WebEnv
@@ -194,7 +199,7 @@ listen conf logger pubSub counter boxxies =
         , webLog     = logger
         , webPubSub  = pubSub
         , webCounter = counter
-        , webBoxxies = boxxies
+        , webBoxxies = boxxies'
         }
 
     snapConfig = Snap.setPort (configWebPort conf) Snap.defaultConfig
