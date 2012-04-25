@@ -6,7 +6,7 @@ $urls = array("http://localhost:8000");
 
 function toBoxxy($teamid, $count, $time) {
     $teams = getTeams();
-    $team = $teams["team-$teamid"];
+    $team = $teams["t$teamid"];
     $data = array(
         'count' => $count,
         'team' => array(
@@ -14,7 +14,7 @@ function toBoxxy($teamid, $count, $time) {
             'name' => $team['name'],
             'laps' => $team['laps']
         ),
-        'time' => date('Y-m-d\TH:i:s.000\Z')
+        'time' => date('Y-m-d\TH:i:s.000\Z', $time)
     );
     foreach($urls as $url) {
         $ch = curl_init();
