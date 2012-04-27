@@ -4,6 +4,7 @@ module CountVonCount.Persistence.Tests
     ) where
 
 import Control.Monad.Trans (liftIO)
+import Control.Applicative ((<$>))
 import Data.Maybe (fromJust)
 import Data.Time (UTCTime, diffUTCTime, getCurrentTime)
 
@@ -36,16 +37,23 @@ tests = testGroup "CountVonCount.Persistence.Tests"
             laps1   = 10
             reason2 = "Bousson = FAG"
             laps2   = 2
-
-        _            <- addLaps r time reason1 laps1
-        _            <- addLaps r time reason2 laps2
-        [lap2, lap1] <- getLatestLaps r 2
+        _    <- addLaps r time reason1 laps1
+        _    <- addLaps r time reason2 laps2
+        _    <- addLaps r time reason2 laps2
+        _    <- addLaps r time reason1 laps1
+        _    <- addLaps r time reason1 laps1
+        _    <- addLaps r time reason2 laps2
+        _    <- addLaps r time reason2 laps2
+        lap1 <- head <$> getLatestLaps r 3
+        lap2 <- head <$> getLatestLaps r 2
+        lap3 <- head <$> getLatestLaps r 5
 
         return $
             -- Might a marginal difference in the times due to conversion,
             -- should never be more than one second
             ((time, reason1, laps1) `eqLap` lap1) &&
-            ((time, reason2, laps2) `eqLap` lap2)
+            ((time, reason2, laps2) `eqLap` lap2) &&
+            ((time, reason2, laps2) `eqLap` lap3)
     ]
 
 eqLap :: (UTCTime, Text, Int) -> Lap -> Bool

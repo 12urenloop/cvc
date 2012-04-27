@@ -150,7 +150,7 @@ getLatestLaps !ref n = do
     -- NOTE: I have to use the project modifier here, because there is no other
     -- way for me to specify this
     team <- MDB.fetch $ (MDB.select ["_id" MDB.:= ref] "teams")
-        {MDB.project = ["laps_" MDB.=: ["$slice" MDB.=: n]]}
+        {MDB.project = ["laps_" MDB.=: ["$slice" MDB.=: -n]]}
     let laps = MDB.at "laps_" team
     return $ fmap fromDocument laps
 
