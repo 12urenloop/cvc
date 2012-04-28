@@ -26,9 +26,9 @@ module CountVonCount.Persistence
     , deleteAll
     ) where
 
-import Control.Exception (Exception (..), SomeException (..), handle, throw)
 import Control.Applicative ((<$>))
 import Control.Arrow ((&&&))
+import Control.Exception (Exception (..), IOException, handle, throw)
 import Control.Monad.Trans (MonadIO, liftIO)
 import Data.Ord (comparing)
 import Data.Typeable (Typeable)
@@ -52,7 +52,7 @@ runPersistence p = liftIO $ do
         MDB.close pipe
         return $ either (error . show) id x
   where
-    connect, query :: SomeException -> IO a
+    connect, query :: IOException -> IO a
     connect = throw $ PersistenceException "Can't connect to MongoDB"
     query   = throw $ PersistenceException "Can't execute MongoDB-query"
 
