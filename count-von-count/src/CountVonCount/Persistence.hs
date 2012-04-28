@@ -1,8 +1,11 @@
-{-# LANGUAGE BangPatterns, OverloadedStrings, ScopedTypeVariables #-}
+{-# LANGUAGE BangPatterns, DeriveDataTypeable, OverloadedStrings,
+        ScopedTypeVariables #-}
 {-# OPTIONS_GHC -fno-warn-unused-do-bind #-}
 module CountVonCount.Persistence
     ( Persistence
     , runPersistence
+
+    , PersistenceException (..)
 
     , Ref
     , refToString
@@ -23,10 +26,12 @@ module CountVonCount.Persistence
     , deleteAll
     ) where
 
+import Control.Exception (Exception (..), SomeException (..), handle, throw)
 import Control.Applicative ((<$>))
 import Control.Arrow ((&&&))
 import Control.Monad.Trans (MonadIO, liftIO)
 import Data.Ord (comparing)
+import Data.Typeable (Typeable)
 
 import Data.Aeson (ToJSON (..), object, (.=))
 import Data.Text (Text)
@@ -42,10 +47,20 @@ runPersistence :: MonadIO m => Persistence a -> m a
 runPersistence p = liftIO $ do
     -- TODO: show a more descriptive error message when failing?
     -- TODO: pool and re-use connections
-    pipe <- MDB.runIOE $ MDB.connect $ MDB.host "127.0.0.1"
-    x    <- MDB.access pipe MDB.master "count-von-count" p
-    MDB.close pipe
-    return $ either (error . show) id x
+    pipe <- handle connect $ MDB.runIOE $ MDB.connect $ MDB.host "127.0.0.1"
+    handle query $ do
+        x    <- MDB.access pipe MDB.master "count-von-count" p
+        MDB.close pipe
+        return $ either (error . show) id x
+  where
+    connect, query :: SomeException -> IO a
+    connect = throw $ PersistenceException "Can't connect to mongodb"
+    query   = throw $ PersistenceException "Can't execute query"
+
+data PersistenceException = PersistenceException String
+    deriving (Show, Typeable)
+
+instance Exception PersistenceException
 
 type Ref a = MDB.Value
 
