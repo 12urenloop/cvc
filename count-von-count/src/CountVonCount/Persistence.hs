@@ -28,7 +28,7 @@ module CountVonCount.Persistence
 
 import Control.Applicative ((<$>))
 import Control.Arrow ((&&&))
-import Control.Exception (Exception (..), IOException, handle, throw)
+import Control.Exception (Exception, IOException, handle, throw)
 import Control.Monad.Trans (MonadIO, liftIO)
 import Data.Ord (comparing)
 import Data.Typeable (Typeable)
@@ -53,8 +53,8 @@ runPersistence p = liftIO $ do
         return $ either (error . show) id x
   where
     connect, query :: IOException -> IO a
-    connect = throw $ PersistenceException "Can't connect to MongoDB"
-    query   = throw $ PersistenceException "Can't execute MongoDB-query"
+    connect _ = throw $ PersistenceException "Can't connect to MongoDB"
+    query   _ = throw $ PersistenceException "Can't execute MongoDB-query"
 
 data PersistenceException = PersistenceException String
     deriving (Show, Typeable)
