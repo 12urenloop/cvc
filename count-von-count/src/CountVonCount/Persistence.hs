@@ -45,7 +45,6 @@ type Persistence = MDB.Action IO
 
 runPersistence :: MonadIO m => Persistence a -> m a
 runPersistence p = liftIO $ do
-    -- TODO: show a more descriptive error message when failing?
     -- TODO: pool and re-use connections
     pipe <- handle connect $ MDB.runIOE $ MDB.connect $ MDB.host "127.0.0.1"
     handle query $ do
@@ -54,8 +53,8 @@ runPersistence p = liftIO $ do
         return $ either (error . show) id x
   where
     connect, query :: SomeException -> IO a
-    connect = throw $ PersistenceException "Can't connect to mongodb"
-    query   = throw $ PersistenceException "Can't execute query"
+    connect = throw $ PersistenceException "Can't connect to MongoDB"
+    query   = throw $ PersistenceException "Can't execute MongoDB-query"
 
 data PersistenceException = PersistenceException String
     deriving (Show, Typeable)
