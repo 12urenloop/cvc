@@ -14,7 +14,9 @@ All information and actions are permanently stored and can be replayed through t
 
 ### pokemon
 
-Demo application that generates detection events and sends them to a count-von-count process. Requires [LÖVE](https://love2d.org/) to run.
+Demo application that generates detection events and sends them to a count-von-count process.
+
+To run, install [LÖVE](https://love2d.org/) and run `love` from the pokemon-directory.
 
 ### tools/data-analysis
 
