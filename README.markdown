@@ -16,7 +16,7 @@ All information and actions are permanently stored and can be replayed through t
 
 Demo application that generates detection events and sends them to a count-von-count process.
 
-To run, install [LÖVE](https://love2d.org/) and run `love` from the pokemon-directory.
+To run, install [LÖVE](https://love2d.org/) and run `love .` from the pokemon-directory or `love pokemon` from the repository root.
 
 ### tools/data-analysis
 
