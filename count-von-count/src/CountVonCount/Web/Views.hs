@@ -8,6 +8,7 @@ module CountVonCount.Web.Views
     , boxxies
     , teamNew
     , teamBonus
+    , multibonus
 
       -- * Partials
     , counterState
@@ -171,6 +172,10 @@ teamBonus ref team view = template "Add bonus" $ block "bonus" $ do
         H.br
 
         D.inputSubmit "Add bonus"
+
+multibonus :: [(Ref Team, Team)] -> Html
+multibonus _teams = template "Multibonus" $ block "multibonus" $ do
+    H.h1 "Multibonus"
 
 counterState :: Double -> Team -> Maybe CounterState -> Partial
 counterState circuitLength team cs = partial selector $ H.div

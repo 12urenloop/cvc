@@ -4,6 +4,7 @@ module CountVonCount.Management
     ( findBaton
     , assignBaton
     , assignment
+    , addBonus
     ) where
 
 import Control.Applicative ((<$>))
@@ -13,9 +14,13 @@ import Data.Foldable (forM_)
 import Data.List (find, sort, sortBy)
 import Data.Maybe (mapMaybe)
 import Data.Ord (comparing)
+import Data.Text (Text)
+import Data.Time (getCurrentTime)
 import qualified Data.Map as M
 
+import CountVonCount.Boxxy
 import CountVonCount.Counter
+import CountVonCount.Log (Log)
 import CountVonCount.Persistence
 import CountVonCount.Types
 
@@ -45,3 +50,10 @@ assignment batons = do
             mapMaybe (teamBaton . snd) teams
 
     return (withBatons, sort freeBatons)
+
+addBonus :: Log -> Boxxies -> Ref Team -> Text -> Int -> Persistence ()
+addBonus logger boxxies ref reason laps = do
+    timestamp <- liftIO getCurrentTime
+    team      <- addLaps ref timestamp reason laps
+    liftIO $ withBoxxies logger boxxies $ \b ->
+        putLaps b team timestamp laps Nothing (Just reason)

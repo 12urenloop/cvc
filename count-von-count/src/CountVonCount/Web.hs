@@ -9,9 +9,8 @@ import Control.Monad.Reader (ReaderT, ask, runReaderT)
 import Control.Monad.Trans (liftIO)
 import Data.Char (isDigit, isLower)
 import Data.List (sort)
-
 import Data.Text (Text)
-import Data.Time (getCurrentTime, getCurrentTimeZone)
+import Data.Time (getCurrentTimeZone)
 import Text.Blaze.Html (Html)
 import Text.Digestive (Form, check, checkM, stringRead, text, (.:))
 import Text.Digestive.Snap (runForm)
@@ -148,13 +147,9 @@ teamBonus = do
     (view, result) <- runForm "bonus" bonusForm
     case result of
         Just (BonusForm laps' reason) -> do
-            boxxies'  <- webBoxxies <$> ask
             logger    <- webLog <$> ask
-            timestamp <- liftIO getCurrentTime
-            team'     <- runPersistence $ addLaps teamRef timestamp reason laps'
-            liftIO $ withBoxxies logger boxxies' $ \b ->
-                putLaps b team' timestamp laps' Nothing (Just reason)
-
+            boxxies'  <- webBoxxies <$> ask
+            runPersistence $ addBonus logger boxxies' teamRef reason laps'
             Snap.redirect "/management"
         _ -> Snap.blaze $ Views.teamBonus teamRef team view
 
@@ -175,6 +170,11 @@ teamReset = do
             Nothing  -> return ()
     Snap.redirect "/management"
 
+multibonus :: Web ()
+multibonus = do
+    teams <- runPersistence getAllTeams
+    Snap.blaze $ Views.multibonus teams
+
 site :: Web ()
 site = Snap.route
     [ ("",                     Snap.ifTop index)
@@ -188,6 +188,7 @@ site = Snap.route
     , ("/team/:id/assign",     teamAssign)
     , ("/team/:id/bonus",      teamBonus)
     , ("/team/:id/reset",      teamReset)
+    , ("/multibonus",          multibonus)
     ] <|> Snap.serveDirectory "static"
 
 listen :: Config -> Log -> WS.PubSub WS.Hybi00 -> Counter -> Boxxies -> IO ()
