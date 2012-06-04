@@ -71,6 +71,10 @@ monitor circuitLength teams deadBatons' =
 management :: [(Ref Team, Team, Maybe Baton)] -> [Baton] -> Html
 management teams batons = template "Teams" $ block "management" $ do
     block "secondary" $ do
+        H.h1 "Extra"
+        buttonTo "/team/new" "Add new team"
+        buttonTo "/multibonus" "Multibonus"
+
         H.h1 "Free batons"
         forM_ batons $ \baton -> H.div ! A.class_ "baton" $
             H.toHtml $ show baton
@@ -91,8 +95,7 @@ management teams batons = template "Teams" $ block "management" $ do
             ")"
 
         H.div ! A.class_ "controls" $ do
-            H.form ! A.action (H.toValue bonusUri) ! A.method "GET" $
-                H.input ! A.type_ "submit" ! A.value "Add bonus"
+            buttonTo (H.toValue bonusUri) "Add bonus"
 
             postForm assignUri $ do
                 H.select ! A.name "baton" $ do
@@ -106,8 +109,6 @@ management teams batons = template "Teams" $ block "management" $ do
 
             postForm resetUri $
                 H.input ! A.type_ "submit" ! A.value "Reset counter"
-
-    linkTo "/team/new" "Add new team"
   where
     macValue = H.toValue . batonMac
 
