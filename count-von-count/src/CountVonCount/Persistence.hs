@@ -10,6 +10,7 @@ module CountVonCount.Persistence
     , Ref
     , refToString
     , refFromString
+    , refToText
 
     , Team (..)
     , addTeam
@@ -68,6 +69,9 @@ refToString = show
 
 refFromString :: String -> Ref a
 refFromString = MDB.ObjId . read
+
+refToText :: Ref a -> Text
+refToText = T.pack . refToString
 
 class FromDocument a where
     fromDocument :: MDB.Document -> a

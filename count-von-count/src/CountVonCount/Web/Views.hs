@@ -173,9 +173,30 @@ teamBonus ref team view = template "Add bonus" $ block "bonus" $ do
 
         D.inputSubmit "Add bonus"
 
-multibonus :: [(Ref Team, Team)] -> Html
-multibonus _teams = template "Multibonus" $ block "multibonus" $ do
+multibonus :: [(Ref Team, Team)] -> D.View Html -> Html
+multibonus teams view = template "Multibonus" $ block "multibonus" $ do
     H.h1 "Multibonus"
+    D.form view "/multibonus" $ do
+        D.childErrorList "" view
+
+        H.h2 "Specify bonus"
+
+        D.label     "laps" view "Laps: "
+        D.inputText "laps" view ! A.size "5"
+        H.br
+
+        D.label     "reason" view "Because: "
+        D.inputText "reason" view ! A.size "30"
+        H.br
+
+        H.h2 "Specify teams"
+        forM_ teams $ \(ref, team) -> do
+            let dref = D.makeRef (refToText ref)
+            D.inputCheckbox dref view
+            D.label         dref view $ H.toHtml $ teamName team
+            H.br
+
+        D.inputSubmit "Add multibonux"
 
 counterState :: Double -> Team -> Maybe CounterState -> Partial
 counterState circuitLength team cs = partial selector $ H.div
