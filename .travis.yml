@@ -1,7 +1,8 @@
 language: haskell
 before_install:
-    - "cd count-von-count"
+  - "cd count-von-count"
 notifications:
   email: true
   irc:
     - "wina.ugent.be#zeus"
+services: mongodb
