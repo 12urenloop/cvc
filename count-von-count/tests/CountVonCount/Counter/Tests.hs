@@ -33,13 +33,14 @@ counterTest :: IO Bool
 counterTest = do
     -- Initialize stuffs
     logger   <- Log.open "/dev/null" False
+    database <- newDatabase
     counter  <- newCounter
     chan     <- newChan
     threadId <- forkIO $ runCounter counter circuitLength maxSpeed
-        logger handler' chan
+        logger database handler' chan
 
     -- Add teams, calculate expected output
-    ts <- runPersistence $
+    ts <- runPersistence database $
         forM (zip [1 ..] (zip teams fixtures)) $ \(i, (t, f)) -> do
             r <- addTeam t
             let baton = Baton (fromJust (teamBaton t)) i
@@ -53,12 +54,13 @@ counterTest = do
     threadDelay 500000
 
     -- Check the laps for each team
-    results <- runPersistence $ forM ts $ \(ref, _, laps) -> do
-        team <- getTeam ref
-        return $ teamLaps team == laps
+    results <- runPersistence database $
+        forM ts $ \(ref, _, laps) -> do
+            team <- getTeam ref
+            return $ teamLaps team == laps
 
     -- Check the output
-    runPersistence deleteAll
+    runPersistence database deleteAll
     killThread threadId
     return $ and results
   where

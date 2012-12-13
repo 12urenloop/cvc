@@ -37,11 +37,12 @@ import qualified CountVonCount.Log as Log
 import qualified CountVonCount.Web.Views as Views
 
 data WebEnv = WebEnv
-    { webConfig  :: Config
-    , webLog     :: Log
-    , webPubSub  :: WS.PubSub WS.Hybi00
-    , webCounter :: Counter
-    , webBoxxies :: Boxxies
+    { webConfig   :: Config
+    , webLog      :: Log
+    , webDatabase :: Database
+    , webPubSub   :: WS.PubSub WS.Hybi00
+    , webCounter  :: Counter
+    , webBoxxies  :: Boxxies
     }
 
 type Web = ReaderT WebEnv Snap.Snap
@@ -54,7 +55,8 @@ config = ask >>= json . webConfig
 
 monitor :: Web ()
 monitor = do
-    teams    <- sort . map snd <$> runPersistence getAllTeams
+    db       <- webDatabase <$> ask
+    teams    <- sort . map snd <$> runPersistence db getAllTeams
     counter  <- webCounter <$> ask
     batons   <- configBatons . webConfig <$> ask
     states   <- forM teams $ \team -> liftIO $
@@ -79,13 +81,15 @@ monitorFeed = do
 management :: Web ()
 management = do
     batons                   <- configBatons . webConfig <$> ask
-    (withBatons, freeBatons) <- liftIO $ assignment batons
+    db                       <- webDatabase <$> ask
+    (withBatons, freeBatons) <- liftIO $ assignment db batons
     Snap.blaze $ Views.management withBatons freeBatons
 
 laps :: Web ()
 laps = do
+    db    <- webDatabase <$> ask
     tz    <- liftIO getCurrentTimeZone
-    laps' <- runPersistence $ do
+    laps' <- runPersistence db $ do
         teams <- getAllTeams
         forM teams $ \(r, t) -> do
             l <- getLatestLaps r 5
@@ -108,15 +112,17 @@ teamForm = Team
     validId = DF.check "Should only contain lowercase letters, numbers or -" $
         T.all $ \c -> isLower c || isDigit c || c == '-'
     uniqueId = DF.checkM "Should be unique" $ \id' -> do
-        teams <- map snd <$> runPersistence getAllTeams
+        db    <- webDatabase <$> ask
+        teams <- map snd <$> runPersistence db getAllTeams
         return $ not $ any ((== id') . teamId) teams
 
 teamNew :: Web ()
 teamNew = do
+    db             <- webDatabase <$> ask
     (view, result) <- DFS.runForm "team" teamForm
     case result of
         Just team -> do
-            _ <- liftIO $ runPersistence $ addTeam team
+            _ <- liftIO $ runPersistence db $ addTeam team
             Snap.redirect "/management"
         _         ->
             Snap.blaze $ Views.teamNew view
@@ -124,13 +130,14 @@ teamNew = do
 teamAssign :: Web ()
 teamAssign = do
     Just mac <- fmap T.decodeUtf8 <$> Snap.getParam "baton"
+    db       <- webDatabase <$> ask
     counter  <- webCounter <$> ask
     batons   <- configBatons . webConfig <$> ask
 
     unless (T.null mac) $ do
         let Just baton = findBaton mac batons
         Just teamRef <- refFromParam "id"
-        liftIO $ assignBaton counter batons baton teamRef
+        liftIO $ assignBaton db counter batons baton teamRef
 
     Snap.redirect "/management"
 
@@ -145,13 +152,14 @@ bonusForm = BonusForm
 teamBonus :: Web ()
 teamBonus = do
     Just teamRef   <- refFromParam "id"
-    team           <- runPersistence $ getTeam teamRef
+    db             <- webDatabase <$> ask
+    team           <- runPersistence db $ getTeam teamRef
     (view, result) <- DFS.runForm "bonus" bonusForm
     case result of
         Just (BonusForm laps' reason) -> do
             logger    <- webLog <$> ask
             boxxies'  <- webBoxxies <$> ask
-            runPersistence $ addBonus logger boxxies' teamRef reason laps'
+            runPersistence db $ addBonus logger boxxies' teamRef reason laps'
             Snap.redirect "/management"
         _ -> Snap.blaze $ Views.teamBonus teamRef team view
 
@@ -159,9 +167,10 @@ teamReset :: Web ()
 teamReset = do
     Just teamRef <- refFromParam "id"
     counter      <- webCounter <$> ask
+    db           <- webDatabase <$> ask
     logger       <- webLog <$> ask
     batons       <- configBatons . webConfig <$> ask
-    runPersistence $ do
+    runPersistence db $ do
         team <- getTeam teamRef
         case teamBaton team of
             Just mac -> do
@@ -186,13 +195,14 @@ multibonusForm teams = MultibonusForm
 
 multibonus :: Web ()
 multibonus = do
-    allTeams    <- runPersistence getAllTeams
+    db          <- webDatabase <$> ask
+    allTeams    <- runPersistence db getAllTeams
     (view, res) <- DFS.runForm "multibonus" $ multibonusForm $ map fst allTeams
     case res of
         Just (MultibonusForm laps' reason teams) -> do
             logger    <- webLog <$> ask
             boxxies'  <- webBoxxies <$> ask
-            runPersistence $ forM_ teams $ \team ->
+            runPersistence db $ forM_ teams $ \team ->
                 addBonus logger boxxies' team reason laps'
             Snap.redirect "/management"
 
@@ -214,16 +224,18 @@ site = Snap.route
     , ("/multibonus",          multibonus)
     ] <|> Snap.serveDirectory "static"
 
-listen :: Config -> Log -> WS.PubSub WS.Hybi00 -> Counter -> Boxxies -> IO ()
-listen conf logger pubSub counter boxxies' =
+listen :: Config -> Log -> Database -> WS.PubSub WS.Hybi00 -> Counter -> Boxxies
+       -> IO ()
+listen conf logger db pubSub counter boxxies' =
     Snap.httpServe snapConfig $ runReaderT site env
   where
     env = WebEnv
-        { webConfig  = conf
-        , webLog     = logger
-        , webPubSub  = pubSub
-        , webCounter = counter
-        , webBoxxies = boxxies'
+        { webConfig   = conf
+        , webLog      = logger
+        , webDatabase = db
+        , webPubSub   = pubSub
+        , webCounter  = counter
+        , webBoxxies  = boxxies'
         }
 
     snapConfig = Snap.setPort (configWebPort conf) Snap.defaultConfig

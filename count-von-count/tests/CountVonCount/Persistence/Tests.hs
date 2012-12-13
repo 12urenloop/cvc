@@ -1,23 +1,32 @@
+--------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
 module CountVonCount.Persistence.Tests
     ( tests
     ) where
 
-import Control.Monad.Trans (liftIO)
-import Control.Applicative ((<$>))
-import Data.Maybe (fromJust)
-import Data.Time (UTCTime, diffUTCTime, getCurrentTime)
 
-import Data.Text (Text)
-import Test.Framework (Test, testGroup)
-import Test.Framework.Providers.HUnit (testCase)
+--------------------------------------------------------------------------------
+import           Control.Applicative                  ((<$>))
+import           Control.Monad.Trans                  (liftIO)
+import           Data.Maybe                           (fromJust)
+import           Data.Text                            (Text)
+import           Data.Time                            (UTCTime, diffUTCTime,
+                                                       getCurrentTime)
+import           Test.Framework                       (Test, testGroup)
+import           Test.Framework.Providers.HUnit       (testCase)
 
-import CountVonCount.Persistence
-import CountVonCount.Persistence.Tests.Util
 
+--------------------------------------------------------------------------------
+import           CountVonCount.Persistence
+import           CountVonCount.Persistence.Tests.Util
+
+
+--------------------------------------------------------------------------------
 wina :: Team
 wina = Team "homos" "wina" 4 (Just "00:40:10:07:00:09")
 
+
+--------------------------------------------------------------------------------
 tests :: Test
 tests = testGroup "CountVonCount.Persistence.Tests"
     [ testCase "store/get team" $ testPersistence $ do
@@ -56,6 +65,8 @@ tests = testGroup "CountVonCount.Persistence.Tests"
             ((time, reason2, laps2) `eqLap` lap3)
     ]
 
+
+--------------------------------------------------------------------------------
 eqLap :: (UTCTime, Text, Int) -> Lap -> Bool
 eqLap (time, reason, laps) lap =
     abs (lapTimestamp lap `diffUTCTime` time) < 1 &&

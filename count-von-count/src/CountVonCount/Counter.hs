@@ -46,23 +46,25 @@ runCounter :: Counter
            -> Double
            -> Double
            -> Log
+           -> P.Database
            -> Handler (P.Team, CounterState, CounterEvent)
            -> Chan SensorEvent
            -> IO ()
-runCounter counter cl ms logger handler' chan = forever $ do
+runCounter counter cl ms logger db handler' chan = forever $ do
     event <- readChan chan
     modifyMVar_ (unCounter counter) (step' event)
   where
-    step' = step cl ms logger handler'
+    step' = step cl ms logger db handler'
 
 step :: Double  -- ^ Circuit length
      -> Double  -- ^ Max speed
      -> Log
+     -> P.Database
      -> Handler (P.Team, CounterState, CounterEvent)
      -> SensorEvent
      -> CounterMap
      -> IO CounterMap
-step cl ms logger handler' event cmap = do
+step cl ms logger db handler' event cmap = do
     let (events, tells, cmap') = stepCounterMap cl ms event cmap
         cstate                 = lookupCounterState (sensorBaton event) cmap'
     forM_ tells $ Log.string logger
@@ -71,14 +73,15 @@ step cl ms logger handler' event cmap = do
   where
     process _      []     = return ()
     process cstate events = isolate_ logger "CounterEvent process" $ do
-        mteam  <- P.runPersistence $
+        mteam  <- P.runPersistence db $
             P.getTeamByMac (batonMac . sensorBaton $ event)
 
         forM_ mteam $ \(ref, team) ->
             forM_ events $ \event' -> do
                 -- Add the lap in the database and update team record
                 team' <- case event' of
-                    Lap timestamp _ -> P.runPersistence $ P.addLap ref timestamp
+                    Lap timestamp _ -> P.runPersistence db $
+                        P.addLap ref timestamp
                     _               -> return team
 
                 -- Call handlers, log

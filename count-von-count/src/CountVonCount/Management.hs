@@ -27,8 +27,8 @@ import CountVonCount.Types
 findBaton :: Mac -> [Baton] -> Maybe Baton
 findBaton mac = find ((== mac) . batonMac)
 
-assignBaton :: Counter -> [Baton] -> Baton -> Ref Team -> IO ()
-assignBaton counter batons baton teamRef = runPersistence $ do
+assignBaton :: Database -> Counter -> [Baton] -> Baton -> Ref Team -> IO ()
+assignBaton db counter batons baton teamRef = runPersistence db $ do
     team <- getTeam teamRef
 
     -- Reset the old baton, if needed
@@ -40,9 +40,10 @@ assignBaton counter batons baton teamRef = runPersistence $ do
 
     setTeamBaton teamRef $ Just baton
 
-assignment :: [Baton] -> IO ([(Ref Team, Team, Maybe Baton)], [Baton])
-assignment batons = do
-    teams  <- sortBy (comparing snd) <$> runPersistence getAllTeams
+assignment :: Database -> [Baton]
+           -> IO ([(Ref Team, Team, Maybe Baton)], [Baton])
+assignment db batons = do
+    teams  <- sortBy (comparing snd) <$> runPersistence db getAllTeams
     let batonMap   = M.fromList $ map (batonMac &&& id) batons
         withBatons = flip map teams $ \(ref, team) ->
             (ref, team, teamBaton team >>= flip M.lookup batonMap)

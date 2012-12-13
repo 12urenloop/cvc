@@ -7,12 +7,11 @@ import Control.Monad.Trans (liftIO)
 
 import Test.Framework (Test, testGroup)
 import Test.Framework.Providers.HUnit (testCase)
-import Test.HUnit ((@=?))
+import Test.HUnit (assert, (@=?))
 
 import CountVonCount.Counter
 import CountVonCount.Management
 import CountVonCount.Persistence
-import CountVonCount.Persistence.Tests.Util
 import CountVonCount.Types
 
 batons :: [Baton]
@@ -34,16 +33,17 @@ tests = testGroup "CountVonCount.Management.Tests"
     [ testCase "findBaton" $
         Just (batons !! 0) @=? findBaton "11:11:11:11:11:11" batons
 
-    , testCase "assignBaton/assignment" $ testPersistence $ do
+    , testCase "assignBaton/assignment" $ do
         counter <- liftIO newCounter
-        refs    <- mapM addTeam teams
+        db      <- newDatabase
+        refs    <- mapM (runPersistence db . addTeam) teams
 
-        liftIO $ assignBaton counter batons (batons !! 1) (refs !! 2)
-        liftIO $ assignBaton counter batons (batons !! 2) (refs !! 1)
+        assignBaton db counter batons (batons !! 1) (refs !! 2)
+        assignBaton db counter batons (batons !! 2) (refs !! 1)
 
-        (withBatons, freeBatons) <- liftIO $ assignment batons
+        (withBatons, freeBatons) <- assignment db batons
 
-        return $ freeBatons == [batons !! 0] &&
+        assert $ freeBatons == [batons !! 0] &&
             (refs !! 2, teams !! 2, Just (batons !! 1)) `elem` withBatons &&
             (refs !! 1, teams !! 1, Just (batons !! 2)) `elem` withBatons
     ]

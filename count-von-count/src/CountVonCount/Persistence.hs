@@ -2,7 +2,9 @@
         ScopedTypeVariables #-}
 {-# OPTIONS_GHC -fno-warn-unused-do-bind #-}
 module CountVonCount.Persistence
-    ( Persistence
+    ( Database
+    , newDatabase
+    , Persistence
     , runPersistence
 
     , PersistenceException (..)
@@ -42,10 +44,15 @@ import qualified Database.MongoDB as MDB
 
 import CountVonCount.Types
 
+data Database = Database
+
+newDatabase :: IO Database
+newDatabase = return Database
+
 type Persistence = MDB.Action IO
 
-runPersistence :: MonadIO m => Persistence a -> m a
-runPersistence p = liftIO $ do
+runPersistence :: MonadIO m => Database -> Persistence a -> m a
+runPersistence Database p = liftIO $ do
     -- TODO: pool and re-use connections
     pipe <- handle connect $ MDB.runIOE $ MDB.connect $ MDB.host "127.0.0.1"
     handle query $ do

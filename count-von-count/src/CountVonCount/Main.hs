@@ -17,11 +17,11 @@ import CountVonCount.Config
 import CountVonCount.Counter
 import CountVonCount.Counter.Core
 import CountVonCount.Log (Log)
-import CountVonCount.Persistence (Team (..), getAllTeams, runPersistence)
 import CountVonCount.Sensor
 import CountVonCount.Sensor.Filter
 import CountVonCount.Types
 import qualified CountVonCount.Log as Log
+import qualified CountVonCount.Persistence as P
 import qualified CountVonCount.Sensor as Sensor
 import qualified CountVonCount.Web as Web
 import qualified CountVonCount.Web.Views as Views
@@ -31,6 +31,7 @@ main = do
     putStrLn "Count Von Count starting in 1..2..3..."
     config    <- readConfigFile "count-von-count.yaml"
     logger    <- Log.setModule "Main" <$> Log.open (configLog config) True
+    database  <- P.newDatabase
     replayLog <- Log.open (configReplayLog config) False
     Log.string logger "count-von-count started"
 
@@ -39,7 +40,7 @@ main = do
 
     -- Initialize boxxy
     boxxies <- newBoxxies logger (configBoxxies config) $ \b -> do
-        teams <- map snd <$> runPersistence getAllTeams
+        teams <- map snd <$> P.runPersistence database P.getAllTeams
         time  <- getCurrentTime
         putConfig b (configStartTime config) (configCircuitLength config)
                 (configStations config) teams time
@@ -60,7 +61,7 @@ main = do
     -- Start the counter
     counter <- newCounter
     _       <- forkIO $ runCounter counter (configCircuitLength config)
-        (configMaxSpeed config) (Log.setModule "Counter" logger)
+        (configMaxSpeed config) (Log.setModule "Counter" logger) database
         (counterHandler (configCircuitLength config) logger
             boxxies pubSub) sensorChan
 
@@ -70,7 +71,8 @@ main = do
         (handler "batonHandler" $
             WS.publish pubSub . WS.textData .  A.encode . Views.deadBatons)
 
-    Web.listen config (Log.setModule "Web" logger) pubSub counter boxxies
+    Web.listen config (Log.setModule "Web" logger) database pubSub
+        counter boxxies
 
     putStrLn "Closing..."
     Log.close replayLog
@@ -78,7 +80,7 @@ main = do
 
 counterHandler :: WS.TextProtocol p
                => Double -> Log -> Boxxies -> WS.PubSub p
-               -> Handler (Team, CounterState, CounterEvent)
+               -> Handler (P.Team, CounterState, CounterEvent)
 counterHandler circuitLength logger boxxies pubSub = handler "counterHandler" $
     \(team, cstate, event) -> do
         -- Send to websockets pubsub
