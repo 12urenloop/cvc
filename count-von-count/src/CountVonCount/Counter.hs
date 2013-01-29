@@ -23,7 +23,6 @@ import Control.Concurrent (threadDelay)
 import Control.Concurrent.Chan (Chan, readChan)
 import Control.Concurrent.MVar (MVar, newMVar, modifyMVar_, readMVar)
 import Control.Monad (forever)
-import Control.Monad.Trans (liftIO)
 import Data.Foldable (forM_)
 
 import Data.Time (addUTCTime, getCurrentTime)
@@ -73,20 +72,19 @@ step cl ms logger db handler' event cmap = do
   where
     process _      []     = return ()
     process cstate events = isolate_ logger "CounterEvent process" $ do
-        mteam  <- P.runPersistence db $
-            P.getTeamByMac (batonMac . sensorBaton $ event)
+        mteam <- P.getTeamByMac db (batonMac . sensorBaton $ event)
 
-        forM_ mteam $ \(ref, team) ->
+        -- If the baton is registred to a team
+        forM_ mteam $ \team ->
             forM_ events $ \event' -> do
                 -- Add the lap in the database and update team record
                 team' <- case event' of
-                    Lap timestamp _ -> P.runPersistence db $
-                        P.addLap ref timestamp
+                    Lap timestamp _ -> P.addLap db (P.teamId team) timestamp
                     _               -> return team
 
                 -- Call handlers, log
-                liftIO $ callHandler logger handler' (team', cstate, event')
-                liftIO $ Log.string logger $ case event' of
+                callHandler logger handler' (team', cstate, event')
+                Log.string logger $ case event' of
                     Progression _ s _ -> show team' ++ " @ " ++ show s
                     Lap _ _           -> "Lap for " ++ show team'
 

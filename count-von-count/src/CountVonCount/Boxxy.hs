@@ -123,7 +123,7 @@ putLaps config team time count speed reason = makeRequest config path $ A.object
     , "reason" .= reason
     ]
   where
-    path = T.concat ["/", teamId team, "/laps"]
+    path = T.concat ["/", refToText (teamId team), "/laps"]
 
 putPosition :: BoxxyConfig -> Team -> UTCTime -> Station -> Double -> IO ()
 putPosition config team time station speed = makeRequest config path $ A.object
@@ -133,7 +133,7 @@ putPosition config team time station speed = makeRequest config path $ A.object
     , "time"    .= time
     ]
   where
-    path = T.concat ["/", teamId team, "/position"]
+    path = T.concat ["/", refToText (teamId team), "/position"]
 
 data BoxxyState = Up | Down
     deriving (Eq, Show)

@@ -3,11 +3,10 @@ module CountVonCount.Web
     ( listen
     ) where
 
-import Control.Applicative (pure, (<$>), (<*>), (<|>))
+import Control.Applicative ((<$>), (<*>), (<|>))
 import Control.Monad (forM, forM_, unless)
 import Control.Monad.Reader (ReaderT, ask, runReaderT)
 import Control.Monad.Trans (liftIO)
-import Data.Char (isDigit, isLower)
 import Data.List (sort)
 import Data.Text (Text)
 import Data.Time (getCurrentTimeZone)
@@ -56,7 +55,7 @@ config = ask >>= json . webConfig
 monitor :: Web ()
 monitor = do
     db       <- webDatabase <$> ask
-    teams    <- sort . map snd <$> runPersistence db getAllTeams
+    teams    <- sort <$> liftIO (getAllTeams db)
     counter  <- webCounter <$> ask
     batons   <- configBatons . webConfig <$> ask
     states   <- forM teams $ \team -> liftIO $
@@ -89,11 +88,10 @@ laps :: Web ()
 laps = do
     db    <- webDatabase <$> ask
     tz    <- liftIO getCurrentTimeZone
-    laps' <- runPersistence db $ do
-        teams <- getAllTeams
-        forM teams $ \(r, t) -> do
-            l <- getLatestLaps r 5
-            return (t, l)
+    teams <- liftIO (getAllTeams db)
+    laps' <- forM teams $ \team -> do
+        l <- liftIO $ getLatestLaps db (teamId team) 5
+        return (team, l)
     Snap.blaze $ Views.laps laps' tz
 
 boxxies :: Web ()
@@ -101,28 +99,18 @@ boxxies = do
     list <- liftIO . boxxiesToList . webBoxxies =<< ask
     Snap.blaze $ Views.boxxies list
 
-teamForm :: DF.Form Html Web Team
-teamForm = Team
-    <$> "id"    .: (uniqueId . validId . notNull $ DF.text Nothing)
-    <*> "name"  .: notNull (DF.text Nothing)
-    <*> "laps"  .: pure 0
-    <*> "baton" .: pure Nothing
+teamForm :: DF.Form Html Web Text
+teamForm = "name" .: notNull (DF.text Nothing)
   where
     notNull = DF.check "Can't be empty" $ not . T.null
-    validId = DF.check "Should only contain lowercase letters, numbers or -" $
-        T.all $ \c -> isLower c || isDigit c || c == '-'
-    uniqueId = DF.checkM "Should be unique" $ \id' -> do
-        db    <- webDatabase <$> ask
-        teams <- map snd <$> runPersistence db getAllTeams
-        return $ not $ any ((== id') . teamId) teams
 
 teamNew :: Web ()
 teamNew = do
     db             <- webDatabase <$> ask
     (view, result) <- DFS.runForm "team" teamForm
     case result of
-        Just team -> do
-            _ <- liftIO $ runPersistence db $ addTeam team
+        Just name -> do
+            _ <- liftIO $ addTeam db name
             Snap.redirect "/management"
         _         ->
             Snap.blaze $ Views.teamNew view
@@ -153,15 +141,15 @@ teamBonus :: Web ()
 teamBonus = do
     Just teamRef   <- refFromParam "id"
     db             <- webDatabase <$> ask
-    team           <- runPersistence db $ getTeam teamRef
+    team           <- liftIO $ getTeam db teamRef
     (view, result) <- DFS.runForm "bonus" bonusForm
     case result of
         Just (BonusForm laps' reason) -> do
             logger    <- webLog <$> ask
             boxxies'  <- webBoxxies <$> ask
-            runPersistence db $ addBonus logger boxxies' teamRef reason laps'
+            liftIO $ addBonus db logger boxxies' teamRef reason laps'
             Snap.redirect "/management"
-        _ -> Snap.blaze $ Views.teamBonus teamRef team view
+        _ -> Snap.blaze $ Views.teamBonus team view
 
 teamReset :: Web ()
 teamReset = do
@@ -170,40 +158,39 @@ teamReset = do
     db           <- webDatabase <$> ask
     logger       <- webLog <$> ask
     batons       <- configBatons . webConfig <$> ask
-    runPersistence db $ do
-        team <- getTeam teamRef
-        case teamBaton team of
-            Just mac -> do
-                let Just baton = findBaton mac batons
-                liftIO $ resetCounterFor baton counter
-                liftIO $ Log.string logger $
-                    "Resetting counter for " ++ show team
-            Nothing  -> return ()
+    team         <- liftIO $ getTeam db teamRef
+    case teamBaton team of
+        Just mac -> do
+            let Just baton = findBaton mac batons
+            liftIO $ resetCounterFor baton counter
+            liftIO $ Log.string logger $
+                "Resetting counter for " ++ show team
+        Nothing  -> return ()
     Snap.redirect "/management"
 
 data MultibonusForm = MultibonusForm Int Text [Ref Team] deriving (Show)
 
-multibonusForm :: Monad m => [Ref Team] -> DF.Form Html m MultibonusForm
+multibonusForm :: Monad m => [Team] -> DF.Form Html m MultibonusForm
 multibonusForm teams = MultibonusForm
     <$> "laps"   .: DF.stringRead "Can't read number of laps" Nothing
     <*> "reason" .: DF.text Nothing
     <*> fmap checked (traverse checkbox teams)
   where
-    checked       = map fst . filter snd
+    checked       = map (teamId . fst) . filter snd
     checkbox team = ((,) team)
-        <$> DF.makeRef (refToText team) .: DF.bool (Just False)
+        <$> DF.makeRef (refToText $ teamId team) .: DF.bool (Just False)
 
 multibonus :: Web ()
 multibonus = do
     db          <- webDatabase <$> ask
-    allTeams    <- runPersistence db getAllTeams
-    (view, res) <- DFS.runForm "multibonus" $ multibonusForm $ map fst allTeams
+    allTeams    <- liftIO $ getAllTeams db
+    (view, res) <- DFS.runForm "multibonus" $ multibonusForm allTeams
     case res of
         Just (MultibonusForm laps' reason teams) -> do
             logger    <- webLog <$> ask
             boxxies'  <- webBoxxies <$> ask
-            runPersistence db $ forM_ teams $ \team ->
-                addBonus logger boxxies' team reason laps'
+            forM_ teams $ \team ->
+                liftIO $ addBonus db logger boxxies' team reason laps'
             Snap.redirect "/management"
 
         _ -> Snap.blaze $ Views.multibonus allTeams view

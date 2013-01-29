@@ -6,63 +6,56 @@ module CountVonCount.Persistence.Tests
 
 
 --------------------------------------------------------------------------------
-import           Control.Applicative                  ((<$>))
 import           Control.Monad.Trans                  (liftIO)
-import           Data.Maybe                           (fromJust)
 import           Data.Text                            (Text)
 import           Data.Time                            (UTCTime, diffUTCTime,
                                                        getCurrentTime)
 import           Test.Framework                       (Test, testGroup)
 import           Test.Framework.Providers.HUnit       (testCase)
+import           Test.HUnit                           (assert, (@=?))
 
 
 --------------------------------------------------------------------------------
 import           CountVonCount.Persistence
 import           CountVonCount.Persistence.Tests.Util
-
-
---------------------------------------------------------------------------------
-wina :: Team
-wina = Team "homos" "wina" 4 (Just "00:40:10:07:00:09")
+import           CountVonCount.Types
 
 
 --------------------------------------------------------------------------------
 tests :: Test
 tests = testGroup "CountVonCount.Persistence.Tests"
-    [ testCase "store/get team" $ testPersistence $ do
-        r  <- addTeam wina
-        x' <- getTeam r
-        return $ wina == x'
+    [ testCase "store/get team" $ testDatabase $ \db -> do
+        r  <- addTeam db "wina"
+        x' <- getTeam db r
+        "wina" @=? teamName x'
 
-    , testCase "getTeamByMac" $ testPersistence $ do
-        r  <- addTeam wina
-        x' <- getTeamByMac $ fromJust $ teamBaton wina
-        return $ Just (r, wina) == x'
+    , testCase "getTeamByMac" $ testDatabase $ \db -> do
+        r  <- addTeam db "wina"
+        setTeamBaton db r $ Just $ Baton "00:40:10:07:00:09" 1
+        x' <- getTeamByMac db "00:40:10:07:00:09"
+        Just "wina" @=? fmap teamName x'
 
-    , testCase "addLaps/getLatestLaps" $ testPersistence $ do
-        r    <- addTeam wina
+    , testCase "addLaps/getLatestLaps" $ testDatabase $ \db -> do
+        r    <- addTeam db "wina"
         time <- liftIO getCurrentTime
         let reason1 = "Because they're gay"
             laps1   = 10
             reason2 = "Bousson = FAG"
             laps2   = 2
-        _    <- addLaps r time reason1 laps1
-        _    <- addLaps r time reason2 laps2
-        _    <- addLaps r time reason2 laps2
-        _    <- addLaps r time reason1 laps1
-        _    <- addLaps r time reason1 laps1
-        _    <- addLaps r time reason2 laps2
-        _    <- addLaps r time reason2 laps2
-        lap1 <- head <$> getLatestLaps r 3
-        lap2 <- head <$> getLatestLaps r 2
-        lap3 <- head <$> getLatestLaps r 5
+        _    <- addLaps db r time reason1 laps1
+        _    <- addLaps db r time reason2 laps2
+        _    <- addLaps db r time reason2 laps2
+        _    <- addLaps db r time reason1 laps1
+        _    <- addLaps db r time reason1 laps1
+        _    <- addLaps db r time reason2 laps2
+        _    <- addLaps db r time reason2 laps2
+        laps <- getLatestLaps db r 5
 
-        return $
-            -- Might a marginal difference in the times due to conversion,
-            -- should never be more than one second
-            ((time, reason1, laps1) `eqLap` lap1) &&
-            ((time, reason2, laps2) `eqLap` lap2) &&
-            ((time, reason2, laps2) `eqLap` lap3)
+        -- Might a marginal difference in the times due to conversion,
+        -- should never be more than one second
+        assert ((time, reason1, laps1) `eqLap` (laps !! 2))
+        assert ((time, reason2, laps2) `eqLap` (laps !! 1))
+        assert ((time, reason2, laps2) `eqLap` (laps !! 4))
     ]
 
 

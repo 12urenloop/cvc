@@ -1,11 +1,7 @@
 --------------------------------------------------------------------------------
 module CountVonCount.Persistence.Tests.Util
-    ( testPersistence
+    ( testDatabase
     ) where
-
-
---------------------------------------------------------------------------------
-import           Test.HUnit                (Assertion, assert)
 
 
 --------------------------------------------------------------------------------
@@ -13,13 +9,9 @@ import           CountVonCount.Persistence
 
 
 --------------------------------------------------------------------------------
-testPersistence :: Persistence Bool -> Assertion
-testPersistence x = assert x'
-  where
-    x' :: IO Bool
-    x' = do
-        db <- newDatabase
-        runPersistence db $ do
-            r <- x
-            deleteAll
-            return r
+testDatabase :: (Database -> IO a) -> IO a
+testDatabase f = do
+    db <- newDatabase ":memory:"
+    r  <- f db
+    deleteAll db
+    return r

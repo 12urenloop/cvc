@@ -69,7 +69,7 @@ monitor circuitLength teams deadBatons' =
             H.toHtml . uncurry (counterState circuitLength)
         javascript "/js/monitor.js"
 
-management :: [(Ref Team, Team, Maybe Baton)] -> [Baton] -> Html
+management :: [(Team, Maybe Baton)] -> [Baton] -> Html
 management teams batons = template "Teams" $ block "management" $ do
     block "secondary" $ do
         H.h1 "Extra"
@@ -81,10 +81,10 @@ management teams batons = template "Teams" $ block "management" $ do
             H.toHtml $ show baton
 
     H.h1 "Teams"
-    forM_ teams $ \(ref, team, assigned) -> H.div ! A.class_ "team" $ do
-        let assignUri = "/team/" ++ refToString ref ++ "/assign"
-            bonusUri  = "/team/" ++ refToString ref ++ "/bonus"
-            resetUri  = "/team/" ++ refToString ref ++ "/reset"
+    forM_ teams $ \(team, assigned) -> H.div ! A.class_ "team" $ do
+        let assignUri = "/team/" ++ refToString (teamId team) ++ "/assign"
+            bonusUri  = "/team/" ++ refToString (teamId team) ++ "/bonus"
+            resetUri  = "/team/" ++ refToString (teamId team) ++ "/reset"
 
         H.toHtml $ teamName team
         " "
@@ -151,9 +151,10 @@ teamNew view = template "Add team" $ do
 
         D.inputSubmit "Add team"
 
-teamBonus :: Ref Team -> Team -> D.View Html -> Html
-teamBonus ref team view = template "Add bonus" $ block "bonus" $ do
-    let bonusUri  = "/team/" ++ refToString ref ++ "/bonus"  -- TODO: cleanup
+teamBonus :: Team -> D.View Html -> Html
+teamBonus team view = template "Add bonus" $ block "bonus" $ do
+    -- TODO: cleanup
+    let bonusUri  = "/team/" ++ refToString (teamId team) ++ "/bonus"
 
     H.h1 "Add bonus"
     H.p $ do
@@ -173,7 +174,7 @@ teamBonus ref team view = template "Add bonus" $ block "bonus" $ do
 
         D.inputSubmit "Add bonus"
 
-multibonus :: [(Ref Team, Team)] -> D.View Html -> Html
+multibonus :: [Team] -> D.View Html -> Html
 multibonus teams view = template "Multibonus" $ block "multibonus" $ do
     H.h1 "Multibonus"
     D.form view "/multibonus" $ do
@@ -190,8 +191,8 @@ multibonus teams view = template "Multibonus" $ block "multibonus" $ do
         H.br
 
         H.h2 "Specify teams"
-        forM_ teams $ \(ref, team) -> do
-            let dref = D.makeRef (refToText ref)
+        forM_ teams $ \team -> do
+            let dref = D.makeRef (refToText $ teamId team)
             D.inputCheckbox dref view
             D.label         dref view $ H.toHtml $ teamName team
             H.br
@@ -201,7 +202,7 @@ multibonus teams view = template "Multibonus" $ block "multibonus" $ do
 counterState :: Double -> Team -> Maybe CounterState -> Partial
 counterState circuitLength team cs = partial selector $ H.div
     ! A.class_ "team"
-    ! H.dataAttribute "team-id" (H.toValue $ teamId team) $ do
+    ! H.dataAttribute "team-id" (H.toValue $ refToText $ teamId team) $ do
         H.h2 $ H.toHtml $ teamName team
         H.span ! A.class_ "laps" $ H.toHtml $ teamLaps team
         " laps "
@@ -224,7 +225,7 @@ counterState circuitLength team cs = partial selector $ H.div
                     H.div ! A.class_ "fill" ! A.style (H.toValue style) $ ""
   where
     selector = T.concat
-        ["[data-team-id = \"", teamId team, "\"]"]
+        ["[data-team-id = \"", refToText (teamId team), "\"]"]
 
 deadBatons :: [Baton] -> Partial
 deadBatons [] = partial "#batons" $ H.h1 "Batons OK"

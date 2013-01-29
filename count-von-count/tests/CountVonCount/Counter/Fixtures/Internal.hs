@@ -34,7 +34,7 @@ lap = at True
 at :: Bool -> Int -> Station -> CounterFixtureM ()
 at isLap time station = do
     (offset, baton) <- ask
-    let time' = fromIntegral time `addUTCTime` offset 
+    let time' = fromIntegral time `addUTCTime` offset
     tell [CounterFixture (SensorEvent time' station baton) isLap]
 
 sensorEvents :: [CounterFixture] -> [SensorEvent]

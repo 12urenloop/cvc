@@ -31,7 +31,7 @@ main = do
     putStrLn "Count Von Count starting in 1..2..3..."
     config    <- readConfigFile "count-von-count.yaml"
     logger    <- Log.setModule "Main" <$> Log.open (configLog config) True
-    database  <- P.newDatabase
+    database  <- P.newDatabase "count-von-count.db"
     replayLog <- Log.open (configReplayLog config) False
     Log.string logger "count-von-count started"
 
@@ -40,7 +40,7 @@ main = do
 
     -- Initialize boxxy
     boxxies <- newBoxxies logger (configBoxxies config) $ \b -> do
-        teams <- map snd <$> P.runPersistence database P.getAllTeams
+        teams <- P.getAllTeams database
         time  <- getCurrentTime
         putConfig b (configStartTime config) (configCircuitLength config)
                 (configStations config) teams time
