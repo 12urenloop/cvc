@@ -140,11 +140,6 @@ teamNew :: D.View Html -> Html
 teamNew view = template "Add team" $ do
     H.h1 "Add team"
     D.form view "/team/new" $ do
-
-        D.label     "id" view "Id: " >> H.br
-        D.inputText "id" view        >> H.br
-        D.errorList "id" view
-
         D.label     "name" view "Name: " >> H.br
         D.inputText "name" view          >> H.br
         D.errorList "name" view
