@@ -6,6 +6,7 @@
 module CountVonCount.Persistence
     ( Database
     , newDatabase
+    , closeDatabase
 
     , Ref
     , refToString
@@ -58,6 +59,11 @@ newDatabase fp = do
     Sqlite.execute_ c teamTable
     Sqlite.execute_ c lapsTable
     return $ Database c
+
+
+--------------------------------------------------------------------------------
+closeDatabase :: Database -> IO ()
+closeDatabase (Database c) = Sqlite.close c
 
 
 --------------------------------------------------------------------------------

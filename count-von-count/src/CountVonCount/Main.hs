@@ -75,6 +75,7 @@ main = do
         counter boxxies
 
     putStrLn "Closing..."
+    P.closeDatabase database
     Log.close replayLog
     Log.close logger
 
