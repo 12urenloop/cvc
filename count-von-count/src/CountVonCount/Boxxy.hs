@@ -35,7 +35,6 @@ import qualified Network.HTTP.Conduit as Http
 
 import CountVonCount.Log (Log)
 import CountVonCount.Persistence
-import CountVonCount.Types
 import CountVonCount.Util
 import qualified CountVonCount.Log as Log
 

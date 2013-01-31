@@ -14,8 +14,9 @@ import Control.Monad.Writer (Writer, execWriter, tell)
 
 import Data.Time (UTCTime, addUTCTime)
 
-import CountVonCount.Types
+import CountVonCount.Persistence
 import CountVonCount.Sensor.Filter
+import CountVonCount.Types
 
 type CounterFixtureM = ReaderT (UTCTime, Baton) (Writer [CounterFixture])
 

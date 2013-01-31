@@ -19,8 +19,8 @@ import Data.Time (UTCTime, diffUTCTime)
 import Text.Printf (printf)
 
 import CountVonCount.Counter.Modulo
+import CountVonCount.Persistence (Station (..))
 import CountVonCount.Sensor.Filter
-import CountVonCount.Types
 
 data CounterEvent
     = Progression UTCTime Station Double
@@ -91,8 +91,8 @@ stepCounterState len maxSpeed event = do
           where
             SensorEvent time     station     _ = event
             SensorEvent prevTime prevStation _ = prev
-            Station _ _ position               = station
-            Station _ _ prevPosition           = prevStation
+            Station _ _ _ position             = station
+            Station _ _ _ prevPosition         = prevStation
 
             dt            = time `diffTime` prevTime
             possibilities = solve len maxSpeed prevPosition position dt

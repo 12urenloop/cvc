@@ -1,31 +1,40 @@
+--------------------------------------------------------------------------------
 module Main
     ( main
     ) where
 
-import Control.Applicative ((<$>))
-import Control.Concurrent (forkIO)
-import Control.Concurrent.Chan (newChan, writeChan)
-import Data.Foldable (forM_)
-import Data.Time (getCurrentTime)
 
-import qualified Data.Aeson as A
-import qualified Network.WebSockets as WS
+--------------------------------------------------------------------------------
+import           Control.Applicative            ((<$>))
+import           Control.Concurrent             (forkIO)
+import           Control.Concurrent.Chan        (newChan, writeChan)
+import           Data.Foldable                  (forM_)
+import           Data.Time                      (getCurrentTime)
+
+
+--------------------------------------------------------------------------------
+import qualified Data.Aeson                     as A
+import qualified Network.WebSockets             as WS
 import qualified Network.WebSockets.Util.PubSub as WS
 
-import CountVonCount.Boxxy
-import CountVonCount.Config
-import CountVonCount.Counter
-import CountVonCount.Counter.Core
-import CountVonCount.Log (Log)
-import CountVonCount.Sensor
-import CountVonCount.Sensor.Filter
-import CountVonCount.Types
-import qualified CountVonCount.Log as Log
-import qualified CountVonCount.Persistence as P
-import qualified CountVonCount.Sensor as Sensor
-import qualified CountVonCount.Web as Web
-import qualified CountVonCount.Web.Views as Views
 
+--------------------------------------------------------------------------------
+import           CountVonCount.Boxxy
+import           CountVonCount.Config
+import           CountVonCount.Counter
+import           CountVonCount.Counter.Core
+import           CountVonCount.Log              (Log)
+import qualified CountVonCount.Log              as Log
+import qualified CountVonCount.Persistence      as P
+import           CountVonCount.Sensor
+import qualified CountVonCount.Sensor           as Sensor
+import           CountVonCount.Sensor.Filter
+import           CountVonCount.Types
+import qualified CountVonCount.Web              as Web
+import qualified CountVonCount.Web.Views        as Views
+
+
+--------------------------------------------------------------------------------
 main :: IO ()
 main = do
     putStrLn "Count Von Count starting in 1..2..3..."
@@ -40,19 +49,21 @@ main = do
 
     -- Initialize boxxy
     boxxies <- newBoxxies logger (configBoxxies config) $ \b -> do
-        teams <- P.getAllTeams database
-        time  <- getCurrentTime
+        teams    <- P.getAllTeams database
+        time     <- getCurrentTime
+        stations <- P.getAllStations database
         putConfig b (configStartTime config) (configCircuitLength config)
-                (configStations config) teams time
+                stations teams time
 
     -- Connecting the sensor to the counter
     sensorChan <- newChan
-    let filterSensorEvent' = filterSensorEvent
-            (configRssiThreshold config) (configStations config)
+    let filterSensorEvent' = filterSensorEvent database
+            (configRssiThreshold config)
             (configBatons config)
         sensorHandler = handler "sensorHandler" $ \event -> do
             Log.raw replayLog $ toReplay event
-            forM_ (filterSensorEvent' event) $ writeChan sensorChan
+            filtered <- filterSensorEvent' event
+            forM_ filtered $ writeChan sensorChan
 
     -- Start the sensor
     _ <- forkIO $ Sensor.listen (Log.setModule "Sensor" logger)
@@ -79,6 +90,8 @@ main = do
     Log.close replayLog
     Log.close logger
 
+
+--------------------------------------------------------------------------------
 counterHandler :: WS.TextProtocol p
                => Double -> Log -> Boxxies -> WS.PubSub p
                -> Handler (P.Team, CounterState, CounterEvent)

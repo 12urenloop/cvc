@@ -17,23 +17,13 @@ import           CountVonCount.Counter
 import           CountVonCount.Management
 import           CountVonCount.Persistence
 import           CountVonCount.Persistence.Tests.Util
-import           CountVonCount.Types
-
-
---------------------------------------------------------------------------------
-batons :: [Baton]
-batons =
-    [ Baton "11:11:11:11:11:11" 1
-    , Baton "22:22:22:22:22:22" 2
-    , Baton "33:33:33:33:33:33" 3
-    ]
 
 
 --------------------------------------------------------------------------------
 tests :: Test
 tests = testGroup "CountVonCount.Management.Tests"
     [ testCase "findBaton" $
-        Just (batons !! 0) @=? findBaton "11:11:11:11:11:11" batons
+        Just (batons !! 0) @=? findBaton "00:00:00:00:01:00" batons
 
     , testCase "assignBaton/assignment" $ testDatabase $ \db -> do
         counter <- liftIO newCounter

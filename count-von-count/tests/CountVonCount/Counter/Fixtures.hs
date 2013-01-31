@@ -9,7 +9,7 @@ module CountVonCount.Counter.Fixtures
 import Data.Time (Day (..), UTCTime (..))
 
 import CountVonCount.Counter.Fixtures.Internal
-import CountVonCount.Types
+import CountVonCount.Persistence
 
 time :: UTCTime
 time = UTCTime (ModifiedJulianDay 0) 0
@@ -21,16 +21,16 @@ maxSpeed :: Double
 maxSpeed = 12
 
 station0 :: Station
-station0 = Station "station-0" "0" 10
+station0 = Station 0 "station-0" "0" 10
 
 station1 :: Station
-station1 = Station "station-1" "1" 100
+station1 = Station 1 "station-1" "1" 100
 
 station2 :: Station
-station2 = Station "station-2" "2" 180
+station2 = Station 2 "station-2" "2" 180
 
 station3 :: Station
-station3 = Station "station-3" "3" 320
+station3 = Station 3 "station-3" "3" 320
 
 fixtures :: [(String, CounterFixtureM ())]
 fixtures =

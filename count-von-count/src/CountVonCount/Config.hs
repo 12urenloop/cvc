@@ -27,7 +27,6 @@ data Config = Config
     , configSensorPort            :: Int
     , configLog                   :: FilePath
     , configReplayLog             :: FilePath
-    , configStations              :: [Station]
     , configBatons                :: [Baton]
     , configRssiThreshold         :: Double
     , configBoxxies               :: [BoxxyConfig]
@@ -44,7 +43,6 @@ instance ToJSON Config where
         , "sensorPort"            .= configSensorPort            conf
         , "log"                   .= configLog                   conf
         , "replayLog"             .= configReplayLog             conf
-        , "stations"              .= configStations              conf
         , "batons"                .= configBatons                conf
         , "rssiThreshold"         .= configRssiThreshold         conf
         , "boxxies"               .= configBoxxies               conf
@@ -61,7 +59,6 @@ instance FromJSON Config where
         o .:? "sensorPort"            .!= configSensorPort            d <*>
         o .:? "log"                   .!= configLog                   d <*>
         o .:? "replayLog"             .!= configReplayLog             d <*>
-        o .:? "stations"              .!= configStations              d <*>
         o .:? "batons"                .!= configBatons                d <*>
         o .:? "rssiThreshold"         .!= configRssiThreshold         d <*>
         o .:? "boxxies"               .!= configBoxxies               d <*>
@@ -81,7 +78,6 @@ defaultConfig = Config
     , configSensorPort            = 9001
     , configLog                   = "log/count-von-count.log"
     , configReplayLog             = "log/replay.log"
-    , configStations              = []
     , configBatons                = []
     , configRssiThreshold         = -81
     , configBoxxies               = [defaultBoxxyConfig]

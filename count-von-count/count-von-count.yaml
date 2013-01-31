@@ -67,20 +67,6 @@ batons:
     - nr:  19
       mac: "20:11:02:15:01:79"
 
-stations:
-    - name:     "station 1"
-      mac:      "00:00:00:00:01:00"
-      position: 0
-    - name:     "station 2"
-      mac:      "00:00:00:00:02:00"
-      position: 100
-    - name:     "station 3"
-      mac:      "00:00:00:00:03:00"
-      position: 200
-    - name:     "station 4"
-      mac:      "00:00:00:00:04:00"
-      position: 300
-
 boxxies:
     - host: "127.0.0.1"
       port: 8080

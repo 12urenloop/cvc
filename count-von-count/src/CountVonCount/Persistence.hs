@@ -25,6 +25,11 @@ module CountVonCount.Persistence
     , addLaps
     , getLatestLaps
 
+    , Station (..)
+    , addStation
+    , getAllStations
+    , getStationByMac
+
     , deleteAll
     ) where
 
@@ -40,6 +45,7 @@ import qualified Data.Text              as T
 import           Data.Time              (UTCTime)
 import           Database.SQLite.Simple (FromRow (..))
 import qualified Database.SQLite.Simple as Sqlite
+import           Text.Printf            (printf)
 
 
 --------------------------------------------------------------------------------
@@ -58,6 +64,7 @@ newDatabase fp = do
     c <- Sqlite.open fp
     Sqlite.execute_ c teamTable
     Sqlite.execute_ c lapsTable
+    Sqlite.execute_ c stationsTable
     return $ Database c
 
 
@@ -224,8 +231,74 @@ getLatestLaps (Database c) !ref n =
 
 
 --------------------------------------------------------------------------------
+data Station = Station
+    { stationId       :: Ref Station
+    , stationName     :: Text
+    , stationMac      :: Mac
+    , stationPosition :: Double
+    }
+
+
+--------------------------------------------------------------------------------
+instance Show Station where
+    show s = printf "%s (%.0fm)" (T.unpack $ stationName s) (stationPosition s)
+
+
+--------------------------------------------------------------------------------
+instance Eq Station where
+    s1 == s2 = stationMac s1 == stationMac s2
+
+
+--------------------------------------------------------------------------------
+instance Ord Station where
+    compare = comparing stationPosition
+
+
+--------------------------------------------------------------------------------
+instance ToJSON Station where
+    toJSON (Station id' name mac position) = object
+        ["id" .= id', "name" .= name, "mac" .= mac, "position" .= position]
+
+
+--------------------------------------------------------------------------------
+instance FromRow Station where
+    fromRow = Station
+        <$> Sqlite.field <*> Sqlite.field <*> Sqlite.field <*> Sqlite.field
+
+
+--------------------------------------------------------------------------------
+stationsTable :: Sqlite.Query
+stationsTable =
+    "CREATE TABLE IF NOT EXISTS stations ( \
+    \    id INTEGER PRIMARY KEY,           \
+    \    name TEXT,                        \
+    \    mac TEXT,                         \
+    \    position REAL                     \
+    \)"
+
+
+--------------------------------------------------------------------------------
+addStation :: Database -> Text -> Mac -> Double -> IO ()
+addStation (Database c) name mac position = Sqlite.execute c
+    "INSERT INTO stations (name, mac, position) VALUES (?, ?, ?)"
+    (name, mac, position)
+
+
+--------------------------------------------------------------------------------
+getAllStations :: Database -> IO [Station]
+getAllStations (Database c) = Sqlite.query_ c "SELECT * FROM stations"
+
+
+--------------------------------------------------------------------------------
+getStationByMac :: Database -> Mac -> IO (Maybe Station)
+getStationByMac (Database c) mac = listToMaybe <$>
+    Sqlite.query c "SELECT * FROM stations WHERE mac = ?" (Sqlite.Only mac)
+
+
+--------------------------------------------------------------------------------
 -- | You probably don't want to use this
 deleteAll :: Database -> IO ()
 deleteAll (Database c) = do
     Sqlite.execute_ c "DELETE FROM laps"
     Sqlite.execute_ c "DELETE FROM teams"
+    Sqlite.execute_ c "DELETE FROM stations"
