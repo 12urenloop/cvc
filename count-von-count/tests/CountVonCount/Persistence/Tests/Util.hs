@@ -19,10 +19,10 @@ import           CountVonCount.Types
 --------------------------------------------------------------------------------
 stations :: [Station]
 stations =
-    [ Station 1 "Pallet Town"   "00:00:00:00:00:00" 0
+    [ Station 1 "Pallet Town"   "00:00:00:00:00:00" 10
     , Station 2 "Viridian City" "00:00:00:00:00:01" 100
-    , Station 3 "Celadon City"  "00:00:00:00:00:02" 200
-    , Station 4 "Fuchsia City"  "00:00:00:00:00:03" 300
+    , Station 3 "Celadon City"  "00:00:00:00:00:02" 180
+    , Station 4 "Fuchsia City"  "00:00:00:00:00:03" 320
     ]
 
 
