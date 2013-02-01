@@ -27,28 +27,28 @@ rssiTreshold = -20
 tests :: Test
 tests = testGroup "CountVonCount.Sensor.Tests"
     [ testCase "filterSensorEvent 1" $ testDatabase $ \db -> do
-        x <- filterSensorEvent db rssiTreshold batons
+        x <- filterSensorEvent db rssiTreshold
             (RawSensorEvent undefined undefined undefined (-40))
         assert $ isNothing x
 
     , testCase "filterSensorEvent 2" $ testDatabase $ \db -> do
-        x <- filterSensorEvent db rssiTreshold batons (RawSensorEvent
+        x <- filterSensorEvent db rssiTreshold (RawSensorEvent
             undefined "10:00:00:00:00:00" "00:00:00:00:01:00" (-40))
         assert $ isNothing x
 
     , testCase "filterSensorEvent 3" $ testDatabase $ \db -> do
-        x <- filterSensorEvent db rssiTreshold batons (RawSensorEvent
+        x <- filterSensorEvent db rssiTreshold (RawSensorEvent
             undefined "00:00:00:00:00:00" "13:00:00:00:01:00" (-40))
         assert $ isNothing x
 
     , testCase "filterSensorEvent 4" $ testDatabase $ \db -> do
-        Just (SensorEvent _ s b) <- filterSensorEvent db rssiTreshold batons
+        Just (SensorEvent _ s b) <- filterSensorEvent db rssiTreshold
             (RawSensorEvent
                 undefined "00:00:00:00:00:00" "00:00:00:00:01:00" (-10))
         (s, b) @=? (stations !! 0, batons !! 0)
 
     , testCase "filterSensorEvent 5" $ testDatabase $ \db -> do
-        Just (SensorEvent _ s b) <- filterSensorEvent db rssiTreshold batons
+        Just (SensorEvent _ s b) <- filterSensorEvent db rssiTreshold
             (RawSensorEvent
                 undefined "00:00:00:00:00:03" "00:00:00:00:01:02" (-10))
         (s, b) @=? (stations !! 3, batons !! 2)

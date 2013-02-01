@@ -1,52 +1,35 @@
+--------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
 module CountVonCount.Types
     ( Mac
-    , Baton (..)
-    , batonName
     , Handler
     , handler
     , callHandler
     ) where
 
-import Control.Applicative ((<$>),(<*>))
-import Control.Monad (mzero)
-import Data.Ord (comparing)
 
-import Data.Aeson (FromJSON (..), ToJSON (..), (.:), (.=))
-import Data.Text (Text)
-import qualified Data.Aeson as A
-import qualified Data.Text as T
+--------------------------------------------------------------------------------
+import           Data.Text          (Text)
 
-import CountVonCount.Util
-import CountVonCount.Log
 
+--------------------------------------------------------------------------------
+import           CountVonCount.Log
+import           CountVonCount.Util
+
+
+--------------------------------------------------------------------------------
 type Mac = Text
 
-data Baton = Baton
-    { batonMac  :: Mac
-    , batonNr   :: Int
-    } deriving (Eq)
 
-instance Show Baton where
-    show b = batonName b ++ " (" ++ T.unpack (batonMac b) ++ ")"
-
-instance Ord Baton where
-    compare = comparing batonNr
-
-instance ToJSON Baton where
-    toJSON (Baton mac nr) = A.object ["mac" .= mac, "nr" .= nr]
-
-instance FromJSON Baton where
-    parseJSON (A.Object o) = Baton <$> o .: "mac" <*> o .: "nr"
-    parseJSON _ = mzero
-
-batonName :: Baton -> String
-batonName = ("Baton " ++) . show . batonNr
-
+--------------------------------------------------------------------------------
 data Handler a = Handler (Log -> a -> IO ())
 
+
+--------------------------------------------------------------------------------
 handler :: String -> (a -> IO ()) -> Handler a
 handler name f = Handler $ \logger -> isolate_ logger ("Handler " ++ name) . f
 
+
+--------------------------------------------------------------------------------
 callHandler :: Log -> Handler a -> a -> IO ()
 callHandler logger (Handler f) = f logger

@@ -12,7 +12,7 @@ module CountVonCount.Counter
     , runCounter
 
     , resetCounterFor
-    , couterStateFor
+    , counterStateFor
 
     , findDeadBatons
     , watchdog
@@ -65,14 +65,14 @@ step :: Double  -- ^ Circuit length
      -> IO CounterMap
 step cl ms logger db handler' event cmap = do
     let (events, tells, cmap') = stepCounterMap cl ms event cmap
-        cstate                 = lookupCounterState (sensorBaton event) cmap'
+        cstate = lookupCounterState (P.batonId $ sensorBaton event) cmap'
     forM_ tells $ Log.string logger
     process cstate events
     return cmap'
   where
     process _      []     = return ()
     process cstate events = isolate_ logger "CounterEvent process" $ do
-        mteam <- P.getTeamByMac db (batonMac . sensorBaton $ event)
+        mteam <- P.getTeamByMac db (P.batonMac . sensorBaton $ event)
 
         -- If the baton is registred to a team
         forM_ mteam $ \team ->
@@ -88,15 +88,15 @@ step cl ms logger db handler' event cmap = do
                     Progression _ s _ -> show team' ++ " @ " ++ show s
                     Lap _ _           -> "Lap for " ++ show team'
 
-resetCounterFor :: Baton -> Counter -> IO ()
+resetCounterFor :: P.Ref P.Baton -> Counter -> IO ()
 resetCounterFor baton counter =
     modifyMVar_ (unCounter counter) $ return . resetCounterMapFor baton
 
-couterStateFor :: Baton -> Counter -> IO CounterState
-couterStateFor baton counter =
+counterStateFor :: P.Ref P.Baton -> Counter -> IO CounterState
+counterStateFor baton counter =
     lookupCounterState baton <$> readMVar (unCounter counter)
 
-findDeadBatons :: Int -> Counter -> IO [Baton]
+findDeadBatons :: Int -> Counter -> IO [P.Ref P.Baton]
 findDeadBatons lifespan counter = do
     now  <- getCurrentTime
     cmap <- readMVar (unCounter counter)
@@ -104,12 +104,12 @@ findDeadBatons lifespan counter = do
   where
     lifespan' = fromInteger $ fromIntegral lifespan
 
-watchdog :: Counter          -- ^ Counter handle
-         -> Log              -- ^ Log handle
-         -> Int              -- ^ Interval (seconds) to check for dead batons
-         -> Int              -- ^ Seconds after a baton is declared dead
-         -> Handler [Baton]  -- ^ Dead baton handler
-         -> IO ()            -- ^ Blocks forever
+watchdog :: Counter                  -- ^ Counter handle
+         -> Log                      -- ^ Log handle
+         -> Int                      -- ^ Dead baton check interval (seconds)
+         -> Int                      -- ^ Seconds after a baton is declared dead
+         -> Handler [P.Ref P.Baton]  -- ^ Dead baton handler
+         -> IO ()                    -- ^ Blocks forever
 watchdog counter logger interval lifespan handler' = forever $ do
     dead <- findDeadBatons lifespan counter
     callHandler logger handler' dead

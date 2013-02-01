@@ -59,7 +59,6 @@ main = do
     sensorChan <- newChan
     let filterSensorEvent' = filterSensorEvent database
             (configRssiThreshold config)
-            (configBatons config)
         sensorHandler = handler "sensorHandler" $ \event -> do
             Log.raw replayLog $ toReplay event
             filtered <- filterSensorEvent' event
@@ -79,8 +78,10 @@ main = do
     -- Start the baton watchdog
     _ <- forkIO $ watchdog counter logger (configBatonWatchdogInterval config)
         (configBatonWatchdogLifespan config)
-        (handler "batonHandler" $
-            WS.publish pubSub . WS.textData .  A.encode . Views.deadBatons)
+        (handler "batonHandler" $ \deadBatons -> do
+            deadBatons' <- mapM (P.getBaton database) deadBatons
+            WS.publish pubSub $ WS.textData $ A.encode $
+                Views.deadBatons deadBatons')
 
     Web.listen config (Log.setModule "Web" logger) database pubSub
         counter boxxies

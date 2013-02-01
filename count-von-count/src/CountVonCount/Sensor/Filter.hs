@@ -9,15 +9,12 @@ module CountVonCount.Sensor.Filter
 
 --------------------------------------------------------------------------------
 import           Control.Applicative       ((<$>))
-import           Control.Arrow             ((&&&))
-import qualified Data.Map                  as M
 import           Data.Time                 (UTCTime)
 
 
 --------------------------------------------------------------------------------
 import           CountVonCount.Persistence
 import           CountVonCount.Sensor
-import           CountVonCount.Types
 
 
 --------------------------------------------------------------------------------
@@ -31,17 +28,14 @@ data SensorEvent = SensorEvent
 --------------------------------------------------------------------------------
 filterSensorEvent :: Database
                   -> Double
-                  -> [Baton]
                   -> RawSensorEvent
                   -> IO (Maybe SensorEvent)
-filterSensorEvent database rssiThreshold batons raw
+filterSensorEvent database rssiThreshold raw
     | rawSensorRssi raw < rssiThreshold = return Nothing
     | otherwise                         = do
         mstation <- getStationByMac database (rawSensorStation raw)
+        mbaton   <- getBatonByMac database (rawSensorBaton raw)
         case mstation of
             Nothing      -> return Nothing  -- TODO: warning
             Just station -> return $
-                SensorEvent (rawSensorTime raw) station <$>
-                M.lookup (rawSensorBaton raw) bMap
-  where
-    bMap = M.fromList $ fmap (batonMac &&& id)   batons
+                SensorEvent (rawSensorTime raw) station <$> mbaton

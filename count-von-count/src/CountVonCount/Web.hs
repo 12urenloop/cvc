@@ -7,7 +7,6 @@ import Control.Applicative ((<$>), (<*>), (<|>))
 import Control.Monad (forM, forM_, unless)
 import Control.Monad.Reader (ReaderT, ask, runReaderT)
 import Control.Monad.Trans (liftIO)
-import Data.List (sort)
 import Data.Text (Text)
 import Data.Time (getCurrentTimeZone)
 import Data.Traversable (traverse)
@@ -54,18 +53,19 @@ config = ask >>= json . webConfig
 
 monitor :: Web ()
 monitor = do
-    db       <- webDatabase <$> ask
-    teams    <- sort <$> liftIO (getAllTeams db)
-    counter  <- webCounter <$> ask
-    batons   <- configBatons . webConfig <$> ask
-    states   <- forM teams $ \team -> liftIO $
-        case teamBaton team >>= flip findBaton batons of
-            Nothing -> return (team, Nothing)
-            Just b  -> couterStateFor b counter >>= \s -> return (team, Just s)
+    db         <- webDatabase <$> ask
+    counter    <- webCounter <$> ask
+    (teams, _) <- liftIO $ assignment db
+    states     <- forM teams $ \(team, mbaton) -> liftIO $ case mbaton of
+        Nothing -> return (team, Nothing)
+        Just b  ->
+            counterStateFor (batonId b) counter >>= \s -> return (team, Just s)
+
     lifespan <- configBatonWatchdogLifespan . webConfig <$> ask
     dead     <- liftIO $ findDeadBatons lifespan counter
+    dead'    <- liftIO $ mapM (getBaton db) dead
     clen     <- configCircuitLength . webConfig <$> ask
-    Snap.blaze $ Views.monitor clen states dead
+    Snap.blaze $ Views.monitor clen states dead'
 
 monitorFeed :: Web ()
 monitorFeed = do
@@ -79,9 +79,8 @@ monitorFeed = do
 
 management :: Web ()
 management = do
-    batons                   <- configBatons . webConfig <$> ask
     db                       <- webDatabase <$> ask
-    (withBatons, freeBatons) <- liftIO $ assignment db batons
+    (withBatons, freeBatons) <- liftIO $ assignment db
     Snap.blaze $ Views.management withBatons freeBatons
 
 laps :: Web ()
@@ -120,12 +119,11 @@ teamAssign = do
     Just mac <- fmap T.decodeUtf8 <$> Snap.getParam "baton"
     db       <- webDatabase <$> ask
     counter  <- webCounter <$> ask
-    batons   <- configBatons . webConfig <$> ask
 
     unless (T.null mac) $ do
-        let Just baton = findBaton mac batons
+        Just baton   <- liftIO $ getBatonByMac db mac
         Just teamRef <- refFromParam "id"
-        liftIO $ assignBaton db counter batons baton teamRef
+        liftIO $ assignBaton db counter (batonId baton) teamRef
 
     Snap.redirect "/management"
 
@@ -157,12 +155,10 @@ teamReset = do
     counter      <- webCounter <$> ask
     db           <- webDatabase <$> ask
     logger       <- webLog <$> ask
-    batons       <- configBatons . webConfig <$> ask
     team         <- liftIO $ getTeam db teamRef
     case teamBaton team of
-        Just mac -> do
-            let Just baton = findBaton mac batons
-            liftIO $ resetCounterFor baton counter
+        Just bid -> do
+            liftIO $ resetCounterFor bid counter
             liftIO $ Log.string logger $
                 "Resetting counter for " ++ show team
         Nothing  -> return ()

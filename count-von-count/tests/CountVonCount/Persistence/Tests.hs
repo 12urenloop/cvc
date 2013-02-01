@@ -18,7 +18,6 @@ import           Test.HUnit                           (assert, (@=?))
 --------------------------------------------------------------------------------
 import           CountVonCount.Persistence
 import           CountVonCount.Persistence.Tests.Util
-import           CountVonCount.Types
 
 
 --------------------------------------------------------------------------------
@@ -30,9 +29,10 @@ tests = testGroup "CountVonCount.Persistence.Tests"
         "wina" @=? teamName x'
 
     , testCase "getTeamByMac" $ testDatabase $ \db -> do
-        r  <- addTeam db "wina"
-        setTeamBaton db r $ Just $ Baton "00:40:10:07:00:09" 1
-        x' <- getTeamByMac db "00:40:10:07:00:09"
+        r       <- addTeam db "wina"
+        batons' <- getAllBatons db
+        setTeamBaton db r (Just $ batonId $ head batons')
+        x' <- getTeamByMac db (batonMac $ head batons')
         Just "wina" @=? fmap teamName x'
 
     , testCase "addLaps/getLatestLaps" $ testDatabase $ \db -> do

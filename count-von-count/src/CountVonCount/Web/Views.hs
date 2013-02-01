@@ -32,7 +32,6 @@ import CountVonCount.Boxxy
 import CountVonCount.Counter.Core
 import CountVonCount.Persistence
 import CountVonCount.Sensor.Filter
-import CountVonCount.Types
 import CountVonCount.Web.Partial
 import CountVonCount.Web.Views.Util
 

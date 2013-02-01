@@ -50,10 +50,12 @@ counterTest = do
 
     -- Add teams, calculate expected output
     ts <- forM (zip teamsAndBatons fixtures) $ \((name, baton), f) -> do
-        r <- addTeam db name
-        setTeamBaton db r $ Just baton
-        let fs = runCounterFixtureM (snd f) time baton
-        return (r, sensorEvents fs, numLaps fs)
+        tr     <- addTeam db name
+        br     <- addBaton db (batonMac baton) (batonNr baton)
+        baton' <- getBaton db br
+        setTeamBaton db tr $ Just br
+        let fs = runCounterFixtureM (snd f) time baton'
+        return (tr, sensorEvents fs, numLaps fs)
 
     -- Feed input to chan
     let events = sortBy (comparing sensorTime) [e | (_, es, _) <- ts, e <- es]
@@ -78,7 +80,7 @@ counterTest = do
 --------------------------------------------------------------------------------
 teamsAndBatons :: [(Text, Baton)]
 teamsAndBatons =
-    [ (name, Baton mac i)
+    [ (name, Baton (fromIntegral i) mac i)
     | i <- [1 :: Int .. 99]
     , let name = "Team " `T.append` T.pack (show i)
     , let mac  = "01:02:03:00:00" `T.append` T.pack (printf "%2d" i)

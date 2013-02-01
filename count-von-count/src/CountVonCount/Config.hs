@@ -15,7 +15,6 @@ import Data.Aeson (FromJSON (..), ToJSON (..), (.=), (.:?), (.!=))
 import Data.Yaml (decodeFile)
 import qualified Data.Aeson as A
 
-import CountVonCount.Types
 import CountVonCount.Boxxy
 
 data Config = Config
@@ -27,7 +26,6 @@ data Config = Config
     , configSensorPort            :: Int
     , configLog                   :: FilePath
     , configReplayLog             :: FilePath
-    , configBatons                :: [Baton]
     , configRssiThreshold         :: Double
     , configBoxxies               :: [BoxxyConfig]
     , configWebPort               :: Int
@@ -43,7 +41,6 @@ instance ToJSON Config where
         , "sensorPort"            .= configSensorPort            conf
         , "log"                   .= configLog                   conf
         , "replayLog"             .= configReplayLog             conf
-        , "batons"                .= configBatons                conf
         , "rssiThreshold"         .= configRssiThreshold         conf
         , "boxxies"               .= configBoxxies               conf
         , "webPort"               .= configWebPort               conf
@@ -59,7 +56,6 @@ instance FromJSON Config where
         o .:? "sensorPort"            .!= configSensorPort            d <*>
         o .:? "log"                   .!= configLog                   d <*>
         o .:? "replayLog"             .!= configReplayLog             d <*>
-        o .:? "batons"                .!= configBatons                d <*>
         o .:? "rssiThreshold"         .!= configRssiThreshold         d <*>
         o .:? "boxxies"               .!= configBoxxies               d <*>
         o .:? "webPort"               .!= configWebPort               d
@@ -78,7 +74,6 @@ defaultConfig = Config
     , configSensorPort            = 9001
     , configLog                   = "log/count-von-count.log"
     , configReplayLog             = "log/replay.log"
-    , configBatons                = []
     , configRssiThreshold         = -81
     , configBoxxies               = [defaultBoxxyConfig]
     , configWebPort               = 8000

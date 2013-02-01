@@ -16,10 +16,11 @@ import qualified Data.Map as M
 import Data.Time (UTCTime)
 
 import CountVonCount.Counter.Core
+import CountVonCount.Persistence
 import CountVonCount.Sensor.Filter
-import CountVonCount.Types
 
-type CounterMap = Map Baton CounterState
+-- TODO maybe change to team
+type CounterMap = Map (Ref Baton) CounterState
 
 emptyCounterMap :: CounterMap
 emptyCounterMap = M.empty
@@ -35,22 +36,22 @@ stepCounterMap circuitLength maxSpeed event !cmap =
         (es, tells, !state') = runCounterM app state
     in (es, map prepend tells, M.insert baton state' cmap)
   where
-    baton       = sensorBaton event
+    baton       = batonId $ sensorBaton event
     prepend str = show baton ++ ": " ++ str
 
 -- | Resets the counter state for a single baton
-resetCounterMapFor :: Baton
+resetCounterMapFor :: Ref Baton
                    -> CounterMap
                    -> CounterMap
 resetCounterMapFor = flip M.insert emptyCounterState
 
-lookupCounterState :: Baton
+lookupCounterState :: Ref Baton
                    -> CounterMap
                    -> CounterState
 lookupCounterState baton = fromMaybe emptyCounterState . M.lookup baton
 
 -- | Get a list of batons which were last updated before the given time
-lastUpdatedBefore :: UTCTime -> CounterMap -> [Baton]
+lastUpdatedBefore :: UTCTime -> CounterMap -> [Ref Baton]
 lastUpdatedBefore time cmap =
     [ baton
     | (baton, cstate) <- M.toList cmap

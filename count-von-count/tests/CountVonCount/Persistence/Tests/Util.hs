@@ -13,7 +13,6 @@ import           Control.Monad             (forM_)
 
 --------------------------------------------------------------------------------
 import           CountVonCount.Persistence
-import           CountVonCount.Types
 
 
 --------------------------------------------------------------------------------
@@ -29,9 +28,9 @@ stations =
 --------------------------------------------------------------------------------
 batons :: [Baton]
 batons =
-    [ Baton "00:00:00:00:01:00" 1
-    , Baton "00:00:00:00:01:01" 2
-    , Baton "00:00:00:00:01:02" 3
+    [ Baton 1 "00:00:00:00:01:00" 1
+    , Baton 2 "00:00:00:00:01:01" 2
+    , Baton 3 "00:00:00:00:01:02" 3
     ]
 
 
@@ -41,6 +40,7 @@ testDatabase f = do
     db <- newDatabase ":memory:"
 
     forM_ stations $ \(Station _ name mac pos) -> addStation db name mac pos
+    forM_ batons $ \(Baton _ mac nr) -> addBaton db mac nr
 
     r <- f db
     closeDatabase db

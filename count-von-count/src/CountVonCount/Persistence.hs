@@ -30,6 +30,13 @@ module CountVonCount.Persistence
     , getAllStations
     , getStationByMac
 
+    , Baton (..)
+    , addBaton
+    , getBaton
+    , getAllBatons
+    , getBatonByMac
+    , batonName
+
     , deleteAll
     ) where
 
@@ -65,6 +72,7 @@ newDatabase fp = do
     Sqlite.execute_ c teamTable
     Sqlite.execute_ c lapsTable
     Sqlite.execute_ c stationsTable
+    Sqlite.execute_ c batonsTable
     return $ Database c
 
 
@@ -97,7 +105,7 @@ data Team = Team
     { teamId    :: Ref Team
     , teamName  :: Text
     , teamLaps  :: Int
-    , teamBaton :: Maybe Mac
+    , teamBaton :: Maybe (Ref Baton)
     }
 
 
@@ -135,15 +143,15 @@ teamTable =
     \    id INTEGER PRIMARY KEY,        \
     \    name TEXT,                     \
     \    laps INTEGER,                  \
-    \    baton TEXT                     \
+    \    baton_id INTEGER               \
     \)"
 
 
 --------------------------------------------------------------------------------
 addTeam :: Database -> Text -> IO (Ref Team)
 addTeam (Database c) name = do
-    Sqlite.execute c "INSERT INTO teams (name, laps, baton) VALUES (?, ?, ?)"
-        (name, 0 :: Int, Nothing :: Maybe Mac)
+    Sqlite.execute c "INSERT INTO teams (name, laps, baton_id) VALUES (?, ?, ?)"
+        (name, 0 :: Int, Nothing :: Maybe Int)
     Sqlite.lastInsertRowId c
 
 
@@ -158,8 +166,10 @@ getTeam (Database c) ref = do
 
 --------------------------------------------------------------------------------
 getTeamByMac :: Database -> Mac -> IO (Maybe Team)
-getTeamByMac (Database c) mac = listToMaybe <$>
-    Sqlite.query c "SELECT * FROM teams WHERE baton = ?" (Sqlite.Only mac)
+getTeamByMac (Database c) mac = listToMaybe <$> Sqlite.query c
+    "SELECT teams.* FROM teams, batons \
+    \WHERE teams.baton_id = batons.id AND mac = ?"
+    (Sqlite.Only mac)
 
 
 --------------------------------------------------------------------------------
@@ -168,10 +178,9 @@ getAllTeams (Database c) = Sqlite.query_ c "SELECT * FROM teams"
 
 
 --------------------------------------------------------------------------------
-setTeamBaton :: Database -> Ref Team -> Maybe Baton -> IO ()
+setTeamBaton :: Database -> Ref Team -> Maybe (Ref Baton) -> IO ()
 setTeamBaton (Database c) ref baton = Sqlite.execute c
-    "UPDATE teams SET baton = ? WHERE id = ?"
-    (fmap batonMac baton, ref)
+    "UPDATE teams SET baton_id = ? WHERE id = ?" (baton, ref)
 
 
 --------------------------------------------------------------------------------
@@ -296,9 +305,80 @@ getStationByMac (Database c) mac = listToMaybe <$>
 
 
 --------------------------------------------------------------------------------
+data Baton = Baton
+    { batonId  :: Ref Baton
+    , batonMac :: Mac
+    , batonNr  :: Int
+    } deriving (Eq)
+
+
+--------------------------------------------------------------------------------
+instance Show Baton where
+    show b = batonName b ++ " (" ++ T.unpack (batonMac b) ++ ")"
+
+
+--------------------------------------------------------------------------------
+instance Ord Baton where
+    compare = comparing batonNr
+
+
+--------------------------------------------------------------------------------
+instance ToJSON Baton where
+    toJSON (Baton id' mac nr) = object ["id" .= id', "mac" .= mac, "nr" .= nr]
+
+
+--------------------------------------------------------------------------------
+instance FromRow Baton where
+    fromRow = Baton <$> Sqlite.field <*> Sqlite.field <*> Sqlite.field
+
+
+--------------------------------------------------------------------------------
+batonsTable :: Sqlite.Query
+batonsTable =
+    "CREATE TABLE IF NOT EXISTS batons ( \
+    \    id INTEGER PRIMARY KEY,         \
+    \    mac TEXT,                       \
+    \    number INTEGER                  \
+    \)"
+
+
+--------------------------------------------------------------------------------
+addBaton :: Database -> Mac -> Int -> IO (Ref Baton)
+addBaton (Database c) mac nr = do
+    Sqlite.execute c "INSERT INTO batons (mac, number) VALUES (?, ?)" (mac, nr)
+    Sqlite.lastInsertRowId c
+
+
+--------------------------------------------------------------------------------
+getBaton :: Database -> Ref Baton -> IO Baton
+getBaton (Database c) id' = do
+    bs <- Sqlite.query c "SELECT * FROM batons WHERE id = ?" (Sqlite.Only id')
+    case bs of
+        (x : _) -> return x
+        _       -> error $ "No baton with ref " ++ show id'
+
+
+--------------------------------------------------------------------------------
+getAllBatons :: Database -> IO [Baton]
+getAllBatons (Database c) = Sqlite.query_ c "SELECT * FROM batons"
+
+
+--------------------------------------------------------------------------------
+getBatonByMac :: Database -> Mac -> IO (Maybe Baton)
+getBatonByMac (Database c) mac = listToMaybe <$> Sqlite.query c
+    "SELECT * FROM batons WHERE mac = ?" (Sqlite.Only mac)
+
+
+--------------------------------------------------------------------------------
+batonName :: Baton -> String
+batonName = ("Baton " ++) . show . batonNr
+
+
+--------------------------------------------------------------------------------
 -- | You probably don't want to use this
 deleteAll :: Database -> IO ()
 deleteAll (Database c) = do
     Sqlite.execute_ c "DELETE FROM laps"
     Sqlite.execute_ c "DELETE FROM teams"
     Sqlite.execute_ c "DELETE FROM stations"
+    Sqlite.execute_ c "DELETE FROM batons"
