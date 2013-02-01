@@ -69,10 +69,8 @@ newtype Database = Database
 newDatabase :: FilePath -> IO Database
 newDatabase fp = do
     c <- Sqlite.open fp
-    Sqlite.execute_ c teamTable
-    Sqlite.execute_ c lapsTable
-    Sqlite.execute_ c stationsTable
-    Sqlite.execute_ c batonsTable
+    mapM_ (Sqlite.execute_ c) $ concat
+        [teamsTable, lapsTable, stationsTable, batonsTable]
     return $ Database c
 
 
@@ -137,14 +135,16 @@ instance FromRow Team where
 
 
 --------------------------------------------------------------------------------
-teamTable :: Sqlite.Query
-teamTable =
-    "CREATE TABLE IF NOT EXISTS teams ( \
-    \    id INTEGER PRIMARY KEY,        \
-    \    name TEXT,                     \
-    \    laps INTEGER,                  \
-    \    baton_id INTEGER               \
-    \)"
+teamsTable :: [Sqlite.Query]
+teamsTable =
+    [ "CREATE TABLE IF NOT EXISTS teams ( \
+      \    id INTEGER PRIMARY KEY,        \
+      \    name TEXT,                     \
+      \    laps INTEGER,                  \
+      \    baton_id INTEGER               \
+      \)"
+    , "CREATE INDEX IF NOT EXISTS teams_baton_id ON teams (baton_id)"
+    ]
 
 
 --------------------------------------------------------------------------------
@@ -201,8 +201,8 @@ instance FromRow Lap where
 
 
 --------------------------------------------------------------------------------
-lapsTable :: Sqlite.Query
-lapsTable =
+lapsTable :: [Sqlite.Query]
+lapsTable = return
     "CREATE TABLE IF NOT EXISTS laps (             \
     \    id INTEGER PRIMARY KEY,                   \
     \    team_id INTEGER,                          \
@@ -276,14 +276,16 @@ instance FromRow Station where
 
 
 --------------------------------------------------------------------------------
-stationsTable :: Sqlite.Query
+stationsTable :: [Sqlite.Query]
 stationsTable =
-    "CREATE TABLE IF NOT EXISTS stations ( \
-    \    id INTEGER PRIMARY KEY,           \
-    \    name TEXT,                        \
-    \    mac TEXT,                         \
-    \    position REAL                     \
-    \)"
+    [ "CREATE TABLE IF NOT EXISTS stations ( \
+      \    id INTEGER PRIMARY KEY,           \
+      \    name TEXT,                        \
+      \    mac TEXT,                         \
+      \    position REAL                     \
+      \)"
+    , "CREATE INDEX IF NOT EXISTS stations_mac ON stations (mac)"
+    ]
 
 
 --------------------------------------------------------------------------------
@@ -333,13 +335,15 @@ instance FromRow Baton where
 
 
 --------------------------------------------------------------------------------
-batonsTable :: Sqlite.Query
+batonsTable :: [Sqlite.Query]
 batonsTable =
-    "CREATE TABLE IF NOT EXISTS batons ( \
-    \    id INTEGER PRIMARY KEY,         \
-    \    mac TEXT,                       \
-    \    number INTEGER                  \
-    \)"
+    [ "CREATE TABLE IF NOT EXISTS batons ( \
+      \    id INTEGER PRIMARY KEY,         \
+      \    mac TEXT,                       \
+      \    number INTEGER                  \
+      \)"
+    , "CREATE INDEX IF NOT EXISTS batons_mac ON batons (mac)"
+    ]
 
 
 --------------------------------------------------------------------------------
