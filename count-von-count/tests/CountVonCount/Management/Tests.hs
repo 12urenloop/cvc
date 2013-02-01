@@ -6,17 +6,17 @@ module CountVonCount.Management.Tests
 
 
 --------------------------------------------------------------------------------
-import           Control.Monad.Trans                  (liftIO)
-import           Test.Framework                       (Test, testGroup)
-import           Test.Framework.Providers.HUnit       (testCase)
-import           Test.HUnit                           ((@=?))
+import           Control.Monad.Trans            (liftIO)
+import           Test.Framework                 (Test, testGroup)
+import           Test.Framework.Providers.HUnit (testCase)
+import           Test.HUnit                     ((@=?))
 
 
 --------------------------------------------------------------------------------
 import           CountVonCount.Counter
 import           CountVonCount.Management
 import           CountVonCount.Persistence
-import           CountVonCount.Persistence.Tests.Util
+import           CountVonCount.TestSuite.Util
 
 
 --------------------------------------------------------------------------------

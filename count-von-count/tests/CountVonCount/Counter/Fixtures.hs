@@ -15,7 +15,7 @@ import           Data.Time                               (Day (..),
 
 --------------------------------------------------------------------------------
 import           CountVonCount.Counter.Fixtures.Internal
-import           CountVonCount.Persistence.Tests.Util
+import           CountVonCount.TestSuite.Util
 
 
 --------------------------------------------------------------------------------

@@ -1,3 +1,4 @@
+--------------------------------------------------------------------------------
 -- | This module implements the counter logic for a /single/ team
 module CountVonCount.Counter.Core
     ( CounterEvent (..)
@@ -10,27 +11,37 @@ module CountVonCount.Counter.Core
     , stepCounterState
     ) where
 
-import Control.Monad (when)
-import Control.Monad.State (State, get, put, runState)
-import Control.Monad.Writer (WriterT, runWriterT, tell)
-import Data.List (minimumBy)
-import Data.Ord (comparing)
-import Data.Time (UTCTime, diffUTCTime)
-import Text.Printf (printf)
 
-import CountVonCount.Counter.Modulo
-import CountVonCount.Persistence (Station (..))
-import CountVonCount.Sensor.Filter
+--------------------------------------------------------------------------------
+import           Control.Monad                (when)
+import           Control.Monad.State          (State, get, put, runState)
+import           Control.Monad.Writer         (WriterT, runWriterT, tell)
+import           Data.List                    (minimumBy)
+import           Data.Ord                     (comparing)
+import           Data.Time                    (UTCTime, diffUTCTime)
+import           Text.Printf                  (printf)
 
+
+--------------------------------------------------------------------------------
+import           CountVonCount.Counter.Modulo
+import           CountVonCount.Persistence    (Station (..))
+import           CountVonCount.Sensor.Filter
+
+
+--------------------------------------------------------------------------------
 data CounterEvent
     = Progression UTCTime Station Double
     | Lap UTCTime Double
     deriving (Show)
 
+
+--------------------------------------------------------------------------------
 isLap :: CounterEvent -> Bool
 isLap (Lap _ _) = True
 isLap _         = False
 
+
+--------------------------------------------------------------------------------
 data CounterState
     -- | No data for now
     = NoCounterState
@@ -38,24 +49,36 @@ data CounterState
     | CounterState SensorEvent SensorEvent Double UTCTime
     deriving (Show)
 
+
+--------------------------------------------------------------------------------
 emptyCounterState :: CounterState
 emptyCounterState = NoCounterState
 
+
+--------------------------------------------------------------------------------
 counterLastUpdate :: CounterState -> Maybe UTCTime
 counterLastUpdate NoCounterState         = Nothing
 counterLastUpdate (CounterState _ _ _ t) = Just t
 
+
+--------------------------------------------------------------------------------
 type CounterM a = WriterT [String] (State CounterState) a
 
+
+--------------------------------------------------------------------------------
 runCounterM :: CounterM a -> CounterState -> (a, [String], CounterState)
 runCounterM c cs =
     let state             = (runWriterT c)
         ((x, tells), cs') = runState state cs
     in (x, tells, cs')
 
+
+--------------------------------------------------------------------------------
 tell' :: String -> CounterM ()
 tell' x = tell [x]
 
+
+--------------------------------------------------------------------------------
 stepCounterState :: Double                   -- ^ Length of the circuit
                  -> Double                   -- ^ Absolute maximum speed
                  -> SensorEvent              -- ^ Incoming event
@@ -117,6 +140,8 @@ stepCounterState len maxSpeed event = do
 
             diffTime t1 t2 = fromRational $ toRational $ t1 `diffUTCTime` t2
 
+
+--------------------------------------------------------------------------------
 solve :: Double              -- ^ Length of the circuit
       -> Double              -- ^ Absolute maximum speed
       -> Double              -- ^ Previous position

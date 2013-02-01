@@ -58,6 +58,7 @@ main = do
     -- Connecting the sensor to the counter
     sensorChan <- newChan
     let filterSensorEvent' = filterSensorEvent database
+            (Log.setModule "Sensor.Filter" logger)
             (configRssiThreshold config)
         sensorHandler = handler "sensorHandler" $ \event -> do
             Log.raw replayLog $ toReplay event

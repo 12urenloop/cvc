@@ -1,9 +1,10 @@
 --------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
-module CountVonCount.Persistence.Tests.Util
+module CountVonCount.TestSuite.Util
     ( testStations
     , testBatons
     , testDatabase
+    , testLog
     ) where
 
 
@@ -12,6 +13,8 @@ import           Control.Monad             (forM_)
 
 
 --------------------------------------------------------------------------------
+import           CountVonCount.Log         (Log)
+import qualified CountVonCount.Log         as Log
 import           CountVonCount.Persistence
 
 
@@ -45,3 +48,13 @@ testDatabase f = do
     r <- f db
     closeDatabase db
     return r
+
+
+--------------------------------------------------------------------------------
+testLog :: (Log -> IO a) -> IO a
+testLog f = do
+    logger <- Log.open "/dev/null" False
+    x      <- f logger
+    Log.close logger
+    return x
+

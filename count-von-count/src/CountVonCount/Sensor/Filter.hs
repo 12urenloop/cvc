@@ -9,10 +9,13 @@ module CountVonCount.Sensor.Filter
 
 --------------------------------------------------------------------------------
 import           Control.Applicative       ((<$>))
+import qualified Data.Text                 as T
 import           Data.Time                 (UTCTime)
 
 
 --------------------------------------------------------------------------------
+import           CountVonCount.Log         (Log)
+import qualified CountVonCount.Log         as Log
 import           CountVonCount.Persistence
 import           CountVonCount.Sensor
 
@@ -22,20 +25,24 @@ data SensorEvent = SensorEvent
     { sensorTime    :: UTCTime
     , sensorStation :: Station
     , sensorBaton   :: Baton
-    } deriving (Show)
+    } deriving (Eq, Show)
 
 
 --------------------------------------------------------------------------------
 filterSensorEvent :: Database
+                  -> Log
                   -> Double
                   -> RawSensorEvent
                   -> IO (Maybe SensorEvent)
-filterSensorEvent database rssiThreshold raw
+filterSensorEvent database logger rssiThreshold raw
     | rawSensorRssi raw < rssiThreshold = return Nothing
     | otherwise                         = do
         mstation <- getStationByMac database (rawSensorStation raw)
         mbaton   <- getBatonByMac database (rawSensorBaton raw)
         case mstation of
-            Nothing      -> return Nothing  -- TODO: warning
+            Nothing      -> do
+                Log.string logger $ "Warning: got event from unknown " ++
+                    "station " ++ T.unpack (rawSensorStation raw)
+                return Nothing
             Just station -> return $
                 SensorEvent (rawSensorTime raw) station <$> mbaton

@@ -24,9 +24,9 @@ import           Text.Printf                             (printf)
 import           CountVonCount.Counter
 import           CountVonCount.Counter.Fixtures
 import           CountVonCount.Counter.Fixtures.Internal
-import qualified CountVonCount.Log                       as Log
 import           CountVonCount.Persistence
 import           CountVonCount.Sensor.Filter
+import           CountVonCount.TestSuite.Util
 import           CountVonCount.Types
 
 
@@ -39,9 +39,8 @@ tests = testGroup "CountVonCount.Counter.Tests"
 
 --------------------------------------------------------------------------------
 counterTest :: Assertion
-counterTest = do
+counterTest = testLog $ \logger -> do
     -- Initialize stuffs
-    logger   <- Log.open "/dev/null" False
     db       <- newDatabase "test.db"
     counter  <- newCounter
     chan     <- newChan

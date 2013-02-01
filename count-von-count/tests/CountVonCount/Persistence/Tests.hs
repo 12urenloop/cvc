@@ -6,18 +6,18 @@ module CountVonCount.Persistence.Tests
 
 
 --------------------------------------------------------------------------------
-import           Control.Monad.Trans                  (liftIO)
-import           Data.Text                            (Text)
-import           Data.Time                            (UTCTime, diffUTCTime,
-                                                       getCurrentTime)
-import           Test.Framework                       (Test, testGroup)
-import           Test.Framework.Providers.HUnit       (testCase)
-import           Test.HUnit                           (assert, (@=?))
+import           Control.Monad.Trans            (liftIO)
+import           Data.Text                      (Text)
+import           Data.Time                      (UTCTime, diffUTCTime,
+                                                 getCurrentTime)
+import           Test.Framework                 (Test, testGroup)
+import           Test.Framework.Providers.HUnit (testCase)
+import           Test.HUnit                     (assert, (@=?))
 
 
 --------------------------------------------------------------------------------
 import           CountVonCount.Persistence
-import           CountVonCount.Persistence.Tests.Util
+import           CountVonCount.TestSuite.Util
 
 
 --------------------------------------------------------------------------------
