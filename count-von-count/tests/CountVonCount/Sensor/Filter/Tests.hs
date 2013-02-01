@@ -45,11 +45,11 @@ tests = testGroup "CountVonCount.Sensor.Tests"
         Just (SensorEvent _ s b) <- filterSensorEvent db rssiTreshold
             (RawSensorEvent
                 undefined "00:00:00:00:00:00" "00:00:00:00:01:00" (-10))
-        (s, b) @=? (stations !! 0, batons !! 0)
+        (s, b) @=? (testStations !! 0, testBatons !! 0)
 
     , testCase "filterSensorEvent 5" $ testDatabase $ \db -> do
         Just (SensorEvent _ s b) <- filterSensorEvent db rssiTreshold
             (RawSensorEvent
                 undefined "00:00:00:00:00:03" "00:00:00:00:01:02" (-10))
-        (s, b) @=? (stations !! 3, batons !! 2)
+        (s, b) @=? (testStations !! 3, testBatons !! 2)
     ]

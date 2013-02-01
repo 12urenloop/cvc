@@ -50,83 +50,83 @@ fixtures =
 -- Normal lap
 fixture01 :: CounterFixtureM ()
 fixture01 = do
-    noLap  0 (stations !! 0)
-    noLap 20 (stations !! 1)
-    noLap 40 (stations !! 2)
-    noLap 60 (stations !! 3)
-    lap   80 (stations !! 0)
+    noLap  0 (testStations !! 0)
+    noLap 20 (testStations !! 1)
+    noLap 40 (testStations !! 2)
+    noLap 60 (testStations !! 3)
+    lap   80 (testStations !! 0)
 
 
 --------------------------------------------------------------------------------
 -- Multiple detections
 fixture02 :: CounterFixtureM ()
 fixture02 = do
-    noLap  0 (stations !! 0)
-    noLap 10 (stations !! 1)
-    noLap 11 (stations !! 1)
-    noLap 12 (stations !! 1)
-    noLap 15 (stations !! 0)
+    noLap  0 (testStations !! 0)
+    noLap 10 (testStations !! 1)
+    noLap 11 (testStations !! 1)
+    noLap 12 (testStations !! 1)
+    noLap 15 (testStations !! 0)
 
 
 --------------------------------------------------------------------------------
 -- Running backwards
 fixture03 :: CounterFixtureM ()
 fixture03 = do
-    noLap  0 (stations !! 3)
-    noLap 10 (stations !! 2)
-    lap   20 (stations !! 1)
-    noLap 30 (stations !! 0)
-    noLap 40 (stations !! 3)
+    noLap  0 (testStations !! 3)
+    noLap 10 (testStations !! 2)
+    lap   20 (testStations !! 1)
+    noLap 30 (testStations !! 0)
+    noLap 40 (testStations !! 3)
 
 
 --------------------------------------------------------------------------------
 -- Only passing 2 points
 fixture04 :: CounterFixtureM ()
 fixture04 = do
-    noLap  0 (stations !! 3)
-    lap   10 (stations !! 0)
-    noLap 20 (stations !! 3)
-    noLap 30 (stations !! 0)
+    noLap  0 (testStations !! 3)
+    lap   10 (testStations !! 0)
+    noLap 20 (testStations !! 3)
+    noLap 30 (testStations !! 0)
 
 
 --------------------------------------------------------------------------------
 -- Only passing 2 points
 fixture05 :: CounterFixtureM ()
 fixture05 = do
-    noLap  0 (stations !! 1)
-    noLap 20 (stations !! 3)
-    lap   40 (stations !! 1)
-    noLap 60 (stations !! 3)
-    lap   80 (stations !! 1)
+    noLap  0 (testStations !! 1)
+    noLap 20 (testStations !! 3)
+    lap   40 (testStations !! 1)
+    noLap 60 (testStations !! 3)
+    lap   80 (testStations !! 1)
 
 
 --------------------------------------------------------------------------------
 -- Taking a nap
 fixture06 :: CounterFixtureM ()
 fixture06 = do
-    noLap   0 (stations !! 0)
-    noLap  15 (stations !! 1)
-    noLap  30 (stations !! 2)
-    noLap  45 (stations !! 3)
-    lap    60 (stations !! 0)
-    noLap  75 (stations !! 1)
-    noLap 300 (stations !! 2)
-    noLap 315 (stations !! 3)
-    lap   330 (stations !! 0)
+    noLap   0 (testStations !! 0)
+    noLap  15 (testStations !! 1)
+    noLap  30 (testStations !! 2)
+    noLap  45 (testStations !! 3)
+    lap    60 (testStations !! 0)
+    noLap  75 (testStations !! 1)
+    noLap 300 (testStations !! 2)
+    noLap 315 (testStations !! 3)
+    lap   330 (testStations !! 0)
 
 
 --------------------------------------------------------------------------------
 -- Riding a fast unicorn
 fixture07 :: CounterFixtureM ()
 fixture07 = do
-    noLap   0 (stations !! 0)
-    noLap   2 (stations !! 1)
-    noLap   4 (stations !! 2)
-    noLap   6 (stations !! 3)
-    noLap   8 (stations !! 0)
-    noLap  10 (stations !! 1)
-    noLap  12 (stations !! 2)
-    noLap  14 (stations !! 3)
-    noLap  16 (stations !! 0)
-    noLap  18 (stations !! 0)
-    noLap  20 (stations !! 0)
+    noLap   0 (testStations !! 0)
+    noLap   2 (testStations !! 1)
+    noLap   4 (testStations !! 2)
+    noLap   6 (testStations !! 3)
+    noLap   8 (testStations !! 0)
+    noLap  10 (testStations !! 1)
+    noLap  12 (testStations !! 2)
+    noLap  14 (testStations !! 3)
+    noLap  16 (testStations !! 0)
+    noLap  18 (testStations !! 0)
+    noLap  20 (testStations !! 0)
