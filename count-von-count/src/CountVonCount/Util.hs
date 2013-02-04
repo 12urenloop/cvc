@@ -1,13 +1,20 @@
+--------------------------------------------------------------------------------
 {-# LANGUAGE ScopedTypeVariables #-}
 module CountVonCount.Util
     ( isolate
     , isolate_
     ) where
 
+
+--------------------------------------------------------------------------------
 import qualified Control.Exception as E
 
+
+--------------------------------------------------------------------------------
 import CountVonCount.Log
 
+
+--------------------------------------------------------------------------------
 -- | Isolate any exception in the given worker code and log it
 isolate :: Log -> String -> IO () -> IO (Maybe E.SomeException)
 isolate logger name worker = E.catches (worker >> return Nothing)
@@ -18,9 +25,12 @@ isolate logger name worker = E.catches (worker >> return Nothing)
     ]
   where
     isolate' ex = do
-        string logger $ "[isolate " ++ name ++ "]: caught " ++ show ex
+        string logger "CountVonCount.Util.isolate" $
+            name ++ " threw: " ++ show ex
         return (Just ex)
 
+
+--------------------------------------------------------------------------------
 isolate_ :: Log -> String -> IO () -> IO ()
 isolate_ logger name worker = do
     _ <- isolate logger name worker

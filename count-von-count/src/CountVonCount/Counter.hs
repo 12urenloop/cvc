@@ -1,3 +1,4 @@
+--------------------------------------------------------------------------------
 -- | This module has a number of responsibilities:
 --
 -- 1. Receiving sensor events
@@ -18,55 +19,67 @@ module CountVonCount.Counter
     , watchdog
     ) where
 
-import Control.Applicative ((<$>))
-import Control.Concurrent (threadDelay)
-import Control.Concurrent.Chan (Chan, readChan)
-import Control.Concurrent.MVar (MVar, newMVar, modifyMVar_, readMVar)
-import Control.Monad (forever)
-import Data.Foldable (forM_)
 
-import Data.Time (addUTCTime, getCurrentTime)
+--------------------------------------------------------------------------------
+import           Control.Applicative         ((<$>))
+import           Control.Concurrent          (threadDelay)
+import           Control.Concurrent.Chan     (Chan, readChan)
+import           Control.Concurrent.MVar     (MVar, modifyMVar_, newMVar,
+                                              readMVar)
+import           Control.Monad               (forever)
+import           Data.Foldable               (forM_)
+import           Data.Time                   (addUTCTime, getCurrentTime)
 
-import CountVonCount.Counter.Core
-import CountVonCount.Counter.Map
-import CountVonCount.Log (Log)
-import CountVonCount.Sensor.Filter
-import CountVonCount.Types
-import CountVonCount.Util
-import qualified CountVonCount.Log as Log
-import qualified CountVonCount.Persistence as P
 
+--------------------------------------------------------------------------------
+import           CountVonCount.Counter.Core
+import           CountVonCount.Counter.Map
+import           CountVonCount.EventBase
+import           CountVonCount.Log           (Log)
+import qualified CountVonCount.Log           as Log
+import qualified CountVonCount.Persistence   as P
+import           CountVonCount.Sensor.Filter
+import           CountVonCount.Util
+
+
+--------------------------------------------------------------------------------
 newtype Counter = Counter {unCounter :: MVar CounterMap}
 
+
+--------------------------------------------------------------------------------
 newCounter :: IO Counter
 newCounter = Counter <$> newMVar emptyCounterMap
 
+
+--------------------------------------------------------------------------------
 runCounter :: Counter
            -> Double
            -> Double
            -> Log
+           -> EventBase
            -> P.Database
-           -> Handler (P.Team, CounterState, CounterEvent)
            -> Chan SensorEvent
            -> IO ()
-runCounter counter cl ms logger db handler' chan = forever $ do
+runCounter counter cl ms logger eventBase db chan = forever $ do
     event <- readChan chan
     modifyMVar_ (unCounter counter) (step' event)
   where
-    step' = step cl ms logger db handler'
+    step' = step cl ms logger eventBase db
 
+
+--------------------------------------------------------------------------------
 step :: Double  -- ^ Circuit length
      -> Double  -- ^ Max speed
      -> Log
+     -> EventBase
      -> P.Database
-     -> Handler (P.Team, CounterState, CounterEvent)
      -> SensorEvent
      -> CounterMap
      -> IO CounterMap
-step cl ms logger db handler' event cmap = do
+step cl ms logger eventBase db event cmap = do
     let (events, tells, cmap') = stepCounterMap cl ms event cmap
         cstate = lookupCounterState (P.batonId $ sensorBaton event) cmap'
-    forM_ tells $ Log.string logger
+    forM_ tells $ Log.string logger "CountVonCount.Counter.step"
     process cstate events
     return cmap'
   where
@@ -83,19 +96,25 @@ step cl ms logger db handler' event cmap = do
                     _               -> return team
 
                 -- Call handlers, log
-                callHandler logger handler' (team', cstate, event')
-                Log.string logger $ case event' of
+                publish eventBase (team', cstate, event')
+                Log.string logger "CountVonCount.Counter.step" $ case event' of
                     Progression _ s _ -> show team' ++ " @ " ++ show s
                     Lap _ _           -> "Lap for " ++ show team'
 
+
+--------------------------------------------------------------------------------
 resetCounterFor :: P.Ref P.Baton -> Counter -> IO ()
 resetCounterFor baton counter =
     modifyMVar_ (unCounter counter) $ return . resetCounterMapFor baton
 
+
+--------------------------------------------------------------------------------
 counterStateFor :: P.Ref P.Baton -> Counter -> IO CounterState
 counterStateFor baton counter =
     lookupCounterState baton <$> readMVar (unCounter counter)
 
+
+--------------------------------------------------------------------------------
 findDeadBatons :: Int -> Counter -> IO [P.Ref P.Baton]
 findDeadBatons lifespan counter = do
     now  <- getCurrentTime
@@ -104,13 +123,14 @@ findDeadBatons lifespan counter = do
   where
     lifespan' = fromInteger $ fromIntegral lifespan
 
+
+--------------------------------------------------------------------------------
 watchdog :: Counter                  -- ^ Counter handle
-         -> Log                      -- ^ Log handle
+         -> EventBase                -- ^ Event base
          -> Int                      -- ^ Dead baton check interval (seconds)
          -> Int                      -- ^ Seconds after a baton is declared dead
-         -> Handler [P.Ref P.Baton]  -- ^ Dead baton handler
          -> IO ()                    -- ^ Blocks forever
-watchdog counter logger interval lifespan handler' = forever $ do
+watchdog counter eventBase interval lifespan = forever $ do
     dead <- findDeadBatons lifespan counter
-    callHandler logger handler' dead
+    publish eventBase dead
     threadDelay $ interval * 1000 * 1000

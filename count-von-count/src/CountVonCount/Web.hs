@@ -159,7 +159,7 @@ teamReset = do
     case teamBaton team of
         Just bid -> do
             liftIO $ resetCounterFor bid counter
-            liftIO $ Log.string logger $
+            liftIO $ Log.string logger "CountVonCount.Web.teamReset" $
                 "Resetting counter for " ++ show team
         Nothing  -> return ()
     Snap.redirect "/management"

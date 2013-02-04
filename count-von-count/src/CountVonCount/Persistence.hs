@@ -50,6 +50,7 @@ import           Data.Ord               (comparing)
 import           Data.Text              (Text)
 import qualified Data.Text              as T
 import           Data.Time              (UTCTime)
+import           Data.Typeable          (Typeable)
 import           Database.SQLite.Simple (FromRow (..))
 import qualified Database.SQLite.Simple as Sqlite
 import           Text.Printf            (printf)
@@ -104,7 +105,7 @@ data Team = Team
     , teamName  :: Text
     , teamLaps  :: Int
     , teamBaton :: Maybe (Ref Baton)
-    }
+    } deriving (Typeable)
 
 
 --------------------------------------------------------------------------------

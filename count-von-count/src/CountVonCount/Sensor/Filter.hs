@@ -41,8 +41,10 @@ filterSensorEvent database logger rssiThreshold raw
         mbaton   <- getBatonByMac database (rawSensorBaton raw)
         case mstation of
             Nothing      -> do
-                Log.string logger $ "Warning: got event from unknown " ++
-                    "station " ++ T.unpack (rawSensorStation raw)
+                Log.string logger
+                    "CountVonCount.Sensor.Filter.filterSensorEvent" $
+                    "Warning: got event from unknown station " ++
+                    T.unpack (rawSensorStation raw)
                 return Nothing
             Just station -> return $
                 SensorEvent (rawSensorTime raw) station <$> mbaton

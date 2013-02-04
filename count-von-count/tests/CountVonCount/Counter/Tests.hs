@@ -24,10 +24,10 @@ import           Text.Printf                             (printf)
 import           CountVonCount.Counter
 import           CountVonCount.Counter.Fixtures
 import           CountVonCount.Counter.Fixtures.Internal
+import           CountVonCount.EventBase
 import           CountVonCount.Persistence
 import           CountVonCount.Sensor.Filter
 import           CountVonCount.TestSuite.Util
-import           CountVonCount.Types
 
 
 --------------------------------------------------------------------------------
@@ -41,11 +41,12 @@ tests = testGroup "CountVonCount.Counter.Tests"
 counterTest :: Assertion
 counterTest = testLog $ \logger -> do
     -- Initialize stuffs
-    db       <- newDatabase "test.db"
-    counter  <- newCounter
-    chan     <- newChan
-    threadId <- forkIO $ runCounter counter circuitLength maxSpeed
-        logger db handler' chan
+    db        <- newDatabase "test.db"
+    counter   <- newCounter
+    chan      <- newChan
+    eventBase <- newEventBase logger
+    threadId  <- forkIO $ runCounter counter circuitLength maxSpeed
+        logger eventBase db chan
 
     -- Add teams, calculate expected output
     ts <- forM (zip teamsAndBatons fixtures) $ \((name, baton), f) -> do
@@ -71,9 +72,6 @@ counterTest = testLog $ \logger -> do
     -- Check the output
     deleteAll db
     killThread threadId
-  where
-    handler' = handler "Crashing handler" $
-        error "Errors in handlers should not break this test"
 
 
 --------------------------------------------------------------------------------

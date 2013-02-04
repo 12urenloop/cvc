@@ -155,7 +155,8 @@ withBoxxies :: Log
 withBoxxies logger bs f = forM_ (boxxiesState bs) $ \(c, rs) ->
     void $ forkIO $ do
         s <- readIORef rs
-        Log.string logger $ "Calling " ++ show c ++ ", currently " ++ show s
+        Log.string logger "CountVonCount.Boxxy.withBoxxies" $
+            "Calling " ++ show c ++ ", currently " ++ show s
         -- Try to init if needed
         r <- case s of
             Down -> isolate logger ("init " ++ show c) $ boxxiesInit bs c
@@ -167,7 +168,8 @@ withBoxxies logger bs f = forM_ (boxxiesState bs) $ \(c, rs) ->
             Just _  -> return r
 
         let s' = if isNothing r' then Up else Down
-        when (s /= s') $ Log.string logger $ show c ++ " is now " ++ show s'
+        when (s /= s') $ Log.string logger "CountVonCount.Boxxy.withBoxxies" $
+            show c ++ " is now " ++ show s'
         writeIORef rs s'
 
 boxxiesToList :: Boxxies -> IO [(BoxxyConfig, BoxxyState)]

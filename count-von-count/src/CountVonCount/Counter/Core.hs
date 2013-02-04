@@ -1,5 +1,6 @@
 --------------------------------------------------------------------------------
 -- | This module implements the counter logic for a /single/ team
+{-# LANGUAGE DeriveDataTypeable #-}
 module CountVonCount.Counter.Core
     ( CounterEvent (..)
     , isLap
@@ -19,6 +20,7 @@ import           Control.Monad.Writer         (WriterT, runWriterT, tell)
 import           Data.List                    (minimumBy)
 import           Data.Ord                     (comparing)
 import           Data.Time                    (UTCTime, diffUTCTime)
+import           Data.Typeable                (Typeable)
 import           Text.Printf                  (printf)
 
 
@@ -32,7 +34,7 @@ import           CountVonCount.Sensor.Filter
 data CounterEvent
     = Progression UTCTime Station Double
     | Lap UTCTime Double
-    deriving (Show)
+    deriving (Show, Typeable)
 
 
 --------------------------------------------------------------------------------
@@ -47,7 +49,7 @@ data CounterState
     = NoCounterState
     -- | First, previous event, current speed, last seen
     | CounterState SensorEvent SensorEvent Double UTCTime
-    deriving (Show)
+    deriving (Show, Typeable)
 
 
 --------------------------------------------------------------------------------

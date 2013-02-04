@@ -1,33 +1,50 @@
+--------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
 module CountVonCount.Sensor.Tests
     ( tests
     ) where
 
-import Control.Applicative ((<$>))
-import Control.Concurrent (forkIO, killThread, threadDelay)
-import Control.Monad (forM_)
-import System.IO (hClose, hPutStrLn, hFlush)
 
-import Data.IORef (atomicModifyIORef, newIORef, readIORef)
-import Network (PortID (..), connectTo)
-import Test.Framework (Test, testGroup)
-import Test.Framework.Providers.HUnit (testCase)
-import Test.HUnit (assert)
+--------------------------------------------------------------------------------
+import           Control.Applicative            ((<$>))
+import           Control.Concurrent             (forkIO, killThread,
+                                                 threadDelay)
+import           Control.Monad                  (forM_)
+import           System.IO                      (hClose, hFlush, hPutStrLn)
 
-import CountVonCount.Sensor
-import CountVonCount.Types
-import qualified CountVonCount.Log as Log
 
+--------------------------------------------------------------------------------
+import           Data.IORef                     (atomicModifyIORef, newIORef,
+                                                 readIORef)
+import           Network                        (PortID (..), connectTo)
+import           Test.Framework                 (Test, testGroup)
+import           Test.Framework.Providers.HUnit (testCase)
+import           Test.HUnit                     (assert)
+
+
+--------------------------------------------------------------------------------
+import           CountVonCount.EventBase
+import qualified CountVonCount.Log              as Log
+import           CountVonCount.Sensor
+
+
+--------------------------------------------------------------------------------
 tests :: Test
 tests = testGroup "CountVonCount.Sensor.Tests"
     [ testCase "sensor listen" $ assert sensorTest
     ]
 
+
+--------------------------------------------------------------------------------
 sensorTest :: IO Bool
 sensorTest = do
-    logger   <- Log.open "/dev/null" False
-    ref      <- newIORef []
-    threadId <- forkIO $ listen logger port $ prepend ref
+    logger    <- Log.open "/dev/null" False
+    ref       <- newIORef []
+    eventBase <- newEventBase logger
+    subscribe eventBase "prepend handler" $ \raw ->
+        atomicModifyIORef ref $ \rs -> (raw : rs, ())
+
+    threadId <- forkIO $ listen logger eventBase port
     threadDelay 100000
     handle <- connectTo "127.0.0.1" (PortNumber $ fromIntegral port)
     forM_ inputs $ \i -> hPutStrLn handle i >> hFlush handle
@@ -37,9 +54,6 @@ sensorTest = do
     killThread threadId
     return $ and $ zipWith (=~=) outputs expected
   where
-    prepend ref = handler "test handler" $ \raw ->
-        atomicModifyIORef ref $ \rs -> (raw : rs, ())
-
     port = 12390
 
     -- Don't take time into account here
