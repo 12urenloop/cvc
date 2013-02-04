@@ -6,9 +6,7 @@ module CountVonCount.Counter.Tests
 
 
 --------------------------------------------------------------------------------
-import           Control.Concurrent                      (forkIO, killThread,
-                                                          threadDelay)
-import           Control.Concurrent.Chan                 (newChan, writeChan)
+import           Control.Concurrent                      (threadDelay)
 import           Control.Monad                           (forM, forM_)
 import           Data.List                               (sortBy)
 import           Data.Ord                                (comparing)
@@ -43,10 +41,8 @@ counterTest = testLog $ \logger -> do
     -- Initialize stuffs
     db        <- newDatabase "test.db"
     counter   <- newCounter
-    chan      <- newChan
     eventBase <- newEventBase logger
-    threadId  <- forkIO $ runCounter counter circuitLength maxSpeed
-        logger eventBase db chan
+    subscribeCounter counter circuitLength maxSpeed logger eventBase db
 
     -- Add teams, calculate expected output
     ts <- forM (zip teamsAndBatons fixtures) $ \((name, baton), f) -> do
@@ -59,19 +55,18 @@ counterTest = testLog $ \logger -> do
 
     -- Feed input to chan
     let events = sortBy (comparing sensorTime) [e | (_, es, _) <- ts, e <- es]
-    forM_ events $ writeChan chan
+    forM_ events $ publish eventBase
 
-    -- 3 seconds, we have plenty of time
-    threadDelay $ 3 * 1000 * 1000
+    -- Some time for the DB
+    threadDelay $ 1 * 1000 * 1000
 
     -- Check the laps for each team
     forM_ ts $ \(ref, _, laps) -> do
         team <- getTeam db ref
         laps @=? teamLaps team
 
-    -- Check the output
+    -- Cleanup
     deleteAll db
-    killThread threadId
 
 
 --------------------------------------------------------------------------------

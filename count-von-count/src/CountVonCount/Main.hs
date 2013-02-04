@@ -58,7 +58,6 @@ main = do
                 stations teams time
 
     -- Connecting the sensor to the counter
-    sensorChan <- newChan
     let filterSensorEvent' = filterSensorEvent database logger
             (configRssiThreshold config)
         {-
@@ -73,8 +72,8 @@ main = do
 
     -- Start the counter
     counter <- newCounter
-    _       <- forkIO $ runCounter counter (configCircuitLength config)
-        (configMaxSpeed config) logger eventBase database sensorChan
+    subscribeCounter counter (configCircuitLength config)
+        (configMaxSpeed config) logger eventBase database
         {-
         (counterHandler (configCircuitLength config) logger
             boxxies pubSub) sensorChan

@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- | This module is responsible for converting raw sensor data to actually
 -- useful data, and discarding irrelevant data
+{-# LANGUAGE DeriveDataTypeable #-}
 module CountVonCount.Sensor.Filter
     ( SensorEvent (..)
     , filterSensorEvent
@@ -11,6 +12,7 @@ module CountVonCount.Sensor.Filter
 import           Control.Applicative       ((<$>))
 import qualified Data.Text                 as T
 import           Data.Time                 (UTCTime)
+import           Data.Typeable             (Typeable)
 
 
 --------------------------------------------------------------------------------
@@ -25,7 +27,7 @@ data SensorEvent = SensorEvent
     { sensorTime    :: UTCTime
     , sensorStation :: Station
     , sensorBaton   :: Baton
-    } deriving (Eq, Show)
+    } deriving (Eq, Show, Typeable)
 
 
 --------------------------------------------------------------------------------

@@ -10,7 +10,7 @@
 module CountVonCount.Counter
     ( Counter
     , newCounter
-    , runCounter
+    , subscribeCounter
 
     , resetCounterFor
     , counterStateFor
@@ -23,7 +23,6 @@ module CountVonCount.Counter
 --------------------------------------------------------------------------------
 import           Control.Applicative         ((<$>))
 import           Control.Concurrent          (threadDelay)
-import           Control.Concurrent.Chan     (Chan, readChan)
 import           Control.Concurrent.MVar     (MVar, modifyMVar_, newMVar,
                                               readMVar)
 import           Control.Monad               (forever)
@@ -52,19 +51,16 @@ newCounter = Counter <$> newMVar emptyCounterMap
 
 
 --------------------------------------------------------------------------------
-runCounter :: Counter
-           -> Double
-           -> Double
-           -> Log
-           -> EventBase
-           -> P.Database
-           -> Chan SensorEvent
-           -> IO ()
-runCounter counter cl ms logger eventBase db chan = forever $ do
-    event <- readChan chan
-    modifyMVar_ (unCounter counter) (step' event)
-  where
-    step' = step cl ms logger eventBase db
+subscribeCounter :: Counter
+                 -> Double
+                 -> Double
+                 -> Log
+                 -> EventBase
+                 -> P.Database
+                 -> IO ()
+subscribeCounter counter cl ms logger eventBase db =
+    subscribe eventBase "CountVonCount.Counter.subscribeCounter" $ \event ->
+        modifyMVar_ (unCounter counter) $ step cl ms logger eventBase db event
 
 
 --------------------------------------------------------------------------------
