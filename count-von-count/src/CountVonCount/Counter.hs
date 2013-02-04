@@ -88,14 +88,14 @@ step cl ms logger eventBase db event cmap = do
             forM_ events $ \event' -> do
                 -- Add the lap in the database and update team record
                 team' <- case event' of
-                    Lap timestamp _ -> P.addLap db (P.teamId team) timestamp
+                    LapEvent time _ -> P.addLap db (P.teamId team) time
                     _               -> return team
 
                 -- Call handlers, log
                 publish eventBase (team', cstate, event')
                 Log.string logger "CountVonCount.Counter.step" $ case event' of
-                    Progression _ s _ -> show team' ++ " @ " ++ show s
-                    Lap _ _           -> "Lap for " ++ show team'
+                    ProgressionEvent _ s _ -> show team' ++ " @ " ++ show s
+                    LapEvent _ _           -> "Lap for " ++ show team'
 
 
 --------------------------------------------------------------------------------

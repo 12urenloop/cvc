@@ -3,7 +3,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 module CountVonCount.Counter.Core
     ( CounterEvent (..)
-    , isLap
+    , isLapEvent
     , CounterState (..)
     , emptyCounterState
     , counterLastUpdate
@@ -32,15 +32,15 @@ import           CountVonCount.Sensor.Filter
 
 --------------------------------------------------------------------------------
 data CounterEvent
-    = Progression UTCTime Station Double
-    | Lap UTCTime Double
+    = ProgressionEvent UTCTime Station Double
+    | LapEvent UTCTime Double
     deriving (Show, Typeable)
 
 
 --------------------------------------------------------------------------------
-isLap :: CounterEvent -> Bool
-isLap (Lap _ _) = True
-isLap _         = False
+isLapEvent :: CounterEvent -> Bool
+isLapEvent (LapEvent _ _) = True
+isLapEvent _              = False
 
 
 --------------------------------------------------------------------------------
@@ -111,8 +111,8 @@ stepCounterState len maxSpeed event = do
                 when (numLaps > 0) $ tell' $ printf "Adding %d laps" numLaps
                 put $ CounterState first event speed' time
                 return $
-                    Progression time station speed :
-                    replicate numLaps (Lap time 0)  -- lapTime is TODO
+                    ProgressionEvent time station speed :
+                    replicate numLaps (LapEvent time 0)  -- lapTime is TODO
           where
             SensorEvent time     station     _ = event
             SensorEvent prevTime prevStation _ = prev

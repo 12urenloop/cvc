@@ -43,8 +43,20 @@ main = do
     -- Create the pubsub system
     pubSub <- WS.newPubSub
 
+    -- Publish counter events to browser
+    subscribe eventBase "WS counter handler" $
+        \(team, cstate, _ :: CounterEvent) ->
+            WS.publish pubSub $ WS.textData $ A.encode $
+            Views.counterState (configCircuitLength config) team (Just cstate)
+
+    -- Publish baton watchdog events to browser
+    subscribe eventBase "baton handler" $ \deadBatons -> do
+        deadBatons' <- mapM (P.getBaton database) deadBatons
+        WS.publish pubSub $ WS.textData $ A.encode $
+            Views.deadBatons deadBatons'
+
     -- Initialize boxxy
-    boxxies <- newBoxxies logger (configBoxxies config) $ \b -> do
+    boxxies <- newBoxxies logger eventBase (configBoxxies config) $ \b -> do
         teams    <- P.getAllTeams database
         time     <- getCurrentTime
         stations <- P.getAllStations database
@@ -66,36 +78,11 @@ main = do
     counter <- newCounter
     subscribeCounter counter (configCircuitLength config)
         (configMaxSpeed config) logger eventBase database
-        {-
-        (counterHandler (configCircuitLength config) logger
-            boxxies pubSub) sensorChan
-        -}
-
-    -- Publish counter events to browser
-    subscribe eventBase "WS counter handler" $
-        \(team, cstate, _ :: CounterEvent) ->
-            WS.publish pubSub $ WS.textData $ A.encode $
-            Views.counterState (configCircuitLength config) team (Just cstate)
-
-    -- Publish counter events to boxxies
-    subscribe eventBase "boxxies counter handler" $
-        \(team, _ :: CounterState, event) ->
-            withBoxxies logger boxxies $ \b -> case event of
-                Lap time speed                 ->
-                    putLaps b team time 1 (Just speed) Nothing
-                Progression time station speed ->
-                    putPosition b team time station speed
 
     -- Start the baton watchdog
     _ <- forkIO $ watchdog counter eventBase
         (configBatonWatchdogInterval config)
         (configBatonWatchdogLifespan config)
-
-    -- Publish baton watchdog events to browser
-    subscribe eventBase "baton handler" $ \deadBatons -> do
-        deadBatons' <- mapM (P.getBaton database) deadBatons
-        WS.publish pubSub $ WS.textData $ A.encode $
-            Views.deadBatons deadBatons'
 
     Web.listen config logger database pubSub counter boxxies
 

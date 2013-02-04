@@ -37,4 +37,4 @@ testCounterFixtureM cf = test emptyCounterState $
     test _     []                                = True
     test state (CounterFixture se expected : xs) =
         let (es, _, state') = runCounterM (step se) state
-        in any isLap es == expected && test state' xs
+        in any isLapEvent es == expected && test state' xs
