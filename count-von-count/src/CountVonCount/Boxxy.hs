@@ -8,7 +8,7 @@ module CountVonCount.Boxxy
     , defaultBoxxyConfig
 
       -- * Talking to boxxy
-    , putConfig
+    , putState
     , putLaps
     , putPosition
 
@@ -28,6 +28,8 @@ import           Control.Monad              (forM, forM_, mzero, void, when)
 import           Data.Aeson                 (FromJSON (..), ToJSON (..), (.!=),
                                              (.:?), (.=))
 import qualified Data.Aeson                 as A
+import           Data.ByteString            (ByteString)
+import qualified Data.ByteString.Char8      as BC
 import qualified Data.Conduit               as C
 import           Data.IORef                 (IORef, newIORef, readIORef,
                                              writeIORef)
@@ -50,36 +52,29 @@ import           CountVonCount.Util
 
 --------------------------------------------------------------------------------
 data BoxxyConfig = BoxxyConfig
-    { boxxyHost :: Text
-    , boxxyPort :: Int
-    , boxxyPath :: Text
-    , boxxyKey  :: Text
+    { boxxyHost     :: Text
+    , boxxyPort     :: Int
+    , boxxyPath     :: Text
+    , boxxyUser     :: ByteString
+    , boxxyPassword :: ByteString
     }
 
 
 --------------------------------------------------------------------------------
 instance Show BoxxyConfig where
-    show (BoxxyConfig host port path key) = T.unpack host ++ ":" ++
-        show port ++ "/" ++ T.unpack path ++ " (" ++ show key ++ ")"
-
-
---------------------------------------------------------------------------------
-instance ToJSON BoxxyConfig where
-    toJSON conf = A.object
-        [ "host" .= boxxyHost conf
-        , "port" .= boxxyPort conf
-        , "path" .= boxxyPath conf
-        , "key"  .= boxxyKey  conf
-        ]
+    show (BoxxyConfig host port path user password) =
+        T.unpack host ++ ":" ++ show port ++ "/" ++ T.unpack path ++
+        " (" ++ BC.unpack user ++ ":" ++ BC.unpack password ++ ")"
 
 
 --------------------------------------------------------------------------------
 instance FromJSON BoxxyConfig where
     parseJSON (A.Object o) = BoxxyConfig <$>
-        o .:? "host" .!= boxxyHost defaultBoxxyConfig <*>
-        o .:? "port" .!= boxxyPort defaultBoxxyConfig <*>
-        o .:? "path" .!= boxxyPath defaultBoxxyConfig <*>
-        o .:? "key"  .!= boxxyKey  defaultBoxxyConfig
+        o .:? "host"     .!= boxxyHost     defaultBoxxyConfig <*>
+        o .:? "port"     .!= boxxyPort     defaultBoxxyConfig <*>
+        o .:? "path"     .!= boxxyPath     defaultBoxxyConfig <*>
+        o .:? "user"     .!= boxxyUser     defaultBoxxyConfig <*>
+        o .:? "password" .!= boxxyPassword defaultBoxxyConfig
 
     parseJSON _ = mzero
 
@@ -87,48 +82,43 @@ instance FromJSON BoxxyConfig where
 --------------------------------------------------------------------------------
 defaultBoxxyConfig :: BoxxyConfig
 defaultBoxxyConfig = BoxxyConfig
-    { boxxyHost = "localhost"
-    , boxxyPort = 80
-    , boxxyPath = ""
-    , boxxyKey  = "tetten"
+    { boxxyHost     = "localhost"
+    , boxxyPort     = 80
+    , boxxyPath     = ""
+    , boxxyUser     = "count-von-count"
+    , boxxyPassword = "tetten"
     }
 
 
 --------------------------------------------------------------------------------
 makeRequest :: ToJSON a => BoxxyConfig -> Text -> a -> IO ()
 makeRequest config path body = do
-    let rq = Http.def
-            { Http.method         = "PUT"
-            , Http.host           = T.encodeUtf8 (boxxyHost config)
-            , Http.port           = boxxyPort config
-            , Http.path           = T.encodeUtf8 path'
-            , Http.requestBody    = Http.RequestBodyLBS (A.encode body)
-            , Http.queryString    = T.encodeUtf8 queryString
-            , Http.requestHeaders =
-                [ ("Connection", "Close")
-                , ("Content-Type", "application/json")
-                ]
-            }
+    let rq = Http.applyBasicAuth (boxxyUser config) (boxxyPassword config) $
+                Http.def
+                    { Http.method         = "PUT"
+                    , Http.host           = T.encodeUtf8 (boxxyHost config)
+                    , Http.port           = boxxyPort config
+                    , Http.path           = T.encodeUtf8 path'
+                    , Http.requestBody    = Http.RequestBodyLBS (A.encode body)
+                    , Http.requestHeaders =
+                        [ ("Connection", "Close")
+                        , ("Content-Type", "application/json")
+                        ]
+                    }
 
     manager <- Http.newManager Http.def
     _       <- C.runResourceT $ Http.httpLbs rq manager
     Http.closeManager manager
   where
-    path'       = boxxyPath config `T.append` path
-    queryString = "key=" `T.append` boxxyKey config
+    path' = boxxyPath config `T.append` path
 
 
 --------------------------------------------------------------------------------
-putConfig :: BoxxyConfig -> UTCTime -> Double -> [Station] -> [Team] -> UTCTime
-          -> IO ()
-putConfig config startTime circuitLength stations teams time =
-    makeRequest config "/config" $ A.object
-        [ "startTime"     .= startTime
-        , "circuitLength" .= circuitLength
-        , "stations"      .= stations
-        , "teams"         .= teams
-        , "time"          .= time
-        ]
+putState :: BoxxyConfig -> [Team] -> [Lap] -> IO ()
+putState config teams laps = makeRequest config "/state" $ A.object
+    [ "teams" .= teams
+    , "laps"  .= laps
+    ]
 
 
 --------------------------------------------------------------------------------

@@ -11,7 +11,7 @@ import Control.Monad (mzero)
 import Data.Maybe (fromMaybe)
 import Data.Time (UTCTime (..))
 
-import Data.Aeson (FromJSON (..), ToJSON (..), (.=), (.:?), (.!=))
+import Data.Aeson (FromJSON (..), (.:?), (.!=))
 import Data.Yaml (decodeFile)
 import qualified Data.Aeson as A
 
@@ -30,21 +30,6 @@ data Config = Config
     , configBoxxies               :: [BoxxyConfig]
     , configWebPort               :: Int
     } deriving (Show)
-
-instance ToJSON Config where
-    toJSON conf = A.object
-        [ "startTime"             .= configStartTime             conf
-        , "circuitLength"         .= configCircuitLength         conf
-        , "maxSpeed"              .= configMaxSpeed              conf
-        , "batonWatchdogLifespan" .= configBatonWatchdogLifespan conf
-        , "batonWatchdogInterval" .= configBatonWatchdogInterval conf
-        , "sensorPort"            .= configSensorPort            conf
-        , "log"                   .= configLog                   conf
-        , "replayLog"             .= configReplayLog             conf
-        , "rssiThreshold"         .= configRssiThreshold         conf
-        , "boxxies"               .= configBoxxies               conf
-        , "webPort"               .= configWebPort               conf
-        ]
 
 instance FromJSON Config where
     parseJSON (A.Object o) = Config <$>

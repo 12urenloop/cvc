@@ -49,7 +49,7 @@ tests = testGroup "CountVonCount.Persistence.Tests"
         _    <- addLaps db r time reason1 laps1
         _    <- addLaps db r time reason2 laps2
         _    <- addLaps db r time reason2 laps2
-        laps <- getLatestLaps db r 5
+        laps <- getLatestLaps db (Just r) 5
 
         -- Might a marginal difference in the times due to conversion,
         -- should never be more than one second

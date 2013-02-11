@@ -202,6 +202,14 @@ instance FromRow Lap where
 
 
 --------------------------------------------------------------------------------
+instance ToJSON Lap where
+    toJSON (Lap id' team time reason count) = object
+        [ "id" .= id', "team" .= team, "time" .= time
+        , "reason" .= reason, "count" .= count
+        ]
+
+
+--------------------------------------------------------------------------------
 lapsTable :: [Sqlite.Query]
 lapsTable = return
     "CREATE TABLE IF NOT EXISTS laps (             \
@@ -233,9 +241,10 @@ addLaps db !ref !timestamp !reason !count = do
 
 
 --------------------------------------------------------------------------------
-getLatestLaps :: Database -> Ref Team -> Int -> IO [Lap]
-getLatestLaps (Database c) !ref n =
-    Sqlite.query c
+getLatestLaps :: Database -> Maybe (Ref Team) -> Int -> IO [Lap]
+getLatestLaps (Database c) Nothing     n = Sqlite.query c
+        "SELECT * FROM laps ORDER BY id DESC LIMIT ?" (Sqlite.Only n)
+getLatestLaps (Database c) !(Just ref) n = Sqlite.query c
         "SELECT * FROM laps WHERE team_id = ? ORDER BY id DESC LIMIT ?"
         (ref, n)
 

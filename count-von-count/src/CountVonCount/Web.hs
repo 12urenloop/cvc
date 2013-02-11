@@ -48,9 +48,6 @@ type Web = ReaderT WebEnv Snap.Snap
 index :: Web ()
 index = Snap.redirect "/monitor"
 
-config :: Web ()
-config = ask >>= json . webConfig
-
 monitor :: Web ()
 monitor = do
     db         <- webDatabase <$> ask
@@ -89,7 +86,7 @@ laps = do
     tz    <- liftIO getCurrentTimeZone
     teams <- liftIO (getAllTeams db)
     laps' <- forM teams $ \team -> do
-        l <- liftIO $ getLatestLaps db (teamId team) 5
+        l <- liftIO $ getLatestLaps db (Just $ teamId team) 5
         return (team, l)
     Snap.blaze $ Views.laps laps' tz
 
@@ -194,7 +191,6 @@ multibonus = do
 site :: Web ()
 site = Snap.route
     [ ("",                     Snap.ifTop index)
-    , ("/config.json",         config)
     , ("/monitor",             monitor)
     , ("/monitor/feed",        monitorFeed)
     , ("/management",          management)
