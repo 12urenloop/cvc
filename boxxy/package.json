@@ -1,0 +1,18 @@
+{
+  "name": "boxxy",
+  "version": "0.2.0",
+  "author": "Jasper Van der Jeugt <m@jaspervdj.be>",
+  "description": "Application proxy for http://12urenloop.be",
+  "contributors": [
+    {
+      "name": "Michiel Van de Berghe"
+    }
+  ],
+  "dependencies": {
+    "express":   "3.0.x",
+    "socket.io": "0.9.x"
+  },
+  "engines": {
+    "node": "0.6.x"
+  }
+}
