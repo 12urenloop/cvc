@@ -62,6 +62,15 @@ Executable count-von-count
     websockets-snap          >= 0.6   && < 0.8,
     yaml                     >= 0.7   && < 0.9
 
+Executable count-von-count-simulation
+  Hs-source-dirs: src
+  Main-is:        CountVonCount/Simulation.hs
+  Ghc-options:    -Wall -O2 -threaded -rtsopts
+
+  Build-depends:
+    ansi-terminal >= 0.6 && < 0.7,
+    random        >= 1.0 && < 1.1
+
 Test-suite count-von-count-tests
   Type:           exitcode-stdio-1.0
   Hs-source-dirs: src tests
