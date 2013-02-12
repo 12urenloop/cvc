@@ -5,17 +5,18 @@ exports.initialize = function() {
     state.maxLaps = 10;
 
     state.onUpdate = function(state) {};
-    state.onReset = function(state) {};
-    state.onLap = function(state, lap) {};
+    state.onPutState = function(state) {};
+    state.onAddLap = function(state, lap) {};
 
     return state;
 }
 
-exports.reset = function(state, newState) {
+exports.putState = function(state, newState) {
     state.teams = newState.teams;
     state.laps = newState.laps;
+
     state.onUpdate(state);
-    state.onReset(state);
+    state.onPutState(state);
 }
 
 exports.addLap = function(state, lap) {
@@ -25,5 +26,5 @@ exports.addLap = function(state, lap) {
     state.teams[lap.team.id] = lap.team;
 
     state.onUpdate(state);
-    state.onLap(state, lap);
+    state.onAddLap(state, lap);
 }
