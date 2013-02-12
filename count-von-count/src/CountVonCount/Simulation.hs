@@ -7,13 +7,17 @@ module Main
 --------------------------------------------------------------------------------
 import           Control.Applicative       ((<$>))
 import           Control.Concurrent        (threadDelay)
+import           Control.Exception         (IOException, handle)
 import           Control.Monad             (forM, forM_, forever)
 import           Control.Monad.Reader      (ReaderT, ask, runReaderT)
 import           Control.Monad.State       (StateT, evalStateT, get, modify)
 import           Control.Monad.Trans       (liftIO)
-import           Data.Maybe                (listToMaybe)
+import           Data.List                 (intercalate)
+import           Data.Maybe                (catMaybes, listToMaybe)
 import qualified Data.Text                 as T
+import qualified Network                   as Network
 import qualified System.Console.ANSI       as Ansi
+import           System.IO                 (Handle, hPutStrLn)
 import           System.Random             (randomRIO)
 
 
@@ -39,7 +43,8 @@ main = do
             }
 
         simulationState = SimulationState
-            { simulationTeams = [(t, b, 0) | (t, Just b) <- teams]
+            { simulationTeams  = [(t, b, 0) | (t, Just b) <- teams]
+            , simulationSocket = Nothing
             }
 
     evalStateT (runReaderT simulation simulationRead) simulationState
@@ -59,7 +64,8 @@ data SimulationRead = SimulationRead
 
 --------------------------------------------------------------------------------
 data SimulationState = SimulationState
-    { simulationTeams :: [(Team, Baton, Position)]
+    { simulationTeams  :: [(Team, Baton, Position)]
+    , simulationSocket :: Maybe Handle
     }
 
 
@@ -74,7 +80,8 @@ simulation = do
     forever $ do
         render
         step
-        liftIO $ threadDelay $ 100 * 1000
+        sensor
+        liftIO $ threadDelay $ 1000 * 1000
 
 
 --------------------------------------------------------------------------------
@@ -122,3 +129,33 @@ step = do
             ]
 
     modify $ \s -> s {simulationTeams = teams'}
+
+
+--------------------------------------------------------------------------------
+sensor :: Simulation ()
+sensor = do
+    teams   <- simulationTeams  <$> get
+    msocket <- simulationSocket <$> get
+    config  <- simulationConfig <$> ask
+
+    sensed <- fmap catMaybes $ forM teams $ \(_, b, p) -> do
+        ms <- stationAt p
+        case ms of
+            Nothing -> return Nothing
+            Just s  -> return $ Just (stationMac s, batonMac b)
+
+    socket <- liftIO $ handle handler $ do
+        socket <- case msocket of
+            Just s  -> return s
+            Nothing -> Network.connectTo "127.0.0.1"
+                (Network.PortNumber $ fromIntegral $ configSensorPort config)
+
+        forM_ sensed $ \(sMac, bMac) -> hPutStrLn socket $ intercalate ","
+            [T.unpack sMac, "_", T.unpack bMac, "0"]
+
+        return $ Just socket
+
+    modify $ \s -> s {simulationSocket = socket}
+  where
+    handler :: IOException -> IO (Maybe Handle)
+    handler _ = return Nothing
