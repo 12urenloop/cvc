@@ -59,6 +59,6 @@ assignment db = do
 addBonus :: Database -> Log -> Boxxies -> Ref Team -> Text -> Int -> IO ()
 addBonus db logger boxxies ref reason laps = do
     timestamp <- liftIO getCurrentTime
-    team      <- addLaps db ref timestamp reason laps
+    team      <- addLaps db ref timestamp (Just reason) laps
     liftIO $ withBoxxies logger boxxies $ \b ->
-        putLaps b team timestamp laps Nothing (Just reason)
+        putLap b (Lap 0 0 timestamp (Just reason) laps) team

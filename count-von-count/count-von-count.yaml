@@ -10,10 +10,11 @@ log:       log/count-von-count.log
 replayLog: log/replay.log
 
 boxxies:
-    - host: "127.0.0.1"
-      port: 8080
-      path: ""
-      key:  "tetten"
+    - host:     "127.0.0.1"
+      port:     8080
+      path:     ""
+      user:     "count-von-count"
+      password: "tetten"
 
     - host: "live.12urenloop.be"
       port: 8080

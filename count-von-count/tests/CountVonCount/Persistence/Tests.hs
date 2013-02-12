@@ -38,9 +38,9 @@ tests = testGroup "CountVonCount.Persistence.Tests"
     , testCase "addLaps/getLatestLaps" $ testDatabase $ \db -> do
         r    <- addTeam db "wina"
         time <- liftIO getCurrentTime
-        let reason1 = "Because they're gay"
+        let reason1 = Just "Because they're gay"
             laps1   = 10
-            reason2 = "Bousson = FAG"
+            reason2 = Nothing
             laps2   = 2
         _    <- addLaps db r time reason1 laps1
         _    <- addLaps db r time reason2 laps2
@@ -60,7 +60,7 @@ tests = testGroup "CountVonCount.Persistence.Tests"
 
 
 --------------------------------------------------------------------------------
-eqLap :: (UTCTime, Text, Int) -> Lap -> Bool
+eqLap :: (UTCTime, Maybe Text, Int) -> Lap -> Bool
 eqLap (time, reason, laps) lap =
     abs (lapTimestamp lap `diffUTCTime` time) < 1 &&
     lapReason lap == reason &&

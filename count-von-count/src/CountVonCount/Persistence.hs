@@ -43,7 +43,6 @@ module CountVonCount.Persistence
 
 --------------------------------------------------------------------------------
 import           Control.Applicative    ((<$>), (<*>))
-import           Data.Aeson             (ToJSON (..), object, (.=))
 import           Data.Int               (Int64)
 import           Data.Maybe             (listToMaybe)
 import           Data.Ord               (comparing)
@@ -124,12 +123,6 @@ instance Show Team where
 
 
 --------------------------------------------------------------------------------
-instance ToJSON Team where
-    toJSON (Team id' name laps baton) = object
-        ["id" .= id', "name" .= name, "laps" .= laps, "baton" .= baton]
-
-
---------------------------------------------------------------------------------
 instance FromRow Team where
     fromRow = Team
         <$> Sqlite.field <*> Sqlite.field <*> Sqlite.field <*> Sqlite.field
@@ -189,7 +182,7 @@ data Lap = Lap
     { lapId        :: Ref Lap
     , lapTeam      :: Ref Team
     , lapTimestamp :: UTCTime
-    , lapReason    :: Text
+    , lapReason    :: Maybe Text
     , lapCount     :: Int
     } deriving (Show)
 
@@ -199,14 +192,6 @@ instance FromRow Lap where
     fromRow = Lap
         <$> Sqlite.field <*> Sqlite.field <*> Sqlite.field
         <*> Sqlite.field <*> Sqlite.field
-
-
---------------------------------------------------------------------------------
-instance ToJSON Lap where
-    toJSON (Lap id' team time reason count) = object
-        [ "id" .= id', "team" .= team, "time" .= time
-        , "reason" .= reason, "count" .= count
-        ]
 
 
 --------------------------------------------------------------------------------
@@ -224,11 +209,11 @@ lapsTable = return
 
 --------------------------------------------------------------------------------
 addLap :: Database -> Ref Team -> UTCTime -> IO Team
-addLap db ref timestamp = addLaps db ref timestamp "Full lap detected" 1
+addLap db ref timestamp = addLaps db ref timestamp Nothing 1
 
 
 --------------------------------------------------------------------------------
-addLaps :: Database -> Ref Team -> UTCTime -> Text -> Int -> IO Team
+addLaps :: Database -> Ref Team -> UTCTime -> Maybe Text -> Int -> IO Team
 addLaps db !ref !timestamp !reason !count = do
     Sqlite.execute (unDatabase db)
         "INSERT INTO laps (team_id, timestamp, reason, count) \
@@ -271,12 +256,6 @@ instance Eq Station where
 --------------------------------------------------------------------------------
 instance Ord Station where
     compare = comparing stationPosition
-
-
---------------------------------------------------------------------------------
-instance ToJSON Station where
-    toJSON (Station id' name mac position) = object
-        ["id" .= id', "name" .= name, "mac" .= mac, "position" .= position]
 
 
 --------------------------------------------------------------------------------
@@ -332,11 +311,6 @@ instance Show Baton where
 --------------------------------------------------------------------------------
 instance Ord Baton where
     compare = comparing batonNr
-
-
---------------------------------------------------------------------------------
-instance ToJSON Baton where
-    toJSON (Baton id' mac nr) = object ["id" .= id', "mac" .= mac, "nr" .= nr]
 
 
 --------------------------------------------------------------------------------

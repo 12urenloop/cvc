@@ -126,7 +126,7 @@ laps teams tz = template "Laps" $ block "laps" $ do
                 let lt = utcToLocalTime tz (lapTimestamp lap)
                 H.td $ H.toHtml $ formatTime defaultTimeLocale "%H:%M:%S" lt
                 H.td $ H.toHtml $ lapCount lap
-                H.td $ H.toHtml $ lapReason lap
+                H.td $ maybe "Nothing" H.toHtml $ lapReason lap
 
 boxxies :: [(BoxxyConfig, BoxxyState)] -> Html
 boxxies boxxies' = template "Boxxies" $ block "boxxies" $ do

@@ -7,6 +7,7 @@ module Main
 
 --------------------------------------------------------------------------------
 import           Control.Concurrent             (forkIO)
+import           Control.Monad                  (forM)
 import qualified Data.Aeson                     as A
 import           Data.Foldable                  (forM_)
 import qualified Network.WebSockets             as WS
@@ -58,7 +59,10 @@ main = do
     boxxies <- newBoxxies logger eventBase (configBoxxies config) $ \b -> do
         teams <- P.getAllTeams database
         laps  <- P.getLatestLaps database Nothing 10
-        putState b teams laps
+        laps' <- forM laps $ \lap -> do
+            team <- P.getTeam database $ P.lapTeam lap
+            return (lap, team)
+        putState b teams laps'
 
     -- Connecting the sensor to the counter
     subscribe eventBase "sensor handler" $ \event -> do

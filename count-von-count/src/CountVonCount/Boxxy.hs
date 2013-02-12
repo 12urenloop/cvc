@@ -9,7 +9,7 @@ module CountVonCount.Boxxy
 
       -- * Talking to boxxy
     , putState
-    , putLaps
+    , putLap
     , putPosition
 
       -- * Stateful talking
@@ -25,8 +25,7 @@ module CountVonCount.Boxxy
 import           Control.Applicative        (pure, (<$>), (<*>))
 import           Control.Concurrent         (forkIO)
 import           Control.Monad              (forM, forM_, mzero, void, when)
-import           Data.Aeson                 (FromJSON (..), ToJSON (..), (.!=),
-                                             (.:?), (.=))
+import           Data.Aeson                 (FromJSON (..), (.!=), (.:?), (.=))
 import qualified Data.Aeson                 as A
 import           Data.ByteString            (ByteString)
 import qualified Data.ByteString.Char8      as BC
@@ -91,7 +90,7 @@ defaultBoxxyConfig = BoxxyConfig
 
 
 --------------------------------------------------------------------------------
-makeRequest :: ToJSON a => BoxxyConfig -> Text -> a -> IO ()
+makeRequest :: BoxxyConfig -> Text -> A.Value -> IO ()
 makeRequest config path body = do
     let rq = Http.applyBasicAuth (boxxyUser config) (boxxyPassword config) $
                 Http.def
@@ -114,42 +113,24 @@ makeRequest config path body = do
 
 
 --------------------------------------------------------------------------------
-putState :: BoxxyConfig -> [Team] -> [Lap] -> IO ()
+putState :: BoxxyConfig -> [Team] -> [(Lap, Team)] -> IO ()
 putState config teams laps = makeRequest config "/state" $ A.object
-    [ "teams" .= teams
-    , "laps"  .= laps
+    [ "teams" .= A.object [T.pack (show $ teamId t) .= teamJson t | t <- teams]
+    , "laps"  .= map (uncurry lapJson) laps
     ]
 
 
 --------------------------------------------------------------------------------
-putLaps :: BoxxyConfig   -- ^ Boxxy instance to notify
-        -> Team          -- ^ Applicable team
-        -> UTCTime       -- ^ Time of event
-        -> Int           -- ^ Number of points added
-        -> Maybe Double  -- ^ Average lap speed
-        -> Maybe Text    -- ^ Lap reason (for bonus rounds)
-        -> IO ()
-putLaps config team time count speed reason = makeRequest config path $ A.object
-    [ "team"   .= team
-    , "time"   .= time
-    , "count"  .= count
-    , "speed"  .= speed
-    , "reason" .= reason
-    ]
-  where
-    path = T.concat ["/", refToText (teamId team), "/laps"]
+putLap :: BoxxyConfig   -- ^ Boxxy instance to notify
+       -> Lap           -- ^ Lap
+       -> Team          -- ^ Applicable team
+       -> IO ()
+putLap config lap team = makeRequest config "/lap" $ lapJson lap team
 
 
 --------------------------------------------------------------------------------
 putPosition :: BoxxyConfig -> Team -> UTCTime -> Station -> Double -> IO ()
-putPosition config team time station speed = makeRequest config path $ A.object
-    [ "team"    .= team
-    , "station" .= station
-    , "speed"   .= speed
-    , "time"    .= time
-    ]
-  where
-    path = T.concat ["/", refToText (teamId team), "/position"]
+putPosition _ _ _ _ _ = return ()
 
 
 --------------------------------------------------------------------------------
@@ -175,8 +156,8 @@ newBoxxies logger eventBase configs ini = do
     subscribe eventBase "boxxies counter handler" $
         \(team, _ :: CounterState, event) ->
             withBoxxies logger bs $ \b -> case event of
-                LapEvent time speed                 ->
-                    putLaps b team time 1 (Just speed) Nothing
+                LapEvent time _speed                ->
+                    putLap b (Lap 0 0 time Nothing 1) team
                 ProgressionEvent time station speed ->
                     putPosition b team time station speed
 
@@ -214,3 +195,17 @@ boxxiesToList :: Boxxies -> IO [(BoxxyConfig, BoxxyState)]
 boxxiesToList boxxies = forM (boxxiesState boxxies) $ \(c, rs) -> do
     s <- readIORef rs
     return (c, s)
+
+
+--------------------------------------------------------------------------------
+teamJson :: Team -> A.Value
+teamJson t = A.object
+    ["id" .= show (teamId t), "name" .= teamName t, "laps" .= teamLaps t]
+
+
+--------------------------------------------------------------------------------
+lapJson :: Lap -> Team -> A.Value
+lapJson lap team = A.object
+    [ "team" .= teamJson team, "timestamp" .= lapTimestamp lap
+    , "reason" .= lapReason lap, "count" .= lapCount lap
+    ]

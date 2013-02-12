@@ -3,9 +3,12 @@ var express = require('express');
 var config = require('./config'),
     state  = require('./state');
 
-/* Initialize express */
+/* Initialize express, and boxxy state */
 var app = express();
 app.set('state', state.initialize());
+
+/* The default body parser will parse JSON, which is what we need. */
+app.use(express.bodyParser());
 
 /* Basic authentication, should be used for all PUT requests from
  * count-von-count */
@@ -18,7 +21,15 @@ app.get('/state', function(req, res) {
 });
 
 app.put('/state', basicAuth, function(req, res) {
-    app.set(req.body);
+    console.log('PUT /state');
+    state.reset(app.get('state'), req.body);
+    res.send('OK');
+});
+
+app.put('/lap', basicAuth, function(req, res) {
+    console.log('PUT /lap (' + req.body.team.name + ')');
+    state.addLap(app.get('state'), req.body);
+    res.send('OK');
 });
 
 app.listen(config.BOXXY_PORT);
