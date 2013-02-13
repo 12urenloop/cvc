@@ -11,7 +11,12 @@
             var boxxy = boxxy.initialize();
 
             boxxy.onUpdate = function() {
-                 $('#log').text(JSON.stringify(boxxy));
+                 $('#scores').text('');
+                 var byScore = boxxy.teamsByScore();
+                 for(var i in byScore) {
+                     var team = byScore[i];
+                     $('#scores').append(team.name + ': ' + team.laps + '\n');
+                 }
             }
 
             boxxy.onPutState = function(newState) {
@@ -27,6 +32,6 @@
     </head>
     <body>
         <h1>My Sample Boxxy Client</h1>
-        <pre id="log"></pre>
+        <pre id="scores"></pre>
     </body>
 </html>

@@ -32,6 +32,15 @@ var boxxy = function() {
         this.onAddLap(lap);
     }
 
+    Boxxy.prototype.teamsByScore = function() {
+        var byScore = [];
+        for(var i in this.teams) byScore.push(this.teams[i]);
+        byScore.sort(function (a, b) {
+            return b.laps - a.laps;
+        });
+        return byScore;
+    }
+
     /* Only used on the client side: this requires sockets.io to be in scope */
     Boxxy.prototype.listen = function(uri) {
         var boxxy  = this;
