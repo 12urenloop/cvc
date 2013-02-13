@@ -3,7 +3,7 @@ var express  = require('express'),
     socketIO = require('socket.io');
 
 var config = require('./config'),
-    state  = require('./state');
+    boxxy  = require('./boxxy');
 
 /* Initialize express and sockets.io */
 var app    = express();
@@ -11,7 +11,7 @@ var server = http.createServer(app);
 var io     = socketIO.listen(server);
 
 /* Initialize boxxy state for broadcasting */
-var boxxyState = state.initialize();
+var boxxyState = boxxy.initialize();
 boxxyState.onPutState = function(state) {
     io.sockets.emit('state', state);
 }
@@ -35,13 +35,13 @@ app.get('/state', function(req, res) {
 
 app.put('/state', basicAuth, function(req, res) {
     console.log('PUT /state');
-    state.putState(boxxyState, req.body);
+    boxxy.putState(boxxyState, req.body);
     res.send('OK');
 });
 
 app.put('/lap', basicAuth, function(req, res) {
     console.log('PUT /lap (' + req.body.team.name + ')');
-    state.addLap(boxxyState, req.body);
+    boxxy.addLap(boxxyState, req.body);
     res.send('OK');
 });
 
@@ -50,4 +50,4 @@ io.sockets.on('connection', function(socket) {
     socket.emit('state', boxxyState);
 });
 
-app.listen(config.BOXXY_PORT);
+server.listen(config.BOXXY_PORT);

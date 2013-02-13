@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>My Sample Boxxy Client</title>
+        <script type="text/JavaScript" src="js/boxxy-client.js"></script>
+        <script type="text/JavaScript" src="js/jquery-1.7.1.min.js"></script>
+        <script type="text/JavaScript"
+            src="http://localhost:8080/socket.io/socket.io.js"></script>
+
+        <script type="text/JavaScript">
+            var state = client.connect('http://localhost:8080');
+
+            state.onUpdate = function(state) {
+                 $('#log').text(JSON.stringify(state));
+            }
+        </script>
+    </head>
+    <body>
+        <h1>My Sample Boxxy Client</h1>
+        <pre id="log"></pre>
+    </body>
+</html>
