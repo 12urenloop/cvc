@@ -2,17 +2,27 @@
 <html>
     <head>
         <title>My Sample Boxxy Client</title>
-        <script type="text/JavaScript" src="js/boxxy-client.js"></script>
+        <script type="text/JavaScript" src="js/boxxy.js"></script>
         <script type="text/JavaScript" src="js/jquery-1.7.1.min.js"></script>
         <script type="text/JavaScript"
             src="http://localhost:8080/socket.io/socket.io.js"></script>
 
         <script type="text/JavaScript">
-            var state = client.connect('http://localhost:8080');
+            var boxxy = boxxy.initialize();
 
-            state.onUpdate = function(state) {
-                 $('#log').text(JSON.stringify(state));
+            boxxy.onUpdate = function() {
+                 $('#log').text(JSON.stringify(boxxy));
             }
+
+            boxxy.onPutState = function(newState) {
+                /* Called when everything is reset */
+            }
+
+            boxxy.onAddLap = function(lap) {
+                /* Called when a lap is added */
+            }
+
+            boxxy.listen('http://localhost:8080');
         </script>
     </head>
     <body>

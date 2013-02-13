@@ -16,7 +16,7 @@ boxxyState.onPutState = function(state) {
     io.sockets.emit('state', state);
 }
 
-boxxyState.onAddLap = function(state, lap) {
+boxxyState.onAddLap = function(lap) {
     io.sockets.emit('lap', lap);
 }
 
@@ -35,13 +35,13 @@ app.get('/state', function(req, res) {
 
 app.put('/state', basicAuth, function(req, res) {
     console.log('PUT /state');
-    boxxy.putState(boxxyState, req.body);
+    boxxyState.putState(req.body);
     res.send('OK');
 });
 
 app.put('/lap', basicAuth, function(req, res) {
     console.log('PUT /lap (' + req.body.team.name + ')');
-    boxxy.addLap(boxxyState, req.body);
+    boxxyState.addLap(req.body);
     res.send('OK');
 });
 

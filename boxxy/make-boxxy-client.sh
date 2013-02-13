@@ -17,9 +17,8 @@ function wrap() {
     echo '}();'
 }
 
-OUTPUT='public/js/boxxy-client.js'
+OUTPUT='public/js/boxxy.js'
 echo "Writing $OUTPUT..."
 
 header > "$OUTPUT"
 wrap 'boxxy' 'src/boxxy.js' >> "$OUTPUT"
-wrap 'client' 'src/client.js' >> "$OUTPUT"

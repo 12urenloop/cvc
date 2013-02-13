@@ -1,30 +1,46 @@
+function Boxxy() {
+    this.teams = {};
+    this.laps = [];
+    this.maxLaps = 10;
+
+    /* To be user will override this */
+    this.onUpdate = function() {};
+    this.onPutState = function(state) {};
+    this.onAddLap = function(lap) {};
+}
+
+Boxxy.prototype.putState = function(state) {
+    this.teams = state.teams;
+    this.laps = state.laps;
+
+    this.onUpdate();
+    this.onPutState(state);
+}
+
+Boxxy.prototype.addLap = function(lap) {
+    this.laps = [lap].concat(this.laps);
+    if(this.laps.length > this.maxlaps) this.laps.shift();
+
+    this.teams[lap.team.id] = lap.team;
+
+    this.onUpdate();
+    this.onAddLap(lap);
+}
+
+/* Only used on the client side: this requires sockets.io to be in scope */
+Boxxy.prototype.listen = function(uri) {
+    var boxxy  = this;
+    var socket = io.connect(uri);
+
+    socket.on('state', function(state) {
+        boxxy.putState(state);
+    });
+
+    socket.on('lap', function(lap) {
+        boxxy.addLap(lap);
+    });
+}
+
 exports.initialize = function() {
-    state = {};
-    state.teams = {};
-    state.laps = [];
-    state.maxLaps = 10;
-
-    state.onUpdate = function(state) {};
-    state.onPutState = function(state) {};
-    state.onAddLap = function(state, lap) {};
-
-    return state;
-}
-
-exports.putState = function(state, newState) {
-    state.teams = newState.teams;
-    state.laps = newState.laps;
-
-    state.onUpdate(state);
-    state.onPutState(state);
-}
-
-exports.addLap = function(state, lap) {
-    state.laps = [lap].concat(state.laps);
-    if(state.laps.length > state.maxlaps) state.laps.shift();
-
-    state.teams[lap.team.id] = lap.team;
-
-    state.onUpdate(state);
-    state.onAddLap(state, lap);
+    return new Boxxy();
 }
