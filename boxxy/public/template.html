@@ -11,12 +11,12 @@
             var boxxy = boxxy.initialize();
 
             boxxy.onUpdate = function() {
-                 $('#scores').text('');
-                 var byScore = boxxy.teamsByScore();
-                 for(var i in byScore) {
-                     var team = byScore[i];
-                     $('#scores').append(team.name + ': ' + team.laps + '\n');
-                 }
+                $('#scores').text('Scores:\n\n');
+                var byScore = boxxy.teamsByScore();
+                for(var i in byScore) {
+                    var team = byScore[i];
+                    $('#scores').append(team.name + ': ' + team.laps + '\n');
+                }
             }
 
             boxxy.onPutState = function(newState) {

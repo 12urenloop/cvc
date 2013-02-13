@@ -36,16 +36,16 @@ Boxxy.prototype.teamsByScore = function() {
     return byScore;
 }
 
-/* Only used on the client side: this requires sockets.io to be in scope */
+// Only used on the client side: this requires sockets.io to be in scope
 Boxxy.prototype.listen = function(uri) {
     var boxxy  = this;
     var socket = io.connect(uri);
 
-    socket.on('state', function(state) {
+    socket.on('/state', function(state) {
         boxxy.putState(state);
     });
 
-    socket.on('lap', function(lap) {
+    socket.on('/lap', function(lap) {
         boxxy.addLap(lap);
     });
 }
