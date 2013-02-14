@@ -1,13 +1,19 @@
 <script type="text/JavaScript">
     var boxxy = boxxy.initialize();
 
+    function teamLi(team) {
+        return '<li>' +
+            '<span class="name">' + team.name + '</span>' +
+            '<span class="laps">' + team.laps + '</span>' +
+            '</li>'
+    }
+
     boxxy.onUpdate = function() {
-        $('#scores').text('Scores:\n\n');
         var byScore = boxxy.teamsByScore();
-        for(var i in byScore) {
-            var team = byScore[i];
-            $('#scores').append(team.name + ': ' + team.laps + '\n');
-        }
+        $('#scores').empty();
+        var ol = $(document.createElement('ol'));
+        for(var i in byScore) ol.append(teamLi(byScore[i]));
+        $('#scores').append(ol);
     }
 
     boxxy.onPutState = function(newState) {
@@ -20,4 +26,4 @@
 
     boxxy.listen('http://localhost:8080');
 </script>
-<pre id="scores"></pre>
+<div id="scores"><p>De scores worden geladen...</p></div>
