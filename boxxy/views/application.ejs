@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title><%= title %></title>
+
+        <% for(i in scripts) { %>
+            <script type="text/JavaScript" src="<%= scripts[i] %>"></script>
+        <% } %>
+    </head>
+    <body>
+        <h1><%= title %></h1>
+        <%- content %>
+    </body>
+</html>

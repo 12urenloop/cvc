@@ -83,4 +83,20 @@ app.get('/js/boxxy.js', function(req, res) {
     });
 });
 
+// General HTML views
+// ==================
+
+app.get('/dj-contest', function(req, res) {
+    fs.readFile('content/dj-contest.html', function(err, data) {
+        res.render('application.ejs', {
+            "title": "DJ Contest",
+            "scripts": [
+                "/js/jquery-1.7.1.min.js",
+                "/socket.io/socket.io.js"
+            ],
+            "content": data
+        });
+    });
+});
+
 server.listen(config.BOXXY_PORT);
