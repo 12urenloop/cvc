@@ -86,17 +86,32 @@ app.get('/js/boxxy.js', function(req, res) {
 // General HTML views
 // ==================
 
-app.get('/dj-contest', function(req, res) {
-    fs.readFile('content/dj-contest.html', function(err, data) {
-        res.render('application.ejs', {
-            "title": "DJ Contest",
-            "scripts": [
-                "/js/jquery-1.7.1.min.js",
-                "/socket.io/socket.io.js"
-            ],
-            "content": data
+// Dry
+function page(route, content, locals) {
+    app.get(route, function(req, res) {
+        fs.readFile(content, function(err, data) {
+            locals.scripts = locals.scripts || [];  // Default
+            locals.content = data;                  // Loaded from file
+            res.render('application.ejs', locals);
         });
     });
+}
+
+page('/dj-contest', 'content/dj-contest.html', {
+    "title": "DJ Contest"
+});
+
+page('/special-laps', 'content/special-laps.html', {
+    "title": "Speciale rondes"
+});
+
+page('/scores', 'content/scores.html', {
+    "title": "Scores",
+    "scripts": [
+        "/js/boxxy.js",
+        "/js/jquery-1.7.1.min.js",
+        "/socket.io/socket.io.js"
+    ]
 });
 
 server.listen(config.BOXXY_PORT);
