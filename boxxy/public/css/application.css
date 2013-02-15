@@ -1,12 +1,25 @@
 html {
     font-family: sans-serif;
     font-size: 16px;
+
+    /* Nice full-screen background for big desktops. CSS3 so might not work
+     * everywhere, but whatever. */
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	-webkit-background-size: cover;
+	background-size: cover;
+	background: url(/img/background.jpg) no-repeat center center fixed;
 }
 
 body {
-    margin: 0px auto 0px auto;
-    max-width: 300px;
-    padding: 6px;
+    margin: 0px;
+}
+
+div#main {
+    background-color: rgba(255, 255, 255, 0.7);
+    margin: 0px auto 36px auto;
+    max-width: 360px;
+    padding: 12px;
 }
 
 h1 {

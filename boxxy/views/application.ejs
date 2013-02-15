@@ -13,16 +13,18 @@
         <link rel="stylesheet" type="text/css" href="/css/application.css">
     </head>
     <body>
-        <p>Big fancy logo here</p>
-        <div id="navigation">
-            <a href="/scores">Scores</a>
-            <a href="/dj-contest">DJ Contest</a>
-            <a href="/special-laps">Speciale rondes</a>
+        <div id="main">
+            <p>Big fancy logo here</p>
+            <div id="navigation">
+                <a href="/scores">Scores</a>
+                <a href="/dj-contest">DJ Contest</a>
+                <a href="/special-laps">Speciale rondes</a>
+            </div>
+            <hr>
+            <h1><%= title %></h1>
+            <%- content %>
+            <hr>
+            <p>Created by <a href="http://zeus.ugent.be">Zeus WPI</a></p>
         </div>
-        <hr>
-        <h1><%= title %></h1>
-        <%- content %>
-        <hr>
-        <p>Created by <a href="http://zeus.ugent.be">Zeus WPI</a></p>
     </body>
 </html>
