@@ -17,7 +17,7 @@ import           Data.Maybe                (catMaybes, listToMaybe)
 import qualified Data.Text                 as T
 import qualified Network                   as Network
 import qualified System.Console.ANSI       as Ansi
-import           System.IO                 (Handle, hPutStrLn)
+import           System.IO                 (Handle, hFlush, hPutStrLn)
 import           System.Random             (randomRIO)
 
 
@@ -153,6 +153,7 @@ sensor = do
         forM_ sensed $ \(sMac, bMac) -> hPutStrLn socket $ intercalate ","
             [T.unpack sMac, "_", T.unpack bMac, "0"]
 
+        hFlush socket
         return $ Just socket
 
     modify $ \s -> s {simulationSocket = socket}
