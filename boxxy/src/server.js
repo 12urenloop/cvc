@@ -86,6 +86,10 @@ app.get('/js/boxxy.js', function(req, res) {
 // General HTML views
 // ==================
 
+app.get('/', function(req, res) {
+    res.redirect('/scores');
+});
+
 // Dry
 function page(route, content, locals) {
     app.get(route, function(req, res) {

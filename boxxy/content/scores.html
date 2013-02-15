@@ -2,7 +2,7 @@
     var boxxy = boxxy.initialize();
 
     function teamLi(team) {
-        return '<li>' +
+        return '<li data-team="' + team.id + '">' +
             '<span class="name">' + team.name + '</span>' +
             '<span class="laps">' + team.laps + '</span>' +
             '</li>'
@@ -17,11 +17,14 @@
     }
 
     boxxy.onPutState = function(newState) {
-        /* Called when everything is reset */
+        /* Called when everything is (re)set */
     }
 
     boxxy.onAddLap = function(lap) {
-        /* Called when a lap is added */
+        var li = $('[data-team="' + lap.team.id + '"]');
+        var up = $(document.createElement('strong')).text(' +1!');
+        li.append(up);
+        up.fadeOut(5000);
     }
 
     boxxy.listen('http://localhost:8080');
