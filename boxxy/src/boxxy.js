@@ -19,7 +19,7 @@ Boxxy.prototype.putState = function(state) {
 
 Boxxy.prototype.addLap = function(lap) {
     this.laps = [lap].concat(this.laps);
-    if(this.laps.length > this.maxlaps) this.laps.shift();
+    if(this.laps.length > this.maxLaps) this.laps.shift();
 
     this.teams[lap.team.id] = lap.team;
 
