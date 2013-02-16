@@ -17,9 +17,6 @@ Boxxy.prototype.putState = function(state) {
     if(!this.frozen && state.teams) this.teams = state.teams;
     if(!this.frozen && state.laps) this.laps = state.laps;
 
-    console.log(state);
-    console.log(this.notification);
-
     this.onUpdate();
     this.onPutState(state);
 }
