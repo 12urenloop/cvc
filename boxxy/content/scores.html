@@ -26,7 +26,7 @@
 
     boxxy.onAddLap = function(lap) {
         var li = $('[data-team="' + lap.team.id + '"]');
-        var up = $(document.createElement('strong')).text(' +1!');
+        var up = $('<strong>' + ' +' + lap.count + '!' + '</strong>');
         li.append(up);
         up.fadeOut(5000);
     }
