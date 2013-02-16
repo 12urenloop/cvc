@@ -42,17 +42,19 @@ module CountVonCount.Persistence
 
 
 --------------------------------------------------------------------------------
-import           Control.Applicative    ((<$>), (<*>))
-import           Data.Int               (Int64)
-import           Data.Maybe             (listToMaybe)
-import           Data.Ord               (comparing)
-import           Data.Text              (Text)
-import qualified Data.Text              as T
-import           Data.Time              (UTCTime)
-import           Data.Typeable          (Typeable)
-import           Database.SQLite.Simple (FromRow (..))
-import qualified Database.SQLite.Simple as Sqlite
-import           Text.Printf            (printf)
+import           Control.Applicative     ((<$>), (<*>))
+import           Control.Concurrent.MVar (MVar, newMVar, putMVar, takeMVar)
+import           Control.Exception       (finally)
+import           Data.Int                (Int64)
+import           Data.Maybe              (listToMaybe)
+import           Data.Ord                (comparing)
+import           Data.Text               (Text)
+import qualified Data.Text               as T
+import           Data.Time               (UTCTime)
+import           Data.Typeable           (Typeable)
+import           Database.SQLite.Simple  (FromRow (..))
+import qualified Database.SQLite.Simple  as Sqlite
+import           Text.Printf             (printf)
 
 
 --------------------------------------------------------------------------------
@@ -60,8 +62,9 @@ import           CountVonCount.Types
 
 
 --------------------------------------------------------------------------------
-newtype Database = Database
-    { unDatabase :: Sqlite.Connection
+data Database = Database
+    { databaseConnection :: Sqlite.Connection
+    , databaseLock       :: MVar ()
     }
 
 
@@ -71,12 +74,19 @@ newDatabase fp = do
     c <- Sqlite.open fp
     mapM_ (Sqlite.execute_ c) $ concat
         [teamsTable, lapsTable, stationsTable, batonsTable]
-    return $ Database c
+    Database c <$> newMVar ()
 
 
 --------------------------------------------------------------------------------
 closeDatabase :: Database -> IO ()
-closeDatabase (Database c) = Sqlite.close c
+closeDatabase (Database c _) = Sqlite.close c
+
+
+--------------------------------------------------------------------------------
+withConnection :: Database -> (Sqlite.Connection -> IO a) -> IO a
+withConnection db f = do
+    () <- takeMVar $ databaseLock db
+    finally (f $ databaseConnection db) $ putMVar (databaseLock db) ()
 
 
 --------------------------------------------------------------------------------
@@ -143,7 +153,7 @@ teamsTable =
 
 --------------------------------------------------------------------------------
 addTeam :: Database -> Text -> IO (Ref Team)
-addTeam (Database c) name = do
+addTeam db name = withConnection db $ \c -> do
     Sqlite.execute c "INSERT INTO teams (name, laps, baton_id) VALUES (?, ?, ?)"
         (name, 0 :: Int, Nothing :: Maybe Int)
     Sqlite.lastInsertRowId c
@@ -151,7 +161,7 @@ addTeam (Database c) name = do
 
 --------------------------------------------------------------------------------
 getTeam :: Database -> Ref Team -> IO Team
-getTeam (Database c) ref = do
+getTeam db ref = withConnection db $ \c -> do
     teams <- Sqlite.query c "SELECT * FROM teams WHERE id = ?" (Sqlite.Only ref)
     case teams of
         (x : _) -> return x
@@ -160,7 +170,7 @@ getTeam (Database c) ref = do
 
 --------------------------------------------------------------------------------
 getTeamByMac :: Database -> Mac -> IO (Maybe Team)
-getTeamByMac (Database c) mac = listToMaybe <$> Sqlite.query c
+getTeamByMac db mac = withConnection db $ \c -> listToMaybe <$> Sqlite.query c
     "SELECT teams.* FROM teams, batons \
     \WHERE teams.baton_id = batons.id AND mac = ?"
     (Sqlite.Only mac)
@@ -168,12 +178,12 @@ getTeamByMac (Database c) mac = listToMaybe <$> Sqlite.query c
 
 --------------------------------------------------------------------------------
 getAllTeams :: Database -> IO [Team]
-getAllTeams (Database c) = Sqlite.query_ c "SELECT * FROM teams"
+getAllTeams db = withConnection db $ \c -> Sqlite.query_ c "SELECT * FROM teams"
 
 
 --------------------------------------------------------------------------------
 setTeamBaton :: Database -> Ref Team -> Maybe (Ref Baton) -> IO ()
-setTeamBaton (Database c) ref baton = Sqlite.execute c
+setTeamBaton db ref baton = withConnection db $ \c -> Sqlite.execute c
     "UPDATE teams SET baton_id = ? WHERE id = ?" (baton, ref)
 
 
@@ -215,23 +225,24 @@ addLap db ref timestamp = addLaps db ref timestamp Nothing 1
 --------------------------------------------------------------------------------
 addLaps :: Database -> Ref Team -> UTCTime -> Maybe Text -> Int -> IO Team
 addLaps db !ref !timestamp !reason !count = do
-    Sqlite.execute (unDatabase db)
-        "INSERT INTO laps (team_id, timestamp, reason, count) \
-        \VALUES (?, ?, ?, ?)"
-        (ref, timestamp, reason, count)
-    Sqlite.execute (unDatabase db)
-        "UPDATE teams SET laps = laps + ? WHERE id = ?"
-        (count, ref)
+    withConnection db $ \c -> do
+        Sqlite.execute c
+            "INSERT INTO laps (team_id, timestamp, reason, count) \
+            \VALUES (?, ?, ?, ?)"
+            (ref, timestamp, reason, count)
+        Sqlite.execute c
+            "UPDATE teams SET laps = laps + ? WHERE id = ?"
+            (count, ref)
     getTeam db ref
 
 
 --------------------------------------------------------------------------------
 getLatestLaps :: Database -> Maybe (Ref Team) -> Int -> IO [Lap]
-getLatestLaps (Database c) Nothing     n = Sqlite.query c
-        "SELECT * FROM laps ORDER BY id DESC LIMIT ?" (Sqlite.Only n)
-getLatestLaps (Database c) !(Just ref) n = Sqlite.query c
-        "SELECT * FROM laps WHERE team_id = ? ORDER BY id DESC LIMIT ?"
-        (ref, n)
+getLatestLaps db Nothing     n = withConnection db $ \c -> Sqlite.query c
+    "SELECT * FROM laps ORDER BY id DESC LIMIT ?" (Sqlite.Only n)
+getLatestLaps db !(Just ref) n = withConnection db $ \c -> Sqlite.query c
+    "SELECT * FROM laps WHERE team_id = ? ORDER BY id DESC LIMIT ?"
+    (ref, n)
 
 
 --------------------------------------------------------------------------------
@@ -279,19 +290,20 @@ stationsTable =
 
 --------------------------------------------------------------------------------
 addStation :: Database -> Text -> Mac -> Double -> IO ()
-addStation (Database c) name mac position = Sqlite.execute c
+addStation db name mac position = withConnection db $ \c -> Sqlite.execute c
     "INSERT INTO stations (name, mac, position) VALUES (?, ?, ?)"
     (name, mac, position)
 
 
 --------------------------------------------------------------------------------
 getAllStations :: Database -> IO [Station]
-getAllStations (Database c) = Sqlite.query_ c "SELECT * FROM stations"
+getAllStations db = withConnection db $ \c ->
+    Sqlite.query_ c "SELECT * FROM stations"
 
 
 --------------------------------------------------------------------------------
 getStationByMac :: Database -> Mac -> IO (Maybe Station)
-getStationByMac (Database c) mac = listToMaybe <$>
+getStationByMac db mac = withConnection db $ \c -> listToMaybe <$>
     Sqlite.query c "SELECT * FROM stations WHERE mac = ?" (Sqlite.Only mac)
 
 
@@ -332,14 +344,14 @@ batonsTable =
 
 --------------------------------------------------------------------------------
 addBaton :: Database -> Mac -> Int -> IO (Ref Baton)
-addBaton (Database c) mac nr = do
+addBaton db mac nr = withConnection db $ \c -> do
     Sqlite.execute c "INSERT INTO batons (mac, number) VALUES (?, ?)" (mac, nr)
     Sqlite.lastInsertRowId c
 
 
 --------------------------------------------------------------------------------
 getBaton :: Database -> Ref Baton -> IO Baton
-getBaton (Database c) id' = do
+getBaton db id' = withConnection db $ \c -> do
     bs <- Sqlite.query c "SELECT * FROM batons WHERE id = ?" (Sqlite.Only id')
     case bs of
         (x : _) -> return x
@@ -348,12 +360,13 @@ getBaton (Database c) id' = do
 
 --------------------------------------------------------------------------------
 getAllBatons :: Database -> IO [Baton]
-getAllBatons (Database c) = Sqlite.query_ c "SELECT * FROM batons"
+getAllBatons db = withConnection db $ \c ->
+    Sqlite.query_ c "SELECT * FROM batons"
 
 
 --------------------------------------------------------------------------------
 getBatonByMac :: Database -> Mac -> IO (Maybe Baton)
-getBatonByMac (Database c) mac = listToMaybe <$> Sqlite.query c
+getBatonByMac db mac = withConnection db $ \c -> listToMaybe <$> Sqlite.query c
     "SELECT * FROM batons WHERE mac = ?" (Sqlite.Only mac)
 
 
@@ -365,7 +378,7 @@ batonName = ("Baton " ++) . show . batonNr
 --------------------------------------------------------------------------------
 -- | You probably don't want to use this
 deleteAll :: Database -> IO ()
-deleteAll (Database c) = do
+deleteAll db = withConnection db $ \c -> do
     Sqlite.execute_ c "DELETE FROM laps"
     Sqlite.execute_ c "DELETE FROM teams"
     Sqlite.execute_ c "DELETE FROM stations"
