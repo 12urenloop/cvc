@@ -1,4 +1,6 @@
 function Boxxy() {
+    this.frozen = false;
+    this.notification = null;
     this.teams = {};
     this.laps = [];
     this.maxLaps = 10;
@@ -10,21 +12,28 @@ function Boxxy() {
 }
 
 Boxxy.prototype.putState = function(state) {
-    this.teams = state.teams;
-    this.laps = state.laps;
+    if(state.frozen != null) this.frozen = state.frozen;
+    if(state.notification != null) this.notification = state.notification;
+    if(!this.frozen && state.teams) this.teams = state.teams;
+    if(!this.frozen && state.laps) this.laps = state.laps;
+
+    console.log(state);
+    console.log(this.notification);
 
     this.onUpdate();
     this.onPutState(state);
 }
 
 Boxxy.prototype.addLap = function(lap) {
-    this.laps = [lap].concat(this.laps);
-    if(this.laps.length > this.maxLaps) this.laps.shift();
+    if(!this.frozen) {
+        this.laps = [lap].concat(this.laps);
+        if(this.laps.length > this.maxLaps) this.laps.shift();
 
-    this.teams[lap.team.id] = lap.team;
+        this.teams[lap.team.id] = lap.team;
 
-    this.onUpdate();
-    this.onAddLap(lap);
+        this.onUpdate();
+        this.onAddLap(lap);
+    }
 }
 
 Boxxy.prototype.teamsByScore = function() {

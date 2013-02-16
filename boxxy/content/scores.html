@@ -14,6 +14,10 @@
         var ol = $(document.createElement('ol'));
         for(var i in byScore) ol.append(teamLi(byScore[i]));
         $('#scores').append(ol);
+
+        if(boxxy.notification) {
+            $('#notification').html('<p>' + boxxy.notification + '</p>');
+        }
     }
 
     boxxy.onPutState = function(newState) {
@@ -29,4 +33,5 @@
 
     boxxy.listen('http://localhost:8080');
 </script>
+<div id="notification"></div>
 <div id="scores"><p>De scores worden geladen...</p></div>
