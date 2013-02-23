@@ -16,19 +16,19 @@ div#main {
 }
 
 img#logo {
+    border-right: 1px solid #aaa;
     float: left;
     margin: 12px;
+    padding-right: 12px;
 }
 
 div#navigation {
-    border-left: 1px solid #888;
     float: left;
     margin: 12px;
-    padding-left: 12px;
 }
 
 div#navigation a {
-    color: #333;
+    color: #555;
     display: block;
     font-size: 20px;
     margin: 3px 0px 3px 0px;
@@ -36,8 +36,8 @@ div#navigation a {
 }
 
 div#content {
-    border-bottom: 1px solid #888;
-    border-top: 1px solid #888;
+    border-bottom: 1px solid #aaa;
+    border-top: 1px solid #aaa;
     clear: both;
     padding: 12px 0px 12px 0px;
 }
