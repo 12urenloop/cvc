@@ -90,12 +90,14 @@ app.get('/', function(req, res) {
     res.redirect('/scores');
 });
 
-// Dry
+// DRY
 function page(route, content, locals) {
     app.get(route, function(req, res) {
         fs.readFile(content, function(err, data) {
-            locals.scripts = locals.scripts || [];  // Default
-            locals.content = data;                  // Loaded from file
+            locals.scripts = locals.scripts || [];
+            locals.content = data;
+            locals.host    =
+                'http://' + config.BOXXY_HOSTNAME + ':' + config.BOXXY_PORT;
             res.render('application.ejs', locals);
         });
     });
