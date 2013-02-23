@@ -1,14 +1,8 @@
 html {
+    background-color: white;
+    color: #333;
     font-family: sans-serif;
     font-size: 16px;
-
-    /* Nice full-screen background for big desktops. CSS3 so might not work
-     * everywhere, but whatever. */
-	-moz-background-size: cover;
-	-o-background-size: cover;
-	-webkit-background-size: cover;
-	background-size: cover;
-	background: url(/img/background.jpg) no-repeat center center fixed;
 }
 
 body {
@@ -16,14 +10,66 @@ body {
 }
 
 div#main {
-    background-color: rgba(255, 255, 255, 0.7);
     margin: 0px auto 36px auto;
-    max-width: 360px;
+    max-width: 460px;
     padding: 12px;
 }
 
+img#logo {
+    float: left;
+    margin: 12px;
+}
+
+div#navigation {
+    border-left: 1px solid #888;
+    float: left;
+    margin: 12px;
+    padding-left: 12px;
+}
+
+div#navigation a {
+    color: #333;
+    display: block;
+    font-size: 20px;
+    margin: 3px 0px 3px 0px;
+    text-decoration: none;
+}
+
+div#content {
+    border-bottom: 1px solid #888;
+    border-top: 1px solid #888;
+    clear: both;
+    padding: 12px 0px 12px 0px;
+}
+
+div#footer {
+    font-size: 14px;
+}
+
+h1, h2, h3 {
+    color: #555;
+    font-weight: normal;
+    margin: 12px 0px 12px 0px;
+    padding: 0px 0px 0px 12px;
+}
+
 h1 {
-    text-align: center;
+    font-size: 24px;
+    border-left: 4px solid #f87;
+}
+
+h2 {
+    font-size: 20px;
+    border-left: 4px solid #bd9;
+}
+
+h3 {
+    font-size: 18px;
+    border-left: 4px solid #5ad;
+}
+
+a {
+    color: #555;
 }
 
 #scores ol {
