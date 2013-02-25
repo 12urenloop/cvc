@@ -25,6 +25,7 @@ Executable count-von-count
     CountVonCount.Management
     CountVonCount.Persistence
     CountVonCount.Sensor
+    CountVonCount.Sensor.Replay
     CountVonCount.Types
     CountVonCount.Util
     CountVonCount.Web

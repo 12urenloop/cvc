@@ -5,7 +5,6 @@
 {-# LANGUAGE OverloadedStrings  #-}
 module CountVonCount.Sensor
     ( RawSensorEvent (..)
-    , toReplay
     , listen
     ) where
 
@@ -24,10 +23,7 @@ import           Data.Enumerator            (Iteratee, ($$), (=$))
 import qualified Data.Enumerator            as E
 import qualified Data.Enumerator.List       as EL
 import           Data.Foldable              (forM_)
-import           Data.List                  (intercalate)
-import qualified Data.Text                  as T
-import           Data.Time                  (UTCTime, formatTime,
-                                             getCurrentTime, parseTime)
+import           Data.Time                  (UTCTime, getCurrentTime, parseTime)
 import           Data.Typeable              (Typeable)
 import           Network                    (PortID (..))
 import qualified Network                    as N
@@ -51,18 +47,6 @@ data RawSensorEvent = RawSensorEvent
     , rawSensorBaton   :: Mac
     , rawSensorRssi    :: Double
     } deriving (Show, Typeable)
-
-
---------------------------------------------------------------------------------
--- | Format a 'SensorEvent' in order to be readable by the replay log
-toReplay :: RawSensorEvent -> String
-toReplay (RawSensorEvent time station baton rssi) = intercalate ","
-    [ "REPLAY"
-    , formatTime defaultTimeLocale "%s" time
-    , T.unpack station
-    , T.unpack baton
-    , show rssi
-    ]
 
 
 --------------------------------------------------------------------------------

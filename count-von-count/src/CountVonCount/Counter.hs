@@ -10,7 +10,7 @@
 module CountVonCount.Counter
     ( Counter
     , newCounter
-    , subscribeCounter
+    , subscribe
 
     , resetCounterFor
     , counterStateFor
@@ -33,11 +33,12 @@ import           Data.Time                   (addUTCTime, getCurrentTime)
 --------------------------------------------------------------------------------
 import           CountVonCount.Counter.Core
 import           CountVonCount.Counter.Map
-import           CountVonCount.EventBase
+import           CountVonCount.EventBase     (EventBase)
+import qualified CountVonCount.EventBase     as EventBase
 import           CountVonCount.Log           (Log)
 import qualified CountVonCount.Log           as Log
 import qualified CountVonCount.Persistence   as P
-import           CountVonCount.Sensor.Filter
+import           CountVonCount.Sensor.Filter (SensorEvent (..))
 import           CountVonCount.Util
 
 
@@ -51,16 +52,17 @@ newCounter = Counter <$> newMVar emptyCounterMap
 
 
 --------------------------------------------------------------------------------
-subscribeCounter :: Counter
-                 -> Double
-                 -> Double
-                 -> Log
-                 -> EventBase
-                 -> P.Database
-                 -> IO ()
-subscribeCounter counter cl ms logger eventBase db =
-    subscribe eventBase "CountVonCount.Counter.subscribeCounter" $ \event ->
-        modifyMVar_ (unCounter counter) $ step cl ms logger eventBase db event
+subscribe :: Counter
+          -> Double
+          -> Double
+          -> Log
+          -> EventBase
+          -> P.Database
+          -> IO ()
+subscribe counter cl ms logger eventBase db =
+    EventBase.subscribe eventBase "CountVonCount.Counter.subscribe" $
+        \event -> modifyMVar_ (unCounter counter) $
+            step cl ms logger eventBase db event
 
 
 --------------------------------------------------------------------------------
@@ -92,7 +94,7 @@ step cl ms logger eventBase db event cmap = do
                     _               -> return team
 
                 -- Call handlers, log
-                publish eventBase (team', cstate, event')
+                EventBase.publish eventBase (team', cstate, event')
                 Log.string logger "CountVonCount.Counter.step" $ case event' of
                     ProgressionEvent _ s _ -> show team' ++ " @ " ++ show s
                     LapEvent _ _           -> "Lap for " ++ show team'
@@ -128,5 +130,5 @@ watchdog :: Counter                  -- ^ Counter handle
          -> IO ()                    -- ^ Blocks forever
 watchdog counter eventBase interval lifespan = forever $ do
     dead <- findDeadBatons lifespan counter
-    publish eventBase dead
+    EventBase.publish eventBase dead
     threadDelay $ interval * 1000 * 1000

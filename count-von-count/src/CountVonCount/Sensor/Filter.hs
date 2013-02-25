@@ -5,17 +5,21 @@
 module CountVonCount.Sensor.Filter
     ( SensorEvent (..)
     , filterSensorEvent
+    , subscribe
     ) where
 
 
 --------------------------------------------------------------------------------
 import           Control.Applicative       ((<$>))
+import           Data.Foldable             (forM_)
 import qualified Data.Text                 as T
 import           Data.Time                 (UTCTime)
 import           Data.Typeable             (Typeable)
 
 
 --------------------------------------------------------------------------------
+import           CountVonCount.EventBase   (EventBase)
+import qualified CountVonCount.EventBase   as EventBase
 import           CountVonCount.Log         (Log)
 import qualified CountVonCount.Log         as Log
 import           CountVonCount.Persistence
@@ -50,3 +54,18 @@ filterSensorEvent database logger rssiThreshold raw
                 return Nothing
             Just station -> return $
                 SensorEvent (rawSensorTime raw) station <$> mbaton
+
+
+--------------------------------------------------------------------------------
+subscribe :: EventBase
+          -> Database
+          -> Log
+          -> Double
+          -> IO ()
+subscribe eventBase database logger rssiThreshold = do
+    EventBase.subscribe eventBase "CountVonCount.Sensor.Filter.subscribe" $
+        \event -> do
+            filtered <- filterSensorEvent' event
+            forM_ filtered $ EventBase.publish eventBase
+  where
+    filterSensorEvent' = filterSensorEvent database logger rssiThreshold
