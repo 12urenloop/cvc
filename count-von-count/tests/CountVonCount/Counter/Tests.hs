@@ -19,7 +19,7 @@ import           Text.Printf                             (printf)
 
 
 --------------------------------------------------------------------------------
-import           CountVonCount.Counter
+import qualified CountVonCount.Counter                   as Counter
 import           CountVonCount.Counter.Fixtures
 import           CountVonCount.Counter.Fixtures.Internal
 import           CountVonCount.EventBase
@@ -40,9 +40,9 @@ counterTest :: Assertion
 counterTest = testLog $ \logger -> do
     -- Initialize stuffs
     db        <- newDatabase "test.db"
-    counter   <- newCounter
+    counter   <- Counter.newCounter
     eventBase <- newEventBase logger
-    subscribeCounter counter circuitLength maxSpeed logger eventBase db
+    Counter.subscribe counter circuitLength maxSpeed logger eventBase db
 
     -- Add teams, calculate expected output
     ts <- forM (zip teamsAndBatons fixtures) $ \((name, baton), f) -> do
