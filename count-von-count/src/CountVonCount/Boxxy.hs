@@ -206,6 +206,7 @@ teamJson t = A.object
 --------------------------------------------------------------------------------
 lapJson :: Lap -> Team -> A.Value
 lapJson lap team = A.object
-    [ "team" .= teamJson team, "timestamp" .= lapTimestamp lap
-    , "reason" .= lapReason lap, "count" .= lapCount lap
+    [ "id" .= show (lapId lap), "team" .= teamJson team
+    , "timestamp" .= lapTimestamp lap, "reason" .= lapReason lap
+    , "count" .= lapCount lap
     ]
