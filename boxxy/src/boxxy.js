@@ -6,9 +6,9 @@ function Boxxy() {
     this.maxLaps = 10;
 
     /* To be user will override this */
-    this.onUpdate = function() {};
     this.onPutState = function(state) {};
     this.onAddLap = function(lap) {};
+    this.onUpdate = function() {};
 }
 
 Boxxy.prototype.putState = function(state) {
@@ -17,8 +17,8 @@ Boxxy.prototype.putState = function(state) {
     if(!this.frozen && state.teams) this.teams = state.teams;
     if(!this.frozen && state.laps) this.laps = state.laps;
 
-    this.onUpdate();
     this.onPutState(state);
+    this.onUpdate();
 }
 
 Boxxy.prototype.addLap = function(lap) {
@@ -28,8 +28,8 @@ Boxxy.prototype.addLap = function(lap) {
 
         this.teams[lap.team.id] = lap.team;
 
-        this.onUpdate();
         this.onAddLap(lap);
+        this.onUpdate();
     }
 }
 
