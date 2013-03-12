@@ -23,6 +23,7 @@ module CountVonCount.Persistence
     , Lap (..)
     , addLap
     , addLaps
+    , getLap
     , getLatestLaps
 
     , Station (..)
@@ -218,22 +219,31 @@ lapsTable = return
 
 
 --------------------------------------------------------------------------------
-addLap :: Database -> Ref Team -> UTCTime -> IO Team
+addLap :: Database -> Ref Team -> UTCTime -> IO (Ref Lap)
 addLap db ref timestamp = addLaps db ref timestamp Nothing 1
 
 
 --------------------------------------------------------------------------------
-addLaps :: Database -> Ref Team -> UTCTime -> Maybe Text -> Int -> IO Team
-addLaps db !ref !timestamp !reason !count = do
-    withConnection db $ \c -> do
-        Sqlite.execute c
-            "INSERT INTO laps (team_id, timestamp, reason, count) \
-            \VALUES (?, ?, ?, ?)"
-            (ref, timestamp, reason, count)
-        Sqlite.execute c
-            "UPDATE teams SET laps = laps + ? WHERE id = ?"
-            (count, ref)
-    getTeam db ref
+addLaps :: Database -> Ref Team -> UTCTime -> Maybe Text -> Int -> IO (Ref Lap)
+addLaps db !ref !timestamp !reason !count = withConnection db $ \c -> do
+    Sqlite.execute c
+        "INSERT INTO laps (team_id, timestamp, reason, count) \
+        \VALUES (?, ?, ?, ?)"
+        (ref, timestamp, reason, count)
+    lapId' <- Sqlite.lastInsertRowId c
+    Sqlite.execute c
+        "UPDATE teams SET laps = laps + ? WHERE id = ?"
+        (count, ref)
+    return lapId'
+
+
+--------------------------------------------------------------------------------
+getLap :: Database -> Ref Lap -> IO Lap
+getLap db ref = withConnection db $ \c -> do
+    laps <- Sqlite.query c "SELECT * FROM laps WHERE id = ?" (Sqlite.Only ref)
+    case laps of
+        (x : _) -> return x
+        []      -> error $ "No lap with ID " ++ refToString ref
 
 
 --------------------------------------------------------------------------------

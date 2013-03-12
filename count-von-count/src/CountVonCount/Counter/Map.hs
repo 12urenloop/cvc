@@ -39,7 +39,7 @@ stepCounterMap :: Double
                -> Double
                -> SensorEvent
                -> CounterMap
-               -> ([CounterEvent], [String], CounterMap)
+               -> ([CounterCoreEvent], [String], CounterMap)
 stepCounterMap circuitLength maxSpeed event !cmap =
     let state                = lookupCounterState baton cmap
         app                  = stepCounterState circuitLength maxSpeed event

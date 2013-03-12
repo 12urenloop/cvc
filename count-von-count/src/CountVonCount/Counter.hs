@@ -6,9 +6,10 @@
 -- 2. Grouping the relevant events by stick mac
 --
 -- 3. Calling the analyzer to process these events
---
+{-# LANGUAGE DeriveDataTypeable #-}
 module CountVonCount.Counter
-    ( Counter
+    ( CounterEvent (..)
+    , Counter
     , newCounter
     , subscribe
 
@@ -28,6 +29,7 @@ import           Control.Concurrent.MVar     (MVar, modifyMVar_, newMVar,
 import           Control.Monad               (forever)
 import           Data.Foldable               (forM_)
 import           Data.Time                   (addUTCTime, getCurrentTime)
+import           Data.Typeable               (Typeable)
 
 
 --------------------------------------------------------------------------------
@@ -40,6 +42,13 @@ import qualified CountVonCount.Log           as Log
 import qualified CountVonCount.Persistence   as P
 import           CountVonCount.Sensor.Filter (SensorEvent (..))
 import           CountVonCount.Util
+
+
+--------------------------------------------------------------------------------
+data CounterEvent
+    = PositionEvent P.Team CounterState
+    | LapEvent P.Team P.Lap
+    deriving (Show, Typeable)
 
 
 --------------------------------------------------------------------------------
@@ -87,17 +96,20 @@ step cl ms logger eventBase db event cmap = do
 
         -- If the baton is registred to a team
         forM_ mteam $ \team ->
-            forM_ events $ \event' -> do
+            forM_ events $ \event' -> case event' of
                 -- Add the lap in the database and update team record
-                team' <- case event' of
-                    LapEvent time _ -> P.addLap db (P.teamId team) time
-                    _               -> return team
+                LapCoreEvent time _ -> do
+                    Log.string logger "CountVonCount.Counter.step" $
+                        "Lap for " ++ show team
+                    lapId' <- P.addLap db (P.teamId team) time
+                    lap    <- P.getLap db lapId'
+                    team'  <- P.getTeam db (P.teamId team)
+                    EventBase.publish eventBase $ LapEvent team' lap
 
-                -- Call handlers, log
-                EventBase.publish eventBase (team', cstate, event')
-                Log.string logger "CountVonCount.Counter.step" $ case event' of
-                    ProgressionEvent _ s _ -> show team' ++ " @ " ++ show s
-                    LapEvent _ _           -> "Lap for " ++ show team'
+                PositionCoreEvent _ s _ -> do
+                    Log.string logger "CountVonCount.Counter.step" $
+                        show team ++ " @ " ++ show s
+                    EventBase.publish eventBase $ PositionEvent team cstate
 
 
 --------------------------------------------------------------------------------

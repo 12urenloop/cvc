@@ -22,29 +22,29 @@ module CountVonCount.Boxxy
 
 
 --------------------------------------------------------------------------------
-import           Control.Applicative        (pure, (<$>), (<*>))
-import           Control.Concurrent         (forkIO)
-import           Control.Monad              (forM, forM_, mzero, void, when)
-import           Data.Aeson                 (FromJSON (..), (.!=), (.:?), (.=))
-import qualified Data.Aeson                 as A
-import           Data.ByteString            (ByteString)
-import qualified Data.ByteString.Char8      as BC
-import qualified Data.Conduit               as C
-import           Data.IORef                 (IORef, newIORef, readIORef,
-                                             writeIORef)
-import           Data.Maybe                 (isNothing)
-import           Data.Text                  (Text)
-import qualified Data.Text                  as T
-import qualified Data.Text.Encoding         as T
-import           Data.Time                  (UTCTime)
-import qualified Network.HTTP.Conduit       as Http
+import           Control.Applicative       (pure, (<$>), (<*>))
+import           Control.Concurrent        (forkIO)
+import           Control.Monad             (forM, forM_, mzero, void, when)
+import           Data.Aeson                (FromJSON (..), (.!=), (.:?), (.=))
+import qualified Data.Aeson                as A
+import           Data.ByteString           (ByteString)
+import qualified Data.ByteString.Char8     as BC
+import qualified Data.Conduit              as C
+import           Data.IORef                (IORef, newIORef, readIORef,
+                                            writeIORef)
+import           Data.Maybe                (isNothing)
+import           Data.Text                 (Text)
+import qualified Data.Text                 as T
+import qualified Data.Text.Encoding        as T
+import           Data.Time                 (UTCTime)
+import qualified Network.HTTP.Conduit      as Http
 
 
 --------------------------------------------------------------------------------
-import           CountVonCount.Counter.Core
+import qualified CountVonCount.Counter     as Counter
 import           CountVonCount.EventBase
-import           CountVonCount.Log          (Log)
-import qualified CountVonCount.Log          as Log
+import           CountVonCount.Log         (Log)
+import qualified CountVonCount.Log         as Log
 import           CountVonCount.Persistence
 import           CountVonCount.Util
 
@@ -153,13 +153,13 @@ newBoxxies logger eventBase configs ini = do
     withBoxxies logger bs (const $ return ())
 
     -- Subscribe to counter events
-    subscribe eventBase "boxxies counter handler" $
-        \(team, _ :: CounterState, event) ->
-            withBoxxies logger bs $ \b -> case event of
-                LapEvent time _speed                ->
-                    putLap b (Lap 0 0 time Nothing 1) team
-                ProgressionEvent time station speed ->
-                    putPosition b team time station speed
+    subscribe eventBase "boxxies counter handler" $ \counterEvent ->
+        withBoxxies logger bs $ \b -> case counterEvent of
+            Counter.LapEvent team lap           -> putLap b lap team
+            Counter.PositionEvent _team _cstate ->
+                -- TODO
+                -- putPosition b team time station speed
+                return ()
 
     return bs
 

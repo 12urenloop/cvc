@@ -17,7 +17,6 @@ import qualified Network.WebSockets.Util.PubSub as WS
 import           CountVonCount.Boxxy
 import           CountVonCount.Config
 import qualified CountVonCount.Counter          as Counter
-import           CountVonCount.Counter.Core
 import           CountVonCount.EventBase
 import qualified CountVonCount.Log              as Log
 import qualified CountVonCount.Persistence      as P
@@ -42,10 +41,11 @@ main = do
     pubSub <- WS.newPubSub
 
     -- Publish counter events to browser
-    subscribe eventBase "WS counter handler" $
-        \(team, cstate, _ :: CounterEvent) ->
+    subscribe eventBase "WS counter handler" $ \ce -> case ce of
+        Counter.PositionEvent team cstate ->
             WS.publish pubSub $ WS.textData $ A.encode $
             Views.counterState (configCircuitLength config) team (Just cstate)
+        _ -> return ()
 
     -- Publish baton watchdog events to browser
     subscribe eventBase "baton handler" $ \deadBatons -> do

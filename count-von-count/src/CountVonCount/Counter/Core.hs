@@ -2,7 +2,7 @@
 -- | This module implements the counter logic for a /single/ team
 {-# LANGUAGE DeriveDataTypeable #-}
 module CountVonCount.Counter.Core
-    ( CounterEvent (..)
+    ( CounterCoreEvent (..)
     , isLapEvent
     , CounterState (..)
     , emptyCounterState
@@ -31,16 +31,16 @@ import           CountVonCount.Sensor.Filter
 
 
 --------------------------------------------------------------------------------
-data CounterEvent
-    = ProgressionEvent UTCTime Station Double
-    | LapEvent UTCTime Double
-    deriving (Show, Typeable)
+data CounterCoreEvent
+    = PositionCoreEvent UTCTime Station Double
+    | LapCoreEvent UTCTime Double
+    deriving (Show)
 
 
 --------------------------------------------------------------------------------
-isLapEvent :: CounterEvent -> Bool
-isLapEvent (LapEvent _ _) = True
-isLapEvent _              = False
+isLapEvent :: CounterCoreEvent -> Bool
+isLapEvent (LapCoreEvent _ _) = True
+isLapEvent _                  = False
 
 
 --------------------------------------------------------------------------------
@@ -81,10 +81,10 @@ tell' x = tell [x]
 
 
 --------------------------------------------------------------------------------
-stepCounterState :: Double                   -- ^ Length of the circuit
-                 -> Double                   -- ^ Absolute maximum speed
-                 -> SensorEvent              -- ^ Incoming event
-                 -> CounterM [CounterEvent]  -- ^ Outgoing events
+stepCounterState :: Double                       -- ^ Length of the circuit
+                 -> Double                       -- ^ Absolute maximum speed
+                 -> SensorEvent                  -- ^ Incoming event
+                 -> CounterM [CounterCoreEvent]  -- ^ Outgoing events
 stepCounterState len maxSpeed event = do
     state <- get
     case state of
@@ -111,8 +111,8 @@ stepCounterState len maxSpeed event = do
                 when (numLaps > 0) $ tell' $ printf "Adding %d laps" numLaps
                 put $ CounterState first event speed' time
                 return $
-                    ProgressionEvent time station speed :
-                    replicate numLaps (LapEvent time 0)  -- lapTime is TODO
+                    PositionCoreEvent time station speed :
+                    replicate numLaps (LapCoreEvent time 0)  -- lapTime is TODO
           where
             SensorEvent time     station     _ = event
             SensorEvent prevTime prevStation _ = prev
