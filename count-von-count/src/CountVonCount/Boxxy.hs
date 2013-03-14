@@ -113,11 +113,19 @@ makeRequest config path body = do
 
 
 --------------------------------------------------------------------------------
-putState :: BoxxyConfig -> [Team] -> [(Lap, Team)] -> IO ()
-putState config teams laps = makeRequest config "/state" $ A.object
-    [ "teams" .= A.object [T.pack (show $ teamId t) .= teamJson t | t <- teams]
-    , "laps"  .= map (uncurry lapJson) laps
-    ]
+putState :: BoxxyConfig -> Double -> [Station] -> [Team] -> [(Lap, Team)]
+         -> IO ()
+putState config circuitLength stations teams laps =
+    makeRequest config "/state" $ A.object
+        [ "circuitLength" .= circuitLength
+        , "stations" .= A.object
+            [ T.pack (show $ stationId s) .= stationJson s
+            | s <- stations
+            ]
+        , "teams" .= A.object
+            [T.pack (show $ teamId t) .= teamJson t | t <- teams]
+        , "laps" .= map (uncurry lapJson) laps
+        ]
 
 
 --------------------------------------------------------------------------------
@@ -209,4 +217,12 @@ lapJson lap team = A.object
     [ "id" .= show (lapId lap), "team" .= teamJson team
     , "timestamp" .= lapTimestamp lap, "reason" .= lapReason lap
     , "count" .= lapCount lap
+    ]
+
+
+--------------------------------------------------------------------------------
+stationJson :: Station -> A.Value
+stationJson station = A.object
+    [ "id" .= show (stationId station), "name" .= stationName station
+    , "position" .= stationPosition station
     ]

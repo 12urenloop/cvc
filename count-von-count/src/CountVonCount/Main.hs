@@ -55,12 +55,14 @@ main = do
 
     -- Initialize boxxy
     boxxies <- newBoxxies logger eventBase (configBoxxies config) $ \b -> do
-        teams <- P.getAllTeams database
-        laps  <- P.getLatestLaps database Nothing 10
-        laps' <- forM laps $ \lap -> do
+        -- TODO: This should be moves inside boxxy
+        stations <- P.getAllStations database
+        teams    <- P.getAllTeams database
+        laps     <- P.getLatestLaps database Nothing 10
+        laps'    <- forM laps $ \lap -> do
             team <- P.getTeam database $ P.lapTeam lap
             return (lap, team)
-        putState b teams laps'
+        putState b (configCircuitLength config) stations teams laps'
 
     -- Connecting raw sensor events to filtered sensor events
     Filter.subscribe eventBase database logger (configRssiThreshold config)
