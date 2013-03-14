@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+        <title>Debug</title>
+        <script type="text/JavaScript" src="http://live.12urenloop.be/js/boxxy.js"></script>
+        <script type="text/JavaScript" src="http://live.12urenloop.be/js/jquery-1.7.1.min.js"></script>
+        <script type="text/JavaScript" src="http://live.12urenloop.be/socket.io/socket.io.js"></script>
+
+        <script type="text/JavaScript">
+            var boxxyHost = 'http://live.12urenloop.be:8080';
+        </script>
+    </head>
+    <body>
+        <h1>onAddLap</h1>
+        <div style="height:100px; max-height:100px; overflow:auto">
+            <pre id="addLap"></pre>
+        </div>
+
+        <h1>onPutState</h1>
+        <div style="height:100px; max-height:100px; overflow:auto">
+            <pre id="putState"></pre>
+        </div>
+
+        <script type="text/JavaScript">
+            // Set up boxxy
+            var boxxy = boxxy.initialize();
+
+            // this function gets executed onLapUpdate
+            boxxy.onAddLap = function (lap) {
+                $("#addLap").prepend(JSON.stringify(lap) + "\n");
+            };
+
+             // this function gets executed onLapUpdate
+            boxxy.onPutState = function (state) {
+                $("#putState").prepend(JSON.stringify(state) + "\n");
+            };
+
+            boxxy.listen(boxxyHost);
+        </script>
+    </body>
+</html>
