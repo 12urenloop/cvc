@@ -22,30 +22,30 @@ module CountVonCount.Boxxy
 
 
 --------------------------------------------------------------------------------
-import           Control.Applicative       (pure, (<$>), (<*>))
-import           Control.Concurrent        (forkIO)
-import           Control.Monad             (forM, forM_, mzero, void, when)
-import           Data.Aeson                (FromJSON (..), (.!=), (.:?), (.=))
-import qualified Data.Aeson                as A
-import           Data.ByteString           (ByteString)
-import qualified Data.ByteString.Char8     as BC
-import qualified Data.Conduit              as C
-import           Data.IORef                (IORef, newIORef, readIORef,
-                                            writeIORef)
-import           Data.Maybe                (isNothing)
-import           Data.Text                 (Text)
-import qualified Data.Text                 as T
-import qualified Data.Text.Encoding        as T
-import           Data.Time                 (UTCTime)
-import qualified Network.HTTP.Conduit      as Http
+import           Control.Applicative         (pure, (<$>), (<*>))
+import           Control.Concurrent          (forkIO)
+import           Control.Monad               (forM, forM_, mzero, void, when)
+import           Data.Aeson                  (FromJSON(..), (.!=), (.:?), (.=))
+import qualified Data.Aeson                  as A
+import           Data.ByteString             (ByteString)
+import qualified Data.ByteString.Char8       as BC
+import qualified Data.Conduit                as C
+import           Data.IORef                  (IORef, newIORef, readIORef, writeIORef)
+import           Data.Maybe                  (isNothing)
+import           Data.Text                   (Text)
+import qualified Data.Text                   as T
+import qualified Data.Text.Encoding          as T
+import           Data.Time                   (UTCTime)
+import qualified Network.HTTP.Conduit        as Http
 
 
 --------------------------------------------------------------------------------
-import qualified CountVonCount.Counter     as Counter
+import qualified CountVonCount.Counter       as Counter
 import           CountVonCount.EventBase
-import           CountVonCount.Log         (Log)
-import qualified CountVonCount.Log         as Log
+import           CountVonCount.Log           (Log)
+import qualified CountVonCount.Log           as Log
 import           CountVonCount.Persistence
+import           CountVonCount.Sensor.Filter (SensorEvent(..))
 import           CountVonCount.Util
 
 
@@ -116,16 +116,7 @@ makeRequest config path body = do
 putState :: BoxxyConfig -> Double -> [Station] -> [Team] -> [(Lap, Team)]
          -> IO ()
 putState config circuitLength stations teams laps =
-    makeRequest config "/state" $ A.object
-        [ "circuitLength" .= circuitLength
-        , "stations" .= A.object
-            [ T.pack (show $ stationId s) .= stationJson s
-            | s <- stations
-            ]
-        , "teams" .= A.object
-            [T.pack (show $ teamId t) .= teamJson t | t <- teams]
-        , "laps" .= map (uncurry lapJson) laps
-        ]
+    makeRequest config "/state" $ stateJson circuitLength stations teams laps
 
 
 --------------------------------------------------------------------------------
@@ -137,8 +128,9 @@ putLap config lap team = makeRequest config "/lap" $ lapJson lap team
 
 
 --------------------------------------------------------------------------------
-putPosition :: BoxxyConfig -> Team -> UTCTime -> Station -> Double -> IO ()
-putPosition _ _ _ _ _ = return ()
+putPosition :: BoxxyConfig -> Team -> Station -> UTCTime -> IO ()
+putPosition config team station timestamp = makeRequest config "/position" $
+    positionJson team station timestamp
 
 
 --------------------------------------------------------------------------------
@@ -163,11 +155,10 @@ newBoxxies logger eventBase configs ini = do
     -- Subscribe to counter events
     subscribe eventBase "boxxies counter handler" $ \counterEvent ->
         withBoxxies logger bs $ \b -> case counterEvent of
-            Counter.LapEvent team lap           -> putLap b lap team
-            Counter.PositionEvent _team _cstate ->
-                -- TODO
-                -- putPosition b team time station speed
-                return ()
+            Counter.LapEvent team lap         -> putLap b lap team
+            Counter.PositionEvent team cstate ->
+                let Counter.CounterState _ sensorEvent _ timestamp = cstate
+                in putPosition b team (sensorStation sensorEvent) timestamp
 
     return bs
 
@@ -206,23 +197,53 @@ boxxiesToList boxxies = forM (boxxiesState boxxies) $ \(c, rs) -> do
 
 
 --------------------------------------------------------------------------------
+stateJson :: Double -> [Station] -> [Team] -> [(Lap, Team)] -> A.Value
+stateJson circuitLength stations teams laps = A.object
+    [ "circuitLength" .= circuitLength
+    , "stations" .= A.object
+        [ refToText (stationId s) .= stationJson s
+        | s <- stations
+        ]
+    , "teams" .= A.object
+        [refToText (teamId t) .= teamJson t | t <- teams]
+    , "laps" .= map (uncurry lapJson) laps
+    ]
+
+
+--------------------------------------------------------------------------------
 teamJson :: Team -> A.Value
 teamJson t = A.object
-    ["id" .= show (teamId t), "name" .= teamName t, "laps" .= teamLaps t]
+    [ "id"   .= refToText (teamId t)
+    , "laps" .= teamLaps t
+    , "name" .= teamName t
+    ]
 
 
 --------------------------------------------------------------------------------
 lapJson :: Lap -> Team -> A.Value
 lapJson lap team = A.object
-    [ "id" .= show (lapId lap), "team" .= teamJson team
-    , "timestamp" .= lapTimestamp lap, "reason" .= lapReason lap
-    , "count" .= lapCount lap
+    [ "count"     .= lapCount lap
+    , "id"        .= refToText (lapId lap)
+    , "reason"    .= lapReason lap
+    , "team"      .= refToText (lapTeam lap)
+    , "timestamp" .= lapTimestamp lap
+    , "total"     .= teamLaps team
     ]
 
 
 --------------------------------------------------------------------------------
 stationJson :: Station -> A.Value
 stationJson station = A.object
-    [ "id" .= show (stationId station), "name" .= stationName station
+    [ "id"       .= refToText (stationId station)
+    , "name"     .= stationName station
     , "position" .= stationPosition station
+    ]
+
+
+--------------------------------------------------------------------------------
+positionJson :: Team -> Station -> UTCTime -> A.Value
+positionJson team station timestamp = A.object
+    [ "team"      .= refToText (teamId team)
+    , "station"   .= refToText (stationId station)
+    , "timestamp" .= timestamp
     ]

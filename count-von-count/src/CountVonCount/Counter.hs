@@ -9,6 +9,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 module CountVonCount.Counter
     ( CounterEvent (..)
+    , CounterState (..)
     , Counter
     , newCounter
     , subscribe

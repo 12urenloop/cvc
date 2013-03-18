@@ -39,6 +39,10 @@ boxxyState.onAddLap = function(lap) {
     io.sockets.emit('/lap', lap);
 }
 
+boxxyState.onUpdatePosition = function(position) {
+    io.sockets.emit('/position', position);
+}
+
 // count-von-count facing API
 // ==========================
 
@@ -58,8 +62,14 @@ app.put('/state', basicAuth, function(req, res) {
 });
 
 app.put('/lap', basicAuth, function(req, res) {
-    console.log('PUT /lap (' + req.body.team.name + ')');
+    console.log('PUT /lap (team ' + req.body.team + ')');
     boxxyState.addLap(req.body);
+    res.send('OK');
+});
+
+app.put('/position', basicAuth, function(req, res) {
+    console.log('PUT /position (team ' + req.body.team + ')');
+    boxxyState.updatePosition(req.body);
     res.send('OK');
 });
 

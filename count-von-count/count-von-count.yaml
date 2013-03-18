@@ -15,9 +15,3 @@ boxxies:
       path:     ""
       user:     "count-von-count"
       password: "tetten"
-
-    - host:     "live.12urenloop.be"
-      port:     8080
-      path:     ""
-      user:     "count-von-count"
-      password: "tetten"

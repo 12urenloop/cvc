@@ -1,14 +1,16 @@
 function Boxxy() {
-    this.frozen = false;
+    /* State */
+    this.frozen       = false;
     this.notification = null;
-    this.teams = {};
-    this.laps = [];
-    this.maxLaps = 10;
+    this.teams        = {};
+    this.laps         = [];
+    this.maxLaps      = 10;
 
     /* To be user will override this */
-    this.onPutState = function(state) {};
-    this.onAddLap = function(lap) {};
-    this.onUpdate = function() {};
+    this.onPutState       = function(state) {};
+    this.onAddLap         = function(lap) {};
+    this.onUpdatePosition = function(position) {};
+    this.onUpdate         = function() {};
 }
 
 Boxxy.prototype.putState = function(state) {
@@ -26,9 +28,20 @@ Boxxy.prototype.addLap = function(lap) {
         if(this.laps.length >= this.maxLaps) this.laps.pop();
         this.laps = [lap].concat(this.laps);
 
-        this.teams[lap.team.id] = lap.team;
+        /* Just copy the total laps instead of calculating it, more robust. */
+        this.teams[lap.team].laps = lap.total;
+        this.teams[lap.team].lastUpdate = lap.timestamp;
 
         this.onAddLap(lap);
+        this.onUpdate();
+    }
+}
+
+Boxxy.prototype.updatePosition = function(position) {
+    if(!this.frozen) {
+        this.teams[position.team].position = position.station;
+        this.teams[position.team].lastUpdate = position.timestamp;
+        this.onUpdatePosition(position);
         this.onUpdate();
     }
 }
@@ -42,7 +55,7 @@ Boxxy.prototype.teamsByScore = function() {
     return byScore;
 }
 
-// Only used on the client side: this requires sockets.io to be in scope
+/* Only used on the client side: this requires sockets.io to be in scope. */
 Boxxy.prototype.listen = function(uri) {
     var boxxy  = this;
     var socket = io.connect(uri);
