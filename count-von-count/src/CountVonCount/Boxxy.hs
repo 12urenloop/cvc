@@ -7,11 +7,6 @@ module CountVonCount.Boxxy
       BoxxyConfig (..)
     , defaultBoxxyConfig
 
-      -- * Talking to boxxy
-    , putState
-    , addLap
-    , updatePosition
-
       -- * Stateful talking
     , BoxxyState (..)
     , Boxxies
@@ -24,11 +19,9 @@ module CountVonCount.Boxxy
 --------------------------------------------------------------------------------
 import           Control.Applicative         (pure, (<$>), (<*>))
 import           Control.Concurrent          (forkIO)
-import           Control.Monad               (forM, forM_, mzero, void, when)
-import           Data.Aeson                  (FromJSON(..), (.!=), (.:?), (.=))
+import           Control.Monad               (forM, forM_, void, when)
+import           Data.Aeson                  ((.=))
 import qualified Data.Aeson                  as A
-import           Data.ByteString             (ByteString)
-import qualified Data.ByteString.Char8       as BC
 import qualified Data.Conduit                as C
 import           Data.IORef                  (IORef, newIORef, readIORef, writeIORef)
 import           Data.Maybe                  (isNothing)
@@ -40,6 +33,7 @@ import qualified Network.HTTP.Conduit        as Http
 
 
 --------------------------------------------------------------------------------
+import           CountVonCount.Config
 import qualified CountVonCount.Counter       as Counter
 import           CountVonCount.EventBase
 import           CountVonCount.Log           (Log)
@@ -47,46 +41,6 @@ import qualified CountVonCount.Log           as Log
 import qualified CountVonCount.Persistence   as P
 import           CountVonCount.Sensor.Filter (SensorEvent(..))
 import           CountVonCount.Util
-
-
---------------------------------------------------------------------------------
-data BoxxyConfig = BoxxyConfig
-    { boxxyHost     :: Text
-    , boxxyPort     :: Int
-    , boxxyPath     :: Text
-    , boxxyUser     :: ByteString
-    , boxxyPassword :: ByteString
-    }
-
-
---------------------------------------------------------------------------------
-instance Show BoxxyConfig where
-    show (BoxxyConfig host port path user password) =
-        T.unpack host ++ ":" ++ show port ++ "/" ++ T.unpack path ++
-        " (" ++ BC.unpack user ++ ":" ++ BC.unpack password ++ ")"
-
-
---------------------------------------------------------------------------------
-instance FromJSON BoxxyConfig where
-    parseJSON (A.Object o) = BoxxyConfig <$>
-        o .:? "host"     .!= boxxyHost     defaultBoxxyConfig <*>
-        o .:? "port"     .!= boxxyPort     defaultBoxxyConfig <*>
-        o .:? "path"     .!= boxxyPath     defaultBoxxyConfig <*>
-        o .:? "user"     .!= boxxyUser     defaultBoxxyConfig <*>
-        o .:? "password" .!= boxxyPassword defaultBoxxyConfig
-
-    parseJSON _ = mzero
-
-
---------------------------------------------------------------------------------
-defaultBoxxyConfig :: BoxxyConfig
-defaultBoxxyConfig = BoxxyConfig
-    { boxxyHost     = "localhost"
-    , boxxyPort     = 80
-    , boxxyPath     = ""
-    , boxxyUser     = "count-von-count"
-    , boxxyPassword = "tetten"
-    }
 
 
 --------------------------------------------------------------------------------
@@ -113,10 +67,101 @@ makeRequest config path body = do
 
 
 --------------------------------------------------------------------------------
-putState :: BoxxyConfig -> Double -> [P.Station] -> [P.Team]
-         -> [(P.Lap, P.Team)] -> IO ()
-putState config circuitLength stations teams laps =
-    makeRequest config "/state" $ stateJson circuitLength stations teams laps
+data BoxxyState = Up | Down
+    deriving (Eq, Show)
+
+
+--------------------------------------------------------------------------------
+data Boxxies = Boxxies
+    { boxxiesConfig   :: Config
+    , boxxiesState    :: [(BoxxyConfig, IORef BoxxyState)]
+    , boxxiesLog      :: Log
+    , boxxiesDatabase :: P.Database
+    , boxxiesCounter  :: Counter.Counter
+    }
+
+
+--------------------------------------------------------------------------------
+newBoxxies :: Config -> Log -> P.Database -> Counter.Counter -> EventBase
+           -> IO Boxxies
+newBoxxies config logger database counter eventBase = do
+    -- Create boxxies value
+    bs <- Boxxies
+        <$> pure config
+        <*> forM (configBoxxies config) (\c -> (,) c <$> newIORef Down)
+        <*> pure logger
+        <*> pure database
+        <*> pure counter
+
+    -- Try to initialize right away
+    withBoxxies bs (const $ return ())
+
+    -- Subscribe to counter events
+    subscribe eventBase "boxxies counter handler" $ \counterEvent ->
+        withBoxxies bs $ \b -> case counterEvent of
+            Counter.LapEvent team lap         -> addLap b lap team
+            Counter.PositionEvent team cstate ->
+                let Counter.CounterState _ sensorEvent _ timestamp = cstate
+                in updatePosition b team (sensorStation sensorEvent) timestamp
+
+    return bs
+
+
+--------------------------------------------------------------------------------
+withBoxxies :: Boxxies
+            -> (BoxxyConfig -> IO ())
+            -> IO ()
+withBoxxies bs f = forM_ (boxxiesState bs) $ \(c, rs) ->
+    void $ forkIO $ do
+        s <- readIORef rs
+        Log.string logger "CountVonCount.Boxxy.withBoxxies" $
+            "Calling " ++ show c ++ ", currently " ++ show s
+        -- Try to init if needed
+        r <- case s of
+            Up   -> return Nothing
+            Down -> isolate logger ("init " ++ show c) $ do
+                ping c
+                putState bs (Just c)
+
+        -- Make the call if up
+        r' <- case r of
+            Nothing -> isolate logger ("call " ++ show c) $ f c
+            Just _  -> return r
+
+        let s' = if isNothing r' then Up else Down
+        when (s /= s') $ Log.string logger "CountVonCount.Boxxy.withBoxxies" $
+            show c ++ " is now " ++ show s'
+        writeIORef rs s'
+  where
+    logger = boxxiesLog bs
+
+
+--------------------------------------------------------------------------------
+ping :: BoxxyConfig -> IO ()
+ping config = makeRequest config "/ping" $ A.object []
+
+
+--------------------------------------------------------------------------------
+putState :: Boxxies -> Maybe BoxxyConfig -> IO ()
+putState boxxies target = do
+    -- Get info
+    stations <- P.getAllStations database
+    teams    <- P.getAllTeams database
+    laps     <- P.getLatestLaps database Nothing 10
+    laps'    <- forM laps $ \lap -> do
+        team <- P.getTeam database $ P.lapTeam lap
+        return (lap, team)
+
+    let withTarget = case target of
+            Nothing -> withBoxxies boxxies
+            Just t  -> forM_ [t]
+
+    withTarget $ \c -> makeRequest c "/state" $
+        stateJson circuitLength stations teams laps'
+  where
+    circuitLength = configCircuitLength config
+    config        = boxxiesConfig boxxies
+    database      = boxxiesDatabase boxxies
 
 
 --------------------------------------------------------------------------------
@@ -131,62 +176,6 @@ addLap config lap team = makeRequest config "/lap" $ lapJson lap team
 updatePosition :: BoxxyConfig -> P.Team -> P.Station -> UTCTime -> IO ()
 updatePosition config team station timestamp = makeRequest config "/position" $
     positionJson team station timestamp
-
-
---------------------------------------------------------------------------------
-data BoxxyState = Up | Down
-    deriving (Eq, Show)
-
-
---------------------------------------------------------------------------------
-data Boxxies = Boxxies
-    { boxxiesState :: [(BoxxyConfig, IORef BoxxyState)]
-    , boxxiesInit  :: BoxxyConfig -> IO ()
-    }
-
-
---------------------------------------------------------------------------------
-newBoxxies :: Log -> EventBase -> [BoxxyConfig] -> (BoxxyConfig -> IO ())
-           -> IO Boxxies
-newBoxxies logger eventBase configs ini = do
-    bs <- Boxxies <$> forM configs (\c -> (,) c <$> newIORef Down) <*> pure ini
-    withBoxxies logger bs (const $ return ())
-
-    -- Subscribe to counter events
-    subscribe eventBase "boxxies counter handler" $ \counterEvent ->
-        withBoxxies logger bs $ \b -> case counterEvent of
-            Counter.LapEvent team lap         -> addLap b lap team
-            Counter.PositionEvent team cstate ->
-                let Counter.CounterState _ sensorEvent _ timestamp = cstate
-                in updatePosition b team (sensorStation sensorEvent) timestamp
-
-    return bs
-
-
---------------------------------------------------------------------------------
-withBoxxies :: Log
-            -> Boxxies
-            -> (BoxxyConfig -> IO ())
-            -> IO ()
-withBoxxies logger bs f = forM_ (boxxiesState bs) $ \(c, rs) ->
-    void $ forkIO $ do
-        s <- readIORef rs
-        Log.string logger "CountVonCount.Boxxy.withBoxxies" $
-            "Calling " ++ show c ++ ", currently " ++ show s
-        -- Try to init if needed
-        r <- case s of
-            Down -> isolate logger ("init " ++ show c) $ boxxiesInit bs c
-            Up   -> return Nothing
-
-        -- Make the call if up
-        r' <- case r of
-            Nothing -> isolate logger ("call " ++ show c) $ f c
-            Just _  -> return r
-
-        let s' = if isNothing r' then Up else Down
-        when (s /= s') $ Log.string logger "CountVonCount.Boxxy.withBoxxies" $
-            show c ++ " is now " ++ show s'
-        writeIORef rs s'
 
 
 --------------------------------------------------------------------------------

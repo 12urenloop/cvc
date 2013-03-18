@@ -55,6 +55,12 @@ app.get('/state', function(req, res) {
     res.send(boxxyState);
 });
 
+// Used to quickly check if boxxy is still alive.
+app.put('/ping', basicAuth, function(req, res) {
+    console.log('PUT /ping');
+    res.send('pong');
+});
+
 app.put('/state', basicAuth, function(req, res) {
     console.log('PUT /state');
     boxxyState.putState(req.body);

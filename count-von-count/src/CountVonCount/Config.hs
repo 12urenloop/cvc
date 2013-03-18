@@ -1,22 +1,69 @@
+--------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
 module CountVonCount.Config
     ( BoxxyConfig (..)
+    , defaultBoxxyConfig
     , Config (..)
     , defaultConfig
     , readConfigFile
     ) where
 
-import Control.Applicative ((<$>),(<*>))
-import Control.Monad (mzero)
-import Data.Maybe (fromMaybe)
-import Data.Time (UTCTime (..))
 
-import Data.Aeson (FromJSON (..), (.:?), (.!=))
-import Data.Yaml (decodeFile)
-import qualified Data.Aeson as A
+--------------------------------------------------------------------------------
+import           Control.Applicative   ((<$>), (<*>))
+import           Control.Monad         (mzero)
+import           Data.Aeson            (FromJSON(..), (.!=), (.:?))
+import qualified Data.Aeson            as A
+import           Data.ByteString       (ByteString)
+import qualified Data.ByteString.Char8 as BC
+import           Data.Maybe            (fromMaybe)
+import           Data.Text             (Text)
+import qualified Data.Text             as T
+import           Data.Time             (UTCTime(..))
+import           Data.Yaml             (decodeFile)
 
-import CountVonCount.Boxxy
 
+--------------------------------------------------------------------------------
+data BoxxyConfig = BoxxyConfig
+    { boxxyHost     :: Text
+    , boxxyPort     :: Int
+    , boxxyPath     :: Text
+    , boxxyUser     :: ByteString
+    , boxxyPassword :: ByteString
+    }
+
+
+--------------------------------------------------------------------------------
+instance Show BoxxyConfig where
+    show (BoxxyConfig host port path user password) =
+        T.unpack host ++ ":" ++ show port ++ "/" ++ T.unpack path ++
+        " (" ++ BC.unpack user ++ ":" ++ BC.unpack password ++ ")"
+
+
+--------------------------------------------------------------------------------
+instance FromJSON BoxxyConfig where
+    parseJSON (A.Object o) = BoxxyConfig <$>
+        o .:? "host"     .!= boxxyHost     defaultBoxxyConfig <*>
+        o .:? "port"     .!= boxxyPort     defaultBoxxyConfig <*>
+        o .:? "path"     .!= boxxyPath     defaultBoxxyConfig <*>
+        o .:? "user"     .!= boxxyUser     defaultBoxxyConfig <*>
+        o .:? "password" .!= boxxyPassword defaultBoxxyConfig
+
+    parseJSON _ = mzero
+
+
+--------------------------------------------------------------------------------
+defaultBoxxyConfig :: BoxxyConfig
+defaultBoxxyConfig = BoxxyConfig
+    { boxxyHost     = "localhost"
+    , boxxyPort     = 80
+    , boxxyPath     = ""
+    , boxxyUser     = "count-von-count"
+    , boxxyPassword = "tetten"
+    }
+
+
+--------------------------------------------------------------------------------
 data Config = Config
     { configStartTime             :: UTCTime
     , configCircuitLength         :: Double
@@ -31,6 +78,8 @@ data Config = Config
     , configWebPort               :: Int
     } deriving (Show)
 
+
+--------------------------------------------------------------------------------
 instance FromJSON Config where
     parseJSON (A.Object o) = Config <$>
         o .:? "startTime"             .!= configStartTime             d <*>
@@ -49,6 +98,8 @@ instance FromJSON Config where
 
     parseJSON _ = mzero
 
+
+--------------------------------------------------------------------------------
 defaultConfig :: Config
 defaultConfig = Config
     { configStartTime             = UTCTime (toEnum 0) 0
@@ -64,6 +115,8 @@ defaultConfig = Config
     , configWebPort               = 8000
     }
 
+
+--------------------------------------------------------------------------------
 readConfigFile :: FilePath -> IO Config
 readConfigFile filePath = fromMaybe
     (error $ "Could not read config: " ++ filePath) <$> decodeFile filePath

@@ -7,7 +7,6 @@ module Main
 
 --------------------------------------------------------------------------------
 import           Control.Concurrent             (forkIO)
-import           Control.Monad                  (forM)
 import qualified Data.Aeson                     as A
 import qualified Network.WebSockets             as WS
 import qualified Network.WebSockets.Util.PubSub as WS
@@ -40,7 +39,14 @@ main = do
     -- Create the pubsub system
     pubSub <- WS.newPubSub
 
+    -- Start the counter
+    counter <- Counter.newCounter
+    Counter.subscribe counter (configCircuitLength config)
+        (configMaxSpeed config) logger eventBase database
+
     -- Publish counter events to browser
+    -- TODO: Now that we're using EventBase, we should be able to push this into
+    -- the Web module.
     subscribe eventBase "WS counter handler" $ \ce -> case ce of
         Counter.PositionEvent team cstate ->
             WS.publish pubSub $ WS.textData $ A.encode $
@@ -54,15 +60,7 @@ main = do
             Views.deadBatons deadBatons'
 
     -- Initialize boxxy
-    boxxies <- newBoxxies logger eventBase (configBoxxies config) $ \b -> do
-        -- TODO: This should be moves inside boxxy
-        stations <- P.getAllStations database
-        teams    <- P.getAllTeams database
-        laps     <- P.getLatestLaps database Nothing 10
-        laps'    <- forM laps $ \lap -> do
-            team <- P.getTeam database $ P.lapTeam lap
-            return (lap, team)
-        putState b (configCircuitLength config) stations teams laps'
+    boxxies <- newBoxxies config logger database counter eventBase
 
     -- Connecting raw sensor events to filtered sensor events
     Filter.subscribe eventBase database logger (configRssiThreshold config)
@@ -72,11 +70,6 @@ main = do
 
     -- Start the sensor
     _ <- forkIO $ Sensor.listen logger eventBase (configSensorPort config)
-
-    -- Start the counter
-    counter <- Counter.newCounter
-    Counter.subscribe counter (configCircuitLength config)
-        (configMaxSpeed config) logger eventBase database
 
     -- Start the baton watchdog
     _ <- forkIO $ Counter.watchdog counter eventBase
