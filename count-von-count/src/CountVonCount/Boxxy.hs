@@ -9,8 +9,8 @@ module CountVonCount.Boxxy
 
       -- * Talking to boxxy
     , putState
-    , putLap
-    , putPosition
+    , addLap
+    , updatePosition
 
       -- * Stateful talking
     , BoxxyState (..)
@@ -44,7 +44,7 @@ import qualified CountVonCount.Counter       as Counter
 import           CountVonCount.EventBase
 import           CountVonCount.Log           (Log)
 import qualified CountVonCount.Log           as Log
-import           CountVonCount.Persistence
+import qualified CountVonCount.Persistence   as P
 import           CountVonCount.Sensor.Filter (SensorEvent(..))
 import           CountVonCount.Util
 
@@ -113,23 +113,23 @@ makeRequest config path body = do
 
 
 --------------------------------------------------------------------------------
-putState :: BoxxyConfig -> Double -> [Station] -> [Team] -> [(Lap, Team)]
-         -> IO ()
+putState :: BoxxyConfig -> Double -> [P.Station] -> [P.Team]
+         -> [(P.Lap, P.Team)] -> IO ()
 putState config circuitLength stations teams laps =
     makeRequest config "/state" $ stateJson circuitLength stations teams laps
 
 
 --------------------------------------------------------------------------------
-putLap :: BoxxyConfig   -- ^ Boxxy instance to notify
-       -> Lap           -- ^ Lap
-       -> Team          -- ^ Applicable team
+addLap :: BoxxyConfig   -- ^ Boxxy instance to notify
+       -> P.Lap         -- ^ Lap
+       -> P.Team        -- ^ Applicable team
        -> IO ()
-putLap config lap team = makeRequest config "/lap" $ lapJson lap team
+addLap config lap team = makeRequest config "/lap" $ lapJson lap team
 
 
 --------------------------------------------------------------------------------
-putPosition :: BoxxyConfig -> Team -> Station -> UTCTime -> IO ()
-putPosition config team station timestamp = makeRequest config "/position" $
+updatePosition :: BoxxyConfig -> P.Team -> P.Station -> UTCTime -> IO ()
+updatePosition config team station timestamp = makeRequest config "/position" $
     positionJson team station timestamp
 
 
@@ -155,10 +155,10 @@ newBoxxies logger eventBase configs ini = do
     -- Subscribe to counter events
     subscribe eventBase "boxxies counter handler" $ \counterEvent ->
         withBoxxies logger bs $ \b -> case counterEvent of
-            Counter.LapEvent team lap         -> putLap b lap team
+            Counter.LapEvent team lap         -> addLap b lap team
             Counter.PositionEvent team cstate ->
                 let Counter.CounterState _ sensorEvent _ timestamp = cstate
-                in putPosition b team (sensorStation sensorEvent) timestamp
+                in updatePosition b team (sensorStation sensorEvent) timestamp
 
     return bs
 
@@ -197,53 +197,53 @@ boxxiesToList boxxies = forM (boxxiesState boxxies) $ \(c, rs) -> do
 
 
 --------------------------------------------------------------------------------
-stateJson :: Double -> [Station] -> [Team] -> [(Lap, Team)] -> A.Value
+stateJson :: Double -> [P.Station] -> [P.Team] -> [(P.Lap, P.Team)] -> A.Value
 stateJson circuitLength stations teams laps = A.object
     [ "circuitLength" .= circuitLength
     , "stations" .= A.object
-        [ refToText (stationId s) .= stationJson s
+        [ P.refToText (P.stationId s) .= stationJson s
         | s <- stations
         ]
     , "teams" .= A.object
-        [refToText (teamId t) .= teamJson t | t <- teams]
+        [P.refToText (P.teamId t) .= teamJson t | t <- teams]
     , "laps" .= map (uncurry lapJson) laps
     ]
 
 
 --------------------------------------------------------------------------------
-teamJson :: Team -> A.Value
+teamJson :: P.Team -> A.Value
 teamJson t = A.object
-    [ "id"   .= refToText (teamId t)
-    , "laps" .= teamLaps t
-    , "name" .= teamName t
+    [ "id"   .= P.refToText (P.teamId t)
+    , "laps" .= P.teamLaps t
+    , "name" .= P.teamName t
     ]
 
 
 --------------------------------------------------------------------------------
-lapJson :: Lap -> Team -> A.Value
+lapJson :: P.Lap -> P.Team -> A.Value
 lapJson lap team = A.object
-    [ "count"     .= lapCount lap
-    , "id"        .= refToText (lapId lap)
-    , "reason"    .= lapReason lap
-    , "team"      .= refToText (lapTeam lap)
-    , "timestamp" .= lapTimestamp lap
-    , "total"     .= teamLaps team
+    [ "count"     .= P.lapCount lap
+    , "id"        .= P.refToText (P.lapId lap)
+    , "reason"    .= P.lapReason lap
+    , "team"      .= P.refToText (P.lapTeam lap)
+    , "timestamp" .= P.lapTimestamp lap
+    , "total"     .= P.teamLaps team
     ]
 
 
 --------------------------------------------------------------------------------
-stationJson :: Station -> A.Value
+stationJson :: P.Station -> A.Value
 stationJson station = A.object
-    [ "id"       .= refToText (stationId station)
-    , "name"     .= stationName station
-    , "position" .= stationPosition station
+    [ "id"       .= P.refToText (P.stationId station)
+    , "name"     .= P.stationName station
+    , "position" .= P.stationPosition station
     ]
 
 
 --------------------------------------------------------------------------------
-positionJson :: Team -> Station -> UTCTime -> A.Value
+positionJson :: P.Team -> P.Station -> UTCTime -> A.Value
 positionJson team station timestamp = A.object
-    [ "team"      .= refToText (teamId team)
-    , "station"   .= refToText (stationId station)
+    [ "team"      .= P.refToText (P.teamId team)
+    , "station"   .= P.refToText (P.stationId station)
     , "timestamp" .= timestamp
     ]

@@ -83,7 +83,7 @@ main = do
         (configBatonWatchdogInterval config)
         (configBatonWatchdogLifespan config)
 
-    Web.listen config logger database pubSub counter boxxies
+    Web.listen config logger eventBase database pubSub counter boxxies
 
     Log.string logger "CountVonCount.Main.main" "Closing..."
     P.closeDatabase database

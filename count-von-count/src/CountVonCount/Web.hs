@@ -1,46 +1,55 @@
+--------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
 module CountVonCount.Web
     ( listen
     ) where
 
-import Control.Applicative ((<$>), (<*>), (<|>))
-import Control.Monad (forM, forM_, unless)
-import Control.Monad.Reader (ReaderT, ask, runReaderT)
-import Control.Monad.Trans (liftIO)
-import Data.Text (Text)
-import Data.Time (getCurrentTimeZone)
-import Data.Traversable (traverse)
-import Text.Blaze.Html (Html)
-import Text.Digestive ((.:))
-import qualified Data.Text as T
-import qualified Data.Text.Encoding as T
-import qualified Network.WebSockets as WS
-import qualified Network.WebSockets.Snap as WS
+
+--------------------------------------------------------------------------------
+import           Control.Applicative            ((<$>), (<*>), (<|>))
+import           Control.Monad                  (forM, forM_, unless)
+import           Control.Monad.Reader           (ReaderT, ask, runReaderT)
+import           Control.Monad.Trans            (liftIO)
+import           Data.Text                      (Text)
+import qualified Data.Text                      as T
+import qualified Data.Text.Encoding             as T
+import           Data.Time                      (getCurrentTimeZone)
+import           Data.Traversable               (traverse)
+import qualified Network.WebSockets             as WS
+import qualified Network.WebSockets.Snap        as WS
 import qualified Network.WebSockets.Util.PubSub as WS
-import qualified Snap.Blaze as Snap
-import qualified Snap.Core as Snap
-import qualified Snap.Http.Server as Snap
-import qualified Snap.Util.FileServe as Snap
-import qualified Text.Digestive as DF
-import qualified Text.Digestive.Snap as DFS
+import qualified Snap.Blaze                     as Snap
+import qualified Snap.Core                      as Snap
+import qualified Snap.Http.Server               as Snap
+import qualified Snap.Util.FileServe            as Snap
+import           Text.Blaze.Html                (Html)
+import           Text.Digestive                 ((.:))
+import qualified Text.Digestive                 as DF
+import qualified Text.Digestive.Snap            as DFS
 
-import CountVonCount.Config
-import CountVonCount.Counter
-import CountVonCount.Log (Log)
-import CountVonCount.Management
-import CountVonCount.Persistence
-import CountVonCount.Web.Util
-import CountVonCount.Boxxy
-import qualified CountVonCount.Log as Log
-import qualified CountVonCount.Web.Views as Views
 
+--------------------------------------------------------------------------------
+import           CountVonCount.Boxxy
+import           CountVonCount.Config
+import           CountVonCount.Counter
+import           CountVonCount.EventBase        (EventBase)
+import           CountVonCount.Log              (Log)
+import qualified CountVonCount.Log              as Log
+import           CountVonCount.Management
+import           CountVonCount.Persistence
+import           CountVonCount.Web.Util
+import qualified CountVonCount.Web.Views        as Views
+
+
+--------------------------------------------------------------------------------
 data WebEnv = WebEnv
-    { webConfig   :: Config
-    , webLog      :: Log
-    , webDatabase :: Database
-    , webPubSub   :: WS.PubSub WS.Hybi00
-    , webCounter  :: Counter
-    , webBoxxies  :: Boxxies
+    { webConfig    :: Config
+    , webLog       :: Log
+    , webEventBase :: EventBase
+    , webDatabase  :: Database
+    , webPubSub    :: WS.PubSub WS.Hybi00
+    , webCounter   :: Counter
+    , webBoxxies   :: Boxxies
     }
 
 type Web = ReaderT WebEnv Snap.Snap
@@ -140,9 +149,8 @@ teamBonus = do
     (view, result) <- DFS.runForm "bonus" bonusForm
     case result of
         Just (BonusForm laps' reason) -> do
-            logger    <- webLog <$> ask
-            boxxies'  <- webBoxxies <$> ask
-            liftIO $ addBonus db logger boxxies' teamRef reason laps'
+            eventBase <- webEventBase <$> ask
+            liftIO $ addBonus eventBase db teamRef reason laps'
             Snap.redirect "/management"
         _ -> Snap.blaze $ Views.teamBonus team view
 
@@ -180,10 +188,9 @@ multibonus = do
     (view, res) <- DFS.runForm "multibonus" $ multibonusForm allTeams
     case res of
         Just (MultibonusForm laps' reason teams) -> do
-            logger    <- webLog <$> ask
-            boxxies'  <- webBoxxies <$> ask
+            eventBase <- webEventBase <$> ask
             forM_ teams $ \team ->
-                liftIO $ addBonus db logger boxxies' team reason laps'
+                liftIO $ addBonus eventBase db team reason laps'
             Snap.redirect "/management"
 
         _ -> Snap.blaze $ Views.multibonus allTeams view
@@ -203,18 +210,19 @@ site = Snap.route
     , ("/multibonus",          multibonus)
     ] <|> Snap.serveDirectory "static"
 
-listen :: Config -> Log -> Database -> WS.PubSub WS.Hybi00 -> Counter -> Boxxies
-       -> IO ()
-listen conf logger db pubSub counter boxxies' =
+listen :: Config -> Log -> EventBase -> Database -> WS.PubSub WS.Hybi00
+       -> Counter -> Boxxies -> IO ()
+listen conf logger eventBase db pubSub counter boxxies' =
     Snap.httpServe snapConfig $ runReaderT site env
   where
     env = WebEnv
-        { webConfig   = conf
-        , webLog      = logger
-        , webDatabase = db
-        , webPubSub   = pubSub
-        , webCounter  = counter
-        , webBoxxies  = boxxies'
+        { webConfig    = conf
+        , webLog       = logger
+        , webEventBase = eventBase
+        , webDatabase  = db
+        , webPubSub    = pubSub
+        , webCounter   = counter
+        , webBoxxies   = boxxies'
         }
 
     snapConfig = Snap.setPort (configWebPort conf) Snap.defaultConfig

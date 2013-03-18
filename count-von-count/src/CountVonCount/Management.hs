@@ -21,9 +21,9 @@ import           Data.Time                 (getCurrentTime)
 
 
 --------------------------------------------------------------------------------
-import           CountVonCount.Boxxy
 import           CountVonCount.Counter
-import           CountVonCount.Log         (Log)
+import           CountVonCount.EventBase   (EventBase)
+import qualified CountVonCount.EventBase   as EventBase
 import           CountVonCount.Persistence
 
 
@@ -56,10 +56,11 @@ assignment db = do
 
 
 --------------------------------------------------------------------------------
-addBonus :: Database -> Log -> Boxxies -> Ref Team -> Text -> Int -> IO ()
-addBonus db logger boxxies ref reason laps = do
+addBonus :: EventBase -> Database -> Ref Team -> Text
+         -> Int -> IO ()
+addBonus eventBase db ref reason laps = do
     timestamp <- liftIO getCurrentTime
     lapRef    <- addLaps db ref timestamp (Just reason) laps
     lap       <- getLap db lapRef
     team      <- getTeam db ref
-    liftIO $ withBoxxies logger boxxies $ \b -> putLap b lap team
+    EventBase.publish eventBase $ LapEvent team lap
