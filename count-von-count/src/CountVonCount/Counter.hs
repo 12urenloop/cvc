@@ -9,6 +9,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 module CountVonCount.Counter
     ( CounterEvent (..)
+    , CounterState (..)
     , Counter
     , newCounter
     , subscribe
@@ -27,8 +28,8 @@ import           Control.Concurrent          (threadDelay)
 import           Control.Concurrent.MVar     (MVar, newMVar, putMVar, takeMVar)
 import           Control.Monad               (forever)
 import           Data.Foldable               (forM_)
-import           Data.IORef                  (IORef, newIORef, readIORef,
-                                              writeIORef, modifyIORef)
+import           Data.IORef                  (IORef, modifyIORef, newIORef,
+                                              readIORef, writeIORef)
 import           Data.Time                   (addUTCTime, getCurrentTime)
 import           Data.Typeable               (Typeable)
 
@@ -76,9 +77,9 @@ subscribe counter cl ms logger eventBase db =
     EventBase.subscribe eventBase "CountVonCount.Counter.subscribe" $
         \event -> do
             () <- takeMVar $ counterLock counter
-            new <- step cl ms logger eventBase db event =<< (
-                readIORef $ counterMap counter)
-            writeIORef (counterMap counter) new
+            writeIORef (counterMap counter)
+                =<< step cl ms logger eventBase db event
+                =<< readIORef (counterMap counter)
             putMVar (counterLock counter) ()
 
 
