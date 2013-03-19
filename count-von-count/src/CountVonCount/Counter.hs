@@ -9,7 +9,7 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 module CountVonCount.Counter
     ( CounterEvent (..)
-    , CounterState (..)
+    , CounterState (..)
     , Counter
     , newCounter
     , subscribe
@@ -23,12 +23,13 @@ module CountVonCount.Counter
 
 
 --------------------------------------------------------------------------------
-import           Control.Applicative         ((<$>))
+import           Control.Applicative         ((<$>), (<*>))
 import           Control.Concurrent          (threadDelay)
-import           Control.Concurrent.MVar     (MVar, modifyMVar_, newMVar,
-                                              readMVar)
+import           Control.Concurrent.MVar     (MVar, newMVar, putMVar, takeMVar)
 import           Control.Monad               (forever)
 import           Data.Foldable               (forM_)
+import           Data.IORef                  (IORef, modifyIORef, newIORef,
+                                              readIORef, writeIORef)
 import           Data.Time                   (addUTCTime, getCurrentTime)
 import           Data.Typeable               (Typeable)
 
@@ -53,12 +54,15 @@ data CounterEvent
 
 
 --------------------------------------------------------------------------------
-newtype Counter = Counter {unCounter :: MVar CounterMap}
+data Counter = Counter
+    { counterMap  :: IORef CounterMap
+    , counterLock :: MVar ()
+    }
 
 
 --------------------------------------------------------------------------------
 newCounter :: IO Counter
-newCounter = Counter <$> newMVar emptyCounterMap
+newCounter = Counter <$> newIORef emptyCounterMap <*> newMVar ()
 
 
 --------------------------------------------------------------------------------
@@ -71,8 +75,12 @@ subscribe :: Counter
           -> IO ()
 subscribe counter cl ms logger eventBase db =
     EventBase.subscribe eventBase "CountVonCount.Counter.subscribe" $
-        \event -> modifyMVar_ (unCounter counter) $
-            step cl ms logger eventBase db event
+        \event -> do
+            () <- takeMVar $ counterLock counter
+            writeIORef (counterMap counter)
+                =<< step cl ms logger eventBase db event
+                =<< readIORef (counterMap counter)
+            putMVar (counterLock counter) ()
 
 
 --------------------------------------------------------------------------------
@@ -115,21 +123,23 @@ step cl ms logger eventBase db event cmap = do
 
 --------------------------------------------------------------------------------
 resetCounterFor :: P.Ref P.Baton -> Counter -> IO ()
-resetCounterFor baton counter =
-    modifyMVar_ (unCounter counter) $ return . resetCounterMapFor baton
+resetCounterFor baton counter = do
+    () <- takeMVar (counterLock counter)
+    modifyIORef (counterMap counter) $ resetCounterMapFor baton
+    putMVar (counterLock counter) ()
 
 
 --------------------------------------------------------------------------------
 counterStateFor :: P.Ref P.Baton -> Counter -> IO CounterState
 counterStateFor baton counter =
-    lookupCounterState baton <$> readMVar (unCounter counter)
+    lookupCounterState baton <$> readIORef (counterMap counter)
 
 
 --------------------------------------------------------------------------------
 findDeadBatons :: Int -> Counter -> IO [P.Ref P.Baton]
 findDeadBatons lifespan counter = do
     now  <- getCurrentTime
-    cmap <- readMVar (unCounter counter)
+    cmap <- readIORef $ counterMap counter
     return $ lastUpdatedBefore (negate lifespan' `addUTCTime` now) cmap
   where
     lifespan' = fromInteger $ fromIntegral lifespan
