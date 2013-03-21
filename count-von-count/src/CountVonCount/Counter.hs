@@ -16,6 +16,7 @@ module CountVonCount.Counter
 
     , resetCounterFor
     , counterStateFor
+    , counterStateForTeam
 
     , findDeadBatons
     , watchdog
@@ -133,6 +134,13 @@ resetCounterFor baton counter = do
 counterStateFor :: P.Ref P.Baton -> Counter -> IO CounterState
 counterStateFor baton counter =
     lookupCounterState baton <$> readIORef (counterMap counter)
+
+
+--------------------------------------------------------------------------------
+counterStateForTeam :: P.Team -> Counter -> IO CounterState
+counterStateForTeam team counter = case P.teamBaton team of
+    Nothing   -> return NoCounterState
+    Just bref -> counterStateFor bref counter
 
 
 --------------------------------------------------------------------------------

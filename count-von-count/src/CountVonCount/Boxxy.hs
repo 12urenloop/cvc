@@ -147,6 +147,9 @@ putState boxxies target = do
     -- Get info
     stations <- P.getAllStations database
     teams    <- P.getAllTeams database
+    teams'   <- forM teams $ \team -> do
+        cstate <- Counter.counterStateForTeam team (boxxiesCounter boxxies)
+        return (team, cstate)
     laps     <- P.getLatestLaps database Nothing 10
     laps'    <- forM laps $ \lap -> do
         team <- P.getTeam database $ P.lapTeam lap
@@ -157,7 +160,7 @@ putState boxxies target = do
             Just t  -> forM_ [t]
 
     withTarget $ \c -> makeRequest c "/state" $
-        stateJson circuitLength stations teams laps'
+        stateJson circuitLength stations teams' laps'
   where
     circuitLength = configCircuitLength config
     config        = boxxiesConfig boxxies
@@ -186,7 +189,8 @@ boxxiesToList boxxies = forM (boxxiesState boxxies) $ \(c, rs) -> do
 
 
 --------------------------------------------------------------------------------
-stateJson :: Double -> [P.Station] -> [P.Team] -> [(P.Lap, P.Team)] -> A.Value
+stateJson :: Double -> [P.Station] -> [(P.Team, Counter.CounterState)]
+          -> [(P.Lap, P.Team)] -> A.Value
 stateJson circuitLength stations teams laps = A.object
     [ "circuitLength" .= circuitLength
     , "stations" .= A.object
@@ -194,18 +198,25 @@ stateJson circuitLength stations teams laps = A.object
         | s <- stations
         ]
     , "teams" .= A.object
-        [P.refToText (P.teamId t) .= teamJson t | t <- teams]
+        [P.refToText (P.teamId t) .= teamJson t cs | (t, cs) <- teams]
     , "laps" .= map (uncurry lapJson) laps
     ]
 
 
 --------------------------------------------------------------------------------
-teamJson :: P.Team -> A.Value
-teamJson t = A.object
-    [ "id"   .= P.refToText (P.teamId t)
-    , "laps" .= P.teamLaps t
-    , "name" .= P.teamName t
+teamJson :: P.Team -> Counter.CounterState -> A.Value
+teamJson t cstate = A.object
+    [ "id"         .= P.refToText (P.teamId t)
+    , "laps"       .= P.teamLaps t
+    , "name"       .= P.teamName t
+    , "position"   .= pos
+    , "lastUpdate" .= lu
     ]
+  where
+    (pos, lu) = case cstate of
+        Counter.NoCounterState          -> (Nothing, Nothing)
+        Counter.CounterState _ se _ lu' ->
+            (Just (P.refToText $ P.stationId $ sensorStation se), Just lu')
 
 
 --------------------------------------------------------------------------------
