@@ -67,6 +67,10 @@ Boxxy.prototype.listen = function(uri) {
     socket.on('/lap', function(lap) {
         boxxy.addLap(lap);
     });
+
+    socket.on('/position', function(position) {
+        boxxy.updatePosition(position);
+    });
 }
 
 exports.initialize = function() {
