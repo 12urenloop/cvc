@@ -12,11 +12,6 @@
         <script type="text/JavaScript" src="http://live.12urenloop.be/socket.io/socket.io.js"></script>
         <script type="text/JavaScript" src="http://d3js.org/d3.v3.min.js"></script>
 
-
-        <script type="text/JavaScript">
-            var boxxyHost = 'http://live.12urenloop.be:8080';
-        </script>
-
         <link rel="stylesheet" type="text/css" href="http://live.12urenloop.be/css/application.css">
     </head>
     <body>
@@ -29,8 +24,8 @@
             <div id="content">
                 <h1>Scores</h1>
                 <div id="notification"></div>
-                <svg id="teams" height="100px"></svg>
-                <svg id="laps" height="205px"></svg>
+                <div id="ranking"></div>
+                <div id="laps" height="205px"></div>
             </div>
             <div id="footer">
                 <p>
@@ -41,73 +36,81 @@
         </div>
         
         <script type="text/JavaScript">
+            // Set up boxxy
+            var boxxy = boxxy.initialize(),
+                boxxyHost = 'http://live.12urenloop.be:8080';
+            
+            // Set up D3 vars
+            var margin = {top: 12, right: 0, bottom: 0, left: 0},
+                width = 460 - margin.left - margin.right,
+                height = 500 - margin.top - margin.bottom,
+                rowHeight = 20;
+
+            var rankingSvg, 
+                data;
+
             $(document).ready(function () {
-                var boxxy = boxxy.initialize();
-
                 boxxy.onUpdate = function () {
-                    if(boxxy.notification) {
-                        $('#notification').html('<p>' + boxxy.notification + '</p>');
-                    }
-
-                    var byScore = boxxy.teamsByScore();
-                    var select = d3.select('#teams').selectAll('text')
-                        .data(byScore, function (d) { return d.id });
-
-                    var select2 = d3.select('#teams').selectAll('.laps')
-                        .data(byScore, function (d) { return d.id });
-
-                    select.transition().duration(1000)
-                      .attr("y", function (d,i) {return (i + 1) * 20})
-                      .text(function (d, i) { return (i + 1) + ". " + d.name });
-
-                    select.enter().append("text")
-                      .text(function (d, i) { return (i + 1) + ". " + d.name })
-                      .attr("y", function (d,i) {return (i + 1) * 20 });
-
-                    select2.transition().duration(1000)
-                      .attr("y", function (d,i) {return (i + 1) * 20 })
-                      .text(function (d, i) { return d.laps });
-
-                    select2.enter().append("text")
-                      .text(function (d) { return d.laps })
-                      .attr("class", "laps")
-                      .attr("text-align", "end")
-                      .attr("x", $('svg').width() - 40)
-                      .attr("y", function (d,i) {return (i + 1) * 20 });
-
-
-                    var laps = d3.select("#laps").selectAll('text')
-                      .data(boxxy.laps, function (d) { return d.id });
-
-                    laps.transition().duration(1000)
-                      .attr("y", function (d,i) {return (i + 1) * 20})
-                      .text(function (d) { return d.team.name });
-
-                    laps.enter()
-                      .append("text")
-                      .transition().duration(1000)
-                      .text(function (d) { return d.team.name })
-                      .attr("y", function (d,i) {return (i + 1) * 20 });
-
-                    laps.exit().transition().duration(1000)
-                      .attr("y", function (d,i) {return (11) * 20})
-                      .text(function (d) { return d.team.name });
 
                 }
 
-                // LOLOL HOPE JAVACHE DIES WHEN READING THIS
-                $(window).bind("resize", function () {
-                    d3.selectAll(".laps").attr("x", $('svg').width() - 40)
-                });
+                // This function gets executed when the state is reset: so either
+                // the client initially connects, or when it reconnects after a
+                // failure.
+                boxxy.onPutState = function (state) {
+                    // Out with the old, in with the new
+                    $("#ranking").html("");
 
-                boxxy.onPutState = function (newState) {
-                /* Called when everything is (re)set */
+                    // Create a D3 readable array
+                    data = [];
+                    for(var key in state.teams){
+                        data.push(state.teams[key]);
+                    }
+                    data.sort(function(a, b) { return b.laps - a.laps });
+
+                    // Set up the main svg
+                    rankingSvg = d3.select("#ranking")
+                      .append("svg")
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom)
+                      .append("g")
+                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+                    // Add the team names to the left hand side
+                    rankingSvg.selectAll(".teamName")
+                        .data(data)
+                      .enter().append("text")
+                        .attr("class", "teamName")
+                        .attr("x", 5)
+                        .attr("y", function (d, i) { return i * rowHeight; })
+                        .text(function (d) { return d.name; });
+
+                    // Add the lap count to the right hand side
+                    rankingSvg.selectAll(".lapCount")
+                        .data(data)
+                      .enter().append("text")
+                        .attr("class", "lapCount")
+                        .attr("x", width)
+                        .attr("y", function (d, i) { return i * rowHeight; })
+                        .attr("text-anchor", "end")
+                        .text(function (d) { return d3.format(",")(d.laps).replace(",", "."); });
                 }
 
                 boxxy.onAddLap = function (lap) {
+                    data = boxxy.teamsByScore().sort(function(a, b) { return b.laps - a.laps });
+                    rankingSvg.selectAll(".teamName")
+                        .data(data)
+                      .transition()
+                        .attr("y", function (d, i) { return i * rowHeight; });
 
+                    rankingSvg.selectAll(".lapCount")
+                        .data(data)
+                      .transition()
+                        .attr("y", function (d, i) { return i * rowHeight; })
+                        .text(function (d) { return d3.format(",")(d.laps).replace(",", "."); });
                 }
 
+                // Listen to boxxy
                 boxxy.listen(boxxyHost);
             });
         </script>
