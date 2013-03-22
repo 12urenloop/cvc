@@ -37,10 +37,9 @@
         </div>
 
         <script type="text/JavaScript">
+            // Set up boxxy
+            var boxxy = boxxy.initialize();
             $(document).ready(function () {
-                // Set up boxxy
-                var boxxy = boxxy.initialize();
-
                 // This function gets executed when the state is reset: so either
                 // the client initially connects, or when it reconnects after a
                 // failure.
@@ -66,7 +65,7 @@
                     $("#extraFunctions").html(JSON.stringify(boxxy.teamsByScore()));
                     return false;
                 });
-            }
+            });
         </script>
     </body>
 </html>
