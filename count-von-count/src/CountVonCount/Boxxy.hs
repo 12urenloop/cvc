@@ -206,11 +206,11 @@ stateJson circuitLength stations teams laps = A.object
 --------------------------------------------------------------------------------
 teamJson :: P.Team -> Counter.CounterState -> A.Value
 teamJson t cstate = A.object
-    [ "id"         .= P.refToText (P.teamId t)
-    , "laps"       .= P.teamLaps t
-    , "name"       .= P.teamName t
-    , "position"   .= pos
-    , "lastUpdate" .= lu
+    [ "id"      .= P.refToText (P.teamId t)
+    , "laps"    .= P.teamLaps t
+    , "name"    .= P.teamName t
+    , "station" .= pos
+    , "updated" .= lu
     ]
   where
     (pos, lu) = case cstate of
