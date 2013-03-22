@@ -6,16 +6,14 @@
 
         <title>Scores</title>
 
+        <script type="text/JavaScript" src="http://live.12urenloop.be/js/boxxy.js"></script>
 
-            <script type="text/JavaScript" src="http://live.12urenloop.be/js/boxxy.js"></script>
-
-            <script type="text/JavaScript" src="http://live.12urenloop.be/js/jquery-1.7.1.min.js"></script>
-
-            <script type="text/JavaScript" src="http://live.12urenloop.be/socket.io/socket.io.js"></script>
-            <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+        <script type="text/JavaScript" src="http://live.12urenloop.be/js/jquery-1.7.1.min.js"></script>
+        <script type="text/JavaScript" src="http://live.12urenloop.be/socket.io/socket.io.js"></script>
+        <script type="text/JavaScript" src="http://d3js.org/d3.v3.min.js"></script>
 
 
-        <script>
+        <script type="text/JavaScript">
             var boxxyHost = 'http://live.12urenloop.be:8080';
         </script>
 
@@ -30,79 +28,9 @@
             </div>
             <div id="content">
                 <h1>Scores</h1>
-                <script type="text/JavaScript">
-    var boxxy = boxxy.initialize();
-
-    boxxy.onUpdate = function() {
-        if(boxxy.notification) {
-            $('#notification').html('<p>' + boxxy.notification + '</p>');
-        }
-
-        var byScore = boxxy.teamsByScore();
-        var select = d3.select('#teams').selectAll('text')
-            .data(byScore, function (d) { return d.id })
-
-        var select2 = d3.select('#teams').selectAll('.laps')
-            .data(byScore, function (d) { return d.id })
-
-        select.transition().duration(1000)
-          .attr("y", function (d,i) {return (i + 1) * 20})
-          .text(function (d, i) { return (i + 1) + ". " + d.name })
-
-        select.enter().append("text")
-          .text(function (d, i) { return (i + 1) + ". " + d.name })
-          .attr("y", function (d,i) {return (i + 1) * 20 })
-
-        select2.transition().duration(1000)
-          .attr("y", function (d,i) {return (i + 1) * 20 })
-          .text(function (d, i) { return d.laps })
-
-        select2.enter().append("text")
-          .text(function (d) { return d.laps })
-          .attr("class", "laps")
-          .attr("text-align", "end")
-          .attr("x", $('svg').width() - 40)
-          .attr("y", function (d,i) {return (i + 1) * 20 })
-
-
-        var laps = d3.select("#laps").selectAll('text')
-          .data(boxxy.laps, function (d) { return d.id })
-
-        laps.transition().duration(1000)
-          .attr("y", function (d,i) {return (i + 1) * 20})
-          .text(function (d) { return d.team.name })
-
-        laps.enter()
-          .append("text")
-          .transition().duration(1000)
-          .text(function (d) { return d.team.name })
-          .attr("y", function (d,i) {return (i + 1) * 20 })
-
-        laps.exit().transition().duration(1000)
-          .attr("y", function (d,i) {return (11) * 20})
-          .text(function (d) { return d.team.name })
-
-    }
-
-    // LOLOL HOPE JAVACHE DIES WHEN READING THIS
-    $(window).bind("resize", function() {
-        d3.selectAll(".laps").attr("x", $('svg').width() - 40)
-    });
-
-    boxxy.onPutState = function(newState) {
-        /* Called when everything is (re)set */
-    }
-
-    boxxy.onAddLap = function(lap) {
-
-    }
-
-    boxxy.listen(boxxyHost);
-</script>
-<div id="notification"></div>
-<svg id="teams" height="100px"></svg>
-<svg id="laps" height="205px"></svg>
-
+                <div id="notification"></div>
+                <svg id="teams" height="100px"></svg>
+                <svg id="laps" height="205px"></svg>
             </div>
             <div id="footer">
                 <p>
@@ -111,5 +39,77 @@
                 </p>
             </div>
         </div>
+        
+        <script type="text/JavaScript">
+            $(document).ready(function () {
+                var boxxy = boxxy.initialize();
+
+                boxxy.onUpdate = function () {
+                    if(boxxy.notification) {
+                        $('#notification').html('<p>' + boxxy.notification + '</p>');
+                    }
+
+                    var byScore = boxxy.teamsByScore();
+                    var select = d3.select('#teams').selectAll('text')
+                        .data(byScore, function (d) { return d.id });
+
+                    var select2 = d3.select('#teams').selectAll('.laps')
+                        .data(byScore, function (d) { return d.id });
+
+                    select.transition().duration(1000)
+                      .attr("y", function (d,i) {return (i + 1) * 20})
+                      .text(function (d, i) { return (i + 1) + ". " + d.name });
+
+                    select.enter().append("text")
+                      .text(function (d, i) { return (i + 1) + ". " + d.name })
+                      .attr("y", function (d,i) {return (i + 1) * 20 });
+
+                    select2.transition().duration(1000)
+                      .attr("y", function (d,i) {return (i + 1) * 20 })
+                      .text(function (d, i) { return d.laps });
+
+                    select2.enter().append("text")
+                      .text(function (d) { return d.laps })
+                      .attr("class", "laps")
+                      .attr("text-align", "end")
+                      .attr("x", $('svg').width() - 40)
+                      .attr("y", function (d,i) {return (i + 1) * 20 });
+
+
+                    var laps = d3.select("#laps").selectAll('text')
+                      .data(boxxy.laps, function (d) { return d.id });
+
+                    laps.transition().duration(1000)
+                      .attr("y", function (d,i) {return (i + 1) * 20})
+                      .text(function (d) { return d.team.name });
+
+                    laps.enter()
+                      .append("text")
+                      .transition().duration(1000)
+                      .text(function (d) { return d.team.name })
+                      .attr("y", function (d,i) {return (i + 1) * 20 });
+
+                    laps.exit().transition().duration(1000)
+                      .attr("y", function (d,i) {return (11) * 20})
+                      .text(function (d) { return d.team.name });
+
+                }
+
+                // LOLOL HOPE JAVACHE DIES WHEN READING THIS
+                $(window).bind("resize", function () {
+                    d3.selectAll(".laps").attr("x", $('svg').width() - 40)
+                });
+
+                boxxy.onPutState = function (newState) {
+                /* Called when everything is (re)set */
+                }
+
+                boxxy.onAddLap = function (lap) {
+
+                }
+
+                boxxy.listen(boxxyHost);
+            });
+        </script>
     </body>
 </html>
