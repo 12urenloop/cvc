@@ -12,21 +12,20 @@ module CountVonCount.Counter.Map
 
 
 --------------------------------------------------------------------------------
-import Data.Map (Map)
-import Data.Maybe (fromMaybe)
-import qualified Data.Map as M
-import Data.Time (UTCTime)
+import           Data.Map                    (Map)
+import qualified Data.Map                    as M
+import           Data.Maybe                  (fromMaybe)
+import           Data.Time                   (UTCTime)
 
 
 --------------------------------------------------------------------------------
-import CountVonCount.Counter.Core
-import CountVonCount.Persistence
-import CountVonCount.Sensor.Filter
+import           CountVonCount.Counter.Core
+import           CountVonCount.Persistence
+import           CountVonCount.Sensor.Filter
 
 
 --------------------------------------------------------------------------------
--- TODO maybe change to team
-type CounterMap = Map (Ref Baton) CounterState
+type CounterMap = Map (Ref Team) CounterState
 
 
 --------------------------------------------------------------------------------
@@ -41,35 +40,35 @@ stepCounterMap :: Double
                -> CounterMap
                -> ([CounterCoreEvent], [String], CounterMap)
 stepCounterMap circuitLength maxSpeed event !cmap =
-    let state                = lookupCounterState baton cmap
+    let state                = lookupCounterState teamRef cmap
         app                  = stepCounterState circuitLength maxSpeed event
         (es, tells, !state') = runCounterM app state
-    in (es, map prepend tells, M.insert baton state' cmap)
+    in (es, map prepend tells, M.insert teamRef state' cmap)
   where
-    baton       = batonId $ sensorBaton event
-    prepend str = show baton ++ ": " ++ str
+    teamRef     = teamId $ sensorTeam event
+    prepend str = show (sensorTeam event) ++ ": " ++ str
 
 
 --------------------------------------------------------------------------------
 -- | Resets the counter state for a single baton
-resetCounterMapFor :: Ref Baton
+resetCounterMapFor :: Ref Team
                    -> CounterMap
                    -> CounterMap
 resetCounterMapFor = flip M.insert emptyCounterState
 
 
 --------------------------------------------------------------------------------
-lookupCounterState :: Ref Baton
+lookupCounterState :: Ref Team
                    -> CounterMap
                    -> CounterState
-lookupCounterState baton = fromMaybe emptyCounterState . M.lookup baton
+lookupCounterState teamRef = fromMaybe emptyCounterState . M.lookup teamRef
 
 
 --------------------------------------------------------------------------------
 -- | Get a list of batons which were last updated before the given time
-lastUpdatedBefore :: UTCTime -> CounterMap -> [Ref Baton]
+lastUpdatedBefore :: UTCTime -> CounterMap -> [Ref Team]
 lastUpdatedBefore time cmap =
-    [ baton
-    | (baton, cstate) <- M.toList cmap
+    [ teamRef
+    | (teamRef, cstate) <- M.toList cmap
     , maybe False (< time) (counterLastUpdate cstate)
     ]

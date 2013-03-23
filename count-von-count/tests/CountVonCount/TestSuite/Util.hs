@@ -57,4 +57,3 @@ testLog f = do
     x      <- f logger
     Log.close logger
     return x
-

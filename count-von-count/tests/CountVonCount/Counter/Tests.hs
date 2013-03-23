@@ -40,17 +40,18 @@ counterTest :: Assertion
 counterTest = testLog $ \logger -> do
     -- Initialize stuffs
     db        <- newDatabase "test.db"
-    counter   <- Counter.newCounter
+    counter   <- Counter.newCounter logger db circuitLength maxSpeed
     eventBase <- newEventBase logger
-    Counter.subscribe counter circuitLength maxSpeed logger eventBase db
+    Counter.subscribe counter eventBase
 
     -- Add teams, calculate expected output
     ts <- forM (zip teamsAndBatons fixtures) $ \((name, baton), f) -> do
         tr     <- addTeam db name
         br     <- addBaton db (batonMac baton) (batonNr baton)
+        team   <- getTeam db tr
         baton' <- getBaton db br
         setTeamBaton db tr $ Just br
-        let fs = runCounterFixtureM (snd f) time baton'
+        let fs = runCounterFixtureM (snd f) time team baton'
         return (tr, sensorEvents fs, numLaps fs)
 
     -- Feed input to chan

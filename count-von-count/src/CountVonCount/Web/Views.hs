@@ -1,3 +1,4 @@
+--------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
 {-# OPTIONS_GHC -fno-warn-unused-do-bind #-}
 module CountVonCount.Web.Views
@@ -15,26 +16,32 @@ module CountVonCount.Web.Views
     , deadBatons
     ) where
 
-import Control.Monad (forM_)
-import Data.Time (TimeZone, formatTime, utcToLocalTime)
-import Prelude hiding (div)
-import System.Locale (defaultTimeLocale)
-import Text.Printf (printf)
 
-import Text.Blaze.Html (Html, (!))
-import qualified Data.Text as T
-import qualified Text.Blaze.Html5 as H
-import qualified Text.Blaze.Html5.Attributes as A
-import qualified Text.Digestive as D
-import qualified Text.Digestive.Blaze.Html5 as D
+--------------------------------------------------------------------------------
+import           Control.Monad                (forM_)
+import qualified Data.Text                    as T
+import           Data.Time                    (TimeZone, formatTime,
+                                               utcToLocalTime)
+import           Prelude                      hiding (div)
+import           System.Locale                (defaultTimeLocale)
+import           Text.Blaze.Html              (Html, (!))
+import qualified Text.Blaze.Html5             as H
+import qualified Text.Blaze.Html5.Attributes  as A
+import qualified Text.Digestive               as D
+import qualified Text.Digestive.Blaze.Html5   as D
+import           Text.Printf                  (printf)
 
-import CountVonCount.Boxxy
-import CountVonCount.Counter.Core
-import CountVonCount.Persistence
-import CountVonCount.Sensor.Filter
-import CountVonCount.Web.Partial
-import CountVonCount.Web.Views.Util
 
+--------------------------------------------------------------------------------
+import           CountVonCount.Boxxy
+import           CountVonCount.Counter
+import           CountVonCount.Persistence
+import           CountVonCount.Sensor.Filter
+import           CountVonCount.Web.Partial
+import           CountVonCount.Web.Views.Util
+
+
+--------------------------------------------------------------------------------
 template :: Html -> Html -> Html
 template title content = H.docTypeHtml $ do
     H.head $ do
@@ -55,10 +62,14 @@ template title content = H.docTypeHtml $ do
 
         block "footer" ""
 
+
+--------------------------------------------------------------------------------
 index :: Html
 index = template "Home" "Hello world"
 
-monitor :: Double -> [(Team, Maybe CounterState)] -> [Baton] -> Html
+
+--------------------------------------------------------------------------------
+monitor :: Double -> [(Team, Maybe CounterState)] -> DeadBatons -> Html
 monitor circuitLength teams deadBatons' =
     template "Monitor" $ block "monitor" $ do
         block "secondary" $ block "batons" $ H.toHtml $ deadBatons deadBatons'
@@ -68,6 +79,8 @@ monitor circuitLength teams deadBatons' =
             H.toHtml . uncurry (counterState circuitLength)
         javascript "/js/monitor.js"
 
+
+--------------------------------------------------------------------------------
 management :: [(Team, Maybe Baton)] -> [Baton] -> Html
 management teams batons = template "Teams" $ block "management" $ do
     block "secondary" $ do
@@ -112,6 +125,8 @@ management teams batons = template "Teams" $ block "management" $ do
   where
     macValue = H.toValue . batonMac
 
+
+--------------------------------------------------------------------------------
 laps :: [(Team, [Lap])] -> TimeZone -> Html
 laps teams tz = template "Laps" $ block "laps" $ do
     H.h1 "Laps"
@@ -128,6 +143,8 @@ laps teams tz = template "Laps" $ block "laps" $ do
                 H.td $ H.toHtml $ lapCount lap
                 H.td $ maybe "Nothing" H.toHtml $ lapReason lap
 
+
+--------------------------------------------------------------------------------
 boxxies :: [(BoxxyConfig, BoxxyState)] -> Html
 boxxies boxxies' = template "Boxxies" $ block "boxxies" $ do
     H.h1 "Boxxies"
@@ -135,6 +152,8 @@ boxxies boxxies' = template "Boxxies" $ block "boxxies" $ do
         H.td $ H.toHtml $ show b
         H.td $ H.toHtml $ show c
 
+
+--------------------------------------------------------------------------------
 teamNew :: D.View Html -> Html
 teamNew view = template "Add team" $ do
     H.h1 "Add team"
@@ -145,6 +164,8 @@ teamNew view = template "Add team" $ do
 
         D.inputSubmit "Add team"
 
+
+--------------------------------------------------------------------------------
 teamBonus :: Team -> D.View Html -> Html
 teamBonus team view = template "Add bonus" $ block "bonus" $ do
     -- TODO: cleanup
@@ -168,6 +189,8 @@ teamBonus team view = template "Add bonus" $ block "bonus" $ do
 
         D.inputSubmit "Add bonus"
 
+
+--------------------------------------------------------------------------------
 multibonus :: [Team] -> D.View Html -> Html
 multibonus teams view = template "Multibonus" $ block "multibonus" $ do
     H.h1 "Multibonus"
@@ -193,6 +216,8 @@ multibonus teams view = template "Multibonus" $ block "multibonus" $ do
 
         D.inputSubmit "Add multibonux"
 
+
+--------------------------------------------------------------------------------
 counterState :: Double -> Team -> Maybe CounterState -> Partial
 counterState circuitLength team cs = partial selector $ H.div
     ! A.class_ "team"
@@ -221,8 +246,14 @@ counterState circuitLength team cs = partial selector $ H.div
     selector = T.concat
         ["[data-team-id = \"", refToText (teamId team), "\"]"]
 
-deadBatons :: [Baton] -> Partial
-deadBatons [] = partial "#batons" $ H.h1 "Batons OK"
-deadBatons bs = partial "#batons" $ do
+
+--------------------------------------------------------------------------------
+deadBatons :: DeadBatons -> Partial
+deadBatons (DeadBatons []) = partial "#batons" $ H.h1 "Batons OK"
+deadBatons (DeadBatons ts) = partial "#batons" $ do
     H.h1 "Batons down!"
-    forM_ bs $ H.div . H.toHtml . show
+    forM_ ts $ \(team, baton) -> H.div $ do
+        H.toHtml (batonName baton)
+        " ("
+        H.toHtml $ show team
+        ")"

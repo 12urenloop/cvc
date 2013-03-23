@@ -40,9 +40,9 @@ main = do
     pubSub <- WS.newPubSub
 
     -- Start the counter
-    counter <- Counter.newCounter
-    Counter.subscribe counter (configCircuitLength config)
-        (configMaxSpeed config) logger eventBase database
+    counter <- Counter.newCounter logger database (configCircuitLength config)
+        (configMaxSpeed config)
+    Counter.subscribe counter eventBase
 
     -- Publish counter events to browser
     -- TODO: Now that we're using EventBase, we should be able to push this into
@@ -55,9 +55,8 @@ main = do
 
     -- Publish baton watchdog events to browser
     subscribe eventBase "baton handler" $ \deadBatons -> do
-        deadBatons' <- mapM (P.getBaton database) deadBatons
         WS.publish pubSub $ WS.textData $ A.encode $
-            Views.deadBatons deadBatons'
+            Views.deadBatons deadBatons
 
     -- Initialize boxxy
     boxxies <- newBoxxies config logger database counter eventBase

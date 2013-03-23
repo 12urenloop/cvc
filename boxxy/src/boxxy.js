@@ -1,4 +1,7 @@
 function Boxxy() {
+    /* Connection */
+    this.socket = null;
+
     /* State */
     this.frozen        = false;
     this.notification  = null;
@@ -62,17 +65,17 @@ Boxxy.prototype.teamsByScore = function() {
 /* Only used on the client side: this requires sockets.io to be in scope. */
 Boxxy.prototype.listen = function(uri) {
     var boxxy  = this;
-    var socket = io.connect(uri);
+    boxxy.socket = io.connect(uri);
 
-    socket.on('/state', function(state) {
+    boxxy.socket.on('/state', function(state) {
         boxxy.putState(state);
     });
 
-    socket.on('/lap', function(lap) {
+    boxxy.socket.on('/lap', function(lap) {
         boxxy.addLap(lap);
     });
 
-    socket.on('/position', function(position) {
+    boxxy.socket.on('/position', function(position) {
         boxxy.updatePosition(position);
     });
 }

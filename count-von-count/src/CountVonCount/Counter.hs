@@ -16,8 +16,8 @@ module CountVonCount.Counter
 
     , resetCounterFor
     , counterStateFor
-    , counterStateForTeam
 
+    , DeadBatons (..)
     , findDeadBatons
     , watchdog
     ) where
@@ -27,10 +27,11 @@ module CountVonCount.Counter
 import           Control.Applicative         ((<$>), (<*>))
 import           Control.Concurrent          (threadDelay)
 import           Control.Concurrent.MVar     (MVar, newMVar, putMVar, takeMVar)
-import           Control.Monad               (forever)
+import           Control.Monad               (forM, forever)
 import           Data.Foldable               (forM_)
 import           Data.IORef                  (IORef, modifyIORef, newIORef,
                                               readIORef, writeIORef)
+import           Data.Maybe                  (catMaybes)
 import           Data.Time                   (addUTCTime, getCurrentTime)
 import           Data.Typeable               (Typeable)
 
@@ -56,99 +57,99 @@ data CounterEvent
 
 --------------------------------------------------------------------------------
 data Counter = Counter
-    { counterMap  :: IORef CounterMap
-    , counterLock :: MVar ()
+    { counterLog           :: Log
+    , counterDatabase      :: P.Database
+    , counterCircuitLength :: Double
+    , counterMaxSpeed      :: Double
+    , counterMap           :: IORef CounterMap
+    , counterLock          :: MVar ()
     }
 
 
 --------------------------------------------------------------------------------
-newCounter :: IO Counter
-newCounter = Counter <$> newIORef emptyCounterMap <*> newMVar ()
+newCounter :: Log -> P.Database -> Double -> Double -> IO Counter
+newCounter logger database circuitLength maxSpeed =
+    Counter logger database circuitLength maxSpeed
+        <$> newIORef emptyCounterMap <*> newMVar ()
 
 
 --------------------------------------------------------------------------------
 subscribe :: Counter
-          -> Double
-          -> Double
-          -> Log
           -> EventBase
-          -> P.Database
           -> IO ()
-subscribe counter cl ms logger eventBase db =
+subscribe counter eventBase =
     EventBase.subscribe eventBase "CountVonCount.Counter.subscribe" $
-        \event -> do
-            () <- takeMVar $ counterLock counter
-            writeIORef (counterMap counter)
-                =<< step cl ms logger eventBase db event
-                =<< readIORef (counterMap counter)
-            putMVar (counterLock counter) ()
+        step counter eventBase
 
 
 --------------------------------------------------------------------------------
-step :: Double  -- ^ Circuit length
-     -> Double  -- ^ Max speed
-     -> Log
-     -> EventBase
-     -> P.Database
-     -> SensorEvent
-     -> CounterMap
-     -> IO CounterMap
-step cl ms logger eventBase db event cmap = do
-    let (events, tells, cmap') = stepCounterMap cl ms event cmap
-        cstate = lookupCounterState (P.batonId $ sensorBaton event) cmap'
+step :: Counter -> EventBase -> SensorEvent -> IO ()
+step counter eventBase event = do
+    () <- takeMVar $ counterLock counter
+    cmap <- readIORef (counterMap counter)
+    let (events, tells, cmap') = stepCounterMap
+            (counterCircuitLength counter) (counterMaxSpeed counter) event cmap
+        cstate = lookupCounterState (P.teamId $ sensorTeam event) cmap'
     forM_ tells $ Log.string logger "CountVonCount.Counter.step"
     process cstate events
-    return cmap'
+    writeIORef (counterMap counter) cmap'
+    putMVar (counterLock counter) ()
   where
+    database = counterDatabase counter
+    logger   = counterLog counter
+
     process _      []     = return ()
     process cstate events = isolate_ logger "CounterEvent process" $ do
-        mteam <- P.getTeamByMac db (P.batonMac . sensorBaton $ event)
+        let team = sensorTeam event
+        forM_ events $ \event' -> case event' of
+            -- Add the lap in the database and update team record
+            LapCoreEvent time _ -> do
+                Log.string logger "CountVonCount.Counter.step" $
+                    "Lap for " ++ show team
+                lapId' <- P.addLap database (P.teamId team) time
+                lap    <- P.getLap database lapId'
+                team'  <- P.getTeam database (P.teamId team)
+                EventBase.publish eventBase $ LapEvent team' lap
 
-        -- If the baton is registred to a team
-        forM_ mteam $ \team ->
-            forM_ events $ \event' -> case event' of
-                -- Add the lap in the database and update team record
-                LapCoreEvent time _ -> do
-                    Log.string logger "CountVonCount.Counter.step" $
-                        "Lap for " ++ show team
-                    lapId' <- P.addLap db (P.teamId team) time
-                    lap    <- P.getLap db lapId'
-                    team'  <- P.getTeam db (P.teamId team)
-                    EventBase.publish eventBase $ LapEvent team' lap
-
-                PositionCoreEvent _ s _ -> do
-                    Log.string logger "CountVonCount.Counter.step" $
-                        show team ++ " @ " ++ show s
-                    EventBase.publish eventBase $ PositionEvent team cstate
+            PositionCoreEvent _ s _ -> do
+                Log.string logger "CountVonCount.Counter.step" $
+                    show team ++ " @ " ++ show s
+                EventBase.publish eventBase $ PositionEvent team cstate
 
 
 --------------------------------------------------------------------------------
-resetCounterFor :: P.Ref P.Baton -> Counter -> IO ()
-resetCounterFor baton counter = do
+resetCounterFor :: P.Ref P.Team -> Counter -> IO ()
+resetCounterFor teamRef counter = do
     () <- takeMVar (counterLock counter)
-    modifyIORef (counterMap counter) $ resetCounterMapFor baton
+    modifyIORef (counterMap counter) $ resetCounterMapFor teamRef
     putMVar (counterLock counter) ()
 
 
 --------------------------------------------------------------------------------
-counterStateFor :: P.Ref P.Baton -> Counter -> IO CounterState
-counterStateFor baton counter =
-    lookupCounterState baton <$> readIORef (counterMap counter)
+counterStateFor :: P.Ref P.Team -> Counter -> IO CounterState
+counterStateFor teamRef counter =
+    lookupCounterState teamRef <$> readIORef (counterMap counter)
 
 
 --------------------------------------------------------------------------------
-counterStateForTeam :: P.Team -> Counter -> IO CounterState
-counterStateForTeam team counter = case P.teamBaton team of
-    Nothing   -> return NoCounterState
-    Just bref -> counterStateFor bref counter
+newtype DeadBatons = DeadBatons [(P.Team, P.Baton)]
+    deriving (Eq, Show, Typeable)
 
 
 --------------------------------------------------------------------------------
-findDeadBatons :: Int -> Counter -> IO [P.Ref P.Baton]
+findDeadBatons :: Int -> Counter -> IO DeadBatons
 findDeadBatons lifespan counter = do
-    now  <- getCurrentTime
-    cmap <- readIORef $ counterMap counter
-    return $ lastUpdatedBefore (negate lifespan' `addUTCTime` now) cmap
+    now      <- getCurrentTime
+    cmap     <- readIORef $ counterMap counter
+    let teamRefs = lastUpdatedBefore (negate lifespan' `addUTCTime` now) cmap
+    teams <- fmap catMaybes $ forM teamRefs $ \teamRef -> do
+        team  <- P.getTeam (counterDatabase counter) teamRef
+        case P.teamBaton team of
+            Nothing       -> return Nothing
+            Just batonRef -> do
+                baton <- P.getBaton (counterDatabase counter) batonRef
+                return $ Just (team, baton)
+    return $ DeadBatons teams
   where
     lifespan' = fromInteger $ fromIntegral lifespan
 

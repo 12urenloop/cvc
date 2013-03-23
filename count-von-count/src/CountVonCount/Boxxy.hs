@@ -148,8 +148,8 @@ putState boxxies target = do
     stations <- P.getAllStations database
     teams    <- P.getAllTeams database
     teams'   <- forM teams $ \team -> do
-        cstate <- Counter.counterStateForTeam team (boxxiesCounter boxxies)
-        return (team, cstate)
+        cs <- Counter.counterStateFor (P.teamId team) (boxxiesCounter boxxies)
+        return (team, cs)
     laps     <- P.getLatestLaps database Nothing 10
     laps'    <- forM laps $ \lap -> do
         team <- P.getTeam database $ P.lapTeam lap

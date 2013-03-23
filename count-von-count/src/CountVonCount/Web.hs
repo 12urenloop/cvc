@@ -69,9 +69,8 @@ monitor = do
 
     lifespan <- configBatonWatchdogLifespan . webConfig <$> ask
     dead     <- liftIO $ findDeadBatons lifespan counter
-    dead'    <- liftIO $ mapM (getBaton db) dead
     clen     <- configCircuitLength . webConfig <$> ask
-    Snap.blaze $ Views.monitor clen states dead'
+    Snap.blaze $ Views.monitor clen states dead
 
 monitorFeed :: Web ()
 monitorFeed = do

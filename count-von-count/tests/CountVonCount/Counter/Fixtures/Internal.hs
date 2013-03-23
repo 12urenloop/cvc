@@ -17,10 +17,12 @@ import Data.Time (UTCTime, addUTCTime)
 import CountVonCount.Persistence
 import CountVonCount.Sensor.Filter
 
-type CounterFixtureM = ReaderT (UTCTime, Baton) (Writer [CounterFixture])
+type CounterFixtureM = ReaderT (UTCTime, Team, Baton) (Writer [CounterFixture])
 
-runCounterFixtureM :: CounterFixtureM () -> UTCTime -> Baton -> [CounterFixture]
-runCounterFixtureM cf time baton = execWriter $ runReaderT cf (time, baton)
+runCounterFixtureM :: CounterFixtureM () -> UTCTime -> Team -> Baton
+                   -> [CounterFixture]
+runCounterFixtureM cf time team baton =
+    execWriter $ runReaderT cf (time, team, baton)
 
 data CounterFixture = CounterFixture SensorEvent Bool
     deriving (Show)
@@ -33,9 +35,9 @@ lap = at True
 
 at :: Bool -> Int -> Station -> CounterFixtureM ()
 at isLap time station = do
-    (offset, baton) <- ask
+    (offset, team, baton) <- ask
     let time' = fromIntegral time `addUTCTime` offset
-    tell [CounterFixture (SensorEvent time' station baton) isLap]
+    tell [CounterFixture (SensorEvent time' station baton team 0) isLap]
 
 sensorEvents :: [CounterFixture] -> [SensorEvent]
 sensorEvents = map (\(CounterFixture se _) -> se)
