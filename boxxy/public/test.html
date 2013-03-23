@@ -44,7 +44,7 @@
                 rowHeight = 20;
 
             var rankingSvg,
-                previousStation = [];
+                numberOfStations = 4;
 
             $(document).ready(function () {
 
@@ -92,7 +92,15 @@
                         .attr("text-anchor", "end")
                         .text(function (d) { return d3.format(",")(d.laps).replace(",", "."); });
 
-                    // Add a progress bar
+                    // Add a progress spinner background
+                    teams.append("path")
+                        .attr("class", "progressBackgrond")
+                        .attr("transform", "translate(" + ( width - 10 ) + ", -5)")
+                        .attr("fill-opacity", 0.2)
+                        .style("fill", "steelblue")
+                        .attr("d", arc(numberOfStations));
+
+                    // Add a progress spinner
                     teams.append("path")
                         .attr("class", "progress")
                         .attr("transform", "translate(" + ( width - 10 ) + ", -5)")
@@ -102,7 +110,7 @@
                         .attrTween("d", arcTween);
                 }
 
-                // This function updates the lapcount and order
+                // Updates the lapcount and order
                 // teams should be an array
                 function update(teams){
                     // Create a D3 readable array and add ranking
@@ -119,17 +127,19 @@
                     team.selectAll(".lapCount")
                         .text(function (d) { return d3.format(",")(d.laps).replace(",", "."); });
                 }
-                
+
+                // Updates the progress spinner
                 function updateProgress(teamId, teams){
                     // Create a D3 readable array and add ranking
                     var data = addRankingInformation(teams);
 
                     var team = d3.selectAll(".team")
-                        .data(data, function(d) { return d.id});
+                        .data(data, function (d) {return d.id;});
 
                     team.filter("#team_" + teamId).selectAll(".progress")
                       .transition()
-                        .duration(2000)
+                        .duration(20000)
+                        .ease("linear")
                         .attrTween("d", arcTween);
                 }
 
@@ -142,12 +152,16 @@
                     return data;
                 }
 
-                function arcTween(a) {
-                    var oldValue = this._current == null || this._current.station == 4 ? {"station" : 0} : this._current,
-                        i = d3.interpolate(oldValue , a);
-                    this._current = i(0);
-                    return function(t) {
-                        return arc(i(t));
+                // Tween the arcs!
+                function arcTween(b) {
+                    var oldValue = this._current == null ? 0 : this._current,
+                        temp = parseInt(b.station, 10),
+                        newValue = oldValue > temp + 1 ? temp + numberOfStations + 1 : temp + 1, 
+                        a = this,
+                        i = d3.interpolate(oldValue , newValue);
+                    return function (t) {
+                        a._current = i(t) % (numberOfStations + 0.01);
+                        return arc(a._current);
                     };
                 }
 
@@ -155,7 +169,7 @@
                     .innerRadius(5)
                     .outerRadius(8)
                     .startAngle(0)
-                    .endAngle(function(d) { return (d.station / 4) * 2 * Math.PI; });
+                    .endAngle(function(d) { return (d / numberOfStations) * 2 * Math.PI; });
 
                 // This function gets executed when the state is reset: so either
                 // the client initially connects, or when it reconnects after a
