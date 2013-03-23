@@ -43,17 +43,25 @@
                 width = 460 - margin.left - margin.right,
                 rowHeight = 20;
 
-            var rankingSvg,
-                data;
+            var rankingSvg;
 
             $(document).ready(function () {
+
+                // Adds the position in the ranking to the data
+                function addRankingInformation(teams){
+                    var data = teams.sort(function(a, b) { return b.laps - a.laps });
+                    for (var i = 0; i < data.length; i++) {
+                        data[i].rankingPosition = i;
+                    }
+                    return data;
+                }
 
                 // This functions draws the complete visualisation
                 // teams should be an array with teams
                 function redrawEverything(teams) {
-                    // Create a D3 readable array
-                    data = teams.sort(function(a, b) { return b.laps - a.laps });
-                    
+                    // Create a D3 readable array and add ranking
+                    var data = addRankingInformation(teams);
+
                     var height = data.length * rowHeight;
 
                     // Set up the main svg
@@ -64,56 +72,50 @@
                       .append("g")
                         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+                    // Add a g for every team
+                    var teams = rankingSvg.selectAll(".team")
+                        .data(data, function(d) { return d.id})
+                      .enter().append("g")
+                        .attr("class", "team")
+                        .attr("id", function (d) { return d.id; })
+                        .attr("transform", function (d) { return "translate(0," + (d.rankingPosition * rowHeight) + ")"});
+
                     // Add the team position
-                    rankingSvg.selectAll(".position")
-                        .data(data)
-                      .enter().append("text")
+                    teams.append("text")
                         .attr("class", "position")
                         .attr("x", 20)
-                        .attr("y", function (d, i) { return i * rowHeight; })
                         .attr("text-anchor", "end")
-                        .text(function (d, i) { return (i + 1) + "."; });
+                        .text(function (d) { return (d.rankingPosition + 1) + "."; });
 
                     // Add the team names to the left hand side
-                    rankingSvg.selectAll(".teamName")
-                        .data(data)
-                      .enter().append("text")
+                    teams.append("text")
                         .attr("class", "teamName")
                         .attr("x", 25)
-                        .attr("y", function (d, i) { return i * rowHeight; })
                         .text(function (d) { return d.name; });
 
                     // Add the lap count to the right hand side
-                    rankingSvg.selectAll(".lapCount")
-                        .data(data)
-                      .enter().append("text")
+                    teams.append("text")
                         .attr("class", "lapCount")
                         .attr("x", width)
-                        .attr("y", function (d, i) { return i * rowHeight; })
                         .attr("text-anchor", "end")
                         .text(function (d) { return d3.format(",")(d.laps).replace(",", "."); });
                 }
-                
+
                 // This function updates the lapcount and order
                 // teams should be an array
                 function update(teams){
-                    data = teams.sort(function(a, b) { return b.laps - a.laps });
+                    // Create a D3 readable array and add ranking
+                    var data = addRankingInformation(teams);
 
-                    rankingSvg.selectAll(".position")
-                        .data(data)
-                      .transition()  
-                        .attr("y", function (d, i) { return i * rowHeight; })
-                        .text(function (d, i) { return (i + 1) + "."; });
-
-                    rankingSvg.selectAll(".teamName")
-                        .data(data)
+                    var team = d3.selectAll(".team")
+                        .data(data, function(d) { return d.id})
                       .transition()
-                        .attr("y", function (d, i) { return i * rowHeight; });
+                        .attr("transform", function (d) { return "translate(0," + (d.rankingPosition * rowHeight) + ")"});
 
-                    rankingSvg.selectAll(".lapCount")
-                        .data(data)
-                      .transition()
-                        .attr("y", function (d, i) { return i * rowHeight; })
+                    team.selectAll(".position")
+                        .text(function (d) { return (d.rankingPosition + 1) + "."; });
+
+                    team.selectAll(".lapCount")
                         .text(function (d) { return d3.format(",")(d.laps).replace(",", "."); });
                 }
 
