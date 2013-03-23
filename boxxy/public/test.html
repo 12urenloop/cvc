@@ -10,6 +10,7 @@
 
         <script type="text/JavaScript" src="http://live.12urenloop.be/js/jquery-1.7.1.min.js"></script>
         <script type="text/JavaScript" src="http://live.12urenloop.be/socket.io/socket.io.js"></script>
+
         <script type="text/JavaScript" src="http://d3js.org/d3.v3.min.js"></script>
 
         <link rel="stylesheet" type="text/css" href="http://live.12urenloop.be/css/application.css">
@@ -50,21 +51,14 @@
                 data;
 
             $(document).ready(function () {
-                boxxy.onUpdate = function () {
 
-                }
-
-                // This function gets executed when the state is reset: so either
-                // the client initially connects, or when it reconnects after a
-                // failure.
-                boxxy.onPutState = function (state) {
-                    // Out with the old, in with the new
-                    $("#ranking").html("");
-
+                // This functions draws the complete visualisation
+                // teams should be the teams object from the state object
+                function redrawEverything(teams) {
                     // Create a D3 readable array
                     data = [];
-                    for(var key in state.teams){
-                        data.push(state.teams[key]);
+                    for(var key in teams){
+                        data.push(teams[key]);
                     }
                     data.sort(function(a, b) { return b.laps - a.laps });
 
@@ -76,12 +70,22 @@
                       .append("g")
                         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+                    // Add the team position
+                    rankingSvg.selectAll(".position")
+                        .data(data)
+                      .enter().append("text")
+                        .attr("class", "position")
+                        .attr("x", 20)
+                        .attr("y", function (d, i) { return i * rowHeight; })
+                        .attr("text-anchor", "end")
+                        .text(function (d, i) { return (i + 1) + "."; });
+
                     // Add the team names to the left hand side
                     rankingSvg.selectAll(".teamName")
                         .data(data)
                       .enter().append("text")
                         .attr("class", "teamName")
-                        .attr("x", 5)
+                        .attr("x", 25)
                         .attr("y", function (d, i) { return i * rowHeight; })
                         .text(function (d) { return d.name; });
 
@@ -95,9 +99,18 @@
                         .attr("text-anchor", "end")
                         .text(function (d) { return d3.format(",")(d.laps).replace(",", "."); });
                 }
+                
+                // This function updates the lapcount and order
+                // teams should be an array
+                function update(teams){
+                    data = teams.sort(function(a, b) { return b.laps - a.laps });
 
-                boxxy.onAddLap = function (lap) {
-                    data = boxxy.teamsByScore().sort(function(a, b) { return b.laps - a.laps });
+                    raningSvg.selectAll(".position")
+                        .data(data)
+                      .transition()  
+                        .attr("y", function (d, i) { return i * rowHeight; })
+                        .text(function (d, i) { return (i + 1) + "."; });
+
                     rankingSvg.selectAll(".teamName")
                         .data(data)
                       .transition()
@@ -109,6 +122,22 @@
                         .attr("y", function (d, i) { return i * rowHeight; })
                         .text(function (d) { return d3.format(",")(d.laps).replace(",", "."); });
                 }
+
+                // This function gets executed when the state is reset: so either
+                // the client initially connects, or when it reconnects after a
+                // failure.
+                boxxy.onPutState = function (state) {
+                    // Out with the old, in with the new
+                    $("#ranking").html("");
+                    redrawEverything(state.teams);
+                }
+
+                // This function gets executed when a team completes a lap.
+                boxxy.onAddLap = function (lap) {
+                    update(boxxy.teamsByScore());
+                }
+
+                boxxy.onUpdate = function () {}
 
                 // Listen to boxxy
                 boxxy.listen(boxxyHost);
