@@ -1,10 +1,12 @@
 function Boxxy() {
     /* State */
-    this.frozen       = false;
-    this.notification = null;
-    this.teams        = {};
-    this.laps         = [];
-    this.maxLaps      = 10;
+    this.frozen        = false;
+    this.notification  = null;
+    this.circuitLength = 0;
+    this.stations      = {};
+    this.teams         = {};
+    this.laps          = [];
+    this.maxLaps       = 10;
 
     /* To be user will override this */
     this.onPutState       = function(state) {};
@@ -16,6 +18,8 @@ function Boxxy() {
 Boxxy.prototype.putState = function(state) {
     if(state.frozen != null) this.frozen = state.frozen;
     if(state.notification != null) this.notification = state.notification;
+    if(state.circuitLength != null) this.circuitLength = state.circuitLength;
+    if(state.stations != null) this.stations = state.stations;
     if(!this.frozen && state.teams) this.teams = state.teams;
     if(!this.frozen && state.laps) this.laps = state.laps;
 
@@ -30,7 +34,7 @@ Boxxy.prototype.addLap = function(lap) {
 
         /* Just copy the total laps instead of calculating it, more robust. */
         this.teams[lap.team].laps = lap.total;
-        this.teams[lap.team].lastUpdate = lap.timestamp;
+        this.teams[lap.team].updated = lap.timestamp;
 
         this.onAddLap(lap);
         this.onUpdate();
@@ -39,8 +43,8 @@ Boxxy.prototype.addLap = function(lap) {
 
 Boxxy.prototype.updatePosition = function(position) {
     if(!this.frozen) {
-        this.teams[position.team].position = position.station;
-        this.teams[position.team].lastUpdate = position.timestamp;
+        this.teams[position.team].station = position.station;
+        this.teams[position.team].updated = position.timestamp;
         this.onUpdatePosition(position);
         this.onUpdate();
     }
