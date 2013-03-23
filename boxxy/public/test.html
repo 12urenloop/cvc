@@ -6,11 +6,10 @@
 
         <title>Scores</title>
 
-        <script type="text/JavaScript" src="http://live.12urenloop.be/js/boxxy.js"></script>
-
-        <script type="text/JavaScript" src="http://live.12urenloop.be/js/jquery-1.7.1.min.js"></script>
-        <script type="text/JavaScript" src="http://live.12urenloop.be/socket.io/socket.io.js"></script>
-        <script type="text/JavaScript" src="http://d3js.org/d3.v3.min.js"></script>
+        <script src="http://live.12urenloop.be/js/boxxy.js"></script>
+        <script src="http://live.12urenloop.be/js/jquery-1.7.1.min.js"></script>
+        <script src="http://live.12urenloop.be/socket.io/socket.io.js"></script>
+        <script src="http://d3js.org/d3.v3.min.js"></script>
 
         <link rel="stylesheet" type="text/css" href="http://live.12urenloop.be/css/application.css">
     </head>
@@ -34,19 +33,19 @@
                 </p>
             </div>
         </div>
-        
-        <script type="text/JavaScript">
+
+        <script>
             // Set up boxxy
             var boxxy = boxxy.initialize(),
                 boxxyHost = 'http://live.12urenloop.be:8080';
-            
+
             // Set up D3 vars
             var margin = {top: 12, right: 0, bottom: 0, left: 0},
                 width = 460 - margin.left - margin.right,
                 height = 500 - margin.top - margin.bottom,
                 rowHeight = 20;
 
-            var rankingSvg, 
+            var rankingSvg,
                 data;
 
             $(document).ready(function () {

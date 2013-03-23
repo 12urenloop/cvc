@@ -23,7 +23,7 @@ Boxxy.prototype.putState = function(state) {
     if(!this.frozen && state.teams) this.teams = state.teams;
     if(!this.frozen && state.laps) this.laps = state.laps;
 
-    this.onPutState(state);
+    this.onPutState(this);
     this.onUpdate();
 }
 
