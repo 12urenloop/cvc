@@ -1,25 +1,29 @@
 function Boxxy() {
     /* State */
-    this.frozen       = false;
-    this.notification = null;
-    this.teams        = {};
-    this.laps         = [];
-    this.maxLaps      = 10;
+    this.frozen        = false;
+    this.notification  = null;
+    this.circuitLength = 0;
+    this.stations      = {};
+    this.teams         = {};
+    this.laps          = [];
+    this.maxLaps       = 10;
 
     /* To be user will override this */
-    this.onPutState       = function(state) {};
+    this.onPutState       = function(stateDelta) {};
     this.onAddLap         = function(lap) {};
     this.onUpdatePosition = function(position) {};
     this.onUpdate         = function() {};
 }
 
-Boxxy.prototype.putState = function(state) {
-    if(state.frozen != null) this.frozen = state.frozen;
-    if(state.notification != null) this.notification = state.notification;
-    if(!this.frozen && state.teams) this.teams = state.teams;
-    if(!this.frozen && state.laps) this.laps = state.laps;
+Boxxy.prototype.putState = function(stateDelta) {
+    if(stateDelta.frozen != null) this.frozen = stateDelta.frozen;
+    if(stateDelta.notification != null) this.notification = stateDelta.notification;
+    if(stateDelta.circuitLength != null) this.circuitLength = stateDelta.circuitLength;
+    if(stateDelta.stations != null) this.stations = stateDelta.stations;
+    if(!this.frozen && stateDelta.teams) this.teams = stateDelta.teams;
+    if(!this.frozen && stateDelta.laps) this.laps = stateDelta.laps;
 
-    this.onPutState(state);
+    this.onPutState(stateDelta);
     this.onUpdate();
 }
 
@@ -30,7 +34,7 @@ Boxxy.prototype.addLap = function(lap) {
 
         /* Just copy the total laps instead of calculating it, more robust. */
         this.teams[lap.team].laps = lap.total;
-        this.teams[lap.team].lastUpdate = lap.timestamp;
+        this.teams[lap.team].updated = lap.timestamp;
 
         this.onAddLap(lap);
         this.onUpdate();
@@ -39,8 +43,8 @@ Boxxy.prototype.addLap = function(lap) {
 
 Boxxy.prototype.updatePosition = function(position) {
     if(!this.frozen) {
-        this.teams[position.team].position = position.station;
-        this.teams[position.team].lastUpdate = position.timestamp;
+        this.teams[position.team].station = position.station;
+        this.teams[position.team].updated = position.timestamp;
         this.onUpdatePosition(position);
         this.onUpdate();
     }

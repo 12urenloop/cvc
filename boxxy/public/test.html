@@ -5,13 +5,10 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title>Scores</title>
-
-        <script type="text/JavaScript" src="http://live.12urenloop.be/js/boxxy.js"></script>
-
-        <script type="text/JavaScript" src="http://live.12urenloop.be/js/jquery-1.7.1.min.js"></script>
-        <script type="text/JavaScript" src="http://live.12urenloop.be/socket.io/socket.io.js"></script>
-
-        <script type="text/JavaScript" src="http://d3js.org/d3.v3.min.js"></script>
+        <script src="http://live.12urenloop.be/js/boxxy.js"></script>
+        <script src="http://live.12urenloop.be/js/jquery-1.7.1.min.js"></script>
+        <script src="http://live.12urenloop.be/socket.io/socket.io.js"></script>
+        <script src="http://d3js.org/d3.v3.min.js"></script>
 
         <link rel="stylesheet" type="text/css" href="http://live.12urenloop.be/css/application.css">
     </head>
@@ -35,32 +32,28 @@
                 </p>
             </div>
         </div>
-        
-        <script type="text/JavaScript">
+
+        <script>
             // Set up boxxy
             var boxxy = boxxy.initialize(),
                 boxxyHost = 'http://live.12urenloop.be:8080';
-            
+
             // Set up D3 vars
             var margin = {top: 12, right: 0, bottom: 0, left: 0},
                 width = 460 - margin.left - margin.right,
                 height = 500 - margin.top - margin.bottom,
                 rowHeight = 20;
 
-            var rankingSvg, 
+            var rankingSvg,
                 data;
 
             $(document).ready(function () {
 
                 // This functions draws the complete visualisation
-                // teams should be the teams object from the state object
+                // teams should be an array with teams
                 function redrawEverything(teams) {
                     // Create a D3 readable array
-                    data = [];
-                    for(var key in teams){
-                        data.push(teams[key]);
-                    }
-                    data.sort(function(a, b) { return b.laps - a.laps });
+                    data = teams.sort(function(a, b) { return b.laps - a.laps });
 
                     // Set up the main svg
                     rankingSvg = d3.select("#ranking")
@@ -129,7 +122,7 @@
                 boxxy.onPutState = function (state) {
                     // Out with the old, in with the new
                     $("#ranking").html("");
-                    redrawEverything(state.teams);
+                    redrawEverything(boxxy.teamsByScore());
                 }
 
                 // This function gets executed when a team completes a lap.
