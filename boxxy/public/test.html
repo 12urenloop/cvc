@@ -41,7 +41,6 @@
             // Set up D3 vars
             var margin = {top: 12, right: 0, bottom: 0, left: 0},
                 width = 460 - margin.left - margin.right,
-                height = 500 - margin.top - margin.bottom,
                 rowHeight = 20;
 
             var rankingSvg,
@@ -54,6 +53,8 @@
                 function redrawEverything(teams) {
                     // Create a D3 readable array
                     data = teams.sort(function(a, b) { return b.laps - a.laps });
+                    
+                    var height = data.length * rowHeight;
 
                     // Set up the main svg
                     rankingSvg = d3.select("#ranking")
@@ -98,7 +99,7 @@
                 function update(teams){
                     data = teams.sort(function(a, b) { return b.laps - a.laps });
 
-                    raningSvg.selectAll(".position")
+                    rankingSvg.selectAll(".position")
                         .data(data)
                       .transition()  
                         .attr("y", function (d, i) { return i * rowHeight; })
