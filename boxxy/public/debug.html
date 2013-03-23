@@ -61,18 +61,18 @@
                 // This function gets executed when the state is reset: so either
                 // the client initially connects, or when it reconnects after a
                 // failure.
-                boxxy.onPutState = function (state) {
-                    $("#onPutState").prepend(JSON.stringify(state) + "\n");
+                boxxy.onPutState = function(stateDelta) {
+                    $("#onPutState").prepend(JSON.stringify(stateDelta) + "\n");
                 };
 
                 // This function gets executed when a team completes a lap.
-                boxxy.onAddLap = function (lap) {
+                boxxy.onAddLap = function(lap) {
                     $("#onAddLap").prepend(JSON.stringify(lap) + "\n");
                 };
 
                 // This function gets executed when a team changes its position to
                 // another station.
-                boxxy.onUpdatePosition = function (position) {
+                boxxy.onUpdatePosition = function(position) {
                     $("#onUpdatePosition").prepend(JSON.stringify(position) + "\n");
                 }
 
