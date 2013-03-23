@@ -114,10 +114,10 @@ stepCounterState len maxSpeed event = do
                     PositionCoreEvent time station speed :
                     replicate numLaps (LapCoreEvent time 0)  -- lapTime is TODO
           where
-            SensorEvent time     station     _ = event
-            SensorEvent prevTime prevStation _ = prev
-            Station _ _ _ position             = station
-            Station _ _ _ prevPosition         = prevStation
+            SensorEvent time     station     _ _ = event
+            SensorEvent prevTime prevStation _ _ = prev
+            Station _ _ _ position               = station
+            Station _ _ _ prevPosition           = prevStation
 
             dt            = time `diffTime` prevTime
             possibilities = solve len maxSpeed prevPosition position dt

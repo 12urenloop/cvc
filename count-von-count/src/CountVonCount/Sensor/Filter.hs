@@ -10,7 +10,7 @@ module CountVonCount.Sensor.Filter
 
 
 --------------------------------------------------------------------------------
-import           Control.Applicative       ((<$>))
+import           Control.Applicative       (pure, (<$>), (<*>))
 import           Data.Foldable             (forM_)
 import qualified Data.Text                 as T
 import           Data.Time                 (UTCTime)
@@ -31,6 +31,7 @@ data SensorEvent = SensorEvent
     { sensorTime    :: UTCTime
     , sensorStation :: Station
     , sensorBaton   :: Baton
+    , sensorRssi    :: Double
     } deriving (Eq, Show, Typeable)
 
 
@@ -52,8 +53,9 @@ filterSensorEvent database logger rssiThreshold raw
                     "Warning: got event from unknown station " ++
                     T.unpack (rawSensorStation raw)
                 return Nothing
-            Just station -> return $
-                SensorEvent (rawSensorTime raw) station <$> mbaton
+            Just station -> return $ SensorEvent (rawSensorTime raw) station
+                    <$> mbaton
+                    <*> pure (rawSensorRssi raw)
 
 
 --------------------------------------------------------------------------------
