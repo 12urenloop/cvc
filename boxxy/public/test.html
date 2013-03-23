@@ -39,22 +39,14 @@
                 boxxyHost = 'http://live.12urenloop.be:8080';
 
             // Set up D3 vars
-            var margin = {top: 12, right: 0, bottom: 0, left: 0},
+            var margin = {top: 15, right: 0, bottom: 0, left: 0},
                 width = 460 - margin.left - margin.right,
                 rowHeight = 20;
 
-            var rankingSvg;
+            var rankingSvg,
+                previousStation = [];
 
             $(document).ready(function () {
-
-                // Adds the position in the ranking to the data
-                function addRankingInformation(teams){
-                    var data = teams.sort(function(a, b) { return b.laps - a.laps });
-                    for (var i = 0; i < data.length; i++) {
-                        data[i].rankingPosition = i;
-                    }
-                    return data;
-                }
 
                 // This functions draws the complete visualisation
                 // teams should be an array with teams
@@ -77,7 +69,7 @@
                         .data(data, function(d) { return d.id})
                       .enter().append("g")
                         .attr("class", "team")
-                        .attr("id", function (d) { return d.id; })
+                        .attr("id", function (d) { return "team_" + d.id; })
                         .attr("transform", function (d) { return "translate(0," + (d.rankingPosition * rowHeight) + ")"});
 
                     // Add the team position
@@ -96,9 +88,18 @@
                     // Add the lap count to the right hand side
                     teams.append("text")
                         .attr("class", "lapCount")
-                        .attr("x", width)
+                        .attr("x", width - 5 - rowHeight)
                         .attr("text-anchor", "end")
                         .text(function (d) { return d3.format(",")(d.laps).replace(",", "."); });
+
+                    // Add a progress bar
+                    teams.append("path")
+                        .attr("class", "progress")
+                        .attr("transform", "translate(" + ( width - 10 ) + ", -5)")
+                        .style("fill", "steelblue")
+                      .transition()
+                        .duration(2000)
+                        .attrTween("d", arcTween);
                 }
 
                 // This function updates the lapcount and order
@@ -118,6 +119,43 @@
                     team.selectAll(".lapCount")
                         .text(function (d) { return d3.format(",")(d.laps).replace(",", "."); });
                 }
+                
+                function updateProgress(teamId, teams){
+                    // Create a D3 readable array and add ranking
+                    var data = addRankingInformation(teams);
+
+                    var team = d3.selectAll(".team")
+                        .data(data, function(d) { return d.id});
+
+                    team.filter("#team_" + teamId).selectAll(".progress")
+                      .transition()
+                        .duration(2000)
+                        .attrTween("d", arcTween);
+                }
+
+                // Adds the position in the ranking to the data
+                function addRankingInformation(teams){
+                    var data = teams.sort(function(a, b) { return b.laps - a.laps });
+                    for (var i = 0; i < data.length; i++) {
+                        data[i].rankingPosition = i;
+                    }
+                    return data;
+                }
+
+                function arcTween(a) {
+                    var oldValue = this._current == null || this._current.station == 4 ? {"station" : 0} : this._current,
+                        i = d3.interpolate(oldValue , a);
+                    this._current = i(0);
+                    return function(t) {
+                        return arc(i(t));
+                    };
+                }
+
+                var arc = d3.svg.arc()
+                    .innerRadius(5)
+                    .outerRadius(8)
+                    .startAngle(0)
+                    .endAngle(function(d) { return (d.station / 4) * 2 * Math.PI; });
 
                 // This function gets executed when the state is reset: so either
                 // the client initially connects, or when it reconnects after a
@@ -131,6 +169,10 @@
                 // This function gets executed when a team completes a lap.
                 boxxy.onAddLap = function (lap) {
                     update(boxxy.teamsByScore());
+                }
+
+                boxxy.onUpdatePosition = function (position){
+                    updateProgress(position.team, boxxy.teamsByScore());
                 }
 
                 boxxy.onUpdate = function () {}
