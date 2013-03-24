@@ -23,14 +23,13 @@ import           Data.Enumerator            (Iteratee, ($$), (=$))
 import qualified Data.Enumerator            as E
 import qualified Data.Enumerator.List       as EL
 import           Data.Foldable              (forM_)
-import           Data.Time                  (UTCTime, getCurrentTime, parseTime)
+import           Data.Time                  (UTCTime, getCurrentTime)
 import           Data.Typeable              (Typeable)
 import           Network                    (PortID (..))
 import qualified Network                    as N
 import qualified Network.Socket             as S
 import qualified Network.Socket.ByteString  as S
 import qualified Network.Socket.Enumerator  as SE
-import           System.Locale              (defaultTimeLocale)
 
 
 --------------------------------------------------------------------------------
@@ -81,7 +80,6 @@ receive logger eventBase = do
         Just event -> do
             time <- liftIO getCurrentTime
             let sensorEvent = case event of
-                    Replay t s b r -> Just $ RawSensorEvent t s b r
                     Event s b r    -> Just $ RawSensorEvent time s b r
                     Ignored        -> Nothing
             forM_ sensorEvent $ liftIO . publish eventBase
@@ -91,7 +89,6 @@ receive logger eventBase = do
 --------------------------------------------------------------------------------
 data Gyrid
     = Event Mac Mac Double
-    | Replay UTCTime Mac Mac Double
     | Ignored
     deriving (Show)
 
@@ -103,10 +100,6 @@ gyrid = do
     return $ case BC.split ',' line of
         ("MSG" : _)                -> Ignored
         ("INFO" : _)               -> Ignored
-        ["REPLAY", !t, !s, !b, !r] ->
-            case parseTime defaultTimeLocale "%s" (BC.unpack t) of
-                Just t' -> Replay t' (parseMac s) (parseMac b) (toDouble r)
-                _       -> Ignored
         [!s, _, !b, !r]            ->
             Event (parseMac s) (parseMac b) (toDouble r)
         _                                 -> Ignored

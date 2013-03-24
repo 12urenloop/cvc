@@ -27,12 +27,3 @@ Testing the application:
 
 1. Install the test framework, using `cabal install test-framework-hunit`
 2. Execute `runghc -isrc -itests tests/CountVonCount/TestSuite.hs`
-
-## Replay logs
-
-`count-von-count` creates a replay log, by default in `log/replay.log`. In order
-to actually replay this log, use something like (assuming `count-von-count` is
-listening for gyrid on port 9001):
-
-    mv log/replay.log replay.log
-    netcat localhost 9001 < replay.log
