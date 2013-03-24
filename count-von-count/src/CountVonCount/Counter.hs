@@ -112,9 +112,10 @@ step counter eventBase event = do
                 EventBase.publish eventBase $ LapEvent team' lap
 
             PositionCoreEvent _ s _ -> do
+                team' <- P.getTeam database (P.teamId team)
                 Log.string logger "CountVonCount.Counter.step" $
-                    show team ++ " @ " ++ show s
-                EventBase.publish eventBase $ PositionEvent team cstate
+                    show team' ++ " @ " ++ show s
+                EventBase.publish eventBase $ PositionEvent team' cstate
 
 
 --------------------------------------------------------------------------------

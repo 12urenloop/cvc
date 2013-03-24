@@ -59,13 +59,11 @@ index = Snap.redirect "/monitor"
 
 monitor :: Web ()
 monitor = do
-    db         <- webDatabase <$> ask
-    counter    <- webCounter <$> ask
-    (teams, _) <- liftIO $ assignment db
-    states     <- forM teams $ \(team, mbaton) -> liftIO $ case mbaton of
-        Nothing -> return (team, Nothing)
-        Just b  ->
-            counterStateFor (batonId b) counter >>= \s -> return (team, Just s)
+    db      <- webDatabase <$> ask
+    counter <- webCounter <$> ask
+    teams   <- liftIO $ getAllTeams db
+    states  <- forM teams $ \team -> liftIO $
+        counterStateFor (teamId team) counter >>= \s -> return (team, Just s)
 
     lifespan <- configBatonWatchdogLifespan . webConfig <$> ask
     dead     <- liftIO $ findDeadBatons lifespan counter
