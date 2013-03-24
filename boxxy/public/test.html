@@ -150,6 +150,8 @@
                     var team = d3.selectAll(".team")
                         .data(data, function(d) { return d.id; })
                       .transition()
+                        .duration(3000)
+                        .ease("elastic")
                         .attr("transform", function (d) { return "translate(0," + (d.rankingPosition * rowHeight) + ")"; });
 
                     team.selectAll(".position")
