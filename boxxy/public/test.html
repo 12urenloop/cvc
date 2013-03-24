@@ -44,7 +44,8 @@
                 rowHeight = 20;
 
             var rankingSvg,
-                numberOfStations;
+                numberOfStations,
+                interstationDurations;
 
             $(document).ready(function () {
 
@@ -58,6 +59,15 @@
                     var height = data.length * rowHeight;
 
                     numberOfStations = stations.length;
+
+                    // Set up initial durations
+                    interstationDurations = [];
+                    for (var t in teams) {
+                        interstationDurations[teams[t].id] = [];
+                        for (var s in stations) {
+                            interstationDurations[teams[t].id][stations[s].id] = 20000;
+                        }
+                    }
 
                     // Set up the main svg
                     rankingSvg = d3.select("#ranking")
@@ -154,13 +164,13 @@
 
                     team.filter("#team_" + teamId).selectAll(".progressSpinner")
                       .transition()
-                        .duration(20000)
+                        .duration(function (d) { return interstationDurations[teamId][d.station]; })
                         .ease("linear")
                         .attrTween("d", arcTween);
 
                     team.filter("#team_" + teamId).selectAll(".progressBar")
                       .transition()
-                        .duration(20000)
+                        .duration(function (d) { return interstationDurations[teamId][d.station]; })
                         .ease("linear")
                         .attrTween("width", barTween);
                 }
@@ -187,7 +197,7 @@
                     };
                 }
 
-                // Tween the arcs!
+                // Tween the bars!
                 function barTween(b) {
                     var oldValue = this._current == null ? 0 : this._current,
                         temp = parseInt(b.station, 10),
