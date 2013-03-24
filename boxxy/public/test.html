@@ -23,7 +23,6 @@
                 <h1>Scores</h1>
                 <div id="notification"></div>
                 <div id="ranking"></div>
-                <div id="laps" height="205px"></div>
             </div>
             <div id="footer">
                 <p>
@@ -45,7 +44,9 @@
 
             var rankingSvg,
                 numberOfStations,
-                interstationDurations;
+                interstationDurations,
+                stationTimestamps,
+                timeFormat;
 
             $(document).ready(function () {
 
@@ -57,13 +58,17 @@
                     var data = addRankingInformation(teams);
 
                     var height = data.length * rowHeight;
+                    
+                    timeFormat = d3.time.format.iso;
 
                     numberOfStations = stations.length;
 
                     // Set up initial durations
                     interstationDurations = [];
+                    stationTimestamps = [];
                     for (var t in teams) {
                         interstationDurations[teams[t].id] = [];
+                        stationTimestamps[teams[t].id] = [];
                         for (var s in stations) {
                             interstationDurations[teams[t].id][stations[s].id] = 20000;
                         }
@@ -155,22 +160,35 @@
                 }
 
                 // Updates the progress spinner
-                function updateProgress(teamId, teams) {
+                // teamId is the id of the team we need to update
+                // station is the logged station
+                // timeStamp is the timeStamp of the log event
+                // teams is the teams data array
+                function updateProgress(teamId, station, timeStamp, teams) {
                     // Create a D3 readable array and add ranking
                     var data = addRankingInformation(teams);
+
+                    var time =timeFormat.parse(timeStamp),
+                        previousStation = station - 1 == 0 ? numberOfStations : station - 1;
+
+                    // basic interpolation
+                    if (stationTimestamps[teamId][previousStation] != null) {
+                        interstationDurations[teamId][previousStation] = time - stationTimestamps[teamId][previousStation];
+                    }
+                    stationTimestamps[teamId][station] = time;
 
                     var team = d3.selectAll(".team")
                         .data(data, function (d) {return d.id; });
 
                     team.filter("#team_" + teamId).selectAll(".progressSpinner")
                       .transition()
-                        .duration(function (d) { return interstationDurations[teamId][d.station]; })
+                        .duration(interstationDurations[teamId][station])
                         .ease("linear")
                         .attrTween("d", arcTween);
 
                     team.filter("#team_" + teamId).selectAll(".progressBar")
                       .transition()
-                        .duration(function (d) { return interstationDurations[teamId][d.station]; })
+                        .duration(interstationDurations[teamId][station])
                         .ease("linear")
                         .attrTween("width", barTween);
                 }
@@ -236,7 +254,7 @@
                 };
 
                 boxxy.onUpdatePosition = function (position) {
-                    updateProgress(position.team, boxxy.teamsByScore());
+                    updateProgress(position.team, position.station, position.timestamp, boxxy.teamsByScore());
                 };
 
                 boxxy.onUpdate = function () {};
