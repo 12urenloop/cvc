@@ -124,7 +124,7 @@
                         .attr("transform", "translate(" + (width - 10) + ", -5)")
                         .style("fill", "steelblue")
                       .transition()
-                        .duration(2000)
+                        .duration(20000)
                         .attrTween("d", arcTween);
 
                     // Add a progress bar
@@ -137,7 +137,7 @@
                         .attr("fill-opacity", 0.2)
                         .style("fill", "steelblue")
                       .transition()
-                        .duration(2000)
+                        .duration(20000)
                         .attrTween("width", barTween);
                 }
 
@@ -171,26 +171,30 @@
                     var data = addRankingInformation(teams);
 
                     var time =timeFormat.parse(timeStamp),
-                        previousStation = station - 1 == 0 ? numberOfStations : station - 1;
+                        previousStation = station - 1 == 0 ? numberOfStations : station - 1,
+                        speedCompensation = 1;
 
                     // basic interpolation
                     if (stationTimestamps[teamId][previousStation] != null) {
-                        interstationDurations[teamId][previousStation] = time - stationTimestamps[teamId][previousStation];
+                        var newValue = time - stationTimestamps[teamId][previousStation];
+                        speedCompensation = newValue / interstationDurations[teamId][previousStation];
+                        interstationDurations[teamId][previousStation] = newValue;
                     }
                     stationTimestamps[teamId][station] = time;
+                    animationDuration = speedCompensation * interstationDurations[teamId][station] + 2000;
 
                     var team = d3.selectAll(".team")
                         .data(data, function (d) {return d.id; });
 
                     team.filter("#team_" + teamId).selectAll(".progressSpinner")
                       .transition()
-                        .duration(interstationDurations[teamId][station])
+                        .duration(animationDuration)
                         .ease("linear")
                         .attrTween("d", arcTween);
 
                     team.filter("#team_" + teamId).selectAll(".progressBar")
                       .transition()
-                        .duration(interstationDurations[teamId][station])
+                        .duration(animationDuration)
                         .ease("linear")
                         .attrTween("width", barTween);
                 }
