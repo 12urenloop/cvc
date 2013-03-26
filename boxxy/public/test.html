@@ -77,7 +77,7 @@
                     // Set up the main svg
                     rankingSvg = d3.select("#ranking")
                       .append("svg")
-                        .attr("viewBox", "0 0 " + width +  " " + height)
+                        .attr("viewBox", "0 0 " + (width + margin.left + margin.right) +  " " + (height + margin.top + margin.bottom))
                         .attr("preserveAspectRatio", "xMinYMin meet" )
                       .append("g")
                         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
