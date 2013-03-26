@@ -58,7 +58,7 @@
                     var data = addRankingInformation(teams);
 
                     var height = data.length * rowHeight;
-                    
+
                     timeFormat = d3.time.format.iso;
 
                     numberOfStations = stations.length;
@@ -77,8 +77,8 @@
                     // Set up the main svg
                     rankingSvg = d3.select("#ranking")
                       .append("svg")
-                        .attr("width", width + margin.left + margin.right)
-                        .attr("height", height + margin.top + margin.bottom)
+                        .attr("viewBox", "0 0 " + width +  " " + height)
+                        .attr("preserveAspectRatio", "xMinYMin meet" )
                       .append("g")
                         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
