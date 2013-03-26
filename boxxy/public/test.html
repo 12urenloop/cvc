@@ -211,10 +211,14 @@
                 // Tween the arcs!
                 function arcTween(b) {
                     var oldValue = this._current == null ? 0 : this._current,
-                        temp = parseInt(b.station, 10),
-                        newValue = oldValue > temp ? temp + numberOfStations : temp,
-                        a = this,
-                        i = d3.interpolate(oldValue, newValue);
+                        newValue = parseInt(b.station, 10),
+                        a = this;
+
+                    if( newValue < oldValue ) {
+                      var i = d3.interpolate(0, newValue);
+                    } else {
+                      var i = d3.interpolate(oldValue, newValue);
+                    }
                     return function (t) {
                         a._current = i(t) % (numberOfStations + 0.01);
                         return arc(a._current);
@@ -224,10 +228,14 @@
                 // Tween the bars!
                 function barTween(b) {
                     var oldValue = this._current == null ? 0 : this._current,
-                        temp = parseInt(b.station, 10),
-                        newValue = oldValue > temp ? temp + numberOfStations : temp,
-                        a = this,
-                        i = d3.interpolate(oldValue, newValue);
+                        newValue = parseInt(b.station, 10),
+                        a = this;
+
+                    if( newValue < oldValue ) {
+                      var i = d3.interpolate(0, newValue);
+                    } else {
+                      var i = d3.interpolate(oldValue, newValue);
+                    }
                     return function (t) {
                         a._current = i(t) % (numberOfStations + 0.01);
                         return a._current * (415.0 / numberOfStations);
