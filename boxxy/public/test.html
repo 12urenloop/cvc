@@ -124,7 +124,7 @@
                         .attr("transform", "translate(" + (width - 10) + ", -5)")
                         .style("fill", "steelblue")
                       .transition()
-                        .duration(20000)
+                        .duration(2000)
                         .attrTween("d", arcTween);
 
                     // Add a progress bar
@@ -134,10 +134,10 @@
                         .attr("x", 23)
                         .attr("height", rowHeight - 2)
                         .attr("class", "progressBar")
-                        .attr("fill-opacity", 0.2)
+                        .attr("fill-opacity", 0.4)
                         .style("fill", "steelblue")
                       .transition()
-                        .duration(20000)
+                        .duration(2000)
                         .attrTween("width", barTween);
                 }
 
