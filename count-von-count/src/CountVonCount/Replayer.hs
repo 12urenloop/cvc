@@ -6,7 +6,7 @@ module Main
 
 --------------------------------------------------------------------------------
 import           Control.Concurrent   (threadDelay)
-import           Control.Monad        (forever, unless, when)
+import           Control.Monad        (unless, when)
 import           Data.List            (intercalate)
 import           Data.List.Split      (splitOn)
 import           Data.Time            (NominalDiffTime, UTCTime, addUTCTime,
@@ -28,7 +28,7 @@ main = do
     args     <- getArgs
     progName <- getProgName
     case args of
-        [fileName] -> forever $ replay fileName (configSensorPort config)
+        [fileName] -> replay fileName (configSensorPort config)
         _          -> putStrLn $ "Usage: " ++ progName ++ " <replay file>"
 
 
