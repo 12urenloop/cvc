@@ -93,14 +93,14 @@
                     // Add the team position
                     team.append("text")
                         .attr("class", "position")
-                        .attr("x", 20)
+                        .attr("x", 25)
                         .attr("text-anchor", "end")
                         .text(function (d) { return (d.rankingPosition + 1) + "."; });
 
                     // Add the team names to the left hand side
                     team.append("text")
                         .attr("class", "teamName")
-                        .attr("x", 25)
+                        .attr("x", 30)
                         .text(function (d) { return d.name; });
 
                     // Add the lap count to the right hand side
@@ -131,7 +131,7 @@
                     team.append("rect")
                         .attr("width", 0)
                         .attr("y", -rowHeight + 6)
-                        .attr("x", 23)
+                        .attr("x", 28)
                         .attr("height", rowHeight - 2)
                         .attr("class", "progressBar")
                         .attr("fill-opacity", 0.4)
@@ -238,7 +238,7 @@
                     }
                     return function (t) {
                         a._current = i(t) % (numberOfStations + 0.01);
-                        return a._current * (415.0 / numberOfStations);
+                        return a._current * (410.0 / numberOfStations);
                     };
                 }
 
