@@ -31,8 +31,8 @@ io.sockets.on('connection', function(socket) {
     socket.emit('/state', boxxyState);
 });
 
-boxxyState.onPutState = function(state) {
-    io.sockets.emit('/state', state);
+boxxyState.onPutState = function(stateDelta) {
+    io.sockets.emit('/state', stateDelta);
 }
 
 boxxyState.onAddLap = function(lap) {
