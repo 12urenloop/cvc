@@ -45,6 +45,7 @@
             var rankingSvg,
                 numberOfStations,
                 interstationDurations,
+                interstationAverages,
                 stationTimestamps,
                 timeFormat;
 
@@ -65,12 +66,15 @@
 
                     // Set up initial durations
                     interstationDurations = [];
+                    interstationAverages = [];
                     stationTimestamps = [];
                     for (var t in teams) {
                         interstationDurations[teams[t].id] = [];
+                        interstationAverages[teams[t].id] = [];
                         stationTimestamps[teams[t].id] = [];
                         for (var s in stations) {
-                            interstationDurations[teams[t].id][stations[s].id] = 20000;
+                            interstationDurations[teams[t].id][stations[s].id] = new CBuffer(5);
+                            interstationAverages[teams[t].id][stations[s].id] = 20000;
                         }
                     }
 
@@ -78,7 +82,7 @@
                     rankingSvg = d3.select("#ranking")
                       .append("svg")
                         .attr("viewBox", "0 0 " + (width + margin.left + margin.right) +  " " + (height + margin.top + margin.bottom))
-                        .attr("preserveAspectRatio", "xMinYMin meet" )
+                        .attr("preserveAspectRatio", "xMinYMin meet")
                       .append("g")
                         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -178,11 +182,12 @@
                     // basic interpolation
                     if (stationTimestamps[teamId][previousStation] != null) {
                         var newValue = time - stationTimestamps[teamId][previousStation];
-                        speedCompensation = newValue / interstationDurations[teamId][previousStation];
-                        interstationDurations[teamId][previousStation] = newValue;
+                        speedCompensation = newValue / interstationAverages[teamId][previousStation];
+                        interstationDurations[teamId][previousStation].push(newValue);
+                        interstationAverages[teamId][previousStation] = interstationDurations[teamId][previousStation].avg();
                     }
                     stationTimestamps[teamId][station] = time;
-                    animationDuration = speedCompensation * interstationDurations[teamId][station] + 2000;
+                    animationDuration = speedCompensation * interstationAverages[teamId][station] + 2000;
 
                     var team = d3.selectAll(".team")
                         .data(data, function (d) {return d.id; });
@@ -245,7 +250,7 @@
                         newValue = parseInt(b.station, 10),
                         a = this;
 
-                    if( newValue < oldValue ) {
+                    if(newValue < oldValue) {
                       var i = d3.interpolate(0, newValue);
                     } else {
                       var i = d3.interpolate(oldValue, newValue);
@@ -262,7 +267,7 @@
                         newValue = parseInt(b.station, 10),
                         a = this;
 
-                    if( newValue < oldValue ) {
+                    if(newValue < oldValue) {
                       var i = d3.interpolate(0, newValue);
                     } else {
                       var i = d3.interpolate(oldValue, newValue);
@@ -307,6 +312,85 @@
                 // Listen to boxxy
                 boxxy.listen(boxxyHost);
             });
+
+            function CBuffer() {
+                // handle cases where "new" keyword wasn't used
+                if (!(this instanceof CBuffer)) {
+                    if (arguments.length > 1 || typeof arguments[0] !== 'number') {
+                        return CBuffer.apply(new CBuffer(), arguments);
+                    } else {
+                        return new CBuffer(arguments[0]);
+                    }
+                }
+                // this is the same in either scenario
+                this.size = this.start = 0;
+                // build CBuffer based on passed arguments
+                if (arguments.length > 1 || typeof arguments[0] !== 'number') {
+                    this.data = new Array(arguments.length);
+                    this.end = (this.length = arguments.length) - 1;
+                    this.push.apply(this, arguments);
+                } else {
+                    this.data = new Array(arguments[0]);
+                    this.end = (this.length = arguments[0]) - 1;
+                }
+                return this;
+            }
+
+            // Circular buffer implementation
+            CBuffer.prototype = {
+                // push item to the end
+                push : function() {
+                    var i = 0;
+                    // push items to the end, wrapping and erasing existing items
+                    // using arguments variable directly to reduce gc footprint
+                    for (; i < arguments.length; i++) {
+                        this.data[(this.end + i + 1) % this.length] = arguments[i];
+                    }
+                    // recalculate size
+                    if (this.size < this.length) {
+                        if (this.size + i > this.length) this.size = this.length;
+                        else this.size += i;
+                    }
+                    // recalculate end
+                    this.end = (this.end + i) % this.length;
+                    // recalculate start
+                    this.start = this.end - this.size + 1;
+                    if (this.start < 0) this.start += this.length;
+                    // return number current number of items in CBuffer
+                    return this.size;
+                },
+                // shift first item
+                shift : function () {
+                    var item;
+                    // check if there are any items in CBuff
+                    if (this.size === 0) return undefined;
+                    // store first item for return
+                    item = this.data[this.start];
+                    // delete first item from memory
+                    delete this.data[this.start];
+                    // recalculate start of CBuff
+                    this.start = (this.start + 1) % this.length;
+                    // decrement size
+                    this.size--;
+                    return item;
+                },
+                first : function () {
+                    return this.data[this.start];
+                },
+                last : function () {
+                    return this.data[this.end];
+                },
+                idx : function (arg) {
+                    return this.data[(this.start + arg) % this.length];
+                },
+                avg : function () {
+                    var sum = 0;
+                    for (var i = 0; i < this.size; i++) {
+                        sum += this.data[i];
+                    }
+                    return sum / this.size;
+                }
+            };
         </script>
     </body>
 </html>
