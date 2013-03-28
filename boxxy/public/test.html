@@ -134,7 +134,7 @@
                         .attr("x", 28)
                         .attr("height", rowHeight - 2)
                         .attr("class", "progressBar")
-                        .attr("fill-opacity", 0.4)
+                        .attr("fill-opacity", 0.5)
                         .style("fill", "steelblue")
                       .transition()
                         .duration(2000)
@@ -192,11 +192,26 @@
                         .ease("linear")
                         .attrTween("d", arcTween);
 
-                    team.filter("#team_" + teamId).selectAll(".progressBar")
-                      .transition()
-                        .duration(animationDuration)
-                        .ease("linear")
-                        .attrTween("width", barTween);
+                    if (station == 1) {
+                        var t0 = team.filter("#team_" + teamId).selectAll(".progressBar")
+                          .transition()
+                            .duration(1000)
+                            .attr("fill-opacity", 0);
+                        var t1 = t0.transition()
+                            .duration(1)
+                            .attr("fill-opacity", 0.5);
+                        t1.transition()
+                            .duration(animationDuration)
+                            .ease("linear")
+                            .attrTween("width", barTween);
+                    }
+                    else {
+                        team.filter("#team_" + teamId).selectAll(".progressBar")
+                          .transition()
+                            .duration(animationDuration)
+                            .ease("linear")
+                            .attrTween("width", barTween);
+                    }
                 }
 
                 // Adds the position in the ranking to the data
