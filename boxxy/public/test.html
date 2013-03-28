@@ -122,6 +122,7 @@
                     team.append("path")
                         .attr("class", "progressSpinner")
                         .attr("transform", "translate(" + (width - 10) + ", -5)")
+                        .attr("fill-opacity", 1)
                         .style("fill", "steelblue")
                       .transition()
                         .duration(2000)
@@ -186,18 +187,27 @@
                     var team = d3.selectAll(".team")
                         .data(data, function (d) {return d.id; });
 
-                    team.filter("#team_" + teamId).selectAll(".progressSpinner")
-                      .transition()
-                        .duration(animationDuration)
-                        .ease("linear")
-                        .attrTween("d", arcTween);
-
                     if (station == 1) {
-                        var t0 = team.filter("#team_" + teamId).selectAll(".progressBar")
+                        var t0,
+                            t1;
+
+                        t0 = team.filter("#team_" + teamId).selectAll(".progressSpinner")
                           .transition()
                             .duration(1000)
                             .attr("fill-opacity", 0);
-                        var t1 = t0.transition()
+                        t1 = t0.transition()
+                            .duration(1)
+                            .attr("fill-opacity", 1);
+                        t1.transition()
+                            .duration(animationDuration)
+                            .ease("linear")
+                            .attrTween("d", arcTween);
+
+                        t0 = team.filter("#team_" + teamId).selectAll(".progressBar")
+                          .transition()
+                            .duration(1000)
+                            .attr("fill-opacity", 0);
+                        t1 = t0.transition()
                             .duration(1)
                             .attr("fill-opacity", 0.5);
                         t1.transition()
@@ -206,6 +216,12 @@
                             .attrTween("width", barTween);
                     }
                     else {
+                        team.filter("#team_" + teamId).selectAll(".progressSpinner")
+                          .transition()
+                            .duration(animationDuration)
+                            .ease("linear")
+                            .attrTween("d", arcTween);
+
                         team.filter("#team_" + teamId).selectAll(".progressBar")
                           .transition()
                             .duration(animationDuration)
