@@ -9,7 +9,7 @@ fi
 while [ 1 ]; do
     echo "[$(date)] Starting new iteration of count-von-count-replayer"
 
-    pkill -u urenloop count-von-count
+    pkill -u urenloop count-von-count || true
     sleep 1
     runghc -isrc 'scripts/teams2012.hs'
 
@@ -17,5 +17,4 @@ while [ 1 ]; do
     sleep 1
 
     dist/build/count-von-count-replayer/count-von-count-replayer replay-2012.log
-    sleep 5
 done
