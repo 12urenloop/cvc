@@ -8,8 +8,6 @@
   information, afterwards run `cabal install --only-dependencies` from the
   count-von-count folder to install all Haskell dependencies.
 
-* [mongoDB](http://www.mongodb.org/)
-
 ## Usage
 
 To build the application run `cabal configure` and `cabal build` from the
@@ -27,3 +25,8 @@ Testing the application:
 
 1. Install the test framework, using `cabal install test-framework-hunit`
 2. Execute `runghc -isrc -itests tests/CountVonCount/TestSuite.hs`
+
+## Other tools
+
+* count-von-count-simulation
+* count-von-count-replayer

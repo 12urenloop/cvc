@@ -10,7 +10,15 @@ Count-von-count is the central component of the application. It analyzes incomin
 
 All information and actions are permanently stored and can be replayed through the application. APIs to access this information are offered for other tools and score displays.
 
-## Utilities
+[More information](count-von-count/README.markdown)
+
+## boxxy
+
+Boxxy is an application-level proxy server which receives information from count-von-count and distributes it again to a larger number of clients through websockets.
+
+[More information](boxxy/README.markdown)
+
+## Utilities and other programs
 
 ### pokemon
 
@@ -18,13 +26,21 @@ Demo application that generates detection events and sends them to a count-von-c
 
 To run, install [LÖVE](https://love2d.org/) and run `love .` from the pokemon-directory or `love pokemon` from the repository root.
 
+### manual-count
+
+Small web application that serves as a backup counting system.
+
 ### tools/data-analysis
 
 Checks the gathered data for inconsistencies.
 
-### tools/monitor.rb
+### tools/dj-ratings.rb
 
-Runs a series of checks on each monitored host.
+Counts the SMS-votes for the DJ-contest.
+
+### tools/heartbeat.sh
+
+Runs a series of checks on each monitored host and sends a heartbeat signal to [sihemo](https://github.com/jaspervdj/sihemo).
 
 ### tools/macalive.sh
 
