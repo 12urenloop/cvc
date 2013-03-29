@@ -108,12 +108,12 @@ is no need to manually deal with these messages. Instead, the user should set
 callbacks in the boxxy object. All callbacks are optional (but you probably want
 to set at least one).
 
-- `boxxy.onPutState = function(state) {}`
+- `boxxy.onPutState = function(stateDelta) {}`
 
     This function is called when the boxxy object receives the initial list of
     teams, stations and laps. This method is also called when there has been a
-    connection interrupt. The `state` argument is best ignored in client code,
-    as you can use `boxxy` instead.
+    connection interrupt. The `stateDelta` argument is best ignored in client
+    code, as you can use `boxxy` instead.
 
 - `boxxy.onAddLap = function(lap) {}`
 

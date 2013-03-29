@@ -3,28 +3,44 @@
     <head>
         <meta charset="utf-8">
 
-        <title>Debug</title>
-        <script type="text/JavaScript" src="http://live.12urenloop.be/js/boxxy.js"></script>
-        <script type="text/JavaScript" src="http://live.12urenloop.be/socket.io/socket.io.js"></script>
-        <script type="text/JavaScript" src="http://live.12urenloop.be/js/jquery-1.7.1.min.js"></script>
-
-        <script type="text/JavaScript">
-            var boxxyHost = 'http://live.12urenloop.be:8080';
-        </script>
+        <title>Boxxy console</title>
+        <script src="http://live.12urenloop.be/js/boxxy.js"></script>
+        <script src="http://live.12urenloop.be/socket.io/socket.io.js"></script>
+        <script src="http://live.12urenloop.be/js/jquery-1.7.1.min.js"></script>
+        <style>
+            body {
+                font-family: sans-serif;
+                color: #333;
+            }
+            h1 {
+                margin: 0;
+            }
+            pre {
+                height: 150px; max-height: 150px;
+                overflow: auto;
+                white-space: pre-wrap;       /* css-3 */
+                white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
+                white-space: -pre-wrap;      /* Opera 4-6 */
+                white-space: -o-pre-wrap;    /* Opera 7 */
+                word-wrap: break-word;       /* Internet Explorer 5.5+ */
+                background-color: #eee; padding: 10px;
+                border: 1px solid #aaa;
+            }
+        </style>
     </head>
     <body>
         <h1>onPutState</h1>
-        <div style="height:100px; max-height:100px; overflow:auto">
+        <div>
             <pre id="onPutState"></pre>
         </div>
 
         <h1>onAddLap</h1>
-        <div style="height:100px; max-height:100px; overflow:auto">
+        <div>
             <pre id="onAddLap"></pre>
         </div>
 
         <h1>onUpdatePosition</h1>
-        <div style="height:100px; max-height:100px; overflow:auto">
+        <div>
             <pre id="onUpdatePosition"></pre>
         </div>
 
@@ -32,29 +48,31 @@
         <ul>
             <li><a href="#" id="teamsByScore">teamsByScore()</a></li>
         </ul>
-        <div style="height:100px; max-height:100px; overflow:auto">
+        <div style="height: auto;">
             <pre id="extraFunctions"></pre>
         </div>
 
-        <script type="text/JavaScript">
+        <script>
             // Set up boxxy
-            var boxxy = boxxy.initialize();
+            var boxxy = boxxy.initialize(),
+                boxxyHost = 'http://live.12urenloop.be:8080';
+
             $(document).ready(function () {
                 // This function gets executed when the state is reset: so either
                 // the client initially connects, or when it reconnects after a
                 // failure.
-                boxxy.onPutState = function (state) {
-                    $("#onPutState").prepend(JSON.stringify(state) + "\n");
+                boxxy.onPutState = function(stateDelta) {
+                    $("#onPutState").prepend(JSON.stringify(stateDelta) + "\n");
                 };
 
                 // This function gets executed when a team completes a lap.
-                boxxy.onAddLap = function (lap) {
+                boxxy.onAddLap = function(lap) {
                     $("#onAddLap").prepend(JSON.stringify(lap) + "\n");
                 };
 
                 // This function gets executed when a team changes its position to
                 // another station.
-                boxxy.onUpdatePosition = function (position) {
+                boxxy.onUpdatePosition = function(position) {
                     $("#onUpdatePosition").prepend(JSON.stringify(position) + "\n");
                 }
 

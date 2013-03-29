@@ -5,21 +5,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title>Scores</title>
+        <script src="http://live.12urenloop.be/js/boxxy.js"></script>
+        <script src="http://live.12urenloop.be/js/jquery-1.7.1.min.js"></script>
+        <script src="http://live.12urenloop.be/socket.io/socket.io.js"></script>
+        <script src="http://d3js.org/d3.v3.min.js"></script>
 
-
-            <script type="text/JavaScript" src="http://live.12urenloop.be/js/boxxy.js"></script>
-
-            <script type="text/JavaScript" src="http://live.12urenloop.be/js/jquery-1.7.1.min.js"></script>
-
-            <script type="text/JavaScript" src="http://live.12urenloop.be/socket.io/socket.io.js"></script>
-            <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
-
-
-        <script>
-            var boxxyHost = 'http://live.12urenloop.be:8080';
-        </script>
-
-        <link rel="stylesheet" type="text/css" href="http://live.12urenloop.be/css/application.css">
+        <link rel="stylesheet" type="text/css" href="css/application.css">
     </head>
     <body>
         <div id="main">
@@ -30,79 +21,8 @@
             </div>
             <div id="content">
                 <h1>Scores</h1>
-                <script type="text/JavaScript">
-    var boxxy = boxxy.initialize();
-
-    boxxy.onUpdate = function() {
-        if(boxxy.notification) {
-            $('#notification').html('<p>' + boxxy.notification + '</p>');
-        }
-
-        var byScore = boxxy.teamsByScore();
-        var select = d3.select('#teams').selectAll('text')
-            .data(byScore, function (d) { return d.id })
-
-        var select2 = d3.select('#teams').selectAll('.laps')
-            .data(byScore, function (d) { return d.id })
-
-        select.transition().duration(1000)
-          .attr("y", function (d,i) {return (i + 1) * 20})
-          .text(function (d, i) { return (i + 1) + ". " + d.name })
-
-        select.enter().append("text")
-          .text(function (d, i) { return (i + 1) + ". " + d.name })
-          .attr("y", function (d,i) {return (i + 1) * 20 })
-
-        select2.transition().duration(1000)
-          .attr("y", function (d,i) {return (i + 1) * 20 })
-          .text(function (d, i) { return d.laps })
-
-        select2.enter().append("text")
-          .text(function (d) { return d.laps })
-          .attr("class", "laps")
-          .attr("text-align", "end")
-          .attr("x", $('svg').width() - 40)
-          .attr("y", function (d,i) {return (i + 1) * 20 })
-
-
-        var laps = d3.select("#laps").selectAll('text')
-          .data(boxxy.laps, function (d) { return d.id })
-
-        laps.transition().duration(1000)
-          .attr("y", function (d,i) {return (i + 1) * 20})
-          .text(function (d) { return d.team.name })
-
-        laps.enter()
-          .append("text")
-          .transition().duration(1000)
-          .text(function (d) { return d.team.name })
-          .attr("y", function (d,i) {return (i + 1) * 20 })
-
-        laps.exit().transition().duration(1000)
-          .attr("y", function (d,i) {return (11) * 20})
-          .text(function (d) { return d.team.name })
-
-    }
-
-    // LOLOL HOPE JAVACHE DIES WHEN READING THIS
-    $(window).bind("resize", function() {
-        d3.selectAll(".laps").attr("x", $('svg').width() - 40)
-    });
-
-    boxxy.onPutState = function(newState) {
-        /* Called when everything is (re)set */
-    }
-
-    boxxy.onAddLap = function(lap) {
-
-    }
-
-    boxxy.listen(boxxyHost);
-</script>
-<div id="notification"></div>
-<svg id="teams" height="100px"></svg>
-<svg id="laps" height="205px"></svg>
-
+                <div id="notification"></div>
+                <div id="ranking"></div>
             </div>
             <div id="footer">
                 <p>
@@ -111,5 +31,366 @@
                 </p>
             </div>
         </div>
+
+        <script>
+            // Set up boxxy
+            var boxxy = boxxy.initialize(),
+                boxxyHost = 'http://live.12urenloop.be:8080';
+
+            // Set up D3 vars
+            var margin = {top: 15, right: 0, bottom: 0, left: 0},
+                width = 460 - margin.left - margin.right,
+                rowHeight = 20;
+
+            var rankingSvg,
+                numberOfStations,
+                interstationDurations,
+                interstationAverages,
+                stationTimestamps,
+                timeFormat;
+
+            $(document).ready(function () {
+
+                // This functions draws the complete visualisation
+                // teams should be an array with teams
+                // stations should be an array with stations
+                function redrawEverything(teams, stations) {
+                    // Create a D3 readable array and add ranking
+                    var data = addRankingInformation(teams);
+
+                    var height = data.length * rowHeight;
+
+                    timeFormat = d3.time.format.iso;
+
+                    numberOfStations = stations.length;
+
+                    // Set up initial durations
+                    interstationDurations = [];
+                    interstationAverages = [];
+                    stationTimestamps = [];
+                    for (var t in teams) {
+                        interstationDurations[teams[t].id] = [];
+                        interstationAverages[teams[t].id] = [];
+                        stationTimestamps[teams[t].id] = [];
+                        for (var s in stations) {
+                            interstationDurations[teams[t].id][stations[s].id] = new CBuffer(5);
+                            interstationAverages[teams[t].id][stations[s].id] = 20000;
+                        }
+                    }
+
+                    // Set up the main svg
+                    rankingSvg = d3.select("#ranking")
+                      .append("svg")
+                        .attr("viewBox", "0 0 " + (width + margin.left + margin.right) +  " " + (height + margin.top + margin.bottom))
+                        .attr("preserveAspectRatio", "xMinYMin meet")
+                      .append("g")
+                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+                    // Add a g for every team
+                    var team = rankingSvg.selectAll(".team")
+                        .data(data, function(d) { return d.id; })
+                      .enter().append("g")
+                        .attr("class", "team")
+                        .attr("id", function (d) { return "team_" + d.id; })
+                        .attr("transform", function (d) { return "translate(0," + (d.rankingPosition * rowHeight) + ")"; });
+
+                    // Add the team position
+                    team.append("text")
+                        .attr("class", "position")
+                        .attr("x", 25)
+                        .attr("text-anchor", "end")
+                        .text(function (d) { return (d.rankingPosition + 1) + "."; });
+
+                    // Add the team names to the left hand side
+                    team.append("text")
+                        .attr("class", "teamName")
+                        .attr("x", 30)
+                        .text(function (d) { return d.name; });
+
+                    // Add the lap count to the right hand side
+                    team.append("text")
+                        .attr("class", "lapCount")
+                        .attr("x", width - 5 - rowHeight)
+                        .attr("text-anchor", "end")
+                        .text(function (d) { return d3.format(",")(d.laps).replace(",", "."); });
+
+                    // Add a progress spinner background
+                    team.append("path")
+                        .attr("class", "progressBackgrond")
+                        .attr("transform", "translate(" + (width - 10) + ", -5)")
+                        .attr("fill-opacity", 0.2)
+                        .style("fill", "steelblue")
+                        .attr("d", arc(numberOfStations));
+
+                    // Add a progress spinner
+                    team.append("path")
+                        .attr("class", "progressSpinner")
+                        .attr("transform", "translate(" + (width - 10) + ", -5)")
+                        .attr("fill-opacity", 1)
+                        .style("fill", "steelblue")
+                      .transition()
+                        .duration(2000)
+                        .attrTween("d", arcTween);
+
+                    // Add a progress bar
+                    team.append("rect")
+                        .attr("width", 0)
+                        .attr("y", -rowHeight + 6)
+                        .attr("x", 28)
+                        .attr("height", rowHeight - 2)
+                        .attr("class", "progressBar")
+                        .attr("fill-opacity", 0.5)
+                        .style("fill", "steelblue")
+                      .transition()
+                        .duration(2000)
+                        .attrTween("width", barTween);
+                }
+
+                // Updates the lapcount and order
+                // teams should be an array
+                function update(teams) {
+                    // Create a D3 readable array and add ranking
+                    var data = addRankingInformation(teams);
+
+                    var team = d3.selectAll(".team")
+                        .data(data, function(d) { return d.id; })
+                      .transition()
+                        .duration(3000)
+                        .ease("elastic", 1.5, 0.3)
+                        .attr("transform", function (d) { return "translate(0," + (d.rankingPosition * rowHeight) + ")"; });
+
+                    team.selectAll(".position")
+                        .text(function (d) { return (d.rankingPosition + 1) + "."; });
+
+                    team.selectAll(".lapCount")
+                        .text(function (d) { return d3.format(",")(d.laps).replace(",", "."); });
+                }
+
+                // Updates the progress spinner
+                // teamId is the id of the team we need to update
+                // station is the logged station
+                // timeStamp is the timeStamp of the log event
+                // teams is the teams data array
+                function updateProgress(teamId, station, timeStamp, teams) {
+                    // Create a D3 readable array and add ranking
+                    var data = addRankingInformation(teams);
+
+                    var time =timeFormat.parse(timeStamp),
+                        previousStation = station - 1 == 0 ? numberOfStations : station - 1,
+                        speedCompensation = 1;
+
+                    // basic interpolation
+                    if (stationTimestamps[teamId][previousStation] != null) {
+                        var newValue = time - stationTimestamps[teamId][previousStation];
+                        speedCompensation = newValue / interstationAverages[teamId][previousStation];
+                        interstationDurations[teamId][previousStation].push(newValue);
+                        interstationAverages[teamId][previousStation] = interstationDurations[teamId][previousStation].avg();
+                    }
+                    stationTimestamps[teamId][station] = time;
+                    animationDuration = speedCompensation * interstationAverages[teamId][station] + 2000;
+
+                    var team = d3.selectAll(".team")
+                        .data(data, function (d) {return d.id; });
+
+                    if (station == 1) {
+                        var t0,
+                            t1;
+
+                        t0 = team.filter("#team_" + teamId).selectAll(".progressSpinner")
+                          .transition()
+                            .duration(1000)
+                            .attr("fill-opacity", 0);
+                        t1 = t0.transition()
+                            .duration(1)
+                            .attr("fill-opacity", 1);
+                        t1.transition()
+                            .duration(animationDuration)
+                            .ease("linear")
+                            .attrTween("d", arcTween);
+
+                        t0 = team.filter("#team_" + teamId).selectAll(".progressBar")
+                          .transition()
+                            .duration(1000)
+                            .attr("fill-opacity", 0);
+                        t1 = t0.transition()
+                            .duration(1)
+                            .attr("fill-opacity", 0.5);
+                        t1.transition()
+                            .duration(animationDuration)
+                            .ease("linear")
+                            .attrTween("width", barTween);
+                    }
+                    else {
+                        team.filter("#team_" + teamId).selectAll(".progressSpinner")
+                          .transition()
+                            .duration(animationDuration)
+                            .ease("linear")
+                            .attrTween("d", arcTween);
+
+                        team.filter("#team_" + teamId).selectAll(".progressBar")
+                          .transition()
+                            .duration(animationDuration)
+                            .ease("linear")
+                            .attrTween("width", barTween);
+                    }
+                }
+
+                // Adds the position in the ranking to the data
+                function addRankingInformation(teams) {
+                    var data = teams.sort(function(a, b) { return b.laps - a.laps; });
+                    for (var i = 0; i < data.length; i++) {
+                        data[i].rankingPosition = i;
+                    }
+                    return data;
+                }
+
+                // Tween the arcs!
+                function arcTween(b) {
+                    var oldValue = this._current == null ? 0 : this._current,
+                        newValue = parseInt(b.station, 10),
+                        a = this;
+
+                    if(newValue < oldValue) {
+                      var i = d3.interpolate(0, newValue);
+                    } else {
+                      var i = d3.interpolate(oldValue, newValue);
+                    }
+                    return function (t) {
+                        a._current = i(t) % (numberOfStations + 0.01);
+                        return arc(a._current);
+                    };
+                }
+
+                // Tween the bars!
+                function barTween(b) {
+                    var oldValue = this._current == null ? 0 : this._current,
+                        newValue = parseInt(b.station, 10),
+                        a = this;
+
+                    if(newValue < oldValue) {
+                      var i = d3.interpolate(0, newValue);
+                    } else {
+                      var i = d3.interpolate(oldValue, newValue);
+                    }
+                    return function (t) {
+                        a._current = i(t) % (numberOfStations + 0.01);
+                        return a._current * (410.0 / numberOfStations);
+                    };
+                }
+
+                var arc = d3.svg.arc()
+                    .innerRadius(5)
+                    .outerRadius(8)
+                    .startAngle(0)
+                    .endAngle(function(d) { return (d / numberOfStations) * 2 * Math.PI; });
+
+                // This function gets executed when the state is reset: so either
+                // the client initially connects, or when it reconnects after a
+                // failure.
+                boxxy.onPutState = function (state) {
+                    // Out with the old, in with the new
+                    $("#ranking").html("");
+                    var teams = boxxy.teamsByScore(),
+                        stations = [];
+                    for (var key in boxxy.stations) {
+                        stations.push(boxxy.stations[key]);
+                    }
+                    redrawEverything(teams, stations);
+                };
+
+                // This function gets executed when a team completes a lap.
+                boxxy.onAddLap = function (lap) {
+                    update(boxxy.teamsByScore());
+                };
+
+                boxxy.onUpdatePosition = function (position) {
+                    updateProgress(position.team, position.station, position.timestamp, boxxy.teamsByScore());
+                };
+
+                boxxy.onUpdate = function () {};
+
+                // Listen to boxxy
+                boxxy.listen(boxxyHost);
+            });
+
+            function CBuffer() {
+                // handle cases where "new" keyword wasn't used
+                if (!(this instanceof CBuffer)) {
+                    if (arguments.length > 1 || typeof arguments[0] !== 'number') {
+                        return CBuffer.apply(new CBuffer(), arguments);
+                    } else {
+                        return new CBuffer(arguments[0]);
+                    }
+                }
+                // this is the same in either scenario
+                this.size = this.start = 0;
+                // build CBuffer based on passed arguments
+                if (arguments.length > 1 || typeof arguments[0] !== 'number') {
+                    this.data = new Array(arguments.length);
+                    this.end = (this.length = arguments.length) - 1;
+                    this.push.apply(this, arguments);
+                } else {
+                    this.data = new Array(arguments[0]);
+                    this.end = (this.length = arguments[0]) - 1;
+                }
+                return this;
+            }
+
+            // Circular buffer implementation
+            CBuffer.prototype = {
+                // push item to the end
+                push : function() {
+                    var i = 0;
+                    // push items to the end, wrapping and erasing existing items
+                    // using arguments variable directly to reduce gc footprint
+                    for (; i < arguments.length; i++) {
+                        this.data[(this.end + i + 1) % this.length] = arguments[i];
+                    }
+                    // recalculate size
+                    if (this.size < this.length) {
+                        if (this.size + i > this.length) this.size = this.length;
+                        else this.size += i;
+                    }
+                    // recalculate end
+                    this.end = (this.end + i) % this.length;
+                    // recalculate start
+                    this.start = this.end - this.size + 1;
+                    if (this.start < 0) this.start += this.length;
+                    // return number current number of items in CBuffer
+                    return this.size;
+                },
+                // shift first item
+                shift : function () {
+                    var item;
+                    // check if there are any items in CBuff
+                    if (this.size === 0) return undefined;
+                    // store first item for return
+                    item = this.data[this.start];
+                    // delete first item from memory
+                    delete this.data[this.start];
+                    // recalculate start of CBuff
+                    this.start = (this.start + 1) % this.length;
+                    // decrement size
+                    this.size--;
+                    return item;
+                },
+                first : function () {
+                    return this.data[this.start];
+                },
+                last : function () {
+                    return this.data[this.end];
+                },
+                idx : function (arg) {
+                    return this.data[(this.start + arg) % this.length];
+                },
+                avg : function () {
+                    var sum = 0;
+                    for (var i = 0; i < this.size; i++) {
+                        sum += this.data[i];
+                    }
+                    return sum / this.size;
+                }
+            };
+        </script>
     </body>
 </html>
