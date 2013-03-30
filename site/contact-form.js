@@ -41,7 +41,7 @@ $(document).ready(function() {
 			url: "process.php",
 
 			//GET method is used
-			type: "GET",
+			type: "POST",
 
 			//pass the data
 			data: data,
