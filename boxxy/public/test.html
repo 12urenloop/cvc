@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
         <title>Scores</title>
-        <script src="http://live.12urenloop.be/js/boxxy.js"></script>
+        <script src="http://localhost:8080/js/boxxy.js"></script>
         <script src="http://live.12urenloop.be/js/jquery-1.7.1.min.js"></script>
         <script src="http://live.12urenloop.be/socket.io/socket.io.js"></script>
         <script src="http://d3js.org/d3.v3.min.js"></script>
@@ -38,9 +38,9 @@
                 boxxyHost = 'http://live.12urenloop.be:8080';
 
             // Set up D3 vars
-            var margin = {top: 15, right: 0, bottom: 0, left: 0},
+            var margin = {top: 20, right: 0, bottom: 0, left: 0},
                 width = 460.0 - margin.left - margin.right,
-                rowHeight = 20.0,
+                rowHeight = 28.0,
                 barWidth = width - 30 - rowHeight;
 
             var rankingSvg,
@@ -51,19 +51,12 @@
                 timeFormat;
 
             $(document).ready(function () {
-
                 // This functions draws the complete visualisation
                 // teams should be an array with teams
                 // stations should be an array with stations
                 function redrawEverything(teams, stations) {
-                    // Create a D3 readable array and add ranking
-                    var data = addRankingInformation(teams);
-
-                    var height = data.length * rowHeight;
-
-                    timeFormat = d3.time.format.iso;
-
                     numberOfStations = stations.length;
+                    timeFormat = d3.time.format.iso;
 
                     // Set up initial durations
                     interstationDurations = [];
@@ -80,17 +73,19 @@
                     }
 
                     // Set up the main svg
+                    var height = teams.length * rowHeight + margin.top + margin.bottom;
                     rankingSvg = d3.select("#ranking")
                       .append("svg")
-                        .attr("viewBox", "0 0 " + (width + margin.left + margin.right) +  " " + (height + margin.top + margin.bottom))
+                        .attr("viewBox", "0 0 " + (width + margin.left + margin.right) +  " " + height)
                         .attr("preserveAspectRatio", "xMinYMin meet")
-                      .append("g")
+                        .attr("height", height)
+                        .append("g")
                         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
                     // Add a g for every team
                     var team = rankingSvg.selectAll(".team")
-                        .data(data, function(d) { return d.id; })
-                      .enter().append("g")
+                        .data(teams, function(d) { return d.id; })
+                        .enter().append("g")
                         .attr("class", "team")
                         .attr("id", function (d) { return "team_" + d.id; })
                         .attr("transform", function (d) { return "translate(0," + (d.rankingPosition * rowHeight) + ")"; });
@@ -116,13 +111,14 @@
                     // Add a progress bar
                     team.append("rect")
                         .attr("width", 0)
-                        .attr("y", -rowHeight + 6)
-                        .attr("x", 28)
+                        .attr("y", -rowHeight/2 - 4)
+                        .attr("x", 30)
+                        .attr("rx", 2)
                         .attr("height", rowHeight - 2)
                         .attr("class", "progressBar")
                         .attr("fill-opacity", 0.5)
-                        .style("fill", "steelblue")
-                      .transition()
+                        .style("fill", "#5299D6")
+                        .transition()
                         .duration(2000)
                         .attrTween("width", barTween);
 
@@ -136,7 +132,7 @@
                     // Add the team names to the left hand side
                     team.append("text")
                         .attr("class", "teamName")
-                        .attr("x", 30)
+                        .attr("x", 34)
                         .text(function (d) { return d.name; });
 
                     // Add the lap count to the right hand side
@@ -150,13 +146,10 @@
                 // Updates the lapcount and order
                 // teams should be an array
                 function update(teams) {
-                    // Create a D3 readable array and add ranking
-                    var data = addRankingInformation(teams);
-
                     var team = d3.selectAll(".team")
-                        .data(data, function(d) { return d.id; })
-                      .transition()
-                        .duration(3000)
+                        .data(teams, function(d) { return d.id; })
+                        .transition()
+                        .duration(1500)
                         .attr("transform", function (d) { return "translate(0," + (d.rankingPosition * rowHeight) + ")"; });
 
                     team.selectAll(".position")
@@ -172,10 +165,7 @@
                 // timeStamp is the timeStamp of the log event
                 // teams is the teams data array
                 function updateProgress(teamId, station, timeStamp, teams) {
-                    // Create a D3 readable array and add ranking
-                    var data = addRankingInformation(teams);
-
-                    var time =timeFormat.parse(timeStamp),
+                    var time = timeFormat.parse(timeStamp),
                         previousStation = station - 1 == 0 ? numberOfStations : station - 1,
                         speedCompensation = 1;
 
@@ -190,7 +180,7 @@
                     animationDuration = speedCompensation * interstationAverages[teamId][station] + 2000;
 
                     var team = d3.selectAll(".team")
-                        .data(data, function (d) {return d.id; });
+                        .data(teams, function (d) {return d.id; });
 
                     if (station == 1) {
                         var t0,
