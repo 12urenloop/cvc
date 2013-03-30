@@ -6,6 +6,7 @@ function Boxxy() {
     this.frozen        = false;
     this.notification  = null;
     this.circuitLength = 0;
+    this.startTime     = null;
     this.stations      = {};
     this.teams         = {};
     this.laps          = [];
@@ -22,6 +23,7 @@ Boxxy.prototype.putState = function(stateDelta) {
     if(stateDelta.frozen != null) this.frozen = stateDelta.frozen;
     if(stateDelta.notification != null) this.notification = stateDelta.notification;
     if(stateDelta.circuitLength != null) this.circuitLength = stateDelta.circuitLength;
+    if(stateDelta.startTime != null) this.startTime = stateDelta.startTime;
     if(stateDelta.stations != null) this.stations = stateDelta.stations;
     if(!this.frozen && stateDelta.teams) this.teams = stateDelta.teams;
     if(!this.frozen && stateDelta.laps) this.laps = stateDelta.laps;

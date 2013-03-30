@@ -1,6 +1,5 @@
-startTime:     "2012-04-25T08:00:00.000Z"
 circuitLength: 369
-maxSpeed:      13
+maxSpeed:      12
 
 batonWatchdogLifespan: 30
 

@@ -274,7 +274,7 @@
                     }
                     return function (t) {
                         a._current = i(t) % (numberOfStations + 0.01);
-                        return a._current * (410.0 / numberOfStations);
+                        return a._current * (boxxy.circuitLength / numberOfStations);
                     };
                 }
 
