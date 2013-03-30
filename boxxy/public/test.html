@@ -39,8 +39,9 @@
 
             // Set up D3 vars
             var margin = {top: 15, right: 0, bottom: 0, left: 0},
-                width = 460 - margin.left - margin.right,
-                rowHeight = 20;
+                width = 460.0 - margin.left - margin.right,
+                rowHeight = 20.0,
+                barWidth = width - 30 - rowHeight;
 
             var rankingSvg,
                 numberOfStations,
@@ -128,7 +129,7 @@
                         .attr("transform", "translate(" + (width - 10) + ", -5)")
                         .attr("fill-opacity", 1)
                         .style("fill", "steelblue")
-                      .transition()
+                        .transition()
                         .duration(2000)
                         .attrTween("d", arcTween);
 
@@ -274,7 +275,7 @@
                     }
                     return function (t) {
                         a._current = i(t) % (numberOfStations + 0.01);
-                        return a._current * (boxxy.circuitLength / numberOfStations);
+                        return a._current * (barWidth / numberOfStations);
                     };
                 }
 
