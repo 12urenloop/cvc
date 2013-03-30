@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Marquee</title>
+        <script src="http://live.12urenloop.be/js/boxxy.js"></script>
+        <script src="http://live.12urenloop.be/js/jquery-1.7.1.min.js"></script>
+        <script src="http://live.12urenloop.be/socket.io/socket.io.js"></script>
+        <style>
+            html, body {
+                height: 100%;
+                margin: 0;
+                padding: 0;
+                background: purple; /* chroma key*/
+                overflow: hidden;
+            }
+            #marquee {
+                position: fixed; bottom: 0; margin-bottom: -130px;
+                height: 130px; width: 100%;
+                background-color: #fff;
+
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                font-size: 60px;
+                line-height: 2;
+            }
+            #marquee-fade {
+                position: absolute; top: 0;
+                height: 100%; width: 100%;
+                background:
+                    url('img/12urenloop.png') 15px center no-repeat,
+                    linear-gradient(to right,
+                        rgba(255,255,255,1) 200px, rgba(255,255,255,0) 230px,
+                        rgba(255,255,255,0) 90%,rgba(255,255,255,1) 97%);
+            }
+            #marquee ol {
+                position: relative;
+                margin: 0;
+                list-style-position: inside;
+                width: 99999px;
+            }
+            #marquee li {
+                margin-right: 50px;
+                float: left;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="marquee">
+            <ol>
+            </ol>
+            <div id="marquee-fade"></div>
+        </div>
+
+        <script>
+            // Set up boxxy
+            var boxxy = boxxy.initialize(),
+                boxxyHost = 'http://live.12urenloop.be:8080',
+                initialTimeout = 2000,
+                interval = 5000;
+
+            function runMarquee() {
+                var container = $('#marquee ol');
+                var marqueeLength = 0;
+
+                var teams = boxxy.teamsByScore();
+                for (var i = 0; i < teams.length; i++) {
+                    container.append('<li>' + teams[i].name + ' (' + teams[i].laps + ')');
+                    marqueeLength += container.children().last().outerWidth(true);
+                };
+
+                container.css('left', $('#marquee').width());
+                $('#marquee').animate({'margin-bottom': 0}, 1000, function() {
+                    var duration = marqueeLength * 8;
+                    container.animate({left: -marqueeLength + 200}, duration, 'linear', function() {
+                        container.empty();
+                        $('#marquee').animate({'margin-bottom': -$('#marquee').height()}, 1000);
+                        setTimeout(runMarquee, interval + 1000);
+                    });
+                });
+            }
+
+            $(document).ready(function () {
+                boxxy.listen(boxxyHost);
+                setTimeout(runMarquee, initialTimeout);
+            });
+        </script>
+    </body>
+</html>
