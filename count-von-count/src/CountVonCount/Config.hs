@@ -16,10 +16,11 @@ import           Data.Aeson            (FromJSON(..), (.!=), (.:?))
 import qualified Data.Aeson            as A
 import           Data.ByteString       (ByteString)
 import qualified Data.ByteString.Char8 as BC
+import           Data.Function         (on)
 import           Data.Maybe            (fromMaybe)
 import           Data.Text             (Text)
 import qualified Data.Text             as T
-import           Data.Time             (UTCTime(..))
+import           Data.Time             (UTCTime(..), getCurrentTime)
 import           Data.Yaml             (decodeFile)
 
 
@@ -118,5 +119,9 @@ defaultConfig = Config
 
 --------------------------------------------------------------------------------
 readConfigFile :: FilePath -> IO Config
-readConfigFile filePath = fromMaybe
-    (error $ "Could not read config: " ++ filePath) <$> decodeFile filePath
+readConfigFile filePath = do
+    config <- fromMaybe (error $ "Could not read config: " ++ filePath) <$>
+        decodeFile filePath
+    if ((==) `on` configStartTime) config defaultConfig
+        then getCurrentTime >>= \t -> return config { configStartTime = t }
+        else return config

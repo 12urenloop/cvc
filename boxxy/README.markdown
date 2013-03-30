@@ -41,6 +41,8 @@ way.
 
 - `boxxy.circuitLength` is simply the length of the running track (in meters).
 
+- `boxxy.startTime` is a string containing the date the event started.
+
 - `boxxy.stations` holds an object with the *stations*. The stations are simply
   the bluetooth receivers positioned around the circuit.
 

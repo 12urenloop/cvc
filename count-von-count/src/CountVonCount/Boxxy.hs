@@ -160,9 +160,10 @@ putState boxxies target = do
             Just t  -> forM_ [t]
 
     withTarget $ \c -> makeRequest c "/state" $
-        stateJson circuitLength stations teams' laps'
+        stateJson circuitLength startTime stations teams' laps'
   where
     circuitLength = configCircuitLength config
+    startTime     = configStartTime config
     config        = boxxiesConfig boxxies
     database      = boxxiesDatabase boxxies
 
@@ -189,10 +190,11 @@ boxxiesToList boxxies = forM (boxxiesState boxxies) $ \(c, rs) -> do
 
 
 --------------------------------------------------------------------------------
-stateJson :: Double -> [P.Station] -> [(P.Team, Counter.CounterState)]
-          -> [(P.Lap, P.Team)] -> A.Value
-stateJson circuitLength stations teams laps = A.object
+stateJson :: Double -> UTCTime -> [P.Station]
+          -> [(P.Team, Counter.CounterState)] -> [(P.Lap, P.Team)] -> A.Value
+stateJson circuitLength startTime stations teams laps = A.object
     [ "circuitLength" .= circuitLength
+    , "startTime" .= startTime
     , "stations" .= A.object
         [ P.refToText (P.stationId s) .= stationJson s
         | s <- stations
