@@ -350,7 +350,7 @@ p.proj-desc {
     border-bottom: 1px solid #d3d3d3;
 }
 
-#services {
+#wedstrijd {
     background: url(../images/bg-dark.jpg) repeat;
     position: relative;
     z-index: 300;
@@ -435,7 +435,7 @@ span.p-small {
     background: url(../images/price-bg.jpg) repeat;
 }
 
-#about {
+#animatie {
     background: #fff;
     position: relative;
     z-index: 300;
