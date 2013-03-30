@@ -6,7 +6,6 @@ $(document).ready(function() {
 		//Get the data from all the fields
 		var name = $('input[name=name]');
 		var email = $('input[name=email]');
-		var website = $('input[name=website]');
 		var comment = $('textarea[name=comment]');
 
 		//Simple validation to make sure user entered something
@@ -27,8 +26,8 @@ $(document).ready(function() {
 		} else comment.removeClass('hightlight');
 
 		//organize the data properly
-		var data = 'name=' + name.val() + '&email=' + email.val() + '&website=' +
-		website.val() + '&comment='  + encodeURIComponent(comment.val());
+		var data = 'name=' + name.val() + '&email=' + email.val() +
+		  '&comment='  + encodeURIComponent(comment.val());
 
 		//disabled all the text fields
 		$('.text').attr('disabled','true');
