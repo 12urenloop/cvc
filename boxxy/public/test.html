@@ -200,7 +200,7 @@
                         t0 = team.filter("#team_" + teamId).selectAll(".progressSpinner")
                           .transition()
                             .duration(1000)
-                            .attr("fill-opacity", 0);
+                            .attr("fill-opacity", 1e-6);
                         t1 = t0.transition()
                             .duration(1)
                             .attr("fill-opacity", 1);
@@ -212,7 +212,7 @@
                         t0 = team.filter("#team_" + teamId).selectAll(".progressBar")
                           .transition()
                             .duration(1000)
-                            .attr("fill-opacity", 0);
+                            .attr("fill-opacity", 1e-6);
                         t1 = t0.transition()
                             .duration(1)
                             .attr("fill-opacity", 0.5);
@@ -247,12 +247,12 @@
 
                 // Tween the arcs!
                 function arcTween(b) {
-                    var oldValue = this._current == null ? 0 : this._current,
+                    var oldValue = this._current == null ? 1e-6 : this._current,
                         newValue = parseInt(b.station, 10),
                         a = this;
 
                     if(newValue < oldValue) {
-                      var i = d3.interpolate(0, newValue);
+                      var i = d3.interpolate(1e-6, newValue);
                     } else {
                       var i = d3.interpolate(oldValue, newValue);
                     }
@@ -264,12 +264,12 @@
 
                 // Tween the bars!
                 function barTween(b) {
-                    var oldValue = this._current == null ? 0 : this._current,
+                    var oldValue = this._current == null ? 1e-6 : this._current,
                         newValue = parseInt(b.station, 10),
                         a = this;
 
                     if(newValue < oldValue) {
-                      var i = d3.interpolate(0, newValue);
+                      var i = d3.interpolate(1e-6, newValue);
                     } else {
                       var i = d3.interpolate(oldValue, newValue);
                     }
