@@ -190,7 +190,7 @@ boxxiesToList boxxies = forM (boxxiesState boxxies) $ \(c, rs) -> do
 
 
 --------------------------------------------------------------------------------
-stateJson :: Double -> UTCTime -> [P.Station]
+stateJson :: Double -> Maybe UTCTime -> [P.Station]
           -> [(P.Team, Counter.CounterState)] -> [(P.Lap, P.Team)] -> A.Value
 stateJson circuitLength startTime stations teams laps = A.object
     [ "circuitLength" .= circuitLength

@@ -16,8 +16,7 @@ import           Data.Aeson            (FromJSON(..), (.!=), (.:?))
 import qualified Data.Aeson            as A
 import           Data.ByteString       (ByteString)
 import qualified Data.ByteString.Char8 as BC
-import           Data.Function         (on)
-import           Data.Maybe            (fromMaybe)
+import           Data.Maybe            (fromMaybe, isNothing)
 import           Data.Text             (Text)
 import qualified Data.Text             as T
 import           Data.Time             (UTCTime(..), getCurrentTime)
@@ -66,7 +65,7 @@ defaultBoxxyConfig = BoxxyConfig
 
 --------------------------------------------------------------------------------
 data Config = Config
-    { configStartTime             :: UTCTime
+    { configStartTime             :: Maybe UTCTime
     , configCircuitLength         :: Double
     , configMaxSpeed              :: Double
     , configBatonWatchdogLifespan :: Int
@@ -103,7 +102,7 @@ instance FromJSON Config where
 --------------------------------------------------------------------------------
 defaultConfig :: Config
 defaultConfig = Config
-    { configStartTime             = UTCTime (toEnum 0) 0
+    { configStartTime             = Nothing
     , configCircuitLength         = 400
     , configMaxSpeed              = 12  -- 12m/s should be plenty?
     , configBatonWatchdogLifespan = 30
@@ -122,6 +121,6 @@ readConfigFile :: FilePath -> IO Config
 readConfigFile filePath = do
     config <- fromMaybe (error $ "Could not read config: " ++ filePath) <$>
         decodeFile filePath
-    if ((==) `on` configStartTime) config defaultConfig
-        then getCurrentTime >>= \t -> return config { configStartTime = t }
+    if isNothing $ configStartTime config
+        then getCurrentTime >>= \t -> return config { configStartTime = Just t }
         else return config
