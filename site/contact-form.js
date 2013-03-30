@@ -6,7 +6,6 @@ $(document).ready(function() {
 		//Get the data from all the fields
 		var name = $('input[name=name]');
 		var email = $('input[name=email]');
-		var website = $('input[name=website]');
 		var comment = $('textarea[name=comment]');
 
 		//Simple validation to make sure user entered something
@@ -27,8 +26,8 @@ $(document).ready(function() {
 		} else comment.removeClass('hightlight');
 
 		//organize the data properly
-		var data = 'name=' + name.val() + '&email=' + email.val() + '&website=' +
-		website.val() + '&comment='  + encodeURIComponent(comment.val());
+		var data = 'name=' + name.val() + '&email=' + email.val() +
+		  '&comment='  + encodeURIComponent(comment.val());
 
 		//disabled all the text fields
 		$('.text').attr('disabled','true');
@@ -42,7 +41,7 @@ $(document).ready(function() {
 			url: "process.php",
 
 			//GET method is used
-			type: "GET",
+			type: "POST",
 
 			//pass the data
 			data: data,
@@ -61,7 +60,7 @@ $(document).ready(function() {
 					$('.done').fadeIn('slow');
 
 				//if process.php returned 0/false (send mail failed)
-				} else alert('Sorry, unexpected error. Please try again later.');
+				} else alert('Sorry, er is iets fout gegaan. Gelieve  later nog eens te proberen.');
 			}
 		});
 

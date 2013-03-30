@@ -65,35 +65,20 @@ $(document).ready(function() { //when the document is ready...
 
 		//if the first section is in view...
 		if($firstBG.hasClass("inview")){
-			//call the newPos function and change the background position
-			$firstBG.css({'backgroundPosition': newPos(0, windowHeight, pos, 500, 0)});
-			//call the newPos function and change the second background position
-			bg1.css({'backgroundPosition': newPos(50, windowHeight, pos, 400, 0.2)});
+			bg1.css({'backgroundPosition': newPos(0, windowHeight, pos, 0, 0.2)});
 		}
 
 		//if the second section is in view...
 		if($secondBG.hasClass("inview")){
-			//call the newPos function and change the background position
-			$secondBG.css({'backgroundPosition': newPos(0, windowHeight, pos, 1550, 0)});
-			//$secondBG.css({'backgroundPosition': newPos(50, windowHeight, pos, 1550, 0.3)});
-			bg2.css({'backgroundPosition': newPos(70, windowHeight, pos, 3410, 0.2)});
-			//call the newPos function and change the second background position
+			bg2.css({'backgroundPosition': newPos(30, windowHeight, pos, 2300, 0.2)});
 		}
 
 		if ($thirdBG.hasClass("inview")){
-			//call the newPos function and change the background position
-			$thirdBG.css({'backgroundPosition': newPos(0, windowHeight, pos, 2550, 0)});
-			//$secondBG.css({'backgroundPosition': newPos(50, windowHeight, pos, 1550, 0.3)});
-			bg3.css({'backgroundPosition': newPos(50, windowHeight, pos, 5410, 0.2)});
-			//call the newPos function and change the second background position
+			bg3.css({'backgroundPosition': newPos(50, windowHeight, pos, 3300, 0.2)});
 		}
 
 		if ($fourthBG.hasClass("inview")){
-			//call the newPos function and change the background position
-			$fourthBG.css({'backgroundPosition': newPos(0, windowHeight, pos, 5850, 0)});
-			//$secondBG.css({'backgroundPosition': newPos(50, windowHeight, pos, 1550, 0.3)});
-			//call the newPos function and change the second background position
-			bg4.css({'backgroundPosition': newPos(50, windowHeight, pos, 6610, 0.20)});
+			bg4.css({'backgroundPosition': newPos(50, windowHeight, pos, 5500, 0.2)});
 		}
 
 		$('#pixels').html(pos); //display the number of pixels scrolled at the bottom of the page
