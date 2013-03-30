@@ -157,7 +157,6 @@
                         .data(data, function(d) { return d.id; })
                       .transition()
                         .duration(3000)
-                        .ease("bounce")
                         .attr("transform", function (d) { return "translate(0," + (d.rankingPosition * rowHeight) + ")"; });
 
                     team.selectAll(".position")
