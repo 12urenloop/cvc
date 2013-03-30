@@ -248,7 +248,7 @@
                 // Tween the arcs!
                 function arcTween(b) {
                     var oldValue = this._current == null ? 1e-6 : this._current,
-                        newValue = parseInt(b.station, 10),
+                        newValue = b.station == null ? 0 : parseInt(b.station, 10),
                         a = this;
 
                     if(newValue < oldValue) {
@@ -265,7 +265,7 @@
                 // Tween the bars!
                 function barTween(b) {
                     var oldValue = this._current == null ? 1e-6 : this._current,
-                        newValue = parseInt(b.station, 10),
+                        newValue = b.station == null ? 0 : parseInt(b.station, 10),
                         a = this;
 
                     if(newValue < oldValue) {
