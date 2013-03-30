@@ -95,26 +95,6 @@
                         .attr("id", function (d) { return "team_" + d.id; })
                         .attr("transform", function (d) { return "translate(0," + (d.rankingPosition * rowHeight) + ")"; });
 
-                    // Add the team position
-                    team.append("text")
-                        .attr("class", "position")
-                        .attr("x", 25)
-                        .attr("text-anchor", "end")
-                        .text(function (d) { return (d.rankingPosition + 1) + "."; });
-
-                    // Add the team names to the left hand side
-                    team.append("text")
-                        .attr("class", "teamName")
-                        .attr("x", 30)
-                        .text(function (d) { return d.name; });
-
-                    // Add the lap count to the right hand side
-                    team.append("text")
-                        .attr("class", "lapCount")
-                        .attr("x", width - 5 - rowHeight)
-                        .attr("text-anchor", "end")
-                        .text(function (d) { return d3.format(",")(d.laps).replace(",", "."); });
-
                     // Add a progress spinner background
                     team.append("path")
                         .attr("class", "progressBackgrond")
@@ -145,6 +125,26 @@
                       .transition()
                         .duration(2000)
                         .attrTween("width", barTween);
+
+                    // Add the team position
+                    team.append("text")
+                        .attr("class", "position")
+                        .attr("x", 25)
+                        .attr("text-anchor", "end")
+                        .text(function (d) { return (d.rankingPosition + 1) + "."; });
+
+                    // Add the team names to the left hand side
+                    team.append("text")
+                        .attr("class", "teamName")
+                        .attr("x", 30)
+                        .text(function (d) { return d.name; });
+
+                    // Add the lap count to the right hand side
+                    team.append("text")
+                        .attr("class", "lapCount")
+                        .attr("x", width - 5 - rowHeight)
+                        .attr("text-anchor", "end")
+                        .text(function (d) { return d3.format(",")(d.laps).replace(",", "."); });
                 }
 
                 // Updates the lapcount and order
