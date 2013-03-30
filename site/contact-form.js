@@ -60,7 +60,7 @@ $(document).ready(function() {
 					$('.done').fadeIn('slow');
 
 				//if process.php returned 0/false (send mail failed)
-				} else alert('Sorry, unexpected error. Please try again later.');
+				} else alert('Sorry, er is iets fout gegaan. Gelieve  later nog eens te proberen.');
 			}
 		});
 
