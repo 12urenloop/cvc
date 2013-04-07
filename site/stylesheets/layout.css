@@ -9,11 +9,13 @@ h1 {
     text-transform: uppercase;
     position: relative;
     z-index: 150;
-    margin-bottom: 70px;
+    margin-bottom: 50px;
+    text-shadow: 0px 5px 10px #000000;
 }
 
 h1.small {
-    font-size: 58px;
+    font-size: 52px;
+    line-height: 66px;
     margin-bottom: 24px;
 }
 
@@ -74,6 +76,8 @@ p {
 p.white {
     color: #f9f9f9;
 }
+p.white a, p.white a:visited { color: #ddd; }
+p.white a:hover, p.white a:focus { color: #fff; }
 
 .button1,input[type="submit"],input[type="reset"],input[type="button"] {
     background: #3a3a3a;
@@ -170,13 +174,18 @@ p.separator {
 }
 
 #separator1 .bg2 {
-    background: url(../images/bg2.jpg) repeat 0 0 fixed;
+    background: url(../images/bg2.jpg) no-repeat 0 0 fixed;
     margin: 0 auto;
     padding: 0;
     position: absolute;
     z-index: 200;
     width: 100%;
     height: 500px;
+
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 }
 
 #separator2 {
@@ -186,7 +195,7 @@ p.separator {
 }
 
 #separator2 .bg3 {
-    background: url(../images/bg3.jpg) repeat 0 0 fixed;
+    background: url(../images/bg3.jpg) no-repeat 0 0 fixed;
     margin: 0 auto;
     padding: 0;
     position: absolute;
@@ -262,13 +271,17 @@ nav a:hover {
 }
 
 #intro .bg1 {
-    background: url(../images/bg1.jpg) 0 0 repeat fixed;
+    background: url(../images/bg1.jpg) 0 0 no-repeat fixed;
     margin: 0 auto;
     padding: 0;
     position: absolute;
     z-index: 100;
     width: 100%;
     height: 600px;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 }
 
 .title {
@@ -282,9 +295,10 @@ nav a:hover {
 .intro-line {
     position: relative;
     z-index: 150;
-    border-top: 1px solid #ededed;
+    border-top: 3px solid #ededed;
     width: 670px;
-    margin: 0 auto 50px auto;
+    margin: 0 auto 45px auto;
+    box-shadow: 0px 3px 3px #000000;
 }
 
 .title p {
@@ -658,6 +672,9 @@ p.t-type {
     font-size: 14px;
 }
 
+.copyright a, .copyright a:visited { color: #999; }
+.copyright a:hover, .copyright a:focus { color: #ccc; }
+
 nav select {
     display: none;
 }
@@ -693,18 +710,6 @@ nav select {
         font-size: 100px;
         margin-bottom: 60px;
     }
-
-    h1.small {
-        font-size: 80px;
-        margin-bottom: 20px;
-    }
-
-}
-
-@media only screen and (min-width: 768px) and (max-width: 959px) {
-}
-
-@media only screen and (max-width: 767px) {
 }
 
 @media only screen and (min-width: 480px) and (max-width: 767px) {
@@ -713,9 +718,19 @@ nav select {
         margin-bottom: 20px;
     }
 
+    #intro {
+        height: 350px;
+    }
+
     h1.small {
         font-size: 40px;
+        line-height: 50px;
         margin-bottom: 20px;
+    }
+
+    .intro-line {
+        width: 450px;
+        margin-bottom: 18px
     }
 
     .title p {
@@ -732,7 +747,7 @@ nav select {
 
 @media only screen and (max-width: 479px) {
     #intro {
-        height: 430px;
+        height: 250px;
     }
 
     .title {
@@ -750,8 +765,9 @@ nav select {
     }
 
     h1.small {
-        font-size: 30px;
-        margin-bottom: 20px;
+        font-size: 24px;
+        line-height: 28px;
+        margin-bottom: 10px;
     }
 
     .title p {
