@@ -25,7 +25,7 @@ h2 {
     color: #434343;
     text-transform: uppercase;
     text-align: center;
-    margin-top: 90px;
+    margin-top: 40px;
     margin-bottom: 80px;
 }
 
@@ -43,6 +43,8 @@ h3 {
     text-transform: uppercase;
     font-weight: 600;
     color: #434343;
+    text-align: center;
+    margin-top: 20px;
 }
 
 h3.white {
@@ -175,13 +177,13 @@ p.separator {
 
 #separator1 .bg2 {
     background: url(../images/bg2.jpg) no-repeat 0 0 fixed;
+    background-position: 50% 0;
     margin: 0 auto;
     padding: 0;
     position: absolute;
     z-index: 200;
     width: 100%;
     height: 500px;
-
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -196,12 +198,17 @@ p.separator {
 
 #separator2 .bg3 {
     background: url(../images/bg3.jpg) no-repeat 0 0 fixed;
+    background-position: 50% 0;
     margin: 0 auto;
     padding: 0;
     position: absolute;
     z-index: 200;
     width: 100%;
     height: 500px;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 }
 
 #separator3 {
@@ -212,12 +219,17 @@ p.separator {
 
 #separator3 .bg4 {
     background: url(../images/bg4.jpg) repeat 0 0 fixed;
+    background-position: 50% 0;
     margin: 0 auto;
     padding: 0;
     position: absolute;
     z-index: 200;
     width: 100%;
     height: 500px;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 }
 
 nav {
@@ -272,6 +284,7 @@ nav a:hover {
 
 #intro .bg1 {
     background: url(../images/bg1.jpg) 0 0 no-repeat fixed;
+    background-position: 50% 0;
     margin: 0 auto;
     padding: 0;
     position: absolute;
@@ -321,12 +334,37 @@ nav a:hover {
 }
 
 .social-intro a {
-    opacity: 0.7;
+    display: inline-block;
+    width: 220px; height: 40px;
+    padding-left: 20px;
+    margin-bottom: 5px;
+
+    font-size: 20px;
+    line-height: 39px;
+    text-align: center;
+    text-decoration: none;
+    color: #fff;
+
+    border-radius: 6px;
+    opacity: 0.9;
+    box-shadow: 0px 3px 3px #000000;
 }
 
 .social-intro a:hover {
     opacity: 1;
+    border: 1px solid #ccc;
 }
+
+a.social-twitter {
+    background: #7ad2f4 url('../images/icn-twitter-intro.png') no-repeat 5px center;
+    border: 1px solid #7ad2f4;
+}
+
+a.social-facebook {
+    background: #39599f url('../images/icn-facebook-intro.png') no-repeat 5px center;
+    border: 1px solid #39599f;
+}
+
 
 #home {
     background: #fff;
@@ -459,99 +497,6 @@ span.p-small {
     box-shadow: 0px 0px 16px 0px rgba(0, 0, 0, 0.9);
 }
 
-.skills {
-    margin-top: 50px;
-}
-
-.skills h3 {
-    text-align: center;
-    margin-bottom: 30px;
-}
-
-.skills p {
-    font-size: 14px;
-    text-transform: uppercase;
-    margin: 0;
-    line-height: 18px;
-}
-
-.skill-bg {
-    background: #e5e5e5;
-    position: relative;
-    width: 100%;
-    height: 31px;
-    margin-bottom: 15px;
-}
-
-.skill1 {
-    background: #d1d1d1;
-    width: 63%;
-    height: 31px;
-}
-
-.skill2 {
-    background: #c8c7c7;
-    width: 72%;
-    height: 31px;
-}
-
-.skill3 {
-    background: #bdbdbd;
-    width: 77%;
-    height: 31px;
-}
-
-.skill4 {
-    background: #b3b2b2;
-    width: 85%;
-    height: 31px;
-}
-
-.skill5 {
-    background: #a9a8a8;
-    width: 90%;
-    height: 31px;
-}
-
-.team {
-    margin-top: 60px;
-    text-align: center;
-}
-
-.team h3 {
-    margin-bottom: 50px;
-}
-
-p.t-name {
-    font-size: 20px;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: #424242;
-    margin-top: 15px;
-    margin-bottom: 0;
-}
-
-p.t-type {
-    font-size: 16px;
-    font-weight: 300;
-    font-style: italic;
-    color: #707070;
-    margin-bottom: 10px;
-}
-
-.team ul {
-    margin-bottom: 10px;
-}
-
-.team ul li {
-    display: inline;
-    margin: 0 3px;
-}
-
-.team ul a:hover {
-    opacity: 0.7;
-}
-
 #contact {
     background: url(../images/bg-dark.jpg) repeat;
     position: relative;
@@ -624,7 +569,7 @@ p.t-type {
     line-height: 0;
     padding: 3px 4px 0 4px;
     font-family: 'Source Sans Pro', sans-serif;
-    width: 60px;
+    width: 100px;
     height: 24px;
 }
 
@@ -719,7 +664,7 @@ nav select {
     }
 
     #intro {
-        height: 350px;
+        height: 380px;
     }
 
     h1.small {
@@ -780,6 +725,18 @@ nav select {
         padding-right: 5px;
     }
 
+    .social-intro {
+        margin-top: 15px;
+    }
+
+    .social-intro a {
+        width: 180px; height: 26px;
+        padding-left: 20px;
+
+        font-size: 14px;
+        line-height: 25px;
+        opacity: 1;
+    }
 }
 
 
