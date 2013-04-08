@@ -79,7 +79,7 @@
 
 			<div class="clear"></div>
 
-			<div class="sixteen columns">
+			<div class="container">
 				<div class="flexslider">
 					<ul class="slides">
 						<li><img src="images/home/1.jpg" alt="" /></li>
@@ -92,10 +92,101 @@
 				</div><!-- end flexslider -->
 			</div>
 
-			<!-- TODO: Sponsors -->
+			<div class="sponsors container">
+				<div class="row">
+					<div class="four columns offset-by-four">
+						<a href="http://www.kbc.be"><img src="images/sponsors/kbc.png" alt="KBC" /></a>
+					</div>
+					<div class="four columns">
+						<a href="http://www.pepsi.be"><img src="images/sponsors/pepsi.png" alt="Pepsi" /></a>
+					</div>
+				</div><div class="container">
+					<div class="two columns offset-by-one">
+						<a href="http://www.maes.be"><img src="images/sponsors/maes.png" alt="Maes" /></a>
+					</div>
+					<div class="two columns">
+						<a href="http://www.brummo.be"><img src="images/sponsors/brummo.png" alt="Brummo" /></a>
+					</div>
+					<div class="two columns">
+						<a href="http://www.mobilevikings.be"><img src="images/sponsors/mobile-vikings.png" alt="Mobile Vikings" /></a>
+					</div>
+					<div class="two columns">
+						<a href="http://www.stadium.be"><img src="images/sponsors/stadium.png" alt="Stadium" /></a>
+					</div>
+					<div class="two columns">
+						<a href="http://www.peterman.be"><img src="images/sponsors/peterman.png" alt="Peterman" /></a>
+					</div>
+					<div class="two columns">
+						<a href="http://gsr.ugent.be"><img src="images/sponsors/gsr.png" alt="Gentse Studentenraad" /></a>
+					</div>
+				</div><div class="container offset-by-half">
+					<div class="two columns offset-by-two">
+						<a href="http://www.desperados.be"><img src="images/sponsors/desperados.png" alt="Desperados" /></a>
+					</div>
+					<div class="two columns">
+						<a href="http://www.aao-optiek.com"><img src="images/sponsors/aao.png" alt="A.A.O." /></a>
+					</div>
+					<div class="two columns">
+						<a href="http://www.guido.be"><img src="images/sponsors/guido.png" alt="Guido" /></a>
+					</div>
+					<div class="two columns">
+						<a href="http://www.acco.be"><img src="images/sponsors/acco.png" alt="Acco" /></a>
+					</div>
+					<div class="two columns">
+						<a href="http://www.skikot.be"><img src="images/sponsors/skikot.png" alt="Skikot" /></a>
+					</div>
+				</div><div class="row offset-by-half">
+					<div class="one column">
+						<a href="https://www.facebook.com/DeCoulissenGent"><img src="images/sponsors/coulissen.png" alt="De Coulissen" /></a>
+					</div>
+					<div class="one column">
+						<a href="http://www.canardbizar.be/"><img src="images/sponsors/canard-bizar.png" alt="Canard Bizar" /></a>
+					</div>
+					<div class="one column">
+						<a href="https://www.facebook.com/tkofschip.gent"><img src="images/sponsors/kofschip.png" alt="'t Kofschip" /></a>
+					</div>
+					<div class="one column">
+						<a href="https://www.facebook.com/pages/Pere-Total/109292535816950"><img src="images/sponsors/pere-total.png" alt="Pere Total" /></a>
+					</div>
+					<div class="one column">
+						<a href="http://www.overpoortbowl.be/"><img src="images/sponsors/overpoort-bowl.png" alt="Overpoort Bowl" /></a>
+					</div>
+					<div class="one column">
+						<a href="http://gratisfuifzaal.be/"><img src="images/sponsors/twitch.png" alt="Twitch" /></a>
+					</div>
+					<div class="one column">
+						<a href="https://www.facebook.com/hamburgerkingertan"><img src="images/sponsors/hamburgertje.png" alt="'t Hamburgertje" /></a>
+					</div>
+					<div class="one column">
+						<a href="https://www.facebook.com/point.final.5?"><img src="images/sponsors/point-final.png" alt="Point Final" /></a>
+					</div>
+					<div class="one column">
+						<a href="https://www.facebook.com/cafeamber.gent"><img src="images/sponsors/amber.png" alt="Amber" /></a>
+					</div>
+					<div class="one column">
+						<a href="http://www.pi-nuts.be/"><img src="images/sponsors/pinuts.png" alt="Pinuts" /></a>
+					</div>
+					<div class="one column">
+						<a href="http://www.alexpatatas.be/"><img src="images/sponsors/alex-patatas.png" alt="Alex Patatas" /></a>
+					</div>
+				</div>
 
-			<div class="clear"></div>
-
+				<p>met medewerking van:</p>
+				<div class="row offset-by-half">
+					<div class="two columns offset-by-three">
+						<a href="http://www.gent.be"><img src="images/sponsors/stad-gent.png" alt="Stad Gent" /></a>
+					</div>
+					<div class="two columns">
+						<a href="http://www.urgent.fm"><img src="images/sponsors/urgent.png" alt="Urgent.fm" /></a>
+					</div>
+					<div class="two columns">
+						<a href="http://www.schamper.ugent.be"><img src="images/sponsors/schamper.png" alt="Schamper" /></a>
+					</div>
+					<div class="two columns">
+						<a href="http://zeus.ugent.be"><img src="images/sponsors/zeus.png" alt="Zeus WPI" /></a>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 
@@ -159,7 +250,6 @@
 
 			<div class="sixteen columns">
 				<h2><span class="lines">Animatie</span></h2>
-				<p style="text-align: center;">Naast lopen vallen er ook heel wat andere zaken te beleven op het Sint-Pietersplein…</p>
 			</div>
 
 			<div class="eight columns">
@@ -302,7 +392,7 @@
         }
 
 		$(document).ready(function(){
-			$("nav").sticky({topSpacing:0});
+			$('nav').sticky({topSpacing:0});
 
 			$('.flexslider').flexslider({
 				animation: "slide",
