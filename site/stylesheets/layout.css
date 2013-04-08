@@ -26,7 +26,7 @@ h2 {
     text-transform: uppercase;
     text-align: center;
     margin-top: 40px;
-    margin-bottom: 80px;
+    margin-bottom: 60px;
 }
 
 h2.white {
@@ -44,7 +44,7 @@ h3 {
     font-weight: 600;
     color: #434343;
     text-align: center;
-    margin-top: 20px;
+    margin: 30px 0 20px;
 }
 
 h3.white {
@@ -75,11 +75,11 @@ p {
     color: #3d3d3d;
 }
 
-p.white {
+.white, .white p {
     color: #f9f9f9;
 }
-p.white a, p.white a:visited { color: #ddd; }
-p.white a:hover, p.white a:focus { color: #fff; }
+.white a, .white a:visited { color: #ddd; }
+.white a:hover, .white a:focus { color: #fff; }
 
 .button1,input[type="submit"],input[type="reset"],input[type="button"] {
     background: #3a3a3a;
@@ -136,8 +136,8 @@ p.white a:hover, p.white a:focus { color: #fff; }
 }
 
 .action {
-    margin-top: 50px;
-    padding: 40px 0 20px 0;
+    margin-top: 30px;
+    padding: 30px 0;
     text-align: center;
     border-top: 1px solid #d3d3d3;
 }
@@ -171,6 +171,9 @@ p.separator {
 
 .bg1, .bg2, .bg3, .bg4 {
     width: 100%;
+    background-attachment: fixed;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -184,8 +187,7 @@ p.separator {
 }
 
 #separator1 .bg2 {
-    background: url(../images/bg2.jpg) no-repeat 0 0 fixed;
-    background-position: 50% 0;
+    background-image: url(../images/bg2.jpg);
     margin: 0 auto;
     padding: 0;
     position: absolute;
@@ -200,8 +202,7 @@ p.separator {
 }
 
 #separator2 .bg3 {
-    background: url(../images/bg3.jpg) no-repeat 0 0 fixed;
-    background-position: 50% 0;
+    background-image: url(../images/bg3.jpg);
     margin: 0 auto;
     padding: 0;
     position: absolute;
@@ -216,8 +217,7 @@ p.separator {
 }
 
 #separator3 .bg4 {
-    background: url(../images/bg4.jpg) repeat 0 0 fixed;
-    background-position: 50% 0;
+    background-image: url(../images/bg4.jpg);
     margin: 0 auto;
     padding: 0;
     position: absolute;
@@ -276,8 +276,7 @@ nav a:hover {
 }
 
 #intro .bg1 {
-    background: url(../images/bg1.jpg) 0 0 no-repeat fixed;
-    background-position: 50% 0;
+    background-image: url(../images/bg1.jpg);
     margin: 0 auto;
     padding: 0;
     position: absolute;
@@ -397,81 +396,6 @@ p.proj-desc {
     padding-bottom: 40px;
     -webkit-box-shadow: 0px 0px 16px 0px rgba(0, 0, 0, 0.9);
     box-shadow: 0px 0px 16px 0px rgba(0, 0, 0, 0.9);
-}
-
-.serv-list {
-    text-align: center;
-    margin-top: 60px;
-}
-
-.serv-list h4 {
-    margin-bottom: 50px;
-}
-
-.serv-list p {
-    margin-top: 35px;
-}
-
-.pricing {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.pricing h3 {
-    margin-top: 70px;
-    margin-bottom: 60px;
-}
-
-p.p-name {
-    background: url(../images/price-name-bg.jpg) repeat;
-    font-size: 22px;
-    font-weight: 600;
-    text-transform: uppercase;
-    padding: 12px 0 8px 0;
-    margin: 0;
-    color: #fff;
-}
-
-p.p-price {
-    background: url(../images/price-bg.jpg) repeat;
-    font-size: 28px;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: #fff;
-    padding: 20px 0 16px 0;
-    margin: 0;
-}
-
-span.p-small {
-    font-size: 14px;
-    color: #a0a0a0;
-}
-
-.pricing ul {
-    background: url(../images/price-feat-bg.jpg) repeat;
-    margin: 0;
-}
-
-.pricing ul li {
-    font-size: 14px;
-    text-transform: uppercase;
-    color: #d7d7d7;
-    border-bottom: 1px solid #333333;
-    padding: 10px 0;
-    margin: 0;
-}
-
-.signup {
-    padding: 14px 0;
-    margin-bottom: 30px;
-}
-
-.signup button2 {
-    margin: 0;
-}
-
-.signup {
-    background: url(../images/price-bg.jpg) repeat;
 }
 
 #animatie {
