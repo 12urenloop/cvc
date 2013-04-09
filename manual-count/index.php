@@ -26,8 +26,12 @@
 	    </ul>
 	</div>
 	<div id="overlay">
-		<a id="closeModal" href="#" onClick="overlay()"><img src="modal_close.png"/></a>
+		<a id="closeModal"><img src="modal_close.png"/></a>
 		<div id="overlayContent">
+			<h1>Lastest error</h1>
+			<p id="overlayError"></p>
+			<h1>Queue</h1>
+			<p id="overlayQueue"></p>
 		</div>
 	</div>
 </body>

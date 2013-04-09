@@ -96,10 +96,9 @@ p.laps {
 }
 
 #queueTable {
-	margin-top: 2em;
-	margin-bottom: 2em;
 	border: 1px solid #E6E6E6;
 	background-color: #FFF;
+	margin: 0 auto;
 	text-align: left;
 	border-radius: 5px;
 	-moz-border-radius: 5px;
@@ -126,12 +125,13 @@ p.laps {
 	vertical-align: top;
 }
 
-#queueTable caption {
+#overlayContent h1 {
 	color: #E6E6E6;
 	font-size: x-large;
+	padding: 10px;
 }
 
-#overlay p, #overlay a {
+#overlay a {
 	color: #FFF;
 }
 
@@ -143,8 +143,9 @@ p.laps {
 	top: 0px;
 	width:100%;
 	height:100%;
-	text-align:center;
+	text-align: center;
 	z-index: 1000;
+	overflow: scroll;
 }
 
 #closeModal {
@@ -152,4 +153,18 @@ p.laps {
 	top: 0px;
 	right:0px;
 	z-index:50;
+}
+
+#overlayError {
+	margin: 0 auto;
+	color: #FF0000;
+	font-size: large;
+}
+
+#overlayError span {	
+	background-color: #000;
+}
+
+#overlayQueue {
+	margin: 0 auto;
 }

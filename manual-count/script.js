@@ -1,5 +1,6 @@
 var DELAY = 30; // delay to prevent accidental double taps
 var BUTTONS_PER_VIEW = 7;
+var error = '';
 
 // Detect local storage
 var storage;
@@ -60,15 +61,21 @@ function createView(viewNumber) {
 function overlay() {
 	el = document.getElementById("overlay");
 	el.style.visibility = (el.style.visibility == "visible") ? "hidden" : "visible";
+	return false;
 }
 
 function createAdminView(){
 	overlay();
-	var container = $('#overlayContent');
-	container.empty();
+	
+	var errorContainer = $('#overlayError');
+	errorContainer.empty();
+	errorContainer.append($('<span>' + error + '</span>'));
+
+	var queueContainer = $('#overlayQueue');
+	queueContainer.empty();
 	var teams = JSON.parse(storage.getItem('teams'))
 	var queue = JSON.parse(storage.getItem('requestQueue') || "[]");
-	var queueListing = $('<table id="queueTable"><caption>Queue</section><tr><th>ID</th><th>Teamnaam</th><th>Tijd</th></tr>');
+	var queueListing = $('<table id="queueTable"><tr><th>ID</th><th>Teamnaam</th><th>Tijd</th></tr>');
 	for(var i = 0; i < queue.length; i++){
 		var row = $('<tr>');
 		row.append('<td>' + queue[i].team + '</td>');
@@ -78,7 +85,7 @@ function createAdminView(){
 		row.append('<td>' + time.getHours() + ':' + time.getMinutes() + ':' + time.getSeconds() + '</td>');
 		queueListing.append(row);
 	}
-	container.append(queueListing);
+	queueContainer.append(queueListing);
 }
 
 function addLap(teamId) {
@@ -105,9 +112,10 @@ function processQueue() {
 
     console.log("Submitting " + JSON.stringify(queue[0]));
 
-    // TODO: show error notification to user
-    var errorHandler = function() {
+    var errorHandler = function(jqXHR, textStatus, errorThrown) {
         console.error("Error submitting " + JSON.stringify(queue[0]));
+		error = textStatus + " when submitting " + JSON.stringify(queue[0]) + ":<BR/>";
+		error += errorThrown + " " + jqXHR.status + " (" + jqXHR.statusText + ") ";
         setTimeout(processQueue, 1000);
     }
 
@@ -147,6 +155,10 @@ $(function() {
             storage.clear();
             window.location.reload();
         }
+    });
+
+	$('#closeModal').click(function() {
+        overlay();
     });
 
     processQueue();
