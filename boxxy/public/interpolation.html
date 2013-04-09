@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+        <title>Boxxy interpolation test</title>
+        <script src="http://live.12urenloop.be/js/boxxy.js"></script>
+        <script src="http://live.12urenloop.be/socket.io/socket.io.js"></script>
+        <script src="http://live.12urenloop.be/js/jquery-1.7.1.min.js"></script>
+        <style>
+            body {
+                font-family: sans-serif;
+                font-size: 13px;
+                color: #333;
+            }
+            h1 {
+                margin: 0;
+            }
+            pre {
+                height: 150px; max-height: 150px;
+                overflow: auto;
+                white-space: pre-wrap;       /* css-3 */
+                white-space: -moz-pre-wrap !important;  /* Mozilla, since 1999 */
+                white-space: -pre-wrap;      /* Opera 4-6 */
+                white-space: -o-pre-wrap;    /* Opera 7 */
+                word-wrap: break-word;       /* Internet Explorer 5.5+ */
+                background-color: #eee; padding: 10px;
+                border: 1px solid #aaa;
+            }
+            th {
+                text-align: left;
+            }
+
+            td span {
+                color: #BBB;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>Interpolation</h2>
+        <table id="interpolation">
+            <thead>
+                <tr><th width=20>ID</th><th width=200>Naam</th>
+                    <th width=70>Snelheid</th><th width=70>Geschatte positie</th>
+                    <th width=100>Vorige positie</th><th width=50>Fout</th>
+            </thead>
+        </table>
+        <h2>onUpdatePosition</h2>
+        <div>
+            <pre id="onUpdatePosition"></pre>
+        </div>
+
+        <script>
+            /**
+             * Interpolation interface
+             */
+            var lastPosition = {};
+
+            var initInterpolation = function(teamId, timestamp, position) {
+                lastPosition[teamId] = {
+                    timestamp: timestamp,
+                    position: position
+                }
+            };
+
+            var updateInterpolation = function(teamId, timestamp, position) {
+                lastPosition[teamId].position = position;
+            };
+
+            var interpolateSpeed = function(teamId, timestamp) {
+                return 0;
+            };
+
+            var interpolatePosition = function(teamId, timestamp) {
+                return lastPosition[teamId].position;
+            };
+
+            /**
+             * Interpolation testing
+             */
+            // Set up boxxy
+            var boxxy = boxxy.initialize(),
+                boxxyHost = 'http://live.12urenloop.be:8080';
+
+            $(document).ready(function () {
+                // This function gets executed when the state is reset: so either
+                // the client initially connects, or when it reconnects after a
+                // failure.
+                boxxy.onPutState = function(stateDelta) {
+                    var table = $('#interpolation');
+                    for(id in boxxy.teams) {
+                        var team = boxxy.teams[id];
+                        var station = boxxy.stations[team.station];
+                        initInterpolation(id, new Date(team.updated), station.position);
+
+                        table.append('<tr id="team-' + id + '">' +
+                                        '<td>' + id + '</td>' +
+                                        '<td>' + team.name + '</td>' +
+                                        '<td class="speed"></td>' +
+                                        '<td class="position"></td>' +
+                                        '<td class="position-last">' + station.position + 'm <span>(0s)</span></td>' +
+                                        '<td class="error"></td>' +
+                                    '</tr>');
+                    }
+                };
+
+                // This function gets executed when a team changes its position to
+                // another station.
+                boxxy.onUpdatePosition = function(position) {
+                    // Calculate error
+                    var expectedPosition = interpolatePosition(position.team, new Date(position.timestamp)),
+                        actualPosition = boxxy.stations[position.station].position;
+
+                    var error = expectedPosition - actualPosition;
+                    if(Math.abs(expectedPosition - (actualPosition + boxxy.circuitLength)) < Math.abs(error)) {
+                        error = expectedPosition - (actualPosition + boxxy.circuitLength);
+                    }
+
+                    // Update row
+                    var row = $('tr#team-' + position.team),
+                        timeDelta = Math.round((Date.now() - new Date(position.timestamp)) / 1000);
+                    $('.position-last', row).html(actualPosition + ' m <span>(' + timeDelta + 's)</span>');
+                    $('.error', row).text(error + ' m');
+
+                    position.position = actualPosition;
+                    position.teamName = boxxy.teams[position.team].name;
+                    $("#onUpdatePosition").prepend(JSON.stringify(position) + "\n");
+
+                    updateInterpolation(position.team, new Date(position.timestamp), actualPosition);
+                }
+
+                // Start listening to the server.
+                boxxy.listen(boxxyHost);
+
+                // Update the interpolation
+                setInterval(function() {
+                    var time = new Date();
+
+                    for(id in boxxy.teams) {
+                        var team = boxxy.teams[id],
+                            row = $('tr#team-' + id)
+                        $('.speed', row).text(interpolateSpeed(id, time) + ' m/s');
+                        $('.position', row).text(interpolatePosition(id, time) + ' m');
+
+                        var position = boxxy.stations[team.station]
+                            timeDelta = Math.round((Date.now() - new Date(team.updated)) / 1000);
+                        $('.position-last', row).html(position.position + ' m <span>(' + timeDelta + 's)</span>');
+                    }
+                }, 250);
+            });
+        </script>
+    </body>
+</html>
