@@ -27,12 +27,10 @@ $(document).ready(function() {
 
     if (ios) {
         $(document).bind('touchmove',function(){
-          var intro = $("#intro"), nav2 = $("nav");
-          console.log(nav2.position().top);
+        var intro = $("#intro"), nav2 = $("nav");
         if(intro.height() != nav2.position().top)
         {
-            nav2.css({position:'fixed', top:'0px'});
-            console.log(nav2.position().top);
+            nav2.css({position:'fixed', top:'0'});
         }
         else
         {
