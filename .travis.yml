@@ -5,4 +5,3 @@ notifications:
   email: true
   irc:
     - "wina.ugent.be#zeus"
-services: mongodb

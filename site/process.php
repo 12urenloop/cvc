@@ -1,11 +1,10 @@
 <?php
 try {
-  //$to = 'info@12urenloop.be';     //put your email address on which you want to receive the information
-  $to = 'siloxtom@gmail.com';
-  $subject = '[12urenloop] Mail via website';   //set the subject of email.
+  $to = 'info@12urenloop.be';
+  $subject = '[12urenloop] Mail via website';
   $headers  = 'MIME-Version: 1.0' . "\r\n";
   $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-  $headers .= 'From: ' . htmlspecialchars($_POST['name']) . ' ' . htmlspecialchars($_POST['email']) . "\r\n";
+  $headers .= 'From: website@12urenloop.be' . "\r\n";
   $headers .= 'Reply-To: ' . htmlspecialchars($_POST['email']) . "\r\n";
   $message = "
     <table>

@@ -8,7 +8,7 @@ CREATE TABLE  `teams` (
   `laps` INT NOT NULL
 ) ENGINE = INNODB CHARACTER SET utf8 COLLATE utf8_general_ci;
 
-CREATE TABLE  `urenloop`.`laps` (
+CREATE TABLE `laps` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
   `team_id` INT NOT NULL ,
   `value` INT NOT NULL ,
