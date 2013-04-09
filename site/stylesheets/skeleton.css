@@ -53,6 +53,7 @@
     .container .two-thirds.column               { width: 620px; }
 
     /* Offsets */
+    .container .offset-by-half                  { padding-left: 30px;  }
     .container .offset-by-one                   { padding-left: 60px;  }
     .container .offset-by-two                   { padding-left: 120px; }
     .container .offset-by-three                 { padding-left: 180px; }
@@ -106,6 +107,7 @@
         .container .two-thirds.column               { width: 492px; }
 
         /* Offsets */
+        .container .offset-by-half                  { padding-left: 24px;  }
         .container .offset-by-one                   { padding-left: 48px; }
         .container .offset-by-two                   { padding-left: 96px; }
         .container .offset-by-three                 { padding-left: 144px; }
@@ -134,10 +136,12 @@
         .container .columns,
         .container .column { margin: 0; }
 
+        .row { margin-bottom: 10px; }
+
         .container .one.column,
-        .container .one.columns,
-        .container .two.columns,
-        .container .three.columns,
+        .container .one.columns { width: 75px; }
+        .container .two.columns { width: 150px; }
+        .container .three.columns { width: 225px; }
         .container .four.columns,
         .container .five.columns,
         .container .six.columns,
@@ -155,6 +159,7 @@
         .container .two-thirds.column  { width: 300px; }
 
         /* Offsets */
+        .container .offset-by-half,
         .container .offset-by-one,
         .container .offset-by-two,
         .container .offset-by-three,
@@ -185,11 +190,11 @@
         .container .column { margin: 0; }
 
         .container .one.column,
-        .container .one.columns,
-        .container .two.columns,
-        .container .three.columns,
-        .container .four.columns,
-        .container .five.columns,
+        .container .one.columns { width: 70px; }
+        .container .two.columns { width: 140px; }
+        .container .three.columns { width: 210px; }
+        .container .four.columns { width: 280px; }
+        .container .five.columns { width: 350px; }
         .container .six.columns,
         .container .seven.columns,
         .container .eight.columns,
