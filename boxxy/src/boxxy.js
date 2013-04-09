@@ -56,17 +56,32 @@ Boxxy.prototype.updatePosition = function(position) {
 }
 
 Boxxy.prototype.teamsByScore = function() {
-    var byScore = [];
-    for(var i in this.teams) byScore.push(this.teams[i]);
-    byScore.sort(function (a, b) {
-        return b.laps - a.laps;
+    var result = [];
+    for(var i in this.teams) result.push(this.teams[i]);
+
+    // Sort, first by #laps, then by position
+    var stations = this.stations;
+    result.sort(function(a, b) {
+        var order = b.laps - a.laps;
+        if(order == 0) {
+            var stationA = stations[a.station],
+                stationB = stations[b.station];
+            if(stationA && stationB) {
+                order = stationB.position - stationA.position;
+            }
+        }
+        return order;
     });
-    return byScore;
+
+    for (var i = 0; i < result.length; i++) {
+        result[i].rankingPosition = i;
+    }
+    return result;
 }
 
 /* Only used on the client side: this requires sockets.io to be in scope. */
 Boxxy.prototype.listen = function(uri) {
-    var boxxy  = this;
+    var boxxy = this;
     boxxy.socket = io.connect(uri);
 
     boxxy.socket.on('/state', function(state) {
