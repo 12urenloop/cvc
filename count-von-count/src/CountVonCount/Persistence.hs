@@ -36,7 +36,6 @@ module CountVonCount.Persistence
     , getBaton
     , getAllBatons
     , getBatonByMac
-    , batonName
 
     , deleteAll
     ) where
@@ -319,20 +318,20 @@ getStationByMac db mac = withConnection db $ \c -> listToMaybe <$>
 
 --------------------------------------------------------------------------------
 data Baton = Baton
-    { batonId  :: Ref Baton
-    , batonMac :: Mac
-    , batonNr  :: Int
+    { batonId   :: Ref Baton
+    , batonMac  :: Mac
+    , batonName :: Text
     } deriving (Eq)
 
 
 --------------------------------------------------------------------------------
 instance Show Baton where
-    show b = batonName b ++ " (" ++ T.unpack (batonMac b) ++ ")"
+    show b = T.unpack (batonName b) ++ " (" ++ T.unpack (batonMac b) ++ ")"
 
 
 --------------------------------------------------------------------------------
 instance Ord Baton where
-    compare = comparing batonNr
+    compare = comparing batonName
 
 
 --------------------------------------------------------------------------------
@@ -346,16 +345,16 @@ batonsTable =
     [ "CREATE TABLE IF NOT EXISTS batons ( \
       \    id INTEGER PRIMARY KEY,         \
       \    mac TEXT,                       \
-      \    number INTEGER                  \
+      \    name TEXT                       \
       \)"
     , "CREATE INDEX IF NOT EXISTS batons_mac ON batons (mac)"
     ]
 
 
 --------------------------------------------------------------------------------
-addBaton :: Database -> Mac -> Int -> IO (Ref Baton)
+addBaton :: Database -> Mac -> Text -> IO (Ref Baton)
 addBaton db mac nr = withConnection db $ \c -> do
-    Sqlite.execute c "INSERT INTO batons (mac, number) VALUES (?, ?)" (mac, nr)
+    Sqlite.execute c "INSERT INTO batons (mac, name) VALUES (?, ?)" (mac, nr)
     Sqlite.lastInsertRowId c
 
 
@@ -378,11 +377,6 @@ getAllBatons db = withConnection db $ \c ->
 getBatonByMac :: Database -> Mac -> IO (Maybe Baton)
 getBatonByMac db mac = withConnection db $ \c -> listToMaybe <$> Sqlite.query c
     "SELECT * FROM batons WHERE mac = ?" (Sqlite.Only mac)
-
-
---------------------------------------------------------------------------------
-batonName :: Baton -> String
-batonName = ("Baton " ++) . show . batonNr
 
 
 --------------------------------------------------------------------------------

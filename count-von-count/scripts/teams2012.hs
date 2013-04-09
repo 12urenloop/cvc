@@ -30,25 +30,25 @@ main = do
     t13 <- addTeam db "KVHV"
     t14 <- addTeam db "HILOK"
 
-    b1  <- addBaton db "20:11:02:15:01:80" 1
-    b2  <- addBaton db "20:11:02:15:01:42" 2
-    b3  <- addBaton db "20:11:02:15:01:15" 3
-    b4  <- addBaton db "20:11:02:15:01:75" 4
-    b5  <- addBaton db "20:11:02:15:01:77" 5
-    b6  <- addBaton db "20:11:02:15:01:51" 6
-    b7  <- addBaton db "20:11:02:15:01:93" 7
-    b8  <- addBaton db "00:12:02:01:07:82" 8
-    b9  <- addBaton db "00:12:02:01:00:04" 9
-    b10 <- addBaton db "20:11:02:15:01:17" 10
-    b11 <- addBaton db "00:12:02:01:06:25" 11
-    b12 <- addBaton db "20:11:02:15:01:50" 12
-    b13 <- addBaton db "00:12:02:01:08:76" 13
-    b14 <- addBaton db "20:11:02:15:01:34" 14
-    b15 <- addBaton db "20:11:02:15:01:90" 15
-    b16 <- addBaton db "00:11:72:14:01:98" 16
-    b17 <- addBaton db "20:11:02:15:01:67" 17
-    b18 <- addBaton db "20:11:02:15:01:83" 18
-    b19 <- addBaton db "20:11:02:15:01:79" 19
+    b1  <- addBaton db "20:11:02:15:01:80" "Baton A"
+    b2  <- addBaton db "20:11:02:15:01:42" "Baton B"
+    b3  <- addBaton db "20:11:02:15:01:15" "Baton C"
+    b4  <- addBaton db "20:11:02:15:01:75" "Baton D"
+    b5  <- addBaton db "20:11:02:15:01:77" "Baton E"
+    b6  <- addBaton db "20:11:02:15:01:51" "Baton F"
+    b7  <- addBaton db "20:11:02:15:01:93" "Baton G"
+    b8  <- addBaton db "00:12:02:01:07:82" "Baton H"
+    b9  <- addBaton db "00:12:02:01:00:04" "Baton I"
+    b10 <- addBaton db "20:11:02:15:01:17" "Baton J"
+    b11 <- addBaton db "00:12:02:01:06:25" "Baton K"
+    b12 <- addBaton db "20:11:02:15:01:50" "Baton L"
+    b13 <- addBaton db "00:12:02:01:08:76" "Baton M"
+    b14 <- addBaton db "20:11:02:15:01:34" "Baton N"
+    b15 <- addBaton db "20:11:02:15:01:90" "Baton O"
+    b16 <- addBaton db "00:11:72:14:01:98" "Baton P"
+    b17 <- addBaton db "20:11:02:15:01:67" "Baton Q"
+    b18 <- addBaton db "20:11:02:15:01:83" "Baton R"
+    b19 <- addBaton db "20:11:02:15:01:79" "Baton S"
 
     setTeamBaton db t1  $ Just b5
     setTeamBaton db t2  $ Just b15

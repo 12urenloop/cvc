@@ -47,7 +47,7 @@ counterTest = testLog $ \logger -> do
     -- Add teams, calculate expected output
     ts <- forM (zip teamsAndBatons fixtures) $ \((name, baton), f) -> do
         tr     <- addTeam db name
-        br     <- addBaton db (batonMac baton) (batonNr baton)
+        br     <- addBaton db (batonMac baton) (batonName baton)
         team   <- getTeam db tr
         baton' <- getBaton db br
         setTeamBaton db tr $ Just br
@@ -73,7 +73,7 @@ counterTest = testLog $ \logger -> do
 --------------------------------------------------------------------------------
 teamsAndBatons :: [(Text, Baton)]
 teamsAndBatons =
-    [ (name, Baton (fromIntegral i) mac i)
+    [ (name, Baton (fromIntegral i) mac (T.pack $ "Baton " ++ show i))
     | i <- [1 :: Int .. 99]
     , let name = "Team " `T.append` T.pack (show i)
     , let mac  = "01:02:03:00:00" `T.append` T.pack (printf "%2d" i)

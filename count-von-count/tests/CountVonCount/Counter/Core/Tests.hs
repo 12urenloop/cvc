@@ -31,7 +31,7 @@ testCounterFixtureM :: CounterFixtureM () -> Bool
 testCounterFixtureM cf = test emptyCounterState $
     runCounterFixtureM cf time team baton
   where
-    baton = Baton 0 "Baton is irrelevant" 0
+    baton = Baton 0 "Baton is irrelevant" "Baton A"
     team  = Team 0 "Team is irrelevant" 0 (Just $ batonId baton)
     step  = stepCounterState circuitLength maxSpeed
 
