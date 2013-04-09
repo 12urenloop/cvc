@@ -19,8 +19,16 @@
         <h1>Manuele telling</h1>
         <button id="viewSwitcher">iPad 1/2</button>
         <button id="clearButton">Reset</button>
+        <button id="adminButton">Admin</button>
     </header>
-    <ul id="buttonHolder">
-    </ul>
+	<div id="content">
+	    <ul id="buttonHolder">
+	    </ul>
+	</div>
+	<div id="overlay">
+		<a id="closeModal" href="#" onClick="overlay()"><img src="modal_close.png"/></a>
+		<div id="overlayContent">
+		</div>
+	</div>
 </body>
 </html>

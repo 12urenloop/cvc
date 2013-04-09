@@ -57,6 +57,30 @@ function createView(viewNumber) {
     };
 }
 
+function overlay() {
+	el = document.getElementById("overlay");
+	el.style.visibility = (el.style.visibility == "visible") ? "hidden" : "visible";
+}
+
+function createAdminView(){
+	overlay();
+	var container = $('#overlayContent');
+	container.empty();
+	var teams = JSON.parse(storage.getItem('teams'))
+	var queue = JSON.parse(storage.getItem('requestQueue') || "[]");
+	var queueListing = $('<table id="queueTable"><caption>Queue</section><tr><th>ID</th><th>Teamnaam</th><th>Tijd</th></tr>');
+	for(var i = 0; i < queue.length; i++){
+		var row = $('<tr>');
+		row.append('<td>' + queue[i].team + '</td>');
+		var teamId = 'team-' + queue[i].team;
+		row.append('<td>' + JSON.parse(storage.getItem(teamId)).name + '</td>');
+		var time = new Date(queue[i].time * 1000);
+		row.append('<td>' + time.getHours() + ':' + time.getMinutes() + ':' + time.getSeconds() + '</td>');
+		queueListing.append(row);
+	}
+	container.append(queueListing);
+}
+
 function addLap(teamId) {
     var team = JSON.parse(storage.getItem(teamId));
     if(!team) return;
@@ -70,7 +94,7 @@ function addLap(teamId) {
 
     storage.setItem('requestQueue', JSON.stringify(queue));
     storage.setItem(teamId, JSON.stringify(team));
-
+	
     if(queue.length > 1) return;
     else processQueue();
 }
@@ -79,11 +103,11 @@ function processQueue() {
     var queue = JSON.parse(storage.getItem('requestQueue') || "[]");
     if(queue.length == 0) return;
 
-    console.log('Submitting', queue[0]);
+    console.log("Submitting " + JSON.stringify(queue[0]));
 
     // TODO: show error notification to user
     var errorHandler = function() {
-        console.error("Error submitting", queue[0]);
+        console.error("Error submitting " + JSON.stringify(queue[0]));
         setTimeout(processQueue, 1000);
     }
 
@@ -112,6 +136,10 @@ $(function() {
         currentView = currentView == 0 ? 1 : 0;
         createView(currentView);
         $(this).text('iPad ' + (currentView + 1) + '/2');
+    });
+
+	$('#adminButton').click(function() {
+        createAdminView();
     });
 
     $('#clearButton').click(function() {

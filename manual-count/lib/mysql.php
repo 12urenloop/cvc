@@ -5,7 +5,7 @@ mysql_connect('localhost', 'root', 'root') or die(mysql_error());
 mysql_select_db('urenloop') or die(mysql_error());
 
 function getTeams() {
-    $q = mysql_query('SELECT id, name, laps FROM teams');
+    $q = mysql_query('SELECT id, name, laps FROM teams ORDER BY id ASC');
 
     $result = array();
     while($row = mysql_fetch_assoc($q)) {

@@ -11,7 +11,7 @@ body {
 
 header {
   background: #333 url('12ul.png') no-repeat 30px center;
-  height: 110px;
+  height: 150px;
   position: relative;
 }
 
@@ -19,10 +19,10 @@ h1 {
   font-size: 2em;
   text-align: center;
   color: #eee;
-  margin: 0; padding: 30px 10px;
+  margin: 0; padding: 60px 10px;
 }
 
-#viewSwitcher, #clearButton {
+#viewSwitcher, #clearButton, #adminButton {
   width: 100px; height: 30px;
   font-size: 1em;
   position: absolute;
@@ -31,6 +31,7 @@ h1 {
 
 #viewSwitcher { top: 20px; }
 #clearButton { top: 60px; }
+#adminButton { top: 100px; }
 
 #buttonHolder {
   width: 740px;
@@ -92,4 +93,63 @@ p.laps {
   color: #222;
   font-size: 1.4em;
   margin: 10px 0 0 0;
+}
+
+#queueTable {
+	margin-top: 2em;
+	margin-bottom: 2em;
+	border: 1px solid #E6E6E6;
+	background-color: #FFF;
+	text-align: left;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+}
+
+#queueTable td, #queueTable th {
+	border-top-color: white;
+	border-bottom: 1px solid #C9C9C9;
+	color: #555;
+}
+
+#queueTable th, #queueTable thead {
+	padding: 8px 8px 9px;
+	line-height: 1.4em;
+	font-weight: bold;
+	font-size: x-large;
+	font-family:"Times New Roman",Georgia,Serif;
+}
+
+#queueTable td {
+	font-size: large;
+	padding: 5px 8px 2px;
+	vertical-align: top;
+}
+
+#queueTable caption {
+	color: #E6E6E6;
+	font-size: x-large;
+}
+
+#overlay p, #overlay a {
+	color: #FFF;
+}
+
+#overlay {
+	background-color: rgba(0,0,0,0.7);
+	visibility: hidden;
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	width:100%;
+	height:100%;
+	text-align:center;
+	z-index: 1000;
+}
+
+#closeModal {
+	position:absolute;
+	top: 0px;
+	right:0px;
+	z-index:50;
 }
