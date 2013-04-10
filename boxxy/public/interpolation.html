@@ -6,7 +6,9 @@
         <title>Boxxy interpolation test</title>
         <script src="http://live.12urenloop.be/js/boxxy.js"></script>
         <script src="http://live.12urenloop.be/socket.io/socket.io.js"></script>
-        <script src="http://live.12urenloop.be/js/jquery-1.7.1.min.js"></script>
+        <script src="js/jquery-1.7.1.min.js"></script>
+        <script src="js/jquery.color-2.1.1.min.js"></script>
+        <script src="js/cbuffer.js"></script>
         <style>
             body {
                 font-family: sans-serif;
@@ -27,23 +29,34 @@
                 background-color: #eee; padding: 10px;
                 border: 1px solid #aaa;
             }
+            thead th {
+                border-bottom: 1px solid #333;
+            }
             th {
                 text-align: left;
+                vertical-align: bottom;
             }
-
+            td, th {
+                padding: 2px 0;
+            }
             td span {
-                color: #BBB;
+                color: #bbb;
             }
         </style>
     </head>
     <body>
         <h2>Interpolation</h2>
-        <table id="interpolation">
+        <table id="interpolation" cellspacing=0>
             <thead>
-                <tr><th width=20>ID</th><th width=200>Naam</th>
+                <tr><th width=25>ID</th><th width=160>Naam</th><th width=100>Rondjes</th>
                     <th width=70>Snelheid</th><th width=70>Geschatte positie</th>
-                    <th width=100>Vorige positie</th><th width=50>Fout</th>
+                    <th width=120>Vorige positie</th><th width=50>Fout</th><th width=150></th>
             </thead>
+            <tfoot>
+                <tr>
+                    <td colspan=6></td><th>Gemiddeld: </th><th class="error-stats"></th>
+                </tr>
+            </tfoot>
         </table>
         <h2>onUpdatePosition</h2>
         <div>
@@ -52,27 +65,41 @@
 
         <script>
             /**
-             * Interpolation interface
+             * Interpolation code
+             * > implement your interpolation technique here
              */
             var lastPosition = {};
 
-            var initInterpolation = function(teamId, timestamp, position) {
+            var initInterpolation = function(teamId, timestamp, distance) {
                 lastPosition[teamId] = {
                     timestamp: timestamp,
-                    position: position
+                    distance: distance,
+                    speed: 4.5
                 }
             };
 
-            var updateInterpolation = function(teamId, timestamp, position) {
-                lastPosition[teamId].position = position;
+            var updateInterpolation = function(teamId, timestamp, distance) {
+                var previousPosition = lastPosition[teamId],
+                    deltaTime = (timestamp - previousPosition.timestamp) / 1000,
+                    distanceTravelled = distance - previousPosition.distance;
+                if(distanceTravelled < 0) distanceTravelled += boxxy.circuitLength;
+
+                lastPosition[teamId] = {
+                    timestamp: timestamp,
+                    distance: distance,
+                    speed: distanceTravelled / deltaTime
+                }
             };
 
             var interpolateSpeed = function(teamId, timestamp) {
-                return 0;
+                return lastPosition[teamId].speed;
             };
 
             var interpolatePosition = function(teamId, timestamp) {
-                return lastPosition[teamId].position;
+                var position = lastPosition[teamId],
+                    deltaTime = (timestamp - position.timestamp) / 1000,
+                    estimate = position.distance + position.speed * deltaTime;
+                return estimate % boxxy.circuitLength;
             };
 
             /**
@@ -80,7 +107,9 @@
              */
             // Set up boxxy
             var boxxy = boxxy.initialize(),
-                boxxyHost = 'http://live.12urenloop.be:8080';
+                boxxyHost = 'http://live.12urenloop.be:8080',
+                errorStats = {},
+                errorDecayRate = 0.9;
 
             $(document).ready(function () {
                 // This function gets executed when the state is reset: so either
@@ -88,21 +117,31 @@
                 // failure.
                 boxxy.onPutState = function(stateDelta) {
                     var table = $('#interpolation');
-                    for(id in boxxy.teams) {
-                        var team = boxxy.teams[id];
-                        var station = boxxy.stations[team.station];
-                        initInterpolation(id, new Date(team.updated), station.position);
+                    var teams = boxxy.teamsByScore();
+                    for(id in teams) {
+                        var team = teams[id];
+                        errorStats[team.id] = {'max': 0, 'avg': 0};
 
-                        table.append('<tr id="team-' + id + '">' +
-                                        '<td>' + id + '</td>' +
+                        var station = boxxy.stations[team.station];
+                        initInterpolation(team.id, new Date(team.updated), station.position);
+
+                        table.append('<tr id="team-' + team.id + '">' +
+                                        '<td>' + team.id + '</td>' +
                                         '<td>' + team.name + '</td>' +
+                                        '<td class="laps">' + team.laps + '</td>' +
                                         '<td class="speed"></td>' +
                                         '<td class="position"></td>' +
                                         '<td class="position-last">' + station.position + 'm <span>(0s)</span></td>' +
                                         '<td class="error"></td>' +
+                                        '<td class="error-stats"><span></span></td>' +
                                     '</tr>');
                     }
                 };
+
+                boxxy.onAddLap = function(lap) {
+                    var row = $('tr#team-' + lap.team);
+                    $('.laps', row).text(lap.total);
+                }
 
                 // This function gets executed when a team changes its position to
                 // another station.
@@ -112,19 +151,34 @@
                         actualPosition = boxxy.stations[position.station].position;
 
                     var error = expectedPosition - actualPosition;
-                    if(Math.abs(expectedPosition - (actualPosition + boxxy.circuitLength)) < Math.abs(error)) {
-                        error = expectedPosition - (actualPosition + boxxy.circuitLength);
+                    if(Math.abs(error - boxxy.circuitLength) < Math.abs(error)) {
+                        error = error - boxxy.circuitLength;
                     }
 
-                    // Update row
+                    // Exponential average of square error
+                    var teamError = errorStats[position.team];
+                    teamError.avg = errorDecayRate * teamError.avg + (1 - errorDecayRate) * error * error;
+                    if(Math.abs(error) > Math.abs(teamError.max)) teamError.max = error;
+
+                    // Update and flash row
                     var row = $('tr#team-' + position.team),
                         timeDelta = Math.round((Date.now() - new Date(position.timestamp)) / 1000);
-                    $('.position-last', row).html(actualPosition + ' m <span>(' + timeDelta + 's)</span>');
-                    $('.error', row).text(error + ' m');
+                    $('.position-last', row).html(actualPosition + 'm <span>(' + timeDelta + 's)</span>');
+                    $('.error', row).text(Math.round(error) + 'm');
+                    $('.error-stats span', row).text('avg: ' + teamError.avg.toFixed(2) + ', max: ' +  Math.round(teamError.max) + '');
+                    row.stop().css('background-color', '#FFF686').animate({backgroundColor: '#FFF'}, 750);
 
                     position.position = actualPosition;
                     position.teamName = boxxy.teams[position.team].name;
                     $("#onUpdatePosition").prepend(JSON.stringify(position) + "\n");
+
+                    // Calcute totals
+                    var total = 0, teamCount = 0;
+                    for(teamId in boxxy.teams) {
+                        total += errorStats[teamId].avg;
+                        teamCount++;
+                    }
+                    $('#interpolation tfoot .error-stats').text((total / teamCount).toFixed(2));
 
                     updateInterpolation(position.team, new Date(position.timestamp), actualPosition);
                 }
@@ -139,12 +193,12 @@
                     for(id in boxxy.teams) {
                         var team = boxxy.teams[id],
                             row = $('tr#team-' + id)
-                        $('.speed', row).text(interpolateSpeed(id, time) + ' m/s');
-                        $('.position', row).text(interpolatePosition(id, time) + ' m');
+                        $('.speed', row).text(interpolateSpeed(id, time).toFixed(2) + ' m/s');
+                        $('.position', row).text(Math.round(interpolatePosition(id, time)) + 'm');
 
                         var position = boxxy.stations[team.station]
                             timeDelta = Math.round((Date.now() - new Date(team.updated)) / 1000);
-                        $('.position-last', row).html(position.position + ' m <span>(' + timeDelta + 's)</span>');
+                        $('.position-last', row).html(position.position + 'm <span>(' + timeDelta + 's)</span>');
                     }
                 }, 250);
             });
