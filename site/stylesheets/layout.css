@@ -189,6 +189,18 @@ p.separator {
     background-size: cover;
 }
 
+@media only screen and (orientation: portrait) and (max-width: 479px) {
+    .bg1, .bg2, .bg3, .bg4 {
+        -webkit-background-size: auto 100%;
+    }
+}
+
+@media only screen and (orientation: landscape) and (max-width: 479px) {
+    .bg1, .bg2, .bg3, .bg4 {
+        -webkit-background-size: 100% auto;
+    }
+}
+
 #separator1 {
     width: 100%;
     height: 500px;
