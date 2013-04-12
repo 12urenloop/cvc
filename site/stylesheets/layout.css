@@ -516,6 +516,20 @@ p.proj-desc {
 .copyright a, .copyright a:visited { color: #999; }
 .copyright a:hover, .copyright a:focus { color: #ccc; }
 
+.dj-schedule {
+    margin: 0 auto 2em;
+    font-size: 14px;
+}
+
+.dj-schedule td {
+    padding-right: 60px;
+}
+
+.dj-schedule th {
+    padding-right: 14px;
+    color: #888;
+}
+
 nav select {
     display: none;
 }
