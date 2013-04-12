@@ -180,70 +180,51 @@ p.separator {
 
 .bg1, .bg2, .bg3, .bg4 {
     width: 100%; height: 100%;
-    background-attachment: fixed;
+    margin: 0; padding: 0;
     background-position: 50% 50%;
     background-repeat: no-repeat;
+    background-attachment: fixed;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
     background-size: cover;
 }
 
-@media only screen and (orientation: portrait) and (max-width: 479px) {
-    .bg1, .bg2, .bg3, .bg4 {
-        -webkit-background-size: auto 100%;
-    }
+#intro {
+    width: 100%;
+    height: 550px;
+    position: relative;
 }
 
-@media only screen and (orientation: landscape) and (max-width: 479px) {
-    .bg1, .bg2, .bg3, .bg4 {
-        -webkit-background-size: 100% auto;
-    }
+#intro .bg1 {
+    background-image: url(../images/bg1.jpg);
 }
 
 #separator1 {
     width: 100%;
     height: 500px;
-    position: relative;
 }
 
 #separator1 .bg2 {
     background-image: url(../images/bg2.jpg);
-    margin: 0 auto;
-    padding: 0;
-    position: absolute;
-    z-index: 200;
-    height: 500px;
 }
 
 #separator2 {
     width: 100%;
     height: 500px;
-    position: relative;
 }
 
 #separator2 .bg3 {
     background-image: url(../images/bg3.jpg);
-    margin: 0 auto;
-    padding: 0;
-    position: absolute;
-    z-index: 200;
-    height: 500px;
 }
 
 #separator3 {
     width: 100%;
     height: 500px;
-    position: relative;
 }
 
 #separator3 .bg4 {
     background-image: url(../images/bg4.jpg);
-    margin: 0 auto;
-    padding: 0;
-    position: absolute;
-    z-index: 200;
-    height: 500px;
 }
 
 nav {
@@ -289,27 +270,11 @@ nav a:hover {
     color: #000;
 }
 
-#intro {
-    width: 100%;
-    height: 550px;
-    text-align: center;
-    z-index: 100;
-}
-
-#intro .bg1 {
-    background-image: url(../images/bg1.jpg);
-    margin: 0 auto;
-    padding: 0;
-    position: absolute;
-    z-index: 100;
-}
-
 .title {
-    position: fixed;
+    position: absolute;
     width: 100%;
     text-align: center;
-    z-index: 150;
-    padding-top: 70px;
+    top: 70px;
 }
 
 .intro-line {
@@ -555,26 +520,24 @@ nav select {
     display: none;
 }
 
-@media (max-width: 960px) {
-
-}
-
 @media only screen and (max-width: 1024px) {
-    .title {
-        position: relative;
-    }
-
     #intro {
         height: 500px;
     }
 
     .title {
-        padding-top: 20px;
+        top: 40px;
     }
 
     h1 {
         font-size: 100px;
         margin-bottom: 60px;
+    }
+}
+
+@media only screen and (max-width: 1024px) {
+    .bg1, .bg2, .bg3, .bg4 {
+        background-attachment: scroll;
     }
 }
 
@@ -585,7 +548,7 @@ nav select {
     }
 
     #intro {
-        height: 380px;
+        height: 400px;
     }
 
     h1.small {
@@ -616,8 +579,7 @@ nav select {
     }
 
     .title {
-        position: relative;
-        padding-top: 30px;
+        top: 30px;
     }
 
     .intro-line {

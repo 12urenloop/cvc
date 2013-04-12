@@ -29,6 +29,9 @@
                 background-color: #eee; padding: 10px;
                 border: 1px solid #aaa;
             }
+            td:first-child, th:first-child {
+                padding-left: 8px;
+            }
             thead th {
                 border-bottom: 1px solid #333;
             }
@@ -50,11 +53,11 @@
             <thead>
                 <tr><th width=25>ID</th><th width=160>Naam</th><th width=100>Rondjes</th>
                     <th width=70>Snelheid</th><th width=70>Geschatte positie</th>
-                    <th width=120>Vorige positie</th><th width=50>Fout</th><th width=150></th>
+                    <th width=120>Vorige positie</th><th width=50>Fout</th><th width=160></th>
             </thead>
             <tfoot>
                 <tr>
-                    <td colspan=6></td><th>Gemiddeld: </th><th class="error-stats"></th>
+                    <td colspan=7></td><th class="error-stats"></th>
                 </tr>
             </tfoot>
         </table>
@@ -117,9 +120,10 @@
                 // failure.
                 boxxy.onPutState = function(stateDelta) {
                     var table = $('#interpolation');
-                    var teams = boxxy.teamsByScore();
-                    for(id in teams) {
-                        var team = teams[id];
+                    $('tbody', table).empty();
+
+                    for(id in boxxy.teams) {
+                        var team = boxxy.teams[id];
                         errorStats[team.id] = {'max': 0, 'avg': 0};
 
                         var station = boxxy.stations[team.station];
@@ -165,7 +169,7 @@
                         timeDelta = Math.round((Date.now() - new Date(position.timestamp)) / 1000);
                     $('.position-last', row).html(actualPosition + 'm <span>(' + timeDelta + 's)</span>');
                     $('.error', row).text(Math.round(error) + 'm');
-                    $('.error-stats span', row).text('avg: ' + teamError.avg.toFixed(2) + ', max: ' +  Math.round(teamError.max) + '');
+                    $('.error-stats span', row).text('avg: ' + Math.sqrt(teamError.avg).toFixed(2) + 'm, max: ' +  Math.round(teamError.max) + 'm');
                     row.stop().css('background-color', '#FFF686').animate({backgroundColor: '#FFF'}, 750);
 
                     position.position = actualPosition;
@@ -178,7 +182,8 @@
                         total += errorStats[teamId].avg;
                         teamCount++;
                     }
-                    $('#interpolation tfoot .error-stats').text((total / teamCount).toFixed(2));
+                    var average = Math.sqrt(total / teamCount);
+                    $('#interpolation tfoot .error-stats').text('avg: ' + average.toFixed(2) + 'm');
 
                     updateInterpolation(position.team, new Date(position.timestamp), actualPosition);
                 }
