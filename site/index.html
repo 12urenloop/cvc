@@ -82,36 +82,38 @@
 				var boxxy = boxxy.initialize();
 				var container = $('#live table');
 				$(document).ready(function () {
-					boxxy.listen('http://live.12urenloop.be:8080');
-	                		setTimeout(function () {
-					var teams = boxxy.teamsByScore();
-					if(teams.length >= 6) {
-						var row = $('<tr id="teams3">');
-						row.append('<td>' + (teams[0].rankingPosition+1) + '. ' + teams[0].name);
-                                                row.append('<td>' + (teams[1].rankingPosition+1) + '. ' + teams[1].name);
-                                                row.append('<td>' + (teams[2].rankingPosition+1) + '. ' + teams[2].name);
-                                                row.append('<td rowspan="4" id="volglivelink">Volg alles live op <a href="http://live.12urenloop.be">live.12urenloop.be');
-						container.append(row);
-
-						var row = $('<tr id="laps3">');
-                                                row.append('<td>' + teams[0].laps + ' rondjes');
-                                                row.append('<td>' + teams[1].laps + ' rondjes');
-                                                row.append('<td>' + teams[2].laps + ' rondjes');
-                                                container.append(row);
-
-						var row = $('<tr id="teams6">');
-                                                row.append('<td>' + (teams[3].rankingPosition+1) + '. ' + teams[3].name);
-                                                row.append('<td>' + (teams[4].rankingPosition+1) + '. ' + teams[4].name);
-                                                row.append('<td>' + (teams[5].rankingPosition+1) + '. ' + teams[5].name);
-                                                container.append(row);
-
-						var row = $('<tr id="laps6">');
-                                                row.append('<td>' + teams[3].laps + ' rondjes');
-                                                row.append('<td>' + teams[4].laps + ' rondjes');
-                                                row.append('<td>' + teams[5].laps + ' rondjes');
-						container.append(row);
+					boxxy.onUpdate = function() {
+						container.empty();
+						var teams = boxxy.teamsByScore();
+						if(teams.length >= 6) {
+							var row = $('<tr id="teams3">');
+							row.append('<td>' + (teams[0].rankingPosition+1) + '. ' + teams[0].name);
+	                                                row.append('<td>' + (teams[1].rankingPosition+1) + '. ' + teams[1].name);
+	                                                row.append('<td>' + (teams[2].rankingPosition+1) + '. ' + teams[2].name);
+	                                                row.append('<td rowspan="4" id="volglivelink">Volg alles live op <a href="http://	live.12urenloop.be">live.12urenloop.be');
+							container.append(row);
+	
+							var row = $('<tr id="laps3">');
+	                                                row.append('<td>' + teams[0].laps + ' rondjes');
+	                                                row.append('<td>' + teams[1].laps + ' rondjes');
+	                                                row.append('<td>' + teams[2].laps + ' rondjes');
+	                                                container.append(row);
+	
+							var row = $('<tr id="teams6">');
+	                                                row.append('<td>' + (teams[3].rankingPosition+1) + '. ' + teams[3].name);
+	                                                row.append('<td>' + (teams[4].rankingPosition+1) + '. ' + teams[4].name);
+	                                                row.append('<td>' + (teams[5].rankingPosition+1) + '. ' + teams[5].name);
+	                                                container.append(row);
+	
+							var row = $('<tr id="laps6">');
+	                                                row.append('<td>' + teams[3].laps + ' rondjes');
+	                                                row.append('<td>' + teams[4].laps + ' rondjes');
+	                                                row.append('<td>' + teams[5].laps + ' rondjes');
+							container.append(row);
+						}
 					}
-            			},1000)});
+					boxxy.listen('http://live.12urenloop.be:8080');
+				});
 			</script>
 
 			<div class="eight columns">
