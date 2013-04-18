@@ -1,0 +1,14 @@
+#scoresresult ol {
+    padding: 0px;
+}
+
+#scoresresult li {
+    margin-left: 30px; /* Enough space for the 1., 2... */
+}
+
+#scoresresult li .name {
+}
+
+#scoresresult li .laps {
+    float: right;
+}
