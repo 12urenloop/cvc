@@ -10,6 +10,7 @@
         <script src="js/jquery.color-2.1.1.min.js"></script>
         <script src="js/cbuffer.js"></script>
         <script src="js/interpolators/stupid.js"></script>
+        <script src="js/interpolators/average.js"></script>
         <style>
             body {
                 font-family: sans-serif;
@@ -77,7 +78,7 @@
                 errorStats = {};
 
             // Choose the interpolator you want to test
-            var interpolator = new stupidInterpolator(boxxy);
+            var interpolator = new averageInterpolator(boxxy);
 
             var error = new function() {
                 var state = {},
