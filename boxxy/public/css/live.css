@@ -1,0 +1,40 @@
+#live table {
+	margin-top: 2em;
+	margin-bottom: 2em;
+	border: 1px solid #C9C9C9;
+	background-color: #FFF;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	text-align: center;
+}
+
+#live table td {
+	width: 240px;
+	height: 25px;
+}
+
+#volglivelink {
+	vertical-align: middle;
+	text-align: center;
+	font-size: large;
+}
+
+#teams3, #teams6 {
+	font-size: large;
+	font-weight: bold;
+	vertical-align: bottom;
+}
+
+#teams6 td{
+	padding-top: 10px;
+}
+
+#laps3, #laps6 {
+	vertical-align: top;
+}
+
+@media all and (max-width:640px) {
+	table,thead,tbody,tfoot,th,td,tr{display:block}
+	tr+tr{margin-top:1em}
+}
