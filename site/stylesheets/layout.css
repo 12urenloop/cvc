@@ -638,3 +638,52 @@ nav select {
         opacity: 1;
     }
 }
+
+#live-results {
+    margin-bottom: 2em;
+
+    border: 1px solid #C9C9C9;
+    background-color: #FFF;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+}
+
+#live-results table {
+    margin: 0.5em 0;
+    width: 100%;
+}
+
+#live-results td {
+    text-align: center;
+    font-size: 16px;
+}
+
+#live-results .placeholder {
+    color: #888;
+}
+
+#live-results .follow-link {
+    vertical-align: middle;
+}
+
+#live-results td { width: 240px; height: 25px;}
+#teams3, #teams6 { height: 15px; }
+
+#teams3 td, #teams6 td {
+    font-weight: bold;
+    vertical-align: bottom;
+}
+
+#laps3, #laps6 {
+    vertical-align: top;
+}
+
+#teams3 td { padding-top: 0.5em; }
+#teams6 td { padding-top: 0.25em; }
+#laps6 td { padding-bottom: 0.5em; }
+
+@media all and (max-width:640px) {
+    table,thead,tbody,tfoot,th,td,tr{display:block}
+    tr+tr{margin-top:1em}
+}

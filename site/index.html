@@ -16,7 +16,6 @@
 	<link rel="stylesheet" href="stylesheets/flexslider.css">
 	<link rel="stylesheet" href="stylesheets/prettyPhoto.css">
 	<link rel="stylesheet" href="stylesheets/layout.css">
-	<link rel="stylesheet" href="stylesheets/live.css">
 
 	<!--[if lt IE 9]>
 		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
@@ -26,11 +25,6 @@
 	<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
 	<link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
 	<link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
-
-	<script src="http://live.12urenloop.be/js/boxxy.js"></script>
-	<script src="http://live.12urenloop.be/js/jquery-1.7.1.min.js"></script>
-	<script src="http://live.12urenloop.be/socket.io/socket.io.js"></script>
-	<script src="http://d3js.org/d3.v3.min.js"></script>
 
 </head>
 <body>
@@ -72,49 +66,11 @@
 	</nav>
 
 	<div id="home">
-		<div class="container" style="margin-top: 20px;">
-
-			<div id="live">
-				<table></table>
-			</div>
-			
-			<script>
-				var boxxy = boxxy.initialize();
-				var container = $('#live table');
-				$(document).ready(function () {
-					boxxy.onUpdate = function() {
-						container.empty();
-						var teams = boxxy.teamsByScore();
-						if(teams.length >= 6) {
-							var row = $('<tr id="teams3">');
-							row.append('<td>' + (teams[0].rankingPosition+1) + '. ' + teams[0].name);
-	                                                row.append('<td>' + (teams[1].rankingPosition+1) + '. ' + teams[1].name);
-	                                                row.append('<td>' + (teams[2].rankingPosition+1) + '. ' + teams[2].name);
-	                                                row.append('<td rowspan="4" id="volglivelink">Volg alles live op <a href="http://	live.12urenloop.be">live.12urenloop.be');
-							container.append(row);
-	
-							var row = $('<tr id="laps3">');
-	                                                row.append('<td>' + teams[0].laps + ' rondjes');
-	                                                row.append('<td>' + teams[1].laps + ' rondjes');
-	                                                row.append('<td>' + teams[2].laps + ' rondjes');
-	                                                container.append(row);
-	
-							var row = $('<tr id="teams6">');
-	                                                row.append('<td>' + (teams[3].rankingPosition+1) + '. ' + teams[3].name);
-	                                                row.append('<td>' + (teams[4].rankingPosition+1) + '. ' + teams[4].name);
-	                                                row.append('<td>' + (teams[5].rankingPosition+1) + '. ' + teams[5].name);
-	                                                container.append(row);
-	
-							var row = $('<tr id="laps6">');
-	                                                row.append('<td>' + teams[3].laps + ' rondjes');
-	                                                row.append('<td>' + teams[4].laps + ' rondjes');
-	                                                row.append('<td>' + teams[5].laps + ' rondjes');
-							container.append(row);
-						}
-					}
-					boxxy.listen('http://live.12urenloop.be:8080');
-				});
-			</script>
+		<div class="container">
+			<!-- TODO: this is not responsive! -->
+			<div id="live-results"><table>
+				<tr><td class="placeholder">Scores worden geladen…</td></tr>
+			</table></div>
 
 			<div class="eight columns">
 				<p>De <strong>12urenloop</strong> is een sportieve en studentikoze activiteit voor alle Gentse studenten!</p>
@@ -257,36 +213,36 @@
 
 			<div class="clear"></div>
 
-            <div class="eight columns white">
-            	<p>De 12urenloop is een wedstrijd waarbij een aantal kringen het tegen elkaar opnemen in een 12 uur durende loopestafette. Net als voorgaande jaren wordt deze wedstrijd georganiseerd op het Sint-Pietersplein, over een ovaal parcours van ±350meter. De looprichting gaat in tegenwijzerzin om de atleten onder ons gelukkig te stellen.</p>
+			<div class="eight columns white">
+				<p>De 12urenloop is een wedstrijd waarbij een aantal kringen het tegen elkaar opnemen in een 12 uur durende loopestafette. Net als voorgaande jaren wordt deze wedstrijd georganiseerd op het Sint-Pietersplein, over een ovaal parcours van ±350meter. De looprichting gaat in tegenwijzerzin om de atleten onder ons gelukkig te stellen.</p>
 
-            	<p>De 12urenloop telt ook mee voor het algemeen klassement van de Interfacultaire Kampioenschappen (IFK). Na de loopwedstrijd volgt ook de apotheose en de prijsuitreiking van IFK.</p>
+				<p>De 12urenloop telt ook mee voor het algemeen klassement van de Interfacultaire Kampioenschappen (IFK). Na de loopwedstrijd volgt ook de apotheose en de prijsuitreiking van IFK.</p>
 
-            	<p>Elk uur is er ook een speciale ronde, waarvoor elke deelnemende kring een extra punt ontvangt. Deze ludieke rondes gaan door tussen de loopwedstrijd zelf maar pas op, de uitvoering is vaak belangrijker dan de snelheid van de loper! De beste(n) van elke ronde worden beloond met naturaprijzen geschonken door onze sponsors.</p>
+				<p>Elk uur is er ook een speciale ronde, waarvoor elke deelnemende kring een extra punt ontvangt. Deze ludieke rondes gaan door tussen de loopwedstrijd zelf maar pas op, de uitvoering is vaak belangrijker dan de snelheid van de loper! De beste(n) van elke ronde worden beloond met naturaprijzen geschonken door onze sponsors.</p>
 
-            	<p>Dit jaar mag je je onder andere verwachten aan een Julienronde, een vikingronde, een "Syndroom Knokke-Le-Zoute"-ronde en enkele klassiekers zoals de "Draag de praeses"-ronde.</p>
+				<p>Dit jaar mag je je onder andere verwachten aan een Julienronde, een vikingronde, een "Syndroom Knokke-Le-Zoute"-ronde en enkele klassiekers zoals de "Draag de praeses"-ronde.</p>
 
-            	<p><strong>Verdedig de eer van je kring en loop mee!</strong></p>
+				<p><strong>Verdedig de eer van je kring en loop mee!</strong></p>
 
-            </div>
+			</div>
 
-            <div class="eight columns">
-                <p><a href="images/wedstrijd/1.jpg" rel="prettyPhoto[gallery1]"><img src="images/wedstrijd/thumb.jpg" class="scale-with-grid" alt="" /></a></p>
-                <div class="hidden"><a href="images/wedstrijd/2.jpg" rel="prettyPhoto[gallery1]"></a></div>
-                <div class="hidden"><a href="images/wedstrijd/3.jpg" rel="prettyPhoto[gallery1]"></a></div>
-                <div class="hidden"><a href="images/wedstrijd/4.jpg" rel="prettyPhoto[gallery1]"></a></div>
-                <div class="hidden"><a href="images/wedstrijd/5.jpg" rel="prettyPhoto[gallery1]"></a></div>
-                <div class="hidden"><a href="images/wedstrijd/6.jpg" rel="prettyPhoto[gallery1]"></a></div>
-                <div class="hidden"><a href="images/wedstrijd/7.jpg" rel="prettyPhoto[gallery1]"></a></div>
-                <div class="hidden"><a href="images/wedstrijd/8.jpg" rel="prettyPhoto[gallery1]"></a></div>
+			<div class="eight columns">
+				<p><a href="images/wedstrijd/1.jpg" rel="prettyPhoto[gallery1]"><img src="images/wedstrijd/thumb.jpg" class="scale-with-grid" alt="" /></a></p>
+				<div class="hidden"><a href="images/wedstrijd/2.jpg" rel="prettyPhoto[gallery1]"></a></div>
+				<div class="hidden"><a href="images/wedstrijd/3.jpg" rel="prettyPhoto[gallery1]"></a></div>
+				<div class="hidden"><a href="images/wedstrijd/4.jpg" rel="prettyPhoto[gallery1]"></a></div>
+				<div class="hidden"><a href="images/wedstrijd/5.jpg" rel="prettyPhoto[gallery1]"></a></div>
+				<div class="hidden"><a href="images/wedstrijd/6.jpg" rel="prettyPhoto[gallery1]"></a></div>
+				<div class="hidden"><a href="images/wedstrijd/7.jpg" rel="prettyPhoto[gallery1]"></a></div>
+				<div class="hidden"><a href="images/wedstrijd/8.jpg" rel="prettyPhoto[gallery1]"></a></div>
 
-                <p class="white">Dankzij de digitale rondetelling van <a href="http://zeus.ugent.be/">Zeus</a> is het mogelijk om tijdens de wedstrijd hier live het klassement te volgen. Na het evenement wordt hier ook de eindscore bekend gemaakt.</p>
+				<p class="white">Dankzij de digitale rondetelling van <a href="http://zeus.ugent.be/">Zeus</a> is het mogelijk om tijdens de wedstrijd hier live het klassement te volgen. Na het evenement wordt hier ook de eindscore bekend gemaakt.</p>
 
-                <!-- ENABLE ME ON 24/04
-                <div class="action" style="text-align: center">
+				<!-- ENABLE ME ON 24/04
+				<div class="action" style="text-align: center">
 					<a href="http://live.12urenloop.be"><div class="button2">Volg hier live de resultaten</div></a>
 				</div> -->
-            </div>
+			</div>
 
 			<!-- <div class="sixteen columns">
 				<div class="action">
@@ -450,13 +406,15 @@
 	<script src="javascripts/smooth-scroll.js" type="text/javascript"></script>
 	<script src="javascripts/jquery.flexslider.js" type="text/javascript"></script>
 	<script src="javascripts/jquery.prettyPhoto.js" type="text/javascript"></script>
+	<script src="http://live.12urenloop.be/js/boxxy.js"></script>
+	<script src="http://live.12urenloop.be/socket.io/socket.io.js"></script>
 	<script src="contact-form.js"></script>
 
 	<script>
 		function scrollTo(target){
 			var targetPosition = $(target).offset().top;
 			$('html,body').animate({ scrollTop: targetPosition}, 'slow');
-        }
+		}
 
 		$(document).ready(function(){
 			$('nav').sticky({topSpacing:0});
@@ -473,14 +431,49 @@
 				theme: 'light_square'
 			});
 		});
-	</script>
-	<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-	  ga('create', 'UA-25444917-4', '12urenloop.be');
-	  ga('send', 'pageview');
+
+		var boxxy = boxxy.initialize();
+		var container = $('#live-results table');
+		$(document).ready(function () {
+			boxxy.onUpdate = function() {
+				container.empty();
+				var teams = boxxy.teamsByScore();
+				if(teams.length >= 6) {
+					var row = $('<tr id="teams3">');
+					row.append('<td>' + (teams[0].rankingPosition+1) + '. ' + teams[0].name);
+					row.append('<td>' + (teams[1].rankingPosition+1) + '. ' + teams[1].name);
+					row.append('<td>' + (teams[2].rankingPosition+1) + '. ' + teams[2].name);
+					row.append('<td rowspan="4" class="follow-link">Volg alles live op <a href="http://live.12urenloop.be">live.12urenloop.be');
+					container.append(row);
+
+					var row = $('<tr id="laps3">');
+					row.append('<td>' + teams[0].laps + ' rondjes');
+					row.append('<td>' + teams[1].laps + ' rondjes');
+					row.append('<td>' + teams[2].laps + ' rondjes');
+					container.append(row);
+
+					var row = $('<tr id="teams6">');
+					row.append('<td>' + (teams[3].rankingPosition+1) + '. ' + teams[3].name);
+					row.append('<td>' + (teams[4].rankingPosition+1) + '. ' + teams[4].name);
+					row.append('<td>' + (teams[5].rankingPosition+1) + '. ' + teams[5].name);
+					container.append(row);
+
+					var row = $('<tr id="laps6">');
+					row.append('<td>' + teams[3].laps + ' rondjes');
+					row.append('<td>' + teams[4].laps + ' rondjes');
+					row.append('<td>' + teams[5].laps + ' rondjes');
+					container.append(row);
+				}
+			}
+			boxxy.listen('http://live.12urenloop.be:8080');
+		});
+
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+		ga('create', 'UA-25444917-4', '12urenloop.be');
+		ga('send', 'pageview');
 	</script>
 </body>
 </html>
