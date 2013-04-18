@@ -1,0 +1,48 @@
+<script type="text/JavaScript">
+    var boxxy = boxxy.initialize();
+
+    function teamLi(team) {
+        return '<li data-team="' + team.id + '">' +
+            '<span class="name">' + team.name + '</span>' +
+            '<span class="laps">' + team.laps + '</span>' +
+            '</li>'
+    }
+
+    boxxy.onUpdate = function() {
+        var byScore = boxxy.teamsByScore();
+        $('#scoresresult').empty();
+        var ol = $(document.createElement('ol'));
+        for(var i in byScore) ol.append(teamLi(byScore[i]));
+        $('#scoresresult').append(ol);
+
+        if(boxxy.notification) {
+            $('#notification').html('<p>' + boxxy.notification + '</p>');
+        }
+    }
+
+    boxxy.onPutState = function(newState) {
+        /* Called when everything is (re)set */
+    }
+
+    boxxy.onAddLap = function(lap) {
+        var li = $('[data-team="' + lap.team.id + '"]');
+        var up = $('<strong>' + ' +' + lap.count + '!' + '</strong>');
+        li.append(up);
+        up.fadeOut(5000);
+    }
+
+    boxxy.listen(boxxyHost);
+</script>
+
+<div id="scores">
+    <div class="container">
+
+        <div class="eight columns">
+
+            <div id="notification"></div>
+            <div id="scoresresult"><p>De scores worden geladen...</p></div>
+
+        </div>
+        
+    </div>
+</div>

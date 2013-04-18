@@ -120,11 +120,13 @@ function page(route, content, locals) {
 }
 
 page('/dj-contest', 'content/dj-contest.html', {
-    "title": "DJ Contest"
+    "title": "DJ Contest",
+    "bg": "bg2"
 });
 
 page('/special-laps', 'content/special-laps.html', {
-    "title": "Speciale rondes"
+    "title": "Speciale rondes",
+    "bg": "bg3"
 });
 
 page('/scores', 'content/scores.html', {
@@ -133,7 +135,8 @@ page('/scores', 'content/scores.html', {
         "/js/boxxy.js",
         "/js/jquery-1.7.1.min.js",
         "/socket.io/socket.io.js"
-    ]
+    ],
+    "bg": "bg1"
 });
 
 server.listen(config.BOXXY_PORT);
