@@ -130,7 +130,7 @@ page('/special-laps', 'content/special-laps.html', {
 });
 
 page('/scores', 'content/scores.html', {
-    "title": "Scores",
+    "title": "Live Scores",
     "scripts": [
         "/js/boxxy.js",
         "/js/jquery-1.7.1.min.js",
