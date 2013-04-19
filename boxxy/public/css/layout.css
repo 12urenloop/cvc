@@ -497,8 +497,14 @@ p.proj-desc {
 .copyright a, .copyright a:visited { color: #999; }
 .copyright a:hover, .copyright a:focus { color: #ccc; }
 
-.dj-white {
+
+.dj-schedule td {
     color: #888;
+}
+
+.dj-schedule th {
+    text-align: left;
+    padding-right: 14px;
 }
 
 nav select {
