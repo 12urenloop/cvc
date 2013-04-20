@@ -11,30 +11,30 @@ body {
 
 header {
   background: #333 url('12ul.png') no-repeat 30px center;
-  height: 150px;
+  height: 120px;
   position: relative;
 }
 
 h1 {
-  font-size: 2em;
+  font-size: 2em; line-height: 120px;
   text-align: center;
   color: #eee;
-  margin: 0; padding: 60px 10px;
+  margin: 0;
 }
 
-#viewSwitcher, #clearButton, #adminButton {
+#viewSwitcher, #adminButton {
   width: 100px; height: 30px;
   font-size: 1em;
   position: absolute;
   right: 30px;
 }
 
-#viewSwitcher { top: 20px; }
-#clearButton { top: 60px; }
-#adminButton { top: 100px; }
+#viewSwitcher { top: 25px; }
+#adminButton { top: 65px; }
 
 #buttonHolder {
-  width: 740px;
+  /* TODO: determine width @media-queries */
+  width: 984px; /* Portrait: 740px; */
   margin: 40px auto 0; padding: 0;
 }
 
@@ -55,7 +55,7 @@ h1 {
     to(rgba(255, 255, 255, .1))
   );
   background-color: #aaa;
-  -webkit-transition: background .5s linear;
+  -webkit-transition: background 1s linear;
 }
 
 #buttonHolder > li:active, #buttonHolder > li.disabled {
@@ -67,14 +67,17 @@ h1 {
     to(rgba(255, 255, 255, .2))
   );
   background-color: #333;
+}
+
+#buttonHolder > li.disabled {
   -webkit-transition: none;
 }
 
-#buttonHolder > li:nth-child(7) {
+/*#buttonHolder > li:nth-child(7) {
   clear: both;
   float: none;
   margin: 24px auto;
-}
+}*/
 
 h2 {
   font-size: 3em;
@@ -96,39 +99,41 @@ p.laps {
 }
 
 #queueTable {
-	border: 1px solid #E6E6E6;
-	background-color: #FFF;
 	margin: 0 auto;
 	text-align: left;
-	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
 }
 
 #queueTable td, #queueTable th {
-	border-top-color: white;
-	border-bottom: 1px solid #C9C9C9;
 	color: #555;
 }
 
 #queueTable th, #queueTable thead {
-	padding: 8px 8px 9px;
-	line-height: 1.4em;
 	font-weight: bold;
-	font-size: x-large;
-	font-family:"Times New Roman",Georgia,Serif;
+	font-size: 14px;
 }
 
 #queueTable td {
-	font-size: large;
+	font-size: 12px;
 	padding: 5px 8px 2px;
 	vertical-align: top;
 }
 
-#overlayContent h1 {
-	color: #E6E6E6;
-	font-size: x-large;
+#overlayContent {
+	background-color: #fff;
+	width: 600px;
 	padding: 10px;
+	margin: 50px auto;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	position: relative;
+}
+
+#overlayContent h1 {
+	font-size: 25px;
+	line-height: 30px;
+	padding: 0; margin: 5px 0;
+	color: #333;
 }
 
 #overlay a {
@@ -150,21 +155,7 @@ p.laps {
 
 #closeModal {
 	position:absolute;
-	top: 0px;
-	right:0px;
+	top: -20px; right: -20px;
+	padding: 10px;
 	z-index:50;
-}
-
-#overlayError {
-	margin: 0 auto;
-	color: #FF0000;
-	font-size: large;
-}
-
-#overlayError span {	
-	background-color: #000;
-}
-
-#overlayQueue {
-	margin: 0 auto;
 }

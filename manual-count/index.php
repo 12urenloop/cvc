@@ -10,29 +10,33 @@
 
     <script type="text/javascript" src="jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="script.js"></script>
+    <script type="text/javascript" src="fastclick.js"></script>
     <script type="text/javascript">
         var teams = (<?= json_encode(getTeams()); ?>);
+    window.addEventListener('load', function() {
+            new FastClick(document.body);
+    }, false);
     </script>
 </head>
 <body ontouchmove="event.preventDefault();" >
     <header>
         <h1>Manuele telling</h1>
         <button id="viewSwitcher">iPad 1/2</button>
-        <button id="clearButton">Reset</button>
         <button id="adminButton">Admin</button>
     </header>
-	<div id="content">
-	    <ul id="buttonHolder">
-	    </ul>
-	</div>
-	<div id="overlay">
-		<a id="closeModal"><img src="modal_close.png"/></a>
-		<div id="overlayContent">
-			<h1>Lastest error</h1>
-			<p id="overlayError"></p>
-			<h1>Queue</h1>
-			<p id="overlayQueue"></p>
-		</div>
-	</div>
+    <div id="content">
+        <ul id="buttonHolder">
+        </ul>
+    </div>
+    <div id="overlay">
+        <div id="overlayContent">
+            <a id="closeModal"><img src="modal_close.png"/></a>
+            <p><button id="clearButton">Reset local state</button></p>
+            <h1>Lastest error</h1>
+            <p id="overlayError"></p>
+            <h1>Queue</h1>
+            <p id="overlayQueue"></p>
+        </div>
+    </div>
 </body>
 </html>
