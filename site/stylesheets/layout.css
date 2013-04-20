@@ -641,7 +641,6 @@ nav select {
 
 #live-results {
     margin-bottom: 2em;
-
     border: 1px solid #C9C9C9;
     background-color: #FFF;
     -moz-border-radius: 5px;
@@ -652,7 +651,7 @@ nav select {
 #live-results table {
     margin: 0.5em 0;
     width: 100%;
-}
+} 
 
 #live-results td {
     text-align: center;
@@ -663,27 +662,70 @@ nav select {
     color: #888;
 }
 
-#live-results .follow-link {
-    vertical-align: middle;
-}
-
 #live-results td { width: 240px; height: 25px;}
-#teams3, #teams6 { height: 15px; }
+#teams3 { height: 15px; }
 
-#teams3 td, #teams6 td {
-    font-weight: bold;
-    vertical-align: bottom;
+@media only screen and (min-width: 768px) {
+    #live-results .follow-link {
+        vertical-align: middle;
+    }
+
+    #live-results .follow-link-bottom {
+        display: none;
+    }
+
+    #teams3 td, #teams6 td {
+        font-weight: bold;
+        vertical-align: bottom;
+    }
+
+    #laps3, #laps6 {
+        vertical-align: top;
+    }
+
+    #teams3 td { padding-top: 0.5em; }
+    #teams6 td { padding-top: 0.25em; }
+    #laps6 td { padding-bottom: 0.5em; }
 }
 
-#laps3, #laps6 {
-    vertical-align: top;
+@media only screen and (max-width: 767px) and (min-width: 480px){
+    #live-results .follow-link {
+        display: none;
+    }
+
+    #teams3 td, #teams6 td , .follow-link-bottom td{
+        font-weight: bold;
+        vertical-align: middle;
+        padding-top: 0.8em;
+    }
+
+    #laps3, #laps6 {
+        vertical-align: top;
+    }
+
+    #teams3 td { padding-top: 0.5em; }
+    #teams6 td { padding-top: 1.5em; }
+    #laps6 td { padding-bottom: 0.5em; }
 }
 
-#teams3 td { padding-top: 0.5em; }
-#teams6 td { padding-top: 0.25em; }
-#laps6 td { padding-bottom: 0.5em; }
+@media only screen and (max-width: 479px){
+    #live-results .follow-link {
+        display: none;
+    }
 
-@media all and (max-width:640px) {
-    table,thead,tbody,tfoot,th,td,tr{display:block}
-    tr+tr{margin-top:1em}
+    #teams6, #laps6 {
+        display: none;
+    }
+
+    #teams3 td, .follow-link-bottom td{
+        font-weight: bold;
+        vertical-align: middle;
+        padding-top: 0.8em;
+    }
+
+    #laps3 {
+        vertical-align: top;
+    }
+
+    #teams3 td { padding-top: 0.5em; }
 }

@@ -67,10 +67,9 @@
 
 	<div id="home">
 		<div class="container">
-			<!-- TODO: this is not responsive! -->
-			<!--<div id="live-results"><table>
+			<div id="live-results"><table>
 				<tr><td class="placeholder">Scores worden geladen…</td></tr>
-			</table></div>-->
+			</table></div>
 
 			<div class="eight columns">
 				<p>De <strong>12urenloop</strong> is een sportieve en studentikoze activiteit voor alle Gentse studenten!</p>
@@ -465,6 +464,10 @@
 					row.append('<td>' + teams[3].laps + ' rondjes');
 					row.append('<td>' + teams[4].laps + ' rondjes');
 					row.append('<td>' + teams[5].laps + ' rondjes');
+					container.append(row);
+
+					var row = $('<tr class="follow-link-bottom">');
+					row.append('<td colspan="3">Volg alles live op <a href="http://live.12urenloop.be">live.12urenloop.be');
 					container.append(row);
 				}
 			}
