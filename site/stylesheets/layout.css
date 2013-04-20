@@ -85,7 +85,7 @@ p {
     text-align: center;
 }
 
-@media only screen and (min-width: 767px) {
+@media only screen and (min-width: 960px) {
     .sponsors .one.column { width: 60px; }
     .sponsors .two.columns { width: 120px; }
 }
@@ -649,9 +649,9 @@ nav select {
 }
 
 #live-results table {
-    margin: 0.5em 0;
+    margin: 0.5em auto;
     width: 100%;
-} 
+}
 
 #live-results td {
     text-align: center;
@@ -662,8 +662,12 @@ nav select {
     color: #888;
 }
 
-#live-results td { width: 240px; height: 25px;}
+#live-results td { height: 25px;}
 #teams3 { height: 15px; }
+
+#laps3 td, #laps6 td {
+    vertical-align: top;
+}
 
 @media only screen and (min-width: 768px) {
     #live-results .follow-link {
@@ -674,13 +678,11 @@ nav select {
         display: none;
     }
 
+    #live-results td { width: 240px; }
+
     #teams3 td, #teams6 td {
         font-weight: bold;
         vertical-align: bottom;
-    }
-
-    #laps3, #laps6 {
-        vertical-align: top;
     }
 
     #teams3 td { padding-top: 0.5em; }
@@ -688,44 +690,26 @@ nav select {
     #laps6 td { padding-bottom: 0.5em; }
 }
 
-@media only screen and (max-width: 767px) and (min-width: 480px){
+@media only screen and (max-width: 767px) {
     #live-results .follow-link {
         display: none;
     }
 
-    #teams3 td, #teams6 td , .follow-link-bottom td{
+    #teams3 td, #teams6 td, .follow-link-bottom td {
         font-weight: bold;
         vertical-align: middle;
         padding-top: 0.8em;
     }
+}
 
-    #laps3, #laps6 {
-        vertical-align: top;
-    }
-
+@media only screen and (max-width: 767px) and (min-width: 480px){
     #teams3 td { padding-top: 0.5em; }
-    #teams6 td { padding-top: 1.5em; }
+    #teams6 td { padding-top: 1em; }
     #laps6 td { padding-bottom: 0.5em; }
 }
 
 @media only screen and (max-width: 479px){
-    #live-results .follow-link {
-        display: none;
-    }
-
     #teams6, #laps6 {
         display: none;
     }
-
-    #teams3 td, .follow-link-bottom td{
-        font-weight: bold;
-        vertical-align: middle;
-        padding-top: 0.8em;
-    }
-
-    #laps3 {
-        vertical-align: top;
-    }
-
-    #teams3 td { padding-top: 0.5em; }
 }
