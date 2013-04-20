@@ -8,7 +8,7 @@
     <link href="style.css" media="screen" rel="stylesheet" type="text/css" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 
-    <script type="text/javascript" src="jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="script.js"></script>
     <script type="text/javascript">
         var teams = (<?= json_encode(getTeams()); ?>);
