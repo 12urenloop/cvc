@@ -21,7 +21,7 @@
 /* #Base 960 Grid
 ================================================== */
 
-    .container                                  { position: relative; width: 960px; margin: 0 auto; padding: 0; }
+    .container                                  { position: relative; width: 960px; margin: 0 auto; padding: 0; overflow: hidden; }
     .container .column,
     .container .columns                         { float: left; display: inline; margin-left: 10px; margin-right: 10px; }
     .row                                        { margin-bottom: 20px; }
@@ -86,7 +86,7 @@
         .alpha.omega                                { margin-left: 0; margin-right: 0; }
 
         .container .one.column,
-        .container .one.columns                     { width: 28px; }
+        .container .one.columns                     { width: 60px; }
         .container .two.columns                     { width: 76px; }
         .container .three.columns                   { width: 124px; }
         .container .four.columns                    { width: 172px; }
@@ -193,8 +193,8 @@
         .container .one.columns { width: 70px; }
         .container .two.columns { width: 140px; }
         .container .three.columns { width: 210px; }
-        .container .four.columns { width: 280px; }
-        .container .five.columns { width: 350px; }
+        .container .four.columns { width: 210px; }
+        .container .five.columns { width: 280px; }
         .container .six.columns,
         .container .seven.columns,
         .container .eight.columns,

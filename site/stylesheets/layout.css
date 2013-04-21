@@ -85,7 +85,7 @@ p {
     text-align: center;
 }
 
-@media only screen and (min-width: 767px) {
+@media only screen and (min-width: 960px) {
     .sponsors .one.column { width: 60px; }
     .sponsors .two.columns { width: 120px; }
 }
@@ -360,19 +360,6 @@ p.mid-text {
     margin-top: 40px;
 }
 
-p.proj-title {
-    margin-bottom: 5px;
-    padding-bottom: 2px;
-    border-bottom: 1px solid #d3d3d3;
-    text-transform: uppercase;
-}
-
-p.proj-desc {
-    margin-bottom: 35px;
-    padding-bottom: 2px;
-    border-bottom: 1px solid #d3d3d3;
-}
-
 #wedstrijd {
     background: url(../images/bg-dark.jpg) repeat;
     position: relative;
@@ -516,18 +503,29 @@ p.proj-desc {
 .copyright a, .copyright a:visited { color: #999; }
 .copyright a:hover, .copyright a:focus { color: #ccc; }
 
-.dj-schedule {
+.schedule {
     margin: 0 auto 2em;
+    font-size: 16px;
+}
+
+.schedule strong {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.schedule span {
     font-size: 14px;
+    font-style: italic;
+    display: block;
 }
 
-.dj-schedule td {
-    padding-right: 60px;
+.schedule td {
+    padding-right: 50px;
 }
 
-.dj-schedule th {
+.schedule th {
     padding-right: 14px;
-    color: #888;
+    color: #999;
 }
 
 nav select {
@@ -641,7 +639,6 @@ nav select {
 
 #live-results {
     margin-bottom: 2em;
-
     border: 1px solid #C9C9C9;
     background-color: #FFF;
     -moz-border-radius: 5px;
@@ -650,7 +647,7 @@ nav select {
 }
 
 #live-results table {
-    margin: 0.5em 0;
+    margin: 0.5em auto;
     width: 100%;
 }
 
@@ -663,27 +660,58 @@ nav select {
     color: #888;
 }
 
-#live-results .follow-link {
-    vertical-align: middle;
-}
+#live-results td { height: 25px;}
+#teams3 { height: 15px; }
 
-#live-results td { width: 240px; height: 25px;}
-#teams3, #teams6 { height: 15px; }
-
-#teams3 td, #teams6 td {
-    font-weight: bold;
-    vertical-align: bottom;
-}
-
-#laps3, #laps6 {
+#laps3 td, #laps6 td {
     vertical-align: top;
 }
 
-#teams3 td { padding-top: 0.5em; }
-#teams6 td { padding-top: 0.25em; }
-#laps6 td { padding-bottom: 0.5em; }
+@media only screen and (min-width: 768px) {
+    #live-results .follow-link {
+        vertical-align: middle;
+    }
 
-@media all and (max-width:640px) {
-    table,thead,tbody,tfoot,th,td,tr{display:block}
-    tr+tr{margin-top:1em}
+    #live-results .follow-link-bottom {
+        display: none;
+    }
+
+    #live-results td { width: 240px; }
+
+    #teams3 td, #teams6 td {
+        font-weight: bold;
+        vertical-align: bottom;
+    }
+
+    #teams3 td { padding-top: 0.5em; }
+    #teams6 td { padding-top: 0.25em; }
+    #laps6 td { padding-bottom: 0.5em; }
+}
+
+@media only screen and (max-width: 767px) {
+    #live-results .follow-link {
+        display: none;
+    }
+
+    #teams3 td, #teams6 td, .follow-link-bottom td {
+        font-weight: bold;
+        vertical-align: middle;
+        padding-top: 0.8em;
+    }
+}
+
+@media only screen and (max-width: 767px) and (min-width: 480px){
+    #teams3 td { padding-top: 0.5em; }
+    #teams6 td { padding-top: 1em; }
+    #laps6 td { padding-bottom: 0.5em; }
+}
+
+@media only screen and (max-width: 479px){
+    #teams6, #laps6 {
+        display: none;
+    }
+
+    .schedule td {
+        padding-right: 20px;
+    }
 }
