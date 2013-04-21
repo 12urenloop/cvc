@@ -360,19 +360,6 @@ p.mid-text {
     margin-top: 40px;
 }
 
-p.proj-title {
-    margin-bottom: 5px;
-    padding-bottom: 2px;
-    border-bottom: 1px solid #d3d3d3;
-    text-transform: uppercase;
-}
-
-p.proj-desc {
-    margin-bottom: 35px;
-    padding-bottom: 2px;
-    border-bottom: 1px solid #d3d3d3;
-}
-
 #wedstrijd {
     background: url(../images/bg-dark.jpg) repeat;
     position: relative;
@@ -516,18 +503,29 @@ p.proj-desc {
 .copyright a, .copyright a:visited { color: #999; }
 .copyright a:hover, .copyright a:focus { color: #ccc; }
 
-.dj-schedule {
+.schedule {
     margin: 0 auto 2em;
+    font-size: 16px;
+}
+
+.schedule strong {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.schedule span {
     font-size: 14px;
+    font-style: italic;
+    display: block;
 }
 
-.dj-schedule td {
-    padding-right: 60px;
+.schedule td {
+    padding-right: 50px;
 }
 
-.dj-schedule th {
+.schedule th {
     padding-right: 14px;
-    color: #888;
+    color: #999;
 }
 
 nav select {
@@ -711,5 +709,9 @@ nav select {
 @media only screen and (max-width: 479px){
     #teams6, #laps6 {
         display: none;
+    }
+
+    .schedule td {
+        padding-right: 20px;
     }
 }
