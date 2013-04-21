@@ -520,7 +520,7 @@ p.mid-text {
 }
 
 .schedule td {
-    padding-right: 50px;
+    padding: 0 50px 6px 0;
 }
 
 .schedule th {

@@ -20,13 +20,14 @@ h1.small {
 }
 
 h2 {
-    font-size: 60px;
+    font-size: 45px;
+    line-height: 55px;
     font-weight: 700;
     color: #434343;
     text-transform: uppercase;
     text-align: center;
-    margin-top: 40px;
-    margin-bottom: 60px;
+    margin-top: 25px;
+    margin-bottom: 40px;
 }
 
 h2.white {
@@ -497,16 +498,6 @@ p.proj-desc {
 .copyright a, .copyright a:visited { color: #999; }
 .copyright a:hover, .copyright a:focus { color: #ccc; }
 
-
-.dj-schedule td {
-    color: #888;
-}
-
-.dj-schedule th {
-    text-align: left;
-    padding-right: 14px;
-}
-
 nav select {
     display: none;
 }
@@ -614,6 +605,10 @@ nav select {
         line-height: 25px;
         opacity: 1;
     }
+
+    .schedule td {
+        padding-right: 0 !important;
+    }
 }
 
 #live-results {
@@ -664,7 +659,51 @@ li {
 #teams6 td { padding-top: 0.25em; }
 #laps6 td { padding-bottom: 0.5em; }
 
-@media all and (max-width:640px) {
-    table,thead,tbody,tfoot,th,td,tr{display:block}
-    tr+tr{margin-top:1em}
+.schedule {
+    margin: 0 auto 2em;
+    font-size: 16px;
+}
+
+.schedule strong {
+    display: block;
+    margin-bottom: 4px;
+}
+
+.schedule span {
+    font-size: 14px;
+    font-style: italic;
+    display: block;
+}
+
+.schedule td {
+    padding: 0 50px 6px 0;
+}
+
+.schedule th {
+    padding-right: 14px;
+    color: #999;
+}
+
+#scoresresult ol {
+    padding: 0px;
+}
+
+#scoresresult li .name {
+    margin-left: 30px;
+}
+
+#scoresresult li .laps {
+    float: right;
+}
+
+#scoresresult ol {
+    padding: 0px;
+}
+
+#scoresresult li .name {
+    margin-left: 30px;
+}
+
+#scoresresult li .laps {
+    float: right;
 }
