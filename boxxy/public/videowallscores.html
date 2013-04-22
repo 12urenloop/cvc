@@ -1,0 +1,78 @@
+<!DOCTYPE html> 
+<html> 
+<head> 
+    <title>12Urenloop Scorebord</title>
+    <link rel="stylesheet" type="text/css" href="css/videoscores.css" />
+    <script src="http://live.12urenloop.be/js/boxxy.js"></script>
+    <script src="http://live.12urenloop.be/js/jquery-1.7.1.min.js"></script>
+    <script src="http://live.12urenloop.be/socket.io/socket.io.js"></script>
+    <script type="text/javascript">
+        var boxxy = boxxy.initialize();
+        window.onload = function() {
+             var loop = [
+                    {command: 'wait', amount: 5000},
+                    {command: 'scroll', amount: 2},
+                    {command: 'wait', amount: 2500},
+                    {command: 'scrollto', position: 0}
+                ],task, commandIdx = -1;
+            var nextCommand = function() {
+                commandIdx = (commandIdx + 1) % loop.length;
+                return loop[commandIdx];
+            }           
+            var executeCommand = function(command) {
+                if(command.command == 'wait') {
+                    task = setTimeout(function() {executeCommand(nextCommand());}, command.amount);
+                } else if(command.command == 'scroll') {
+                    var prevScroll = window.scrollY;
+                    task = setInterval(function() {
+                        window.scrollBy(0, command.amount);
+                        if(window.scrollY == prevScroll) {
+                            clearTimeout(task);
+                            executeCommand(nextCommand());
+                        }
+                        prevScroll = window.scrollY;
+                    }, 10)
+                } else if(command.command == 'scrollto') {
+                    window.scroll(0, command.position);
+                    var teams = boxxy.teamsByScore();
+                    scoreboard.children().each(function(idx, elem) {
+                        //console.log(elem)
+                        $(elem).find('.name').html(teams[idx].name);
+                        $(elem).find('.score').html(teams[idx].laps);
+                    });
+                    executeCommand(nextCommand());
+                    
+                }
+            }
+            function runMagic() {
+                scoreboard = $('#scoreboard').children().first();
+                var teams = boxxy.teamsByScore();
+                console.log(teams);
+                for (var i = 0; i < teams.length; i++) {
+                    var team = teams[i];
+                    //console.log(team);
+                    var elem = $('<tr></tr>').attr('id', team.id );
+                    elem.append($('<td></td>').addClass('position').html(i+1));
+                    elem.append($('<td></td>').addClass('name').html(team.name));
+                    elem.append($('<td></td>').addClass('score').html(team.laps));
+                    scoreboard.append(elem);
+                }
+                executeCommand(nextCommand());
+            }
+            boxxy.listen('http://live.12urenloop.be:8080');
+            setTimeout(runMagic,2000);  
+        }
+    </script>
+</head> 
+
+<body> 
+
+<div id="content">
+    <table class="scoreboard" id="scoreboard">
+        <tbody> </tbody>
+    </table>
+</div>
+
+</body>
+
+</html>
