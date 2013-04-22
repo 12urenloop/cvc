@@ -11,7 +11,7 @@ Cabal-version: >= 1.2
 Executable count-von-count
   Hs-source-dirs: src
   Main-is:        CountVonCount/Main.hs
-  Ghc-options:    -Wall -O2 -threaded -rtsopts
+  Ghc-options:    -Wall -O2 -threaded -rtsopts -with-rtsopts=-T
 
   Other-modules:
     CountVonCount.Boxxy
@@ -47,6 +47,7 @@ Executable count-von-count
     digestive-functors       >= 0.4.1 && < 0.7,
     digestive-functors-blaze >= 0.4   && < 0.7,
     digestive-functors-snap  >= 0.4   && < 0.7,
+    ekg                      >= 0.3   && < 0.4,
     enumerator               >= 0.4   && < 0.5,
     http-conduit             >= 1.4   && < 1.10,
     mtl                      >= 2.0   && < 2.2,
@@ -104,6 +105,7 @@ Test-suite count-von-count-tests
     digestive-functors       >= 0.4.1 && < 0.7,
     digestive-functors-blaze >= 0.4   && < 0.7,
     digestive-functors-snap  >= 0.4   && < 0.7,
+    ekg                      >= 0.3   && < 0.4,
     enumerator               >= 0.4   && < 0.5,
     http-conduit             >= 1.4   && < 1.10,
     mtl                      >= 2.0   && < 2.2,

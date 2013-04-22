@@ -66,6 +66,7 @@ function overlay() {
 
 function createAdminView(){
 	overlay();
+	toggleAdminNotification(false);
 	
 	var errorContainer = $('#overlayError');
 	errorContainer.empty();
@@ -82,10 +83,20 @@ function createAdminView(){
 		var teamId = 'team-' + queue[i].team;
 		row.append('<td>' + JSON.parse(storage.getItem(teamId)).name + '</td>');
 		var time = new Date(queue[i].time * 1000);
-		row.append('<td>' + time.getHours() + ':' + time.getMinutes() + ':' + time.getSeconds() + '</td>');
+		row.append('<td>' + ('0'+time.getHours()).slice(-2) + ':' + ('0'+time.getMinutes()).slice(-2) + ':' + ('0'+time.getSeconds()).slice(-2) + '</td>');
 		queueListing.append(row);
 	}
 	queueContainer.append(queueListing);
+}
+
+function toggleAdminNotification(unread){
+	var color = "#FFF";
+	if(unread) {
+		color = "#FF0000";
+	} else {
+		color = "#FFF";
+	}
+	document.getElementById("adminButton").style.backgroundColor = color;
 }
 
 function addLap(teamId) {
@@ -116,6 +127,7 @@ function processQueue() {
         console.error("Error submitting " + JSON.stringify(queue[0]));
 		error = textStatus + " when submitting " + JSON.stringify(queue[0]) + ":<BR/>";
 		error += errorThrown + " " + jqXHR.status + " (" + jqXHR.statusText + ") ";
+	if (document.getElementById("overlay").style.visibility != "visible") toggleAdminNotification(true);
         setTimeout(processQueue, 1000);
     }
 

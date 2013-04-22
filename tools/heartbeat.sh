@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SIHEMO="eva:8001"
+SIHEMO="count:8002"
 GROUP=$(hostname)
 ALIVE="30"
 

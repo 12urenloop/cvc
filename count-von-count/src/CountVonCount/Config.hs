@@ -76,6 +76,7 @@ data Config = Config
     , configRssiThreshold         :: Double
     , configBoxxies               :: [BoxxyConfig]
     , configWebPort               :: Int
+    , configEkgPort               :: Int
     } deriving (Show)
 
 
@@ -92,7 +93,8 @@ instance FromJSON Config where
         o .:? "replayLog"             .!= configReplayLog             d <*>
         o .:? "rssiThreshold"         .!= configRssiThreshold         d <*>
         o .:? "boxxies"               .!= configBoxxies               d <*>
-        o .:? "webPort"               .!= configWebPort               d
+        o .:? "webPort"               .!= configWebPort               d <*>
+        o .:? "ekgPort"               .!= configEkgPort               d
       where
         d = defaultConfig
 
@@ -113,6 +115,7 @@ defaultConfig = Config
     , configRssiThreshold         = -81
     , configBoxxies               = [defaultBoxxyConfig]
     , configWebPort               = 8000
+    , configEkgPort               = 8001
     }
 
 
