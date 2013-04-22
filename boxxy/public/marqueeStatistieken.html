@@ -95,9 +95,13 @@
                 for (var i = 0; i < teams.length; i++) {
                     totaleRondjes += teams[i].laps;
                 };
+                afstand = Math.round(totaleRondjes*boxxy.circuitLength/1000);
                 array = [];
                 array.push('Wedstrijdstats');
-                array.push(totaleRondjes + ' gelopen rondjes, dit is ' + Math.round(totaleRondjes*boxxy.circuitLength/1000) + 'km');
+                array.push(totaleRondjes + ' gelopen rondjes, dit is ' + afstand + 'km');
+                array.push('dit zijn '+ Math.round(afstand * 4666.355) + ' tandenborstels');
+                array.push('of ' + Math.round(afstand/5854*100) + '% van de afstand tot New York');
+                //array.push('er is al 3000l bier gedronken, en 350 hot dogs gemaakt');
                 tijdS = '';
                 iTijd = (12*3600) - tijd;
                 if ( iTijd > 3600){
