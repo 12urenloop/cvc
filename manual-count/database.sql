@@ -19,17 +19,18 @@ CREATE TABLE `laps` (
 -- Sample teams
 
 INSERT INTO `teams` (`id`, `name`, `laps`) VALUES
-(1, 'HomeKonvent', 0),
-(2, 'SeniorenKonvent', 0),
-(3, 'Kofschipclubs', 0),
-(4, 'VEK', 0),
-(5, 'VTK', 0),
+(1, 'KVHV', 0),
+(2, 'VRG', 0),
+(3, 'VEK', 0),
+(4, 'Blandinia', 0),
+(5, 'Wetenschappen & VLAK', 0),
 (6, 'VLK', 0),
-(7, 'Blandinia', 0),
-(8, 'Politeia', 0),
-(9, 'VRG', 0),
-(10, 'Wetenschappen & VLAK', 0),
-(11, 'VPPK', 0),
-(12, 'VGK & GFK & VBK', 0),
-(13, 'KVHV', 0),
-(14, 'HILOK', 0)
+(7, 'VTK', 0),
+(8, 'VPPK', 0),
+(9, 'HILOK', 0),
+(10, 'GFK/VGK/VBK/Dentalia', 0),
+(11, 'SK', 0),
+(12, 'HK', 0),
+(13, 'Politeia', 0),
+(14, 'Curatio', 0),
+(15, 'Kofschipclubs', 0)
