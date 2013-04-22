@@ -81,7 +81,7 @@
                     if (perRonde<60){
                         tijdS = perRonde + 's';
                     }else {
-                        tijdS = Math.round(perRonde/60) + 'm' + perRonde%60 + 's'
+                        tijdS = Math.round(perRonde/60) + 'min' + perRonde%60 + 's'
                     }
                     array.push(teams[i].name + ' doet ' + tijdS + ' over een ronde');
                 }
@@ -97,10 +97,9 @@
                 };
                 afstand = Math.round(totaleRondjes*boxxy.circuitLength/1000);
                 array = [];
-                array.push('Wedstrijdstats');
-                array.push(totaleRondjes + ' gelopen rondjes, dit is ' + afstand + 'km');
-                array.push('dit zijn '+ Math.round(afstand * 4666.355) + ' tandenborstels');
-                array.push('of ' + Math.round(afstand/5854*100) + '% van de afstand tot New York');
+                array.push(totaleRondjes + ' gelopen rondjes, das ' + afstand + 'km.');
+                array.push('Das '+ makePuntedInts(Math.round(afstand * 4666.355)) + ' tandenborstels.');
+                array.push('Of ' + Math.round(afstand/5854*100) + '% van de afstand tot New York.');
                 //array.push('er is al 3000l bier gedronken, en 350 hot dogs gemaakt');
                 tijdS = '';
                 iTijd = (12*3600) - tijd;
@@ -109,7 +108,7 @@
                 } else {
                     tijdS = Math.round(iTijd/60) + 'm' ;
                 }
-                array.push('nog ' +  tijdS + ' om te lopen');
+                array.push('Nog ' + tijdS + ' om te lopen.');
                 return array;
             }
             function runMarquee() {
@@ -136,6 +135,23 @@
                 });
             }
 
+            function makePuntedInts(number){
+                numberString = '';
+                bool = true;
+                while(number >= 1000){
+                    if (bool){
+                        numberString = number%1000 + numberString;
+                        bool = false;
+                    }else{
+                        numberString = number%1000 + '.' + numberString;
+                    }
+                    number = Math.round(number/1000)
+                }
+                if (number > 1){
+                    numberString = number + '.' + numberString;
+                }
+                return numberString;
+            }
             $(document).ready(function () {
                 boxxy.listen(boxxyHost);
                 setTimeout(runMarquee, initialTimeout);
