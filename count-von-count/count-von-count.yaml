@@ -4,6 +4,8 @@ maxSpeed:      12
 batonWatchdogLifespan: 30
 
 sensorPort: 9001
+webPort:    8000
+ekgPort:    8001
 
 log:       log/count-von-count.log
 replayLog: log/replay.log

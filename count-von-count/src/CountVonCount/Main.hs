@@ -1,4 +1,5 @@
 --------------------------------------------------------------------------------
+{-# LANGUAGE OverloadedStrings   #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 module Main
     ( main
@@ -10,6 +11,7 @@ import           Control.Concurrent             (forkIO)
 import qualified Data.Aeson                     as A
 import qualified Network.WebSockets             as WS
 import qualified Network.WebSockets.Util.PubSub as WS
+import qualified System.Remote.Monitoring       as Ekg
 
 
 --------------------------------------------------------------------------------
@@ -35,6 +37,9 @@ main = do
     eventBase <- newEventBase logger
     database  <- P.newDatabase "count-von-count.db"
     Log.string logger "CountVonCount.Main.main" "count-von-count started"
+
+    -- Start ekg server
+    _ <- Ekg.forkServer "0.0.0.0" (configEkgPort config)
 
     -- Create the pubsub system
     pubSub <- WS.newPubSub
