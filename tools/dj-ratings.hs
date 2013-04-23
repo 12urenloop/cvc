@@ -152,7 +152,7 @@ rateDjs djs votes = reverse $ sortBy (comparing (ratingCilb . snd))
 --------------------------------------------------------------------------------
 main :: IO ()
 main = do
-    conn <- Sql.open "db.sqlite"
+    conn <- Sql.open "/var/spool/gammu/db.sqlite"
 
     -- Get SMSs
     smss <- Sql.query_ conn
