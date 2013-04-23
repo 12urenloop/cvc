@@ -8,7 +8,7 @@ import           Data.Map               (Map)
 import qualified Data.Map               as M
 import           Data.Maybe             (catMaybes)
 import           Data.Number.Erf        (invnormcdf)
-import           Data.Ord               (Down (..), comparing)
+import           Data.Ord               (comparing)
 import           Data.Text              (Text)
 import qualified Data.Text              as T
 import           Data.Time              (UTCTime, formatTime)
@@ -119,7 +119,7 @@ voteFromSms djs (Sms sender text time) = case T.words (T.toLower text) of
 
 --------------------------------------------------------------------------------
 rateDjs :: [Dj] -> [Vote] -> [(Dj, Double)]
-rateDjs djs votes = sortBy (comparing (Down . snd))
+rateDjs djs votes = reverse $ sortBy (comparing snd)
     [(dj, rating hotnots) | (dj, hotnots) <- M.toList perDj]
   where
     perDj :: Map Dj (Map Sender HotNot)
