@@ -9,11 +9,11 @@ main = do
     db <- newDatabase "count-von-count.db"
     deleteAll db
 
-    addStation db "gyrid-6" "00:24:01:EB:C2:65" 0
-    addStation db "gyrid-2" "00:21:91:F1:EA:0A" 77
-    addStation db "gyrid-3" "00:22:B0:D0:61:1F" 143
-    addStation db "gyrid-4" "00:21:91:F1:EA:11" 195
-    addStation db "gyrid-5" "00:21:91:F1:EA:0E" 289
+    addStation db "gyrid-1" "00:21:91:F1:EA:08"  45
+    addStation db "gyrid-2" "00:24:01:62:6C:B3" 141
+    addStation db "gyrid-3" "00:24:01:62:6C:B4" 220
+    addStation db "gyrid-4" "00:24:01:EB:C2:67" 300
+    addStation db "gyrid-5" "00:1C:F0:6C:39:32" 365
 
     t1  <- addTeam db "KVHV"
     t2  <- addTeam db "VRG"
@@ -28,8 +28,8 @@ main = do
     t11 <- addTeam db "SK"
     t12 <- addTeam db "HK"
     t13 <- addTeam db "Politeia"
-    t14 <- addTeam db "Curatio"
-    t15 <- addTeam db "Kofschipclubs"
+    t14 <- addTeam db "Kofschipclubs"
+    t15 <- addTeam db "Curatio"
 
     b1  <- addBaton db "20:13:01:24:11:15" "Baton A"
     b2  <- addBaton db "20:13:01:30:03:69" "Baton B"
