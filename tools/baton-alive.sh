@@ -26,8 +26,8 @@ fi
 MACS_FILE=""
 if [[ -f "macs.csv" ]]; then
     MACS_FILE="macs.csv"
-elif [[ -f "../macs.csv" ]]; then
-    MACS_FILE="../macs.csv"
+elif [[ -f "../doc/macs.csv" ]]; then
+    MACS_FILE="../doc/macs.csv"
 fi
 
 # Error if not found
@@ -37,7 +37,7 @@ if [[ "$MACS_FILE" = "" ]]; then
 fi
 
 # Find mac address
-MAC=$(grep ",$BATON$" "$MACS_FILE" | sed 's/,.*$//')
+MAC=$(grep -i "^$BATON," "$MACS_FILE" | sed 's/^.*,//')
 
 # Error if not found
 if [[ "$MAC" = "" ]]; then
