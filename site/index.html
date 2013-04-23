@@ -24,12 +24,17 @@
 	<link rel="shortcut icon" href="images/favicon.ico">
 	<link rel="apple-touch-icon" href="images/apple-touch-icon.png">
 	<link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
-	<link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
 
 </head>
 <body>
 	<div id="intro">
-		<div class="bg1"></div>
+        <div class="bg1"></div>
+
+        <div class="play-button" style="position: absolute; right: 20px; top: 20px;">
+            <p><a href="#?custom=true&amp;width=260&amp;height=270"
+                rel="prettyPhoto">Open a google map</a></p>
+        </div>
 
 		<div class="title">
 			<div class="intro-line"></div>
@@ -492,6 +497,41 @@
 		})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 		ga('create', 'UA-25444917-4', '12urenloop.be');
 		ga('send', 'pageview');
-	</script>
+    </script>
+
+    <!-- For livestream popup -->
+
+    <script type="text/javascript" src="http://filesvideo.ugent.be/jwplayer6/jwplayer.js"></script>
+    <script type="text/javascript">jwplayer.key="mdGdaKfVbO3+1sGvEDiR4cXDtQ5BEevfGnD2os7p5do=";</script>
+    <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
+    <script type="text/javascript">
+            function initialize() {
+                var latlng = new google.maps.LatLng(-34.397, 150.644);
+                var myOptions = {
+                  zoom: 8,
+                  center: latlng,
+                  mapTypeId: google.maps.MapTypeId.ROADMAP
+                };
+                var map = new google.maps.Map(document.getElementById("map_canvas"),
+                    myOptions);
+            }
+            function init() {
+                jwplayer('mediaspace').setup({
+                    'id' : 'playerID',
+                    'width': '620',
+                    'height':'350',
+                    'file' : 'rtmp://wowza1.ugent.be/live/12urenloop'
+                });
+            }
+            alert("HEY");
+        $(document).ready(function() {
+            $(".play-button a").prettyPhoto({
+                custom_markup: '<div id="mediaspace" style="height:350px;width:620px;"></div>',
+                changepicturecallback: function(){ initialize(); }
+            });
+        });
+    </script>
+
+
 </body>
 </html>
