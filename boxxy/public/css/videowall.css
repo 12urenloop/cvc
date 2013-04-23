@@ -1,0 +1,35 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background: purple; /* chroma key*/
+    overflow: hidden;
+}
+#marquee {
+    position: fixed; bottom: 0; margin-bottom: -130px;
+    height: 130px; width: 100%;
+    background-color: #fff;
+
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 60px;
+    line-height: 2;
+}
+#marquee-fade {
+    position: absolute; top: 0;
+    height: 100%; width: 100%;
+    background:
+        url('img/12urenloop.png') 15px center no-repeat,
+        linear-gradient(to right,
+            rgba(255,255,255,1) 240px, rgba(255,255,255,0) 270px,
+            rgba(255,255,255,0) 90%,rgba(255,255,255,1) 97%);
+}
+#marquee ol {
+    position: relative;
+    margin: 0;
+    list-style-position: inside;
+    width: 99999px;
+}
+#marquee li {
+    margin-right: 50px;
+    float: left;
+}
