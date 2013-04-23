@@ -6,13 +6,13 @@ html, body {
     overflow: hidden;
 }
 #marquee {
-    position: fixed; bottom: 0; margin-bottom: -130px;
-    height: 130px; width: 100%;
+    position: fixed; bottom: 0; margin-bottom: -150px;
+    height: 150px; width: 100%;
     background-color: #fff;
 
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    font-size: 60px;
-    line-height: 2;
+    font-size: 80px;
+    line-height: 1;
 }
 #marquee-fade {
     position: absolute; top: 0;
@@ -26,10 +26,12 @@ html, body {
 #marquee ol {
     position: relative;
     margin: 0;
-    list-style-position: inside;
+    list-style-type: none;
     width: 99999px;
+    padding-bottom: 40px;
 }
 #marquee li {
+    padding-top: 35px;
     margin-right: 50px;
     float: left;
 }

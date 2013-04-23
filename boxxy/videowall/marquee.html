@@ -31,7 +31,7 @@
 
                 var teams = boxxy.teamsByScore();
                 for (var i = 0; i < teams.length; i++) {
-                    container.append('<li>' + teams[i].name + ' (' + teams[i].laps + ')');
+                    container.append('<li>' + (i+1) + '. ' + teams[i].name + ' (' + teams[i].laps + ')');
                     marqueeLength += container.children().last().outerWidth(true);
                 };
 
