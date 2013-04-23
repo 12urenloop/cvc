@@ -111,8 +111,8 @@ stepCounterState len maxSpeed event = do
                 when (numLaps > 0) $ tell' $ printf "Adding %d laps" numLaps
                 put $ CounterState first event speed' time
                 return $
-                    PositionCoreEvent time station speed :
-                    replicate numLaps (LapCoreEvent time 0)  -- lapTime is TODO
+                    replicate numLaps (LapCoreEvent time 0) :  -- lapTime is TODO
+                    PositionCoreEvent time station speed
           where
             SensorEvent time     station     _ _ _ = event
             SensorEvent prevTime prevStation _ _ _ = prev
