@@ -22,17 +22,17 @@ import           Text.Printf            (printf)
 djs2013 :: [Dj]
 djs2013 =
     -- TODO add a base rating by us?
-    [ Dj "Bassick"      1 (Time 10 30) (Time 11 30)
-    , Dj "LSGHN"        2 (Time 11 30) (Time 12 30)
-    , Dj "Oscar Mike"   3 (Time 12 30) (Time 13 30)
-    , Dj "Pulp Mixion"  4 (Time 13 30) (Time 14 30)
-    , Dj "Supernovazz"  5 (Time 14 30) (Time 15 30)
-    , Dj "Brains Off"   6 (Time 15 30) (Time 16 30)
-    , Dj "Cultivar"     7 (Time 16 30) (Time 17 30)
-    , Dj "Blueshades"   8 (Time 17 30) (Time 18 30)
-    , Dj "Louis Gara"   9 (Time 18 30) (Time 19 30)
-    , Dj "Dropzilla"   10 (Time 19 30) (Time 20 30)
-    , Dj "DJ Ace"      11 (Time 20 30) (Time 21 30)
+    [ Dj "Bassick"                         1 (Time 10 30) (Time 11 30)
+    , Dj "LSGHN"                           2 (Time 11 30) (Time 12 30)
+    , Dj "Oscar Mike"                      3 (Time 12 30) (Time 13 30)
+    , Dj "Pulp Mixion"                     4 (Time 13 30) (Time 14 30)
+    , Dj "Alexandrovic & Falco Poco Loco"  5 (Time 14 30) (Time 15 30)
+    , Dj "Brains Off"                      6 (Time 15 30) (Time 16 30)
+    , Dj "Cultivar"                        7 (Time 16 30) (Time 17 30)
+    , Dj "Blueshades"                      8 (Time 17 30) (Time 18 30)
+    , Dj "Louis Gara"                      9 (Time 18 30) (Time 19 30)
+    , Dj "Dropzilla"                      10 (Time 19 30) (Time 20 30)
+    , Dj "DJ Ace"                         11 (Time 20 30) (Time 21 30)
     ]
 
 
