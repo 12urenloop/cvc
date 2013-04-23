@@ -118,8 +118,16 @@ voteFromSms djs (Sms sender text time) = case T.words (T.toLower text) of
 
 
 --------------------------------------------------------------------------------
-rateDjs :: [Dj] -> [Vote] -> [(Dj, Double)]
-rateDjs djs votes = reverse $ sortBy (comparing snd)
+data Rating = Rating
+    { ratingCilb :: Double
+    , ratingHots :: Int
+    , ratingNots :: Int
+    } deriving (Show)
+
+
+--------------------------------------------------------------------------------
+rateDjs :: [Dj] -> [Vote] -> [(Dj, Rating)]
+rateDjs djs votes = reverse $ sortBy (comparing (ratingCilb . snd))
     [(dj, rating hotnots) | (dj, hotnots) <- M.toList perDj]
   where
     perDj :: Map Dj (Map Sender HotNot)
@@ -130,20 +138,24 @@ rateDjs djs votes = reverse $ sortBy (comparing snd)
         [ (dj, M.empty) | dj <- djs]  -- Makes sure the DJ is there even if
                                       -- there are no votes
 
-    rating :: Map Sender HotNot -> Double
+    rating :: Map Sender HotNot -> Rating
     rating hotnots =
-        let (hots, nots) = partition (== Hot) $ map snd $ M.toList hotnots
-            hots'        = length hots
-        in ciLowerBound (fromIntegral hots') (hots' + length nots) 0.95
+        let (hs, ns)   = partition (== Hot) $ map snd $ M.toList hotnots
+            (hs', ns') = (length hs, length ns)
+        in Rating
+            { ratingCilb = ciLowerBound (fromIntegral hs') (hs' + ns') 0.95
+            , ratingHots = hs'
+            , ratingNots = ns'
+            }
 
 
 --------------------------------------------------------------------------------
 main :: IO ()
 main = do
-    conn  <- Sql.open "/var/spool/gammu/db.sqlite"
+    conn <- Sql.open "db.sqlite"
 
     -- Get SMSs
-    smss  <- Sql.query_ conn
+    smss <- Sql.query_ conn
         "SELECT SenderNumber, TextDecoded, ReceivingDateTime FROM inbox"
 
     -- Parse into votes
@@ -153,7 +165,8 @@ main = do
 
     -- Calculate and print rating
     let rating = zip [1 :: Int ..] $ rateDjs djs2013 votes
-    forM_ rating $ \(i, (Dj name _ _ _, rate)) ->
-        putStrLn $ printf "%2d: %s (%.3f)" i (T.unpack name) rate
+    forM_ rating $ \(i, (Dj name _ _ _, r)) ->
+        putStrLn $ printf "%2d: %s (%.3f: %d HOT, %d NOT)"
+            i (T.unpack name) (ratingCilb r) (ratingHots r) (ratingNots r)
 
     Sql.close conn
