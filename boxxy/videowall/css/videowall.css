@@ -2,7 +2,7 @@ html, body {
     height: 100%;
     margin: 0;
     padding: 0;
-    background: purple; /* chroma key*/
+    background: #FF0019; /* CHROMAH KEY */
     overflow: hidden;
 }
 #marquee {

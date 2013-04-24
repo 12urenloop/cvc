@@ -14,7 +14,7 @@ body {
 }
 
 #scoreboard tr:nth-child(even) {
-    background-color: #eee;
+    background-color: #d6d6d6;
 }
 #scoreboard {
     width: 100%;
