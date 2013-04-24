@@ -68,9 +68,9 @@
                 tijdS = '';
                 iTijd = (12*3600) - tijd;
                 if ( iTijd > 3600){
-                    tijdS = '' + Math.round(iTijd/3600) + 'u' + Math.round((iTijd%3600)/60) + 'm';
+                    tijdS = '' + Math.floor(iTijd/3600) + 'u' + Math.floor((iTijd%3600)/60) + 'm';
                 } else {
-                    tijdS = Math.round(iTijd/60) + 'm' ;
+                    tijdS = Math.floor(iTijd/60) + 'm' ;
                 }
                 array.push('Nog ' + tijdS + ' om te lopen.');
                 return array;
