@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <title>Marquee</title>
+        <link rel="stylesheet" type="text/css" href="css/videowall.css" />
+
+        <script src="http://live.12urenloop.be/js/boxxy.js"></script>
+        <script src="http://live.12urenloop.be/js/jquery-1.7.1.min.js"></script>
+        <script src="http://live.12urenloop.be/socket.io/socket.io.js"></script>
+    </head>
+    <body>
+        <div id="marquee-top">
+            <ol>
+            </ol>
+        </div>
+
+        <div id="marquee">
+            <ol>
+            </ol>
+            <div id="marquee-fade"></div>
+        </div>
+
+        <script>
+            // Set up boxxy
+            var boxxy = boxxy.initialize(),
+            boxxyHost = 'http://live.12urenloop.be:8080',
+            initialTimeout = 2000,
+            interval = 5000;
+
+            function runMarquee() {
+                var marqueeTop = $('#marquee-top ol');
+                var marqueeBot = $('#marquee ol');
+                var marqueeLengthTop = 0;
+                var marqueeLengthBot = 0;
+
+                var teams = boxxy.teamsByScore();
+                
+                marqueeTop.append('<li>DJ-Contest: SMS HOT or NOT naar 0487 012 370');
+                marqueeLengthTop += marqueeTop.children().first().outerWidth(true);
+                
+                for (var i = 0; i < teams.length; i++) {
+                    marqueeBot.append('<li>' + (i+1) + '. ' + teams[i].name + ' (' + teams[i].laps + ')');
+                    marqueeLengthBot += marqueeBot.children().last().outerWidth(true);
+                };
+                
+                marqueeTop.css('left', $('#marquee-top').width());
+                $('#marquee-top').animate({'margin-top': 0}, 1000, function() {
+                    var duration = marqueeLengthTop * 8;
+                    marqueeTop.animate({left: -marqueeLengthTop + 200}, duration, 'linear', function() {
+                        marqueeTop.empty();
+                        $('#marquee-top').animate({'margin-top': -$('#marquee-top').height()}, 1000);
+                        setTimeout(runMarquee, interval + 1000);
+                    });
+                });
+
+                marqueeBot.css('left', $('#marquee').width());
+                $('#marquee').animate({'margin-bottom': 0}, 1000, function() {
+                    var duration = marqueeLengthBot * 8;
+                    marqueeBot.animate({left: -marqueeLengthBot + 200}, duration, 'linear', function() {
+                        marqueeBot.empty();
+                        $('#marquee').animate({'margin-bottom': -$('#marquee').height()}, 1000);
+                        setTimeout(runMarquee, interval + 1000);
+                    });
+                });
+            }
+
+            $(document).ready(function () {
+                boxxy.listen(boxxyHost);
+                setTimeout(runMarquee, initialTimeout);
+            });
+        </script>
+    </body>
+</html>

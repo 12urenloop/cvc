@@ -5,6 +5,16 @@ html, body {
     background: #FF0019; /* CHROMAH KEY */
     overflow: hidden;
 }
+#marquee-top {
+    position: fixed; top: 0; margin-top: -100px;
+    height: 100px; width: 100%;
+    background-color: #fff;
+
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 80px;
+    line-height: 1;
+}
+
 #marquee {
     position: fixed; bottom: 0; margin-bottom: -150px;
     height: 150px; width: 100%;
@@ -32,6 +42,17 @@ html, body {
 }
 #marquee li {
     padding-top: 35px;
+    margin-right: 50px;
+    float: left;
+}
+#marquee-top ol {
+    position: relative;
+    margin: 0;
+    list-style-type: none;
+    width: 99999px;
+}
+#marquee-top li {
+    padding-top: 10px;
     margin-right: 50px;
     float: left;
 }
