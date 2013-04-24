@@ -16,6 +16,7 @@ import           Database.SQLite.Simple (FromRow (..))
 import qualified Database.SQLite.Simple as Sql
 import           System.Locale          (defaultTimeLocale)
 import           Text.Printf            (printf)
+import System.Environment (getArgs)
 
 
 --------------------------------------------------------------------------------
@@ -157,9 +158,9 @@ rateDjs djs votes = reverse $ sortBy (comparing (ratingCilb . snd))
 
 
 --------------------------------------------------------------------------------
-main :: IO ()
-main = do
-    conn <- Sql.open "db.sqlite"
+ratings :: FilePath -> IO ()
+ratings filePath = do
+    conn <- Sql.open filePath
 
     -- Get SMSs
     smss <- Sql.query_ conn
@@ -177,3 +178,12 @@ main = do
             i (T.unpack name) (ratingCilb r) (ratingHots r) (ratingNots r)
 
     Sql.close conn
+
+
+--------------------------------------------------------------------------------
+main :: IO ()
+main = do
+    args <- getArgs
+    case args of
+        (x : _) -> ratings x
+        _       -> ratings "/var/spool/gammu/db.sqlite"
