@@ -14,9 +14,10 @@ import qualified Data.Text              as T
 import           Data.Time              (UTCTime, formatTime)
 import           Database.SQLite.Simple (FromRow (..))
 import qualified Database.SQLite.Simple as Sql
+import           System.Environment     (getArgs)
 import           System.Locale          (defaultTimeLocale)
 import           Text.Printf            (printf)
-import System.Environment (getArgs)
+import           Text.Regex.PCRE        ((=~))
 
 
 --------------------------------------------------------------------------------
@@ -81,7 +82,11 @@ timeFromUTCTime t = case words (formatTime defaultTimeLocale "%H %M" t) of
 
 
 --------------------------------------------------------------------------------
-data Sms = Sms Sender Text Time deriving (Show)
+data Sms = Sms
+    { smsSender :: Sender
+    , smsText   :: Text
+    , smsTime   :: Time
+    } deriving (Show)
 
 
 --------------------------------------------------------------------------------
@@ -95,26 +100,26 @@ data HotNot = Hot | Not deriving (Eq, Show)
 
 
 --------------------------------------------------------------------------------
-data Vote = Vote Sender Dj HotNot
-    deriving (Show)
+data Vote = Vote
+    { voteSender :: Sender
+    , voteDj     :: Dj
+    , voteHotNot :: HotNot
+    } deriving (Show)
 
 
 --------------------------------------------------------------------------------
 voteFromSms :: [Dj] -> Sms -> Either String Vote
-voteFromSms djs (Sms sender text time) = do
-    hotnot <- case words' of
-        ("hot" : _) -> Right Hot
-        ("not" : _) -> Right Not
-        _           -> Left $ "No Hot/Not" ++ T.unpack text
-
-    dj <- flip catchError (const djByTime) $ case words' of
-        (_ : i : _) -> djByNr i
-        _           -> Left "No argument"
-
-    return $ Vote sender dj hotnot
+voteFromSms djs (Sms sender text time) =
+    case T.unpack (T.toLower text) =~ ("(hot|not)\\s*(\\d*)" :: String) of
+        ([_, hotnot, i] : _) -> do
+            hn <- case hotnot of
+                "hot" -> Right Hot
+                "not" -> Right Not
+                _     -> Left $ "No hot/not: " ++ hotnot
+            dj <- flip catchError (const djByTime) $ djByNr (T.pack i)
+            return $ Vote sender dj hn
+        _ -> Left $ "Couldn't parse: " ++ T.unpack text
   where
-    words' = T.words (T.toLower text)
-
     djByNr :: Text -> Either String Dj
     djByNr n = case [dj | dj@(Dj _ i _ _) <- djs, show i == T.unpack n] of
         (dj : _) -> Right dj
@@ -169,7 +174,10 @@ ratings filePath = do
     -- Parse into votes
     votes <- fmap catMaybes $ forM smss $ \s -> case voteFromSms djs2013 s of
         Left err -> putStrLn ("Warning: " ++ err) >> return Nothing
-        Right v  -> return (Just v)
+        Right v  -> do
+            putStrLn $ (T.unpack $ smsText s) ++ " => " ++
+                show (voteHotNot v) ++ " " ++ (show $ voteDj v)
+            return (Just v)
 
     -- Calculate and print rating
     let rating = zip [1 :: Int ..] $ rateDjs djs2013 votes
