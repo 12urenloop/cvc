@@ -14,9 +14,10 @@
     <body>
         <div id="marquee-top">
             <ol>
+                <li>SMS HOT or NOT naar 0478 012 970<li>
             </ol>
         </div>
-
+        
         <div id="marquee">
             <ol>
             </ol>
@@ -26,41 +27,25 @@
         <script>
             // Set up boxxy
             var boxxy = boxxy.initialize(),
-            boxxyHost = 'http://live.12urenloop.be:8080',
-            initialTimeout = 2000,
-            interval = 5000;
+                boxxyHost = 'http://live.12urenloop.be:8080',
+                initialTimeout = 2000,
+                interval = 5000;
 
             function runMarquee() {
-                var marqueeTop = $('#marquee-top ol');
-                var marqueeBot = $('#marquee ol');
-                var marqueeLengthTop = 0;
-                var marqueeLengthBot = 0;
+                var container = $('#marquee ol');
+                var marqueeLength = 0;
 
                 var teams = boxxy.teamsByScore();
-                
-                marqueeTop.append('<li>DJ-Contest: SMS HOT or NOT naar 0487 012 370');
-                marqueeLengthTop += marqueeTop.children().first().outerWidth(true);
-                
                 for (var i = 0; i < teams.length; i++) {
-                    marqueeBot.append('<li>' + (i+1) + '. ' + teams[i].name + ' (' + teams[i].laps + ')');
-                    marqueeLengthBot += marqueeBot.children().last().outerWidth(true);
+                    container.append('<li>' + (i+1) + '. ' + teams[i].name + ' (' + teams[i].laps + ')');
+                    marqueeLength += container.children().last().outerWidth(true);
                 };
-                
-                marqueeTop.css('left', $('#marquee-top').width());
-                $('#marquee-top').animate({'margin-top': 0}, 1000, function() {
-                    var duration = marqueeLengthTop * 8;
-                    marqueeTop.animate({left: -marqueeLengthTop + 200}, duration, 'linear', function() {
-                        marqueeTop.empty();
-                        $('#marquee-top').animate({'margin-top': -$('#marquee-top').height()}, 1000);
-                        setTimeout(runMarquee, interval + 1000);
-                    });
-                });
 
-                marqueeBot.css('left', $('#marquee').width());
+                container.css('left', $('#marquee').width());
                 $('#marquee').animate({'margin-bottom': 0}, 1000, function() {
-                    var duration = marqueeLengthBot * 8;
-                    marqueeBot.animate({left: -marqueeLengthBot + 200}, duration, 'linear', function() {
-                        marqueeBot.empty();
+                    var duration = marqueeLength * 8;
+                    container.animate({left: -marqueeLength + 200}, duration, 'linear', function() {
+                        container.empty();
                         $('#marquee').animate({'margin-bottom': -$('#marquee').height()}, 1000);
                         setTimeout(runMarquee, interval + 1000);
                     });
