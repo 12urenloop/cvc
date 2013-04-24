@@ -14,13 +14,7 @@
 #  \_)-\___/  |_|          \____| <<\___/  |_|  |_|
 #       \\    )(\\,-      _// \\ (__) )(  <<,-,,-.
 #      (__)  (__)(_/     (__)(__)    (__)  (./  \.)
-
-# Check arguments
-BATON="$1"
-if [[ $# -lt 1 ]]; then
-    echo "Usage: $0 <baton nr>"
-    exit 1
-fi
+set -o nounset -o errexit -o pipefail
 
 # Find file containing mac addresses
 MACS_FILE=""
@@ -36,19 +30,17 @@ if [[ "$MACS_FILE" = "" ]]; then
     exit 1
 fi
 
-# Find mac address
-MAC=$(grep -i "^$BATON," "$MACS_FILE" | sed 's/^.*,//')
-
-# Error if not found
-if [[ "$MAC" = "" ]]; then
-    echo "Unknown baton: MAC-adress for baton $BATON not found"
-    exit 1
-fi
-
 # Scan for the mac address
-LINE=$(hcitool inq --length=3 | grep "$MAC")
-if [[ "$LINE" = "" ]]; then
-    echo "Baton $BATON ($MAC): down!"
-else
-    echo "Baton $BATON ($MAC): ok."
-fi
+HCITOOL_OUT=$(mktemp)
+hcitool inq --length=5 > "$HCITOOL_OUT"
+while read LINE; do
+    BATON_MAC=$(echo "$LINE" | sed 's/^.*,//')
+    BATON_NAME=$(echo "$LINE" | sed 's/,.*$//')
+    GREP_OUT=$(grep "$BATON_MAC" "$HCITOOL_OUT" || true)
+    if [[ "$GREP_OUT" = "" ]]; then
+        echo "Baton $BATON_NAME ($BATON_MAC): down!"
+    else
+        echo "Baton $BATON_NAME ($BATON_MAC): ok."
+    fi
+done < "$MACS_FILE"
+rm "$HCITOOL_OUT"
