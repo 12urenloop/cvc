@@ -2,7 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 import           Control.Applicative    ((<$>), (<*>))
 import           Control.Monad          (forM, forM_)
-import           Control.Monad.Error    ()
+import           Control.Monad.Error    (catchError)
 import           Data.List              (partition, sortBy)
 import           Data.Map               (Map)
 import qualified Data.Map               as M
@@ -100,13 +100,20 @@ data Vote = Vote Sender Dj HotNot
 
 --------------------------------------------------------------------------------
 voteFromSms :: [Dj] -> Sms -> Either String Vote
-voteFromSms djs (Sms sender text time) = case T.words (T.toLower text) of
-    ["hot", i] -> djByNr i >>= \dj -> Right (Vote sender dj Hot)
-    ["not", i] -> djByNr i >>= \dj -> Right (Vote sender dj Not)
-    ["hot"]    -> djByTime >>= \dj -> Right (Vote sender dj Hot)
-    ["not"]    -> djByTime >>= \dj -> Right (Vote sender dj Not)
-    _          -> Left $ "Couldn't parse sms: " ++ T.unpack text
+voteFromSms djs (Sms sender text time) = do
+    hotnot <- case words' of
+        ("hot" : _) -> Right Hot
+        ("not" : _) -> Right Not
+        _           -> Left $ "No Hot/Not" ++ T.unpack text
+
+    dj <- flip catchError (const djByTime) $ case words' of
+        (_ : i : _) -> djByNr i
+        _           -> Left "No argument"
+
+    return $ Vote sender dj hotnot
   where
+    words' = T.words (T.toLower text)
+
     djByNr :: Text -> Either String Dj
     djByNr n = case [dj | dj@(Dj _ i _ _) <- djs, show i == T.unpack n] of
         (dj : _) -> Right dj
@@ -152,7 +159,7 @@ rateDjs djs votes = reverse $ sortBy (comparing (ratingCilb . snd))
 --------------------------------------------------------------------------------
 main :: IO ()
 main = do
-    conn <- Sql.open "/var/spool/gammu/db.sqlite"
+    conn <- Sql.open "db.sqlite"
 
     -- Get SMSs
     smss <- Sql.query_ conn
