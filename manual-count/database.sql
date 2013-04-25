@@ -32,5 +32,5 @@ INSERT INTO `teams` (`id`, `name`, `laps`) VALUES
 (11, 'SK', 0),
 (12, 'HK', 0),
 (13, 'Politeia', 0),
-(14, 'Curatio', 0),
-(15, 'Kofschipclubs', 0)
+(14, 'Kofschipclubs', 0),
+(15, 'Curatio', 0)
