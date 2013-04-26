@@ -11,10 +11,10 @@ while [ 1 ]; do
 
     pkill -u urenloop count-von-count || true
     sleep 1
-    runghc -isrc 'scripts/teams2012.hs'
+    runghc -isrc 'scripts/teams2013.hs'
 
     nohup dist/build/count-von-count/count-von-count >> ~/log/count-von-count.log &
     sleep 1
 
-    dist/build/count-von-count-replayer/count-von-count-replayer replay-2012.log
+    dist/build/count-von-count-replayer/count-von-count-replayer replay-2013.log
 done
