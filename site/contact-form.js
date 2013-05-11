@@ -52,7 +52,7 @@ $(document).ready(function() {
 			//success
 			success: function (html) {
 				//if process.php returned 1/true (send mail success)
-				if (html==1) {
+				if (html.indexOf("verzonden")!=-1) {
 					//hide the form
 					$('.form').fadeOut('slow');
 

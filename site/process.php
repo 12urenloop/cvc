@@ -1,4 +1,5 @@
 <?php
+
 try {
 
   $name = htmlspecialchars($_POST['name']);
@@ -20,7 +21,11 @@ try {
     <tr><td>Bericht: </td><td>" . $comment . "</td></tr>
     </table>";
   mail($to, $subject, $message, $headers);
-  echo 1;
+  echo "Bericht verzonden! U wordt nu teruggestuurd naar de website.";
+
+
 } catch (Exception $e) {
-  echo 0;
+  echo "Fout bij verzenden, gelieve opnieuw te proberen. U wordt automatisch teruggestuurd.";
 }
+
+header("Refresh: 2;index.html#contact");
