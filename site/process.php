@@ -2,11 +2,19 @@
 
 try {
 
-  $name = htmlspecialchars($_POST['name']);
-  $email = htmlspecialchars($_POST['email']);
-  $comment = htmlspecialchars($_POST['comment']);
+  $name = trim(htmlspecialchars($_POST['name']));
+  $email = trim(htmlspecialchars($_POST['email']));
+  $comment = trim(htmlspecialchars($_POST['comment']));
 
-  if(trim($name) == "" || trim($email) == "" || trim($comment) == "") throw new Exception();
+  // Empty detection
+  if($name == "" || $email == "" || $comment == "") throw new Exception();
+
+  // Silly spambot detection
+  if(strpos($name, ' ') != -1 && (
+    preg_match("#^[a-z]*, http://www.[a-z]*.com [a-z]*$#", $comment) ||
+    preg_match("#^[a-z]*, \[url=http://www.[a-z]*.com\][a-z]*\[/url\]$#", $comment)
+    )
+  ) throw new Exception();
 
   $to = 'info@12urenloop.be';
   $subject = '[12urenloop] Mail via website';
