@@ -10,11 +10,11 @@ try {
   if($name == "" || $email == "" || $comment == "") throw new Exception();
 
   // Silly spambot detection
-  if(strpos($name, ' ') != -1 && (
-    preg_match("#^[a-z]*, http://www.[a-z]*.com [a-z]*$#", $comment) ||
-    preg_match("#^[a-z]*, \[url=http://www.[a-z]*.com\][a-z]*\[/url\]$#", $comment)
-    )
-  ) throw new Exception();
+  $context  = stream_context_create(array('http' => array('header' => 'Accept: application/xml')));
+  $url = 'http://www.stopforumspam.com/api?email=' . $email;
+  $xml = file_get_contents($url, false, $context);
+  $xml = simplexml_load_string($xml);
+  if($xml->appears == "yes") throw new Exception();
 
   $to = 'info@12urenloop.be';
   $subject = '[12urenloop] Mail via website';
