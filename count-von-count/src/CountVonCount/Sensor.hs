@@ -1,6 +1,5 @@
 --------------------------------------------------------------------------------
 -- | Communication with sensors (i.e. Gyrid)
-{-# LANGUAGE BangPatterns       #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE OverloadedStrings  #-}
 module CountVonCount.Sensor
@@ -10,27 +9,26 @@ module CountVonCount.Sensor
 
 
 --------------------------------------------------------------------------------
+import           Control.Applicative              ((<$>))
 import           Control.Concurrent               (forkIO)
-import           Control.Monad                    (forever, liftM)
-import qualified Data.Attoparsec                  as A
+import           Control.Monad                    (forever)
+import           Data.Bits                        (shiftL, shiftR, (.&.), (.|.))
+import           Data.ByteString                  (ByteString)
+import qualified Data.ByteString                  as B
 import           Data.ByteString.Char8            ()
 import qualified Data.ByteString.Char8            as BC
 import qualified Data.ByteString.Lazy             as BL
-import           Data.Char                        (ord)
 import           Data.Foldable                    (forM_)
 import           Data.Time                        (UTCTime, getCurrentTime)
 import           Data.Typeable                    (Typeable)
 import qualified Gyrid.Bluetooth_DataRaw          as BDR
 import           Gyrid.Msg                        (Msg, type')
-import qualified Gyrid.Msg                        as M
+import qualified Gyrid.Msg                        as Msg
 import           Gyrid.Msg.Type                   (Type (..))
 import           Network                          (PortID (..))
 import qualified Network                          as N
 import qualified Network.Socket                   as S
-import qualified System.IO.Streams.Attoparsec     as SA
-import qualified System.IO.Streams.ByteString     as SB
-import qualified System.IO.Streams.Combinators    as SC
-import           System.IO.Streams.List           as SL
+import qualified System.IO.Streams                as Streams
 import           System.IO.Streams.Network        (socketToStreams)
 import qualified Text.ProtocolBuffers.WireMessage as WM
 
@@ -52,6 +50,10 @@ data RawSensorEvent = RawSensorEvent
 
 
 --------------------------------------------------------------------------------
+type Payload = ByteString
+
+
+--------------------------------------------------------------------------------
 listen :: Log
        -> EventBase
        -> Int
@@ -60,23 +62,32 @@ listen logger eventBase port = do
     sock <- N.listenOn (PortNumber $ fromIntegral port)
 
     forever $ do
-        (conn, _) <- S.accept sock
-        (incoming, _) <- socketToStreams conn
+        (conn, _)           <- S.accept sock
+        (inBytes, outBytes) <- socketToStreams conn
+        (inBytes', count)   <- Streams.countInput inBytes
+        inPayload           <- int16Receiver inBytes'
+        inMsgs              <- messageReceiver inPayload
+        _outPayload         <- int16Sender outBytes
         _ <- forkIO $ isolate_ logger "Sensor send config" $ do
-            --S.sendAll conn "MSG,enable_rssi,true\r\n"
-            --S.sendAll conn "MSG,enable_cache,false\r\n"
+            -- FIXME: Check if we need to send messages here. Read gyrid
+            -- code/ask Roel if necessary.
             return ()
         _ <- forkIO $ isolate_ logger "Sensor receive" $ do
-            (incoming', count) <- SB.countInput incoming
-            messageStream <- SA.parserToInputStream message incoming'
-            _ <- SC.mapM_ (handleMessage logger eventBase) messageStream
-            --listy <- SL.toList messageStream
-            --string logger "CountVonCount.Sensor.listen" (show listy)
+            consume inMsgs
             count' <- count
             string logger "CountVonCount.Sensor.listen" (show count')
             string logger "CountVonCount.Sensor.listen" "Socket gracefully disconnected"
             S.sClose conn
         return ()
+  where
+    consume inMsgs = do
+        mbMsg <- Streams.read inMsgs
+        case mbMsg of
+            Nothing  -> return ()
+            Just msg -> do
+                handleMessage logger eventBase msg
+                consume inMsgs
+
 
 --------------------------------------------------------------------------------
 handleMessage :: Log
@@ -95,21 +106,59 @@ handleMessage logger eventBase msg
     parseMac' = parseMac . BC.concat . BL.toChunks
     messageToEvent :: UTCTime -> Msg -> Maybe RawSensorEvent
     messageToEvent time msg' = do
-        bdr    <- M.bluetooth_dataRaw msg'
+        bdr    <- Msg.bluetooth_dataRaw msg'
         sensor <- BDR.hwid bdr
         baton  <- BDR.sensorMac bdr
         rssi   <- BDR.rssi bdr
-        return $ RawSensorEvent time (parseMac' sensor) (parseMac' baton) (fromIntegral rssi)
+        return $ RawSensorEvent time
+            (parseMac' sensor) (parseMac' baton) (fromIntegral rssi)
+
 
 --------------------------------------------------------------------------------
-message :: A.Parser (Maybe Msg)
-message = do
-    l     <- lengthParser
-    bytes <- A.take l
-    case WM.messageGet (BL.fromChunks [bytes]) of
-         Left _         -> return Nothing
-         Right (msg, _) -> return $ Just msg
-    --return $ Just l
-  where
-    lengthParser = BC.foldl (\a c -> 8*a + ord c) 0 `liftM` A.take 2
+-- | See <http://twistedmatrix.com/documents/8.2.0/api/twisted.protocols.basic.Int16StringReceiver.html>
+int16Receiver
+    :: Streams.InputStream ByteString
+    -> IO (Streams.InputStream Payload)
+int16Receiver is = Streams.makeInputStream $ do
+    eof <- Streams.atEOF is
+    if eof
+        then return Nothing
+        else do
+            header <- Streams.readExactly 2 is
+            let h0  = fromIntegral $ header `B.index` 0
+                h1  = fromIntegral $ header `B.index` 1
+                len = (h0 `shiftL` 8) .|. h1
+            Just <$> Streams.readExactly len is
 
+
+--------------------------------------------------------------------------------
+-- | See <http://twistedmatrix.com/documents/8.2.0/api/twisted.protocols.basic.Int16StringReceiver.html>
+int16Sender
+    :: Streams.OutputStream Payload
+    -> IO (Streams.OutputStream ByteString)
+int16Sender = Streams.contramap $ \bs ->
+    let len = B.length bs
+        h0  = fromIntegral $ (len .&. 0xff00) `shiftR` 8
+        h1  = fromIntegral $ len .&. 0x00ff
+    in  B.pack [h0, h1] `B.append` bs
+
+
+--------------------------------------------------------------------------------
+messageReceiver
+    :: Streams.InputStream Payload
+    -> IO (Streams.InputStream Msg)
+messageReceiver is = Streams.makeInputStream readNextMsg
+  where
+    readNextMsg = do
+        mbPayload <- Streams.read is
+        case mbPayload of
+            Nothing      -> return Nothing
+            Just payload -> case WM.messageGet (BL.fromChunks [payload]) of
+                Right (msg, "") -> return $ Just msg
+                _               ->
+                    -- FIXME: In this case, we *need* to log the precise error
+                    -- for debugging purposes. This means the logger also needs
+                    -- to be passed to `messageReceiver`.
+
+                    -- Go to next message.
+                    readNextMsg
