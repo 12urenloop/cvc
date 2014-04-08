@@ -10,26 +10,28 @@ module CountVonCount.Sensor
 
 
 --------------------------------------------------------------------------------
-import           Control.Applicative        ((*>))
-import           Control.Concurrent         (forkIO)
-import           Control.Monad              (forever)
-import           Control.Monad.Trans        (liftIO)
-import qualified Data.Attoparsec            as A
-import qualified Data.Attoparsec.Enumerator as AE
-import qualified Data.ByteString            as B
-import           Data.ByteString.Char8      ()
-import qualified Data.ByteString.Char8      as BC
-import           Data.Enumerator            (Iteratee, ($$), (=$))
-import qualified Data.Enumerator            as E
-import qualified Data.Enumerator.List       as EL
-import           Data.Foldable              (forM_)
-import           Data.Time                  (UTCTime, getCurrentTime)
-import           Data.Typeable              (Typeable)
-import           Network                    (PortID (..))
-import qualified Network                    as N
-import qualified Network.Socket             as S
-import qualified Network.Socket.ByteString  as S
-import qualified Network.Socket.Enumerator  as SE
+import           Control.Concurrent           (forkIO)
+import           Control.Monad                (forever, liftM)
+import qualified Data.Attoparsec              as A
+import           Data.ByteString.Char8        ()
+import qualified Data.ByteString.Char8        as BC
+import qualified Data.ByteString.Lazy         as BL
+import           Data.Char                    (ord)
+import           Data.Foldable                (forM_)
+import           Data.Time                    (UTCTime, getCurrentTime)
+import           Data.Typeable                (Typeable)
+import           Gyrid.Msg                    (Msg, type')
+import  qualified Gyrid.Msg                    as M
+import           Gyrid.Msg.Type               (Type (..))
+import qualified Gyrid.Bluetooth_DataRaw      as BDR
+import qualified Gyrid.Bluetooth_StateInquiry      as BSI
+import           Network                      (PortID (..))
+import qualified Network                      as N
+import qualified Network.Socket               as S
+import qualified System.IO.Streams.Attoparsec as SA
+import qualified System.IO.Streams.Combinators as SC
+import           System.IO.Streams.Network    (socketToStreams)
+import qualified Text.ProtocolBuffers.WireMessage as WM
 
 
 --------------------------------------------------------------------------------
@@ -58,53 +60,51 @@ listen logger eventBase port = do
 
     forever $ do
         (conn, _) <- S.accept sock
+        (incoming, _) <- socketToStreams conn
         _ <- forkIO $ isolate_ logger "Sensor send config" $ do
-            S.sendAll conn "MSG,enable_rssi,true\r\n"
-            S.sendAll conn "MSG,enable_cache,false\r\n"
+            --S.sendAll conn "MSG,enable_rssi,true\r\n"
+            --S.sendAll conn "MSG,enable_cache,false\r\n"
+            return ()
         _ <- forkIO $ isolate_ logger "Sensor receive" $ do
-            E.run_ $ SE.enumSocket 256 conn $$
-                E.sequence (AE.iterParser gyrid) =$ receive logger eventBase
+            messageStream <- SA.parserToInputStream message incoming
+            _ <- SC.foldM (handleMessage logger eventBase) Nothing messageStream
+            string logger "CountVonCount.Sensor.listen" "Socket gracefully disconnected"
             S.sClose conn
         return ()
 
-
 --------------------------------------------------------------------------------
-receive :: Log
-        -> EventBase
-        -> Iteratee Gyrid IO ()
-receive logger eventBase = do
-    g <- EL.head
-    case g of
-        Nothing    -> liftIO $ string logger "CountVonCount.Sensor.receive"
-            "Socket gracefully disconnected"
-        Just event -> do
-            time <- liftIO getCurrentTime
-            let sensorEvent = case event of
-                    Event s b r    -> Just $ RawSensorEvent time s b r
-                    Ignored        -> Nothing
-            forM_ sensorEvent $ liftIO . publish eventBase
-            receive logger eventBase
-
-
---------------------------------------------------------------------------------
-data Gyrid
-    = Event Mac Mac Double
-    | Ignored
-    deriving (Show)
-
-
---------------------------------------------------------------------------------
-gyrid :: A.Parser Gyrid
-gyrid = do
-    line <- lineParser
-    return $ case BC.split ',' line of
-        ("MSG" : _)                -> Ignored
-        ("INFO" : _)               -> Ignored
-        [!s, _, !b, !r]            ->
-            Event (parseMac s) (parseMac b) (toDouble r)
-        _                                 -> Ignored
+handleMessage :: Log
+              -> EventBase
+              -> (Maybe Mac) -> Msg -> IO (Maybe Mac) -- fold
+handleMessage _ eventBase mMac msg
+  | type' msg == Type_BLUETOOTH_STATE_INQUIRY = do
+        return $ liftM parseMac' $ BSI.sensorMac =<< M.bluetooth_stateInquiry msg
+  | type' msg == Type_BLUETOOTH_DATARAW = do
+        time <- getCurrentTime
+        let mSensorEvent = messageToEvent time mMac msg
+        forM_ mSensorEvent $ publish eventBase
+        return mMac
+  | otherwise = do
+      putStrLn $ show $ type' msg
+      return mMac
   where
-    newline x  = x `B.elem` "\r\n"
-    lineParser = A.skipWhile newline *> A.takeWhile (not . newline)
+    parseMac' = parseMac . BC.concat . BL.toChunks
+    messageToEvent :: UTCTime -> Maybe Mac -> Msg -> Maybe RawSensorEvent
+    messageToEvent time mMac' msg' = do
+        sensor <- mMac'
+        bdr    <- M.bluetooth_dataRaw msg'
+        baton  <- BDR.sensorMac bdr
+        rssi   <- BDR.rssi bdr
+        return $ RawSensorEvent time sensor (parseMac' baton) (fromIntegral rssi)
 
-    toDouble = read . BC.unpack
+--------------------------------------------------------------------------------
+message :: A.Parser (Maybe Msg)
+message = do
+    l     <- lengthParser
+    bytes <- A.take l
+    case WM.messageGet (BL.fromChunks [bytes]) of
+         Left _         -> return Nothing
+         Right (msg, _) -> return $ Just msg
+  where
+    lengthParser = BC.foldl (\a c -> 8*a + ord c) 0 `liftM` A.take 2
+
