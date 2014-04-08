@@ -10,27 +10,28 @@ module CountVonCount.Sensor
 
 
 --------------------------------------------------------------------------------
-import           Control.Concurrent           (forkIO)
-import           Control.Monad                (forever, liftM)
-import qualified Data.Attoparsec              as A
-import           Data.ByteString.Char8        ()
-import qualified Data.ByteString.Char8        as BC
-import qualified Data.ByteString.Lazy         as BL
-import           Data.Char                    (ord)
-import           Data.Foldable                (forM_)
-import           Data.Time                    (UTCTime, getCurrentTime)
-import           Data.Typeable                (Typeable)
-import           Gyrid.Msg                    (Msg, type')
-import  qualified Gyrid.Msg                    as M
-import           Gyrid.Msg.Type               (Type (..))
-import qualified Gyrid.Bluetooth_DataRaw      as BDR
-import qualified Gyrid.Bluetooth_StateInquiry      as BSI
-import           Network                      (PortID (..))
-import qualified Network                      as N
-import qualified Network.Socket               as S
-import qualified System.IO.Streams.Attoparsec as SA
-import qualified System.IO.Streams.Combinators as SC
-import           System.IO.Streams.Network    (socketToStreams)
+import           Control.Concurrent               (forkIO)
+import           Control.Monad                    (forever, liftM)
+import qualified Data.Attoparsec                  as A
+import           Data.ByteString.Char8            ()
+import qualified Data.ByteString.Char8            as BC
+import qualified Data.ByteString.Lazy             as BL
+import           Data.Char                        (ord)
+import           Data.Foldable                    (forM_)
+import           Data.Time                        (UTCTime, getCurrentTime)
+import           Data.Typeable                    (Typeable)
+import qualified Gyrid.Bluetooth_DataRaw          as BDR
+import           Gyrid.Msg                        (Msg, type')
+import qualified Gyrid.Msg                        as M
+import           Gyrid.Msg.Type                   (Type (..))
+import           Network                          (PortID (..))
+import qualified Network                          as N
+import qualified Network.Socket                   as S
+import qualified System.IO.Streams.Attoparsec     as SA
+import qualified System.IO.Streams.ByteString     as SB
+import qualified System.IO.Streams.Combinators    as SC
+import           System.IO.Streams.List           as SL
+import           System.IO.Streams.Network        (socketToStreams)
 import qualified Text.ProtocolBuffers.WireMessage as WM
 
 
@@ -66,8 +67,13 @@ listen logger eventBase port = do
             --S.sendAll conn "MSG,enable_cache,false\r\n"
             return ()
         _ <- forkIO $ isolate_ logger "Sensor receive" $ do
-            messageStream <- SA.parserToInputStream message incoming
-            _ <- SC.foldM (handleMessage logger eventBase) Nothing messageStream
+            (incoming', count) <- SB.countInput incoming
+            messageStream <- SA.parserToInputStream message incoming'
+            _ <- SC.mapM_ (handleMessage logger eventBase) messageStream
+            --listy <- SL.toList messageStream
+            --string logger "CountVonCount.Sensor.listen" (show listy)
+            count' <- count
+            string logger "CountVonCount.Sensor.listen" (show count')
             string logger "CountVonCount.Sensor.listen" "Socket gracefully disconnected"
             S.sClose conn
         return ()
@@ -75,27 +81,25 @@ listen logger eventBase port = do
 --------------------------------------------------------------------------------
 handleMessage :: Log
               -> EventBase
-              -> (Maybe Mac) -> Msg -> IO (Maybe Mac) -- fold
-handleMessage _ eventBase mMac msg
-  | type' msg == Type_BLUETOOTH_STATE_INQUIRY = do
-        return $ liftM parseMac' $ BSI.sensorMac =<< M.bluetooth_stateInquiry msg
+              -> Msg
+              -> IO ()
+handleMessage logger eventBase msg
   | type' msg == Type_BLUETOOTH_DATARAW = do
+        string logger "CountVonCount.Sensor.handleMessage" (show $ type' msg)
         time <- getCurrentTime
-        let mSensorEvent = messageToEvent time mMac msg
+        let mSensorEvent = messageToEvent time msg
         forM_ mSensorEvent $ publish eventBase
-        return mMac
   | otherwise = do
-      putStrLn $ show $ type' msg
-      return mMac
+        string logger "CountVonCount.Sensor.handleMessage" (show $ type' msg)
   where
     parseMac' = parseMac . BC.concat . BL.toChunks
-    messageToEvent :: UTCTime -> Maybe Mac -> Msg -> Maybe RawSensorEvent
-    messageToEvent time mMac' msg' = do
-        sensor <- mMac'
+    messageToEvent :: UTCTime -> Msg -> Maybe RawSensorEvent
+    messageToEvent time msg' = do
         bdr    <- M.bluetooth_dataRaw msg'
+        sensor <- BDR.hwid bdr
         baton  <- BDR.sensorMac bdr
         rssi   <- BDR.rssi bdr
-        return $ RawSensorEvent time sensor (parseMac' baton) (fromIntegral rssi)
+        return $ RawSensorEvent time (parseMac' sensor) (parseMac' baton) (fromIntegral rssi)
 
 --------------------------------------------------------------------------------
 message :: A.Parser (Maybe Msg)
@@ -105,6 +109,7 @@ message = do
     case WM.messageGet (BL.fromChunks [bytes]) of
          Left _         -> return Nothing
          Right (msg, _) -> return $ Just msg
+    --return $ Just l
   where
     lengthParser = BC.foldl (\a c -> 8*a + ord c) 0 `liftM` A.take 2
 
