@@ -163,10 +163,11 @@ handleMessage logger eventBase msg
         time <- getCurrentTime
         let mSensorEvent = messageToEvent time msg
         forM_ mSensorEvent $ publish eventBase
+        forM_ mSensorEvent $ \e ->
+            string logger "CountVonCount.Senser.handleMessage" (show e)
   | otherwise = do
         string logger "CountVonCount.Sensor.handleMessage" (show $ type' msg)
   where
-    parseMac' = parseMac . BC.concat . BL.toChunks
     messageToEvent :: UTCTime -> Msg -> Maybe RawSensorEvent
     messageToEvent time msg' = do
         bdr    <- Msg.bluetooth_dataRaw msg'
@@ -174,7 +175,7 @@ handleMessage logger eventBase msg
         baton  <- BDR.sensorMac bdr
         rssi   <- BDR.rssi bdr
         return $ RawSensorEvent time
-            (parseMac' sensor) (parseMac' baton) (fromIntegral rssi)
+            (parseHexMac sensor) (parseHexMac baton) (fromIntegral rssi)
 
 
 --------------------------------------------------------------------------------
