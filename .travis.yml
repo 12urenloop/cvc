@@ -4,4 +4,4 @@ before_install:
 notifications:
   email: true
   irc:
-    - "wina.ugent.be#zeus"
+    - "wina.ugent.be#hydra"
