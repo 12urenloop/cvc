@@ -92,64 +92,44 @@ listen logger eventBase port = do
             Just msg -> do
                 handleMessage logger eventBase msg
                 consume inMsgs
-    dataMessage = Just Msg.Msg { type' = Type_REQUEST_STARTDATA
-                               , Msg.requestStartdata = Just RSD.RequestStartdata
-                                   { RSD.enableData         = Just True
-                                   , RSD.enableBluetoothRaw = Just True
-                                   , RSD.enableWifiRaw      = Just False
-                                   , RSD.enableWifiDevRaw   = Just False
-                                   , RSD.enableSensorMac    = Just True }
-                               , Msg.ack = Nothing
-                               , Msg.cached = Nothing
-                               , Msg.bluetooth_dataIO = Nothing
-                               , Msg.bluetooth_dataRaw = Nothing
-                               , Msg.bluetooth_stateInquiry = Nothing
-                               , Msg.wifi_stateFrequency = Nothing
-                               , Msg.wifi_stateFrequencyLoop = Nothing
-                               , Msg.wifi_dataRaw = Nothing
-                               , Msg.wifi_dataDevRaw = Nothing
-                               , Msg.wifi_dataIO = Nothing
-                               , Msg.info = Nothing
-                               , Msg.stateScanning = Nothing
-                               , Msg.stateGyrid = Nothing
-                               , Msg.stateAntenna = Nothing
-                               , Msg.uptime = Nothing
-                               , Msg.requestKeepalive = Nothing
-                               , Msg.requestUptime = Nothing
-                               , Msg.requestCaching = Nothing
-                               , Msg.requestState = Nothing
-                               , Msg.hostname = Nothing
-                               , Msg.antennaTurn = Nothing
-                               , Msg.scanPattern = Nothing
-                               , Msg.success = Nothing }
-    cacheMessage = Just Msg.Msg { type' = Type_REQUEST_CACHING
-                               , Msg.requestCaching = Just RC.RequestCaching
-                                   { RC.enableCaching = Just True
-                                   , RC.clearCache = Nothing
-                                   , RC.pushCache = Nothing }
-                               , Msg.requestStartdata = Nothing
-                               , Msg.ack = Nothing
-                               , Msg.cached = Nothing
-                               , Msg.bluetooth_dataIO = Nothing
-                               , Msg.bluetooth_dataRaw = Nothing
-                               , Msg.bluetooth_stateInquiry = Nothing
-                               , Msg.wifi_stateFrequency = Nothing
-                               , Msg.wifi_stateFrequencyLoop = Nothing
-                               , Msg.wifi_dataRaw = Nothing
-                               , Msg.wifi_dataDevRaw = Nothing
-                               , Msg.wifi_dataIO = Nothing
-                               , Msg.info = Nothing
-                               , Msg.stateScanning = Nothing
-                               , Msg.stateGyrid = Nothing
-                               , Msg.stateAntenna = Nothing
-                               , Msg.uptime = Nothing
-                               , Msg.requestKeepalive = Nothing
-                               , Msg.requestUptime = Nothing
-                               , Msg.requestState = Nothing
-                               , Msg.hostname = Nothing
-                               , Msg.antennaTurn = Nothing
-                               , Msg.scanPattern = Nothing
-                               , Msg.success = Nothing }
+    mkMsg :: Type -> Msg
+    mkMsg t = Msg.Msg { type' = t
+                      , Msg.requestStartdata = Nothing
+                      , Msg.ack = Nothing
+                      , Msg.cached = Nothing
+                      , Msg.bluetooth_dataIO = Nothing
+                      , Msg.bluetooth_dataRaw = Nothing
+                      , Msg.bluetooth_stateInquiry = Nothing
+                      , Msg.wifi_stateFrequency = Nothing
+                      , Msg.wifi_stateFrequencyLoop = Nothing
+                      , Msg.wifi_dataRaw = Nothing
+                      , Msg.wifi_dataDevRaw = Nothing
+                      , Msg.wifi_dataIO = Nothing
+                      , Msg.info = Nothing
+                      , Msg.stateScanning = Nothing
+                      , Msg.stateGyrid = Nothing
+                      , Msg.stateAntenna = Nothing
+                      , Msg.uptime = Nothing
+                      , Msg.requestKeepalive = Nothing
+                      , Msg.requestUptime = Nothing
+                      , Msg.requestCaching = Nothing
+                      , Msg.requestState = Nothing
+                      , Msg.hostname = Nothing
+                      , Msg.antennaTurn = Nothing
+                      , Msg.scanPattern = Nothing
+                      , Msg.success = Nothing }
+    dataMessage = Just $ (mkMsg Type_REQUEST_STARTDATA)
+        { Msg.requestStartdata = Just RSD.RequestStartdata
+            { RSD.enableData         = Just True
+            , RSD.enableBluetoothRaw = Just True
+            , RSD.enableWifiRaw      = Just False
+            , RSD.enableWifiDevRaw   = Just False
+            , RSD.enableSensorMac    = Just True } }
+    cacheMessage = Just $ (mkMsg Type_REQUEST_CACHING)
+        { Msg.requestCaching = Just RC.RequestCaching
+            { RC.enableCaching = Just True
+            , RC.clearCache = Nothing
+            , RC.pushCache = Nothing } }
 
 
 --------------------------------------------------------------------------------
