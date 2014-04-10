@@ -22,6 +22,8 @@ import           Data.Foldable                    (forM_)
 import           Data.Time                        (UTCTime, getCurrentTime)
 import           Data.Typeable                    (Typeable)
 import qualified Gyrid.Bluetooth_DataRaw          as BDR
+import qualified Gyrid.RequestStartdata           as RSD
+import qualified Gyrid.RequestCaching             as RC
 import           Gyrid.Msg                        (Msg, type')
 import qualified Gyrid.Msg                        as Msg
 import           Gyrid.Msg.Type                   (Type (..))
@@ -67,10 +69,13 @@ listen logger eventBase port = do
         (inBytes', count)   <- Streams.countInput inBytes
         inPayload           <- int16Receiver inBytes'
         inMsgs              <- messageReceiver inPayload
-        _outPayload         <- int16Sender outBytes
+        outPayload          <- int16Sender outBytes
+        outMsgs             <- messageSender outPayload
         _ <- forkIO $ isolate_ logger "Sensor send config" $ do
             -- FIXME: Check if we need to send messages here. Read gyrid
             -- code/ask Roel if necessary.
+            (flip Streams.write) outMsgs dataMessage
+            (flip Streams.write) outMsgs cacheMessage
             return ()
         _ <- forkIO $ isolate_ logger "Sensor receive" $ do
             consume inMsgs
@@ -87,6 +92,64 @@ listen logger eventBase port = do
             Just msg -> do
                 handleMessage logger eventBase msg
                 consume inMsgs
+    dataMessage = Just Msg.Msg { type' = Type_REQUEST_STARTDATA
+                               , Msg.requestStartdata = Just RSD.RequestStartdata
+                                   { RSD.enableData         = Just True
+                                   , RSD.enableBluetoothRaw = Just True
+                                   , RSD.enableWifiRaw      = Just False
+                                   , RSD.enableWifiDevRaw   = Just False
+                                   , RSD.enableSensorMac    = Just True }
+                               , Msg.ack = Nothing
+                               , Msg.cached = Nothing
+                               , Msg.bluetooth_dataIO = Nothing
+                               , Msg.bluetooth_dataRaw = Nothing
+                               , Msg.bluetooth_stateInquiry = Nothing
+                               , Msg.wifi_stateFrequency = Nothing
+                               , Msg.wifi_stateFrequencyLoop = Nothing
+                               , Msg.wifi_dataRaw = Nothing
+                               , Msg.wifi_dataDevRaw = Nothing
+                               , Msg.wifi_dataIO = Nothing
+                               , Msg.info = Nothing
+                               , Msg.stateScanning = Nothing
+                               , Msg.stateGyrid = Nothing
+                               , Msg.stateAntenna = Nothing
+                               , Msg.uptime = Nothing
+                               , Msg.requestKeepalive = Nothing
+                               , Msg.requestUptime = Nothing
+                               , Msg.requestCaching = Nothing
+                               , Msg.requestState = Nothing
+                               , Msg.hostname = Nothing
+                               , Msg.antennaTurn = Nothing
+                               , Msg.scanPattern = Nothing
+                               , Msg.success = Nothing }
+    cacheMessage = Just Msg.Msg { type' = Type_REQUEST_CACHING
+                               , Msg.requestCaching = Just RC.RequestCaching
+                                   { RC.enableCaching = Just True
+                                   , RC.clearCache = Nothing
+                                   , RC.pushCache = Nothing }
+                               , Msg.requestStartdata = Nothing
+                               , Msg.ack = Nothing
+                               , Msg.cached = Nothing
+                               , Msg.bluetooth_dataIO = Nothing
+                               , Msg.bluetooth_dataRaw = Nothing
+                               , Msg.bluetooth_stateInquiry = Nothing
+                               , Msg.wifi_stateFrequency = Nothing
+                               , Msg.wifi_stateFrequencyLoop = Nothing
+                               , Msg.wifi_dataRaw = Nothing
+                               , Msg.wifi_dataDevRaw = Nothing
+                               , Msg.wifi_dataIO = Nothing
+                               , Msg.info = Nothing
+                               , Msg.stateScanning = Nothing
+                               , Msg.stateGyrid = Nothing
+                               , Msg.stateAntenna = Nothing
+                               , Msg.uptime = Nothing
+                               , Msg.requestKeepalive = Nothing
+                               , Msg.requestUptime = Nothing
+                               , Msg.requestState = Nothing
+                               , Msg.hostname = Nothing
+                               , Msg.antennaTurn = Nothing
+                               , Msg.scanPattern = Nothing
+                               , Msg.success = Nothing }
 
 
 --------------------------------------------------------------------------------
@@ -162,3 +225,10 @@ messageReceiver is = Streams.makeInputStream readNextMsg
 
                     -- Go to next message.
                     readNextMsg
+
+--------------------------------------------------------------------------------
+messageSender
+    :: Streams.OutputStream Payload
+    -> IO (Streams.OutputStream Msg)
+messageSender = Streams.contramap $ BC.concat . BL.toChunks . WM.messagePut
+

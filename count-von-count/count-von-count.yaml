@@ -3,7 +3,7 @@ maxSpeed:      12
 
 batonWatchdogLifespan: 30
 
-sensorPort: 9001
+sensorPort: 2583
 webPort:    8000
 ekgPort:    8001
 
