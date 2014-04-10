@@ -151,8 +151,8 @@ handleMessage logger eventBase msg
     messageToEvent :: UTCTime -> Msg -> Maybe RawSensorEvent
     messageToEvent time msg' = do
         bdr    <- Msg.bluetooth_dataRaw msg'
-        sensor <- BDR.hwid bdr
-        baton  <- BDR.sensorMac bdr
+        sensor <- BDR.sensorMac bdr
+        baton  <- BDR.hwid bdr
         rssi   <- BDR.rssi bdr
         return $ RawSensorEvent time
             (parseHexMac sensor) (parseHexMac baton) (fromIntegral rssi)
