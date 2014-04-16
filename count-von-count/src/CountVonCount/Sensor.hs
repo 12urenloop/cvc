@@ -123,8 +123,8 @@ listen logger eventBase port = do
             , RSD.enableSensorMac    = Just True } }
     cacheMessage = Just $ (mkMsg Type_REQUEST_CACHING)
         { Msg.requestCaching = Just RC.RequestCaching
-            { RC.enableCaching = Just True
-            , RC.clearCache = Nothing
+            { RC.enableCaching = Just False
+            , RC.clearCache = Just True
             , RC.pushCache = Nothing } }
 
 
