@@ -66,21 +66,17 @@ listen logger eventBase port = do
     forever $ do
         (conn, _)           <- S.accept sock
         (inBytes, outBytes) <- socketToStreams conn
-        (inBytes', count)   <- Streams.countInput inBytes
-        inPayload           <- int16Receiver inBytes'
+        inPayload           <- int16Receiver inBytes
         inMsgs              <- messageReceiver inPayload
         outPayload          <- int16Sender outBytes
         outMsgs             <- messageSender outPayload
         _ <- forkIO $ isolate_ logger "Sensor send config" $ do
-            -- FIXME: Check if we need to send messages here. Read gyrid
-            -- code/ask Roel if necessary.
+            string logger "CountVonCount.Sensor.listen" "Socket connected"
             (flip Streams.write) outMsgs dataMessage
             (flip Streams.write) outMsgs cacheMessage
             return ()
         _ <- forkIO $ isolate_ logger "Sensor receive" $ do
             consume inMsgs
-            count' <- count
-            string logger "CountVonCount.Sensor.listen" (show count')
             string logger "CountVonCount.Sensor.listen" "Socket gracefully disconnected"
             S.sClose conn
         return ()
@@ -139,14 +135,12 @@ handleMessage :: Log
               -> IO ()
 handleMessage logger eventBase msg
   | type' msg == Type_BLUETOOTH_DATARAW = do
-        string logger "CountVonCount.Sensor.handleMessage" (show $ type' msg)
         time <- getCurrentTime
         let mSensorEvent = messageToEvent time msg
         forM_ mSensorEvent $ publish eventBase
         forM_ mSensorEvent $ \e ->
             string logger "CountVonCount.Senser.handleMessage" (show e)
-  | otherwise = do
-        string logger "CountVonCount.Sensor.handleMessage" (show $ type' msg)
+  | otherwise = return ()
   where
     messageToEvent :: UTCTime -> Msg -> Maybe RawSensorEvent
     messageToEvent time msg' = do
