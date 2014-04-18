@@ -33,7 +33,7 @@ main = do
     t16 <- addTeam db "Home Konvent"
     t17 <- addTeam db "Urgent & Schamper"
 
-    b1  <- addBaton db "20:13:02:20:11:15" "Baton A"
+    b1  <- addBaton db "20:13:01:24:11:15" "Baton A"
     b2  <- addBaton db "20:13:01:30:03:69" "Baton B"
     b3  <- addBaton db "20:13:01:31:03:09" "Baton C"
     b4  <- addBaton db "20:13:02:20:15:11" "Baton D"
