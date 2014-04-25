@@ -16,7 +16,7 @@ trap 'echo "Previous command did not complete successfully. Exiting." >&2' ERR
 
 echo "Installing prerequisites..."
 apt-get update
-apt-get install git gammu-smsd sqlite3 libdbi1 libdb-dev libdbi-perl libdb-sqlite3 haskell-platform
+apt-get install git gammu-smsd sqlite3 libdbi1 libdb-dev libdbi-perl libdbd-sqlite3 haskell-platform
 
 echo "Setting gammu-smsd config file..."
 cat > /etc/gammu-smsdrc <<EOF
@@ -45,9 +45,11 @@ errorsmspath = /var/spool/gammu/error/
 EOF
 
 echo "Setting up database"
-sqlite3 -init /usr/share/doc/gammu-smsd/examples/sqlite.sql /var/spool/gammu/db.sqlite
-chown -R gammu:gammu /var/spool/gammu
-chmod 777 /var/spool/gammu
+if [[ ! -f /var/spool/gammu/db.sqlite ]]; then
+	sqlite3 -init /usr/share/doc/gammu-smsd/examples/sqlite.sql /var/spool/gammu/db.sqlite
+	chown -R gammu:gammu /var/spool/gammu
+	chmod 777 /var/spool/gammu
+fi
 
 echo "Starting Gammu SMS Daemon"
 service gammu-smsd start
@@ -58,9 +60,9 @@ cabal install sqlite-simple regex-pcre-builtin erf
 
 echo "Cloning 12UL repo"
 cd ~
-git clone https://github.com/ZeusWPI/12Urenloop.git
+[[ -d ~/12Urenloop ]] && git clone https://github.com/ZeusWPI/12Urenloop.git
 
 echo "Running dj-ratings.hs"
 cd 12Urenloop/tools/dj-ratings
-chmod +x dj-ratings.hs
-./dj-ratings.hs
+ghc dj-ratings.hs
+./dj-ratings
