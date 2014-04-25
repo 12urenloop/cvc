@@ -60,7 +60,7 @@ cabal install sqlite-simple regex-pcre-builtin erf
 
 echo "Cloning 12UL repo"
 cd ~
-[[ -d ~/12Urenloop ]] && git clone https://github.com/ZeusWPI/12Urenloop.git
+[[ ! -d ~/12Urenloop ]] && git clone https://github.com/ZeusWPI/12Urenloop.git
 
 echo "Running dj-ratings.hs"
 cd 12Urenloop/tools/dj-ratings
