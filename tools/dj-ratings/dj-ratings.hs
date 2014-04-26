@@ -21,20 +21,20 @@ import           Text.Regex.PCRE        ((=~))
 
 
 --------------------------------------------------------------------------------
-djs2013 :: [Dj]
-djs2013 =
+djs2014 :: [Dj]
+djs2014 =
     -- TODO add a base rating by us?
-    [ Dj "Bassick"                         1 (Time 10 30) (Time 11 30)
-    , Dj "LSGHN"                           2 (Time 11 30) (Time 12 30)
-    , Dj "Oscar Mike"                      3 (Time 12 30) (Time 13 30)
-    , Dj "Pulp Mixion"                     4 (Time 13 30) (Time 14 30)
-    , Dj "Alexandrovic & Falco Poco Loco"  5 (Time 14 30) (Time 15 30)
-    , Dj "Brains Off"                      6 (Time 15 30) (Time 16 30)
-    , Dj "Cultivar"                        7 (Time 16 30) (Time 17 30)
-    , Dj "Blueshades"                      8 (Time 17 30) (Time 18 30)
-    , Dj "Louis Gara"                      9 (Time 18 30) (Time 19 30)
-    , Dj "Dropzilla"                      10 (Time 19 30) (Time 20 30)
-    , Dj "DJ Ace"                         11 (Time 20 30) (Time 21 30)
+    [ Dj "Vyncue"                         1 (Time 10 30) (Time 11 30)
+    , Dj "Snap-ah"                        2 (Time 11 30) (Time 12 30)
+    , Dj "DJ Plancke"                     3 (Time 12 30) (Time 13 30)
+    , Dj "Bouclé"                         4 (Time 13 30) (Time 14 30)
+    , Dj "Bassick"                        5 (Time 14 30) (Time 15 30)
+    , Dj "Bollé"                          6 (Time 15 30) (Time 16 30)
+    , Dj "G-Danza"                        7 (Time 16 30) (Time 17 30)
+    , Dj "B-tech"                         8 (Time 17 30) (Time 18 30)
+    , Dj "Pulp Mixion"                    9 (Time 18 30) (Time 19 30)
+    , Dj "Tous les deux"                 10 (Time 19 30) (Time 20 30)
+    , Dj "Sennen"                        11 (Time 20 30) (Time 21 30)
     ]
 
 
@@ -172,7 +172,7 @@ ratings filePath = do
         "SELECT SenderNumber, TextDecoded, ReceivingDateTime FROM inbox"
 
     -- Parse into votes
-    votes <- fmap catMaybes $ forM smss $ \s -> case voteFromSms djs2013 s of
+    votes <- fmap catMaybes $ forM smss $ \s -> case voteFromSms djs2014 s of
         Left err -> putStrLn ("Warning: " ++ err) >> return Nothing
         Right v  -> do
             putStrLn $ (T.unpack $ smsText s) ++ " => " ++
@@ -180,7 +180,7 @@ ratings filePath = do
             return (Just v)
 
     -- Calculate and print rating
-    let rating = zip [1 :: Int ..] $ rateDjs djs2013 votes
+    let rating = zip [1 :: Int ..] $ rateDjs djs2014 votes
     forM_ rating $ \(i, (Dj name _ _ _, r)) ->
         putStrLn $ printf "%2d: %s (%.3f: %d HOT, %d NOT)"
             i (T.unpack name) (ratingCilb r) (ratingHots r) (ratingNots r)
