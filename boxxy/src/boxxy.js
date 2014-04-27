@@ -11,6 +11,7 @@ function Boxxy() {
     this.teams         = {};
     this.laps          = [];
     this.maxLaps       = 10;
+    this.frozenTeams   = null;
 
     /* To be user will override this */
     this.onPutState       = function(stateDelta) {};
@@ -20,42 +21,44 @@ function Boxxy() {
 }
 
 Boxxy.prototype.putState = function(stateDelta) {
-    if(stateDelta.frozen != null) this.frozen = stateDelta.frozen;
     if(stateDelta.notification != null) this.notification = stateDelta.notification;
     if(stateDelta.circuitLength != null) this.circuitLength = stateDelta.circuitLength;
     if(stateDelta.startTime != null) this.startTime = stateDelta.startTime;
     if(stateDelta.stations != null) this.stations = stateDelta.stations;
-    if(!this.frozen && stateDelta.teams) this.teams = stateDelta.teams;
-    if(!this.frozen && stateDelta.laps) this.laps = stateDelta.laps;
+    if(stateDelta.teams != null) this.teams = stateDelta.teams;
+    if(stateDelta.laps != null) this.laps = stateDelta.laps;
 
-    this.onPutState(stateDelta);
+    if(stateDelta.frozen != null) {
+        if(stateDelta.frozen) this.frozenTeams = this.teamsByScore();
+        this.frozen = stateDelta.frozen;
+    }
+
+    if(!this.frozen) this.onPutState(stateDelta);
     this.onUpdate();
 }
 
 Boxxy.prototype.addLap = function(lap) {
-    if(!this.frozen) {
-        if(this.laps.length >= this.maxLaps) this.laps.pop();
-        this.laps = [lap].concat(this.laps);
+    if(this.laps.length >= this.maxLaps) this.laps.pop();
+    this.laps = [lap].concat(this.laps);
 
-        /* Just copy the total laps instead of calculating it, more robust. */
-        this.teams[lap.team].laps = lap.total;
-        this.teams[lap.team].updated = lap.timestamp;
+    /* Just copy the total laps instead of calculating it, more robust. */
+    this.teams[lap.team].laps = lap.total;
+    this.teams[lap.team].updated = lap.timestamp;
 
-        this.onAddLap(lap);
-        this.onUpdate();
-    }
+    if(!this.frozen) this.onAddLap(lap);
+    this.onUpdate();
 }
 
 Boxxy.prototype.updatePosition = function(position) {
-    if(!this.frozen) {
-        this.teams[position.team].station = position.station;
-        this.teams[position.team].updated = position.timestamp;
-        this.onUpdatePosition(position);
-        this.onUpdate();
-    }
+    this.teams[position.team].station = position.station;
+    this.teams[position.team].updated = position.timestamp;
+
+    if(!this.frozen) this.onUpdatePosition(position);
+    this.onUpdate();
 }
 
 Boxxy.prototype.teamsByScore = function() {
+    if(this.frozen) return this.frozenTeams;
     var result = [];
     for(var i in this.teams) result.push(this.teams[i]);
 
