@@ -64,20 +64,20 @@ listen logger eventBase port = do
     sock <- N.listenOn (PortNumber $ fromIntegral port)
 
     forever $ do
-        (conn, _)           <- S.accept sock
+        (conn, addr)        <- S.accept sock
         (inBytes, outBytes) <- socketToStreams conn
         inPayload           <- int16Receiver inBytes
-        inMsgs              <- messageReceiver inPayload
+        inMsgs              <- messageReceiver logger inPayload
         outPayload          <- int16Sender outBytes
         outMsgs             <- messageSender outPayload
         _ <- forkIO $ isolate_ logger "Sensor send config" $ do
-            string logger "CountVonCount.Sensor.listen" "Socket connected"
+            string logger "CountVonCount.Sensor.listen" $ "Socket connected to " ++ show addr
             (flip Streams.write) outMsgs dataMessage
             (flip Streams.write) outMsgs cacheMessage
             return ()
         _ <- forkIO $ isolate_ logger "Sensor receive" $ do
             consume inMsgs
-            string logger "CountVonCount.Sensor.listen" "Socket gracefully disconnected"
+            string logger "CountVonCount.Sensor.listen" $ "Socket gracefully disconnected (client was " ++ show addr ++ ")"
             S.sClose conn
         return ()
   where
@@ -86,7 +86,7 @@ listen logger eventBase port = do
         case mbMsg of
             Nothing  -> return ()
             Just msg -> do
-                handleMessage logger eventBase msg
+                handleMessage eventBase msg
                 consume inMsgs
     mkMsg :: Type -> Msg
     mkMsg t = Msg.Msg { type' = t
@@ -129,17 +129,14 @@ listen logger eventBase port = do
 
 
 --------------------------------------------------------------------------------
-handleMessage :: Log
-              -> EventBase
+handleMessage :: EventBase
               -> Msg
               -> IO ()
-handleMessage logger eventBase msg
+handleMessage eventBase msg
   | type' msg == Type_BLUETOOTH_DATARAW = do
         time <- getCurrentTime
         let mSensorEvent = messageToEvent time msg
         forM_ mSensorEvent $ publish eventBase
-        forM_ mSensorEvent $ \e ->
-            string logger "CountVonCount.Senser.handleMessage" (show e)
   | otherwise = return ()
   where
     messageToEvent :: UTCTime -> Msg -> Maybe RawSensorEvent
@@ -183,9 +180,10 @@ int16Sender = Streams.contramap $ \bs ->
 
 --------------------------------------------------------------------------------
 messageReceiver
-    :: Streams.InputStream Payload
+    :: Log
+    -> Streams.InputStream Payload
     -> IO (Streams.InputStream Msg)
-messageReceiver is = Streams.makeInputStream readNextMsg
+messageReceiver logger is = Streams.makeInputStream readNextMsg
   where
     readNextMsg = do
         mbPayload <- Streams.read is
@@ -193,13 +191,10 @@ messageReceiver is = Streams.makeInputStream readNextMsg
             Nothing      -> return Nothing
             Just payload -> case WM.messageGet (BL.fromChunks [payload]) of
                 Right (msg, "") -> return $ Just msg
-                _               ->
-                    -- FIXME: In this case, we *need* to log the precise error
-                    -- for debugging purposes. This means the logger also needs
-                    -- to be passed to `messageReceiver`.
-
-                    -- Go to next message.
+                Left  ermsg     -> do
+                    string logger "CountVonCount.Sensor.messageReceiver" ermsg
                     readNextMsg
+                _               -> readNextMsg
 
 --------------------------------------------------------------------------------
 messageSender
