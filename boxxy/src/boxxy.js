@@ -1,9 +1,11 @@
+var frozen = false;
+var frozenTeams = null;
+
 function Boxxy() {
     /* Connection */
     this.socket = null;
 
     /* State */
-    this.frozen        = false;
     this.notification  = null;
     this.circuitLength = 0;
     this.startTime     = null;
@@ -11,7 +13,6 @@ function Boxxy() {
     this.teams         = {};
     this.laps          = [];
     this.maxLaps       = 10;
-    this.frozenTeams   = null;
 
     /* To be user will override this */
     this.onPutState       = function(stateDelta) {};
@@ -28,12 +29,16 @@ Boxxy.prototype.putState = function(stateDelta) {
     if(stateDelta.teams != null) this.teams = stateDelta.teams;
     if(stateDelta.laps != null) this.laps = stateDelta.laps;
 
+    console.log(frozen);
+    console.log(stateDelta.frozen);
     if(stateDelta.frozen != null) {
-        if(stateDelta.frozen) this.frozenTeams = this.teamsByScore();
-        this.frozen = stateDelta.frozen;
+        if(!frozen && stateDelta.frozen) {
+            frozenTeams = this.teamsByScore();
+        }
+        frozen = stateDelta.frozen;
     }
 
-    if(!this.frozen) this.onPutState(stateDelta);
+    if(!frozen) this.onPutState(stateDelta);
     this.onUpdate();
 }
 
@@ -45,7 +50,7 @@ Boxxy.prototype.addLap = function(lap) {
     this.teams[lap.team].laps = lap.total;
     this.teams[lap.team].updated = lap.timestamp;
 
-    if(!this.frozen) this.onAddLap(lap);
+    if(!frozen) this.onAddLap(lap);
     this.onUpdate();
 }
 
@@ -53,12 +58,12 @@ Boxxy.prototype.updatePosition = function(position) {
     this.teams[position.team].station = position.station;
     this.teams[position.team].updated = position.timestamp;
 
-    if(!this.frozen) this.onUpdatePosition(position);
+    if(!frozen) this.onUpdatePosition(position);
     this.onUpdate();
 }
 
 Boxxy.prototype.teamsByScore = function() {
-    if(this.frozen) return this.frozenTeams;
+    if(frozen) return frozenTeams;
     var result = [];
     for(var i in this.teams) result.push(this.teams[i]);
 
