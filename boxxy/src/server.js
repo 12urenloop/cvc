@@ -36,6 +36,7 @@ io.sockets.on('connection', function(socket) {
         state.stations = boxxyState.stations;
         state.laps = boxxyState.frozenLaps;
         state.teams = boxxyState.frozenTeams;
+        state.frozen = true;
         socket.emit('/state', state);
     } else {
         socket.emit('/state', boxxyState);
