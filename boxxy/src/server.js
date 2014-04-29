@@ -29,7 +29,14 @@ var boxxyState = boxxy.initialize();
 
 io.sockets.on('connection', function(socket) {
     if (boxxyState.frozen) {
-        socket.emit('/state', boxxyState.frozenScore);
+        state = {};
+        state.circuitLength = boxxyState.circuitLength;
+        state.startTime = boxxyState.startTime;
+        state.stopTime = boxxyState.stopTime;
+        state.stations = boxxyState.stations;
+        state.laps = boxxyState.frozenLaps;
+        state.teams = boxxyState.frozenTeams;
+        socket.emit('/state', state);
     } else {
         socket.emit('/state', boxxyState);
     }

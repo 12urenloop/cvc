@@ -4,7 +4,8 @@ function Boxxy() {
 
     /* State */
     this.frozen        = false;
-    this.frozenScore   = null;
+    this.frozenLaps    = null;
+    this.frozenTeams   = null;
     this.notification  = null;
     this.circuitLength = 0;
     this.startTime     = null;
@@ -28,7 +29,8 @@ Boxxy.prototype.putState = function(stateDelta) {
 
     // This signifies the change melted -> frozen
     if(stateDelta.frozen != null && stateDelta.frozen && !this.frozen) {
-        this.frozenScore = this.teamsByScore();
+        this.frozenLaps = this.laps;
+        this.frozenTeams = this.teams;
         this.frozen = true;
     }
 
@@ -37,8 +39,8 @@ Boxxy.prototype.putState = function(stateDelta) {
         this.frozen = false;
     }
 
-    if(!this.frozen && stateDelta.teams) this.teams = stateDelta.teams;
-    if(!this.frozen && stateDelta.laps) this.laps = stateDelta.laps;
+    if(stateDelta.teams) this.teams = stateDelta.teams;
+    if(stateDelta.laps) this.laps = stateDelta.laps;
 
     this.onPutState(stateDelta);
     this.onUpdate();
