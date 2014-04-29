@@ -39,8 +39,8 @@ Boxxy.prototype.putState = function(stateDelta) {
         this.frozen = false;
     }
 
-    if(stateDelta.teams) this.teams = stateDelta.teams;
-    if(stateDelta.laps) this.laps = stateDelta.laps;
+    if(!this.frozen && stateDelta.teams) this.teams = stateDelta.teams;
+    if(!this.frozen && stateDelta.laps) this.laps = stateDelta.laps;
 
     this.onPutState(stateDelta);
     this.onUpdate();
