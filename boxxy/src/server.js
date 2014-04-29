@@ -28,19 +28,37 @@ app.use(express.static('public'));  // Serve the public dir as-is
 var boxxyState = boxxy.initialize();
 
 io.sockets.on('connection', function(socket) {
-    socket.emit('/state', boxxyState);
+    if (boxxyState.frozen) {
+        state = {};
+        state.circuitLength = boxxyState.circuitLength;
+        state.startTime = boxxyState.startTime;
+        state.stopTime = boxxyState.stopTime;
+        state.stations = boxxyState.stations;
+        state.laps = boxxyState.frozenLaps;
+        state.teams = boxxyState.frozenTeams;
+        state.frozen = true;
+        socket.emit('/state', state);
+    } else {
+        socket.emit('/state', boxxyState);
+    }
 });
 
 boxxyState.onPutState = function(stateDelta) {
-    io.sockets.emit('/state', stateDelta);
+    if (!boxxyState.frozen) {
+        io.sockets.emit('/state', stateDelta);
+    }
 }
 
 boxxyState.onAddLap = function(lap) {
-    io.sockets.emit('/lap', lap);
+    if (!boxxyState.frozen) {
+        io.sockets.emit('/lap', lap);
+    }
 }
 
 boxxyState.onUpdatePosition = function(position) {
-    io.sockets.emit('/position', position);
+    if (!boxxyState.frozen) {
+        io.sockets.emit('/position', position);
+    }
 }
 
 // count-von-count facing API
