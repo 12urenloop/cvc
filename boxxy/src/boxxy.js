@@ -29,8 +29,10 @@ Boxxy.prototype.putState = function(stateDelta) {
 
     // This signifies the change melted -> frozen
     if(stateDelta.frozen != null && stateDelta.frozen && !this.frozen) {
-        this.laps = stateDelta.laps;
-        this.teams = stateDelta.teams;
+        if(stateDelta.laps && stateDelta.teams) {
+            this.laps = stateDelta.laps;
+            this.teams = stateDelta.teams;
+        }
         this.frozenLaps = this.laps;
         this.frozenTeams = this.teams;
         this.frozen = true;
