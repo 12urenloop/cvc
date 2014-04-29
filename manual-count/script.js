@@ -1,5 +1,5 @@
 var DELAY = 30; // delay to prevent accidental double taps
-var BUTTONS_PER_VIEW = 7;
+var BUTTONS_PER_VIEW = 9
 var error = '';
 
 // Detect local storage
