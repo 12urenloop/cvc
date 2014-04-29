@@ -1,6 +1,15 @@
 #!/bin/bash
+### BEGIN INIT INFO
+# Provides:          heartbeat
+# Required-Start:    $local_fs $remote_fs $network $syslog bluetooth network-manager gyrid
+# Required-Stop:     $local_fs $remote_fs $network $syslog bluetooth network-manager gyrid
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start/stop Gyrid Bluetooth scanner
+### END INIT INFO-
+#
 
-SIHEMO="count:8002"
+SIHEMO="10.1.2.100:8002"
 GROUP=$(hostname)
 ALIVE="30"
 

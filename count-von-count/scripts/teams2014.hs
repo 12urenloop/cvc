@@ -9,11 +9,11 @@ main = do
     db <- newDatabase "count-von-count.db"
     deleteAll db
 
-    addStation db "gyrid1" "00:1C:F0:F1:F8:25"  45
-    addStation db "gyrid2" "00:24:01:EB:C2:68" 141
-    addStation db "gyrid3" "00:1C:F0:6C:39:32" 220
-    addStation db "gyrid4" "00:21:91:F1:F1:33" 300
-    addStation db "gyrid5" "00:24:01:EB:C2:65" 365
+    addStation db "gyrid1" "00:1c:f0:f1:f8:25"  45
+    addStation db "gyrid2" "00:24:01:eb:c2:68" 141
+    addStation db "gyrid3" "00:1c:f0:6c:39:32" 220
+    addStation db "gyrid4" "00:21:91:f1:f1:33" 300
+    addStation db "gyrid5" "00:24:01:eb:c2:65" 365
 
     t1  <- addTeam db "KVHV"
     t2  <- addTeam db "Kofschipclubs"
@@ -24,11 +24,11 @@ main = do
     t7  <- addTeam db "VTK"
     t8  <- addTeam db "HILOK"
     t9  <- addTeam db "VBK"
-    t10 <- addTeam db "VGK (fgen)"
+    t10 <- addTeam db "VGK"
     t11 <- addTeam db "Politeia"
     t12 <- addTeam db "VPPK"
-    t13 <- addTeam db "VRG & Farma"
-    t14 <- addTeam db "Veto, Moeder Lies, LILA & Hermes"
+    t13 <- addTeam db "Veto, Moeder Lies, LILA & Hermes"
+    t14 <- addTeam db "VRG & Farma"
     t15 <- addTeam db "SeniorenKonvent"
     t16 <- addTeam db "Home Konvent"
     t17 <- addTeam db "Urgent & Schamper"
