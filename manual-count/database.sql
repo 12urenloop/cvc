@@ -2,6 +2,8 @@
 -- Database: `urenloop`
 --
 
+DROP TABLE IF EXISTS `teams`, `laps`;
+
 CREATE TABLE  `teams` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY ,
   `name` VARCHAR( 255 ) NOT NULL ,

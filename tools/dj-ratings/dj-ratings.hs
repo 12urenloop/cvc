@@ -25,16 +25,15 @@ djs2014 :: [Dj]
 djs2014 =
     -- TODO add a base rating by us?
     [ Dj "Vyncue"                         1 (Time 10 30) (Time 11 30)
-    , Dj "Snap-ah"                        2 (Time 11 30) (Time 12 30)
-    , Dj "DJ Plancke"                     3 (Time 12 30) (Time 13 30)
-    , Dj "Bouclé"                         4 (Time 13 30) (Time 14 30)
-    , Dj "Bassick"                        5 (Time 14 30) (Time 15 30)
-    , Dj "Bollé"                          6 (Time 15 30) (Time 16 30)
-    , Dj "G-Danza"                        7 (Time 16 30) (Time 17 30)
-    , Dj "B-tech"                         8 (Time 17 30) (Time 18 30)
-    , Dj "Pulp Mixion"                    9 (Time 18 30) (Time 19 30)
-    , Dj "Tous les deux"                 10 (Time 19 30) (Time 20 30)
-    , Dj "Sennen"                        11 (Time 20 30) (Time 21 30)
+    , Dj "DJ Plancke"                     2 (Time 12 30) (Time 13 30)
+    , Dj "Bouclé"                         3 (Time 13 30) (Time 14 30)
+    , Dj "Bassick"                        4 (Time 14 30) (Time 15 30)
+    , Dj "Bollé"                          5 (Time 15 30) (Time 16 30)
+    , Dj "Snap-ah"                        6 (Time 16 30) (Time 17 30)
+    , Dj "B-tech"                         7 (Time 17 30) (Time 18 30)
+    , Dj "Pulp Mixion"                    8 (Time 18 30) (Time 19 30)
+    , Dj "Tous les deux"                  9 (Time 19 30) (Time 20 30)
+    , Dj "Sennen"                        10 (Time 20 30) (Time 21 30)
     ]
 
 

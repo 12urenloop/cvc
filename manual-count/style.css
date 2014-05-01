@@ -34,13 +34,13 @@ h1 {
 
 #buttonHolder {
   /* TODO: determine width @media-queries */
-  width: 984px; /* Portrait: 740px; */
+  width: 1200px; /* Portrait: 740px; */
   margin: 40px auto 0; padding: 0;
 }
 
 #buttonHolder > li {
   list-style: none;
-  width: 200px; height: 180px;
+  width: 190px; height: 180px;
   margin: 0 12px 36px; padding: 10px;
   display: block; float: left;
   text-align: center;
