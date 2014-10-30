@@ -1,0 +1,3 @@
+RewriteEngine On
+RewriteCond %{HTTP_HOST} !^www\.12urenloop\.be$ [NC]
+RewriteRule ^(.*)$ http://www.12urenloop.be/$1 [L,R=301]
