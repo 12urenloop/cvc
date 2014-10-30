@@ -10,10 +10,11 @@ main = do
     deleteAll db
 
     addStation db "gyrid1" "00:1c:f0:f1:f8:25"  45
-    addStation db "gyrid2" "00:24:01:eb:c2:68" 141
-    addStation db "gyrid3" "00:1c:f0:6c:39:32" 220
-    addStation db "gyrid4" "00:21:91:f1:f1:33" 300
-    addStation db "gyrid5" "00:24:01:eb:c2:65" 365
+    addStation db "gyrid2" "00:24:01:eb:c2:68" 120
+    addStation db "gyrid3" "00:1c:f0:6c:39:32" 190
+    --addStation db "gyrid4" "00:21:91:f1:f1:33" 300
+    addStation db "gyrid6" "00:1c:f0:6c:39:3e" 280
+    addStation db "gyrid5" "00:24:01:eb:c2:65" 370
 
     t1  <- addTeam db "KVHV"
     t2  <- addTeam db "Kofschipclubs"
