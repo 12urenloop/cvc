@@ -9,6 +9,27 @@ try {
   // Empty detection
   if($name == "" || $email == "" || $comment == "") throw new Exception();
 
+  if (!preg_match("/^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,8})$/", $email)){
+    throw new Exception();
+  }
+
+  // Blacklist certain words
+  $blacklist = array("viagra", "erectile", "prescription", "valium",
+                     "xanax", "sell", "buy", "rental", "teen", "sex", "car", "offer",
+                     "smoke", "cigarette", "medication", "coffee", "pill", "cialis",
+                     "monthly", "abuse", "electronic", "woman", "xanax", "medication",
+                     "[/url]", "[url");
+
+  $count = 0;
+  foreach($blacklist as $needle) {
+    // doe alsof mail verzonden is voor spambots en kill script
+    if(stristr($name, $needle) != FALSE || stristr($email, $needle) != FALSE || stristr($comment, $needle) != FALSE) 
+      $count++;
+
+      if($count > 1) die("Mail verzonden... Mail sent...");
+  }
+
+
   // Silly spambot detection
   $context  = stream_context_create(array('http' => array('header' => 'Accept: application/xml')));
   $url = 'http://www.stopforumspam.com/api?email=' . $email;
