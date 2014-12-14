@@ -1,5 +1,4 @@
 <div style="font-family: Arial, Arial, Helvetica, sans-serif; font-size: 10pt;">
-  --<br /><br />
   <?php echo htmlentities($_POST['naam'], ENT_QUOTES, "UTF-8"); ?><br />
   <?php echo htmlentities($_POST['functie'], ENT_QUOTES, "UTF-8"); ?><br />
   <?php echo htmlentities($_POST['gsm'], ENT_QUOTES, "UTF-8"); ?><br /><br />
