@@ -30,18 +30,18 @@ To run, install [LÖVE](https://love2d.org/) and run `love .` from the pokemon-d
 
 Small web application that serves as a backup counting system.
 
-### tools/data-analysis
+### `tools/data-analysis`
 
 Checks the gathered data for inconsistencies.
 
-### tools/dj-ratings.rb
+### `tools/dj-ratings.rb`
 
 Counts the SMS-votes for the DJ-contest.
 
-### tools/heartbeat.sh
+### `tools/heartbeat.sh`
 
 Runs a series of checks on each monitored host and sends a heartbeat signal to [sihemo](https://github.com/jaspervdj/sihemo).
 
-### tools/macalive.sh
+### `tools/macalive.sh`
 
 Checks if a bluetooth device is still alive using the hcitool command. Used to assess the lifetime of our batons.
