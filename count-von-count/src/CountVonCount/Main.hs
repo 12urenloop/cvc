@@ -26,7 +26,7 @@ import qualified CountVonCount.Sensor.Filter    as Filter
 import qualified CountVonCount.Sensor.Replay    as Replay
 import qualified CountVonCount.Web              as Web
 import qualified CountVonCount.Web.Views        as Views
-
+import           CountVonCount.Protocols.Gyrid
 
 --------------------------------------------------------------------------------
 main :: IO ()
@@ -59,7 +59,7 @@ main = do
         _ -> return ()
 
     -- Publish baton watchdog events to browser
-    subscribe eventBase "baton handler" $ \deadBatons -> do
+    subscribe eventBase "baton handler" $ \deadBatons ->
         WS.publish pubSub $ WS.textData $ A.encode $
             Views.deadBatons deadBatons
 
@@ -73,7 +73,7 @@ main = do
     Replay.subscribe eventBase (configReplayLog config)
 
     -- Start the sensor
-    _ <- forkIO $ Sensor.listen logger eventBase (configSensorPort config)
+    _ <- forkIO $ Sensor.listen gyrid logger eventBase (configSensorPort config)
 
     -- Start the baton watchdog
     _ <- forkIO $ Counter.watchdog counter eventBase
