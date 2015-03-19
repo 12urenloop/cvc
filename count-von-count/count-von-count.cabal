@@ -46,7 +46,7 @@ Executable count-von-count
     digestive-functors-blaze >= 0.4     && < 0.7,
     digestive-functors-snap  >= 0.4     && < 0.7,
     ekg                      >= 0.3     && < 0.4,
-    io-streams               >= 1.1.4.2 && < 1.2,
+    io-streams               >= 1.2.1.0 && <= 1.2.1.2,
     http-conduit             >= 1.4     && < 1.10,
     mtl                      >= 2.0     && < 2.2,
     network                  >= 2.3     && < 2.5,

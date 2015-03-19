@@ -1,19 +1,31 @@
 --------------------------------------------------------------------------------
+{-# LANGUAGE DeriveDataTypeable #-}
 module  CountVonCount.Protocol
-    ( Protocol (..)
+    ( RawSensorEvent (..)
+    , Protocol (..)
     ) where
 
 --------------------------------------------------------------------------------
 import qualified Data.ByteString         as B
+import           Data.Time               (UTCTime)
 import           System.IO.Streams
 
 --------------------------------------------------------------------------------
-import           CountVonCount.EventBase
 import           CountVonCount.Log
+import           CountVonCount.Types
+import           Data.Typeable           (Typeable)
 
 --------------------------------------------------------------------------------
+data RawSensorEvent = RawSensorEvent
+    { rawSensorTime    :: UTCTime
+    , rawSensorStation :: Mac
+    , rawSensorBaton   :: Mac
+    , rawSensorRssi    :: Double
+    } deriving (Show, Typeable)
+
 data Protocol = Protocol {
-    input  :: Log -> EventBase -> InputStream B.ByteString  -> IO (),
-    output :: Log -> EventBase -> OutputStream B.ByteString -> IO ()
+    output :: OutputStream B.ByteString -> IO (),
+    input  :: Log -> InputStream B.ByteString
+                -> IO (InputStream RawSensorEvent)
 }
 

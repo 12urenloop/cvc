@@ -1,5 +1,5 @@
 --------------------------------------------------------------------------------
-{-# LANGUAGE OverloadedStrings  #-}
+{-# LANGUAGE OverloadedStrings #-}
 module CountVonCount.Protocols.Gyrid
     ( gyrid
     ) where
@@ -7,51 +7,42 @@ module CountVonCount.Protocols.Gyrid
 
 --------------------------------------------------------------------------------
 import           Control.Applicative              ((<$>))
-import           Control.Concurrent               (forkIO)
-import           Control.Monad                    (forever)
+import           Control.Monad                    (guard, liftM)
 import           Data.Bits                        (shiftL, shiftR, (.&.), (.|.))
 import           Data.ByteString                  (ByteString)
 import qualified Data.ByteString                  as B
 import           Data.ByteString.Char8            ()
 import qualified Data.ByteString.Char8            as BC
 import qualified Data.ByteString.Lazy             as BL
-import           Data.Foldable                    (forM_)
 import           Data.Time                        (UTCTime, getCurrentTime)
-import           Data.Typeable                    (Typeable)
 import qualified Gyrid.Bluetooth_DataRaw          as BDR
 import           Gyrid.Msg                        (Msg, type')
 import qualified Gyrid.Msg                        as Msg
 import           Gyrid.Msg.Type                   (Type (..))
 import qualified Gyrid.RequestCaching             as RC
 import qualified Gyrid.RequestStartdata           as RSD
-import           Network                          (PortID (..))
-import qualified Network                          as N
-import qualified Network.Socket                   as S
 import qualified System.IO.Streams                as Streams
-import           System.IO.Streams.Network        (socketToStreams)
 import qualified Text.ProtocolBuffers.WireMessage as WM
 
 --------------------------------------------------------------------------------
-import           CountVonCount.EventBase
 import           CountVonCount.Log
 import           CountVonCount.Protocol
-import           CountVonCount.Sensor             (RawSensorEvent (..))
 import           CountVonCount.Types
-import           CountVonCount.Util
 --------------------------------------------------------------------------------
 type Payload = ByteString
 
 
 --------------------------------------------------------------------------------
 
+gyrid :: Protocol
 gyrid = Protocol {
     input  = gyridInput,
     output = gyridOutput
 }
 
 --------------------------------------------------------------------------------
-gyridOutput :: Log -> EventBase -> Streams.OutputStream B.ByteString -> IO ()
-gyridOutput _ _ outStream = do
+gyridOutput :: Streams.OutputStream B.ByteString -> IO ()
+gyridOutput outStream = do
     outPayload          <- int16Sender outStream
     outMsgs             <- messageSender outPayload
     Streams.write dataMessage  outMsgs
@@ -59,19 +50,14 @@ gyridOutput _ _ outStream = do
     return ()
 
 --------------------------------------------------------------------------------
-gyridInput :: Log -> EventBase -> Streams.InputStream B.ByteString -> IO ()
-gyridInput logger eventBase inStream = do
+gyridInput :: Log
+    -> Streams.InputStream B.ByteString
+    -> IO (Streams.InputStream RawSensorEvent)
+gyridInput logger inStream = do
     inPayload           <- int16Receiver inStream
     inMsgs              <- messageReceiver logger inPayload
-    consume inMsgs
-    return ()
-    where consume inMsgs = do
-            mbMsg <- Streams.read inMsgs
-            case mbMsg of
-                Nothing  -> return ()
-                Just msg -> do
-                    handleMessage eventBase msg
-                    consume inMsgs
+    Streams.mapM mToEvent inMsgs >>= Streams.mapMaybe id
+        where mToEvent m = liftM (messageToEvent m) getCurrentTime
 
 --------------------------------------------------------------------------------
 mkMsg :: Type -> Msg
@@ -102,6 +88,7 @@ mkMsg t = Msg.Msg { type' = t
                     , Msg.success = Nothing }
 
 --------------------------------------------------------------------------------
+dataMessage :: Maybe Msg
 dataMessage = Just $ (mkMsg Type_REQUEST_STARTDATA)
     { Msg.requestStartdata = Just RSD.RequestStartdata
         { RSD.enableData         = Just True
@@ -109,6 +96,8 @@ dataMessage = Just $ (mkMsg Type_REQUEST_STARTDATA)
         , RSD.enableWifiRaw      = Just False
         , RSD.enableWifiDevRaw   = Just False
         , RSD.enableSensorMac    = Just True } }
+
+cacheMessage :: Maybe Msg
 cacheMessage = Just $ (mkMsg Type_REQUEST_CACHING)
     { Msg.requestCaching = Just RC.RequestCaching
         { RC.enableCaching = Just False
@@ -117,24 +106,15 @@ cacheMessage = Just $ (mkMsg Type_REQUEST_CACHING)
 
 
 --------------------------------------------------------------------------------
-handleMessage :: EventBase
-              -> Msg
-              -> IO ()
-handleMessage eventBase msg
-  | type' msg == Type_BLUETOOTH_DATARAW = do
-        time <- getCurrentTime
-        let mSensorEvent = messageToEvent time msg
-        forM_ mSensorEvent $ publish eventBase
-  | otherwise = return ()
-  where
-    messageToEvent :: UTCTime -> Msg -> Maybe RawSensorEvent
-    messageToEvent time msg' = do
-        bdr    <- Msg.bluetooth_dataRaw msg'
-        sensor <- BDR.sensorMac bdr
-        baton  <- BDR.hwid bdr
-        rssi   <- BDR.rssi bdr
-        return $ RawSensorEvent time
-            (parseHexMac sensor) (parseHexMac baton) (fromIntegral rssi)
+messageToEvent :: Msg -> UTCTime -> Maybe RawSensorEvent
+messageToEvent msg time = do
+    guard (type' msg == Type_BLUETOOTH_DATARAW)
+    bdr    <- Msg.bluetooth_dataRaw msg
+    sensor <- BDR.sensorMac bdr
+    baton  <- BDR.hwid bdr
+    rssi   <- BDR.rssi bdr
+    return $ RawSensorEvent time
+        (parseHexMac sensor) (parseHexMac baton) (fromIntegral rssi)
 
 
 --------------------------------------------------------------------------------
