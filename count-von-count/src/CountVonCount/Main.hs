@@ -21,12 +21,13 @@ import qualified CountVonCount.Counter          as Counter
 import           CountVonCount.EventBase
 import qualified CountVonCount.Log              as Log
 import qualified CountVonCount.Persistence      as P
+import           CountVonCount.Protocols.CSV
+import           CountVonCount.Protocols.Gyrid
 import qualified CountVonCount.Sensor           as Sensor
 import qualified CountVonCount.Sensor.Filter    as Filter
 import qualified CountVonCount.Sensor.Replay    as Replay
 import qualified CountVonCount.Web              as Web
 import qualified CountVonCount.Web.Views        as Views
-import           CountVonCount.Protocols.Gyrid
 
 --------------------------------------------------------------------------------
 main :: IO ()
@@ -73,7 +74,7 @@ main = do
     Replay.subscribe eventBase (configReplayLog config)
 
     -- Start the sensor
-    _ <- forkIO $ Sensor.listen gyrid logger eventBase (configSensorPort config)
+    _ <- forkIO $ Sensor.listen csv logger eventBase (configSensorPort config)
 
     -- Start the baton watchdog
     _ <- forkIO $ Counter.watchdog counter eventBase
