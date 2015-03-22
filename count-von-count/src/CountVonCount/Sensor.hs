@@ -10,6 +10,7 @@ module CountVonCount.Sensor
 --------------------------------------------------------------------------------
 import           Control.Concurrent        (forkIO)
 import           Control.Monad             (forever)
+import qualified Data.Foldable             as F
 import           Data.ByteString.Char8     ()
 import           Network                   (PortID (..))
 import qualified Network                   as N
@@ -42,9 +43,10 @@ listen protocol logger eventBase port = do
             output protocol outBytes
 
         _ <- forkIO $ isolate_ logger "Sensor receive" $ do
-            _ <- input protocol logger inBytes 
-                    >>= Streams.mapM_ (publish eventBase)
+            publisher <- Streams.makeOutputStream $ F.mapM_ $ publish eventBase
+            input protocol logger inBytes >>= Streams.connectTo publisher
             string logger "CountVonCount.Sensor.listen"
                 $ "Socket gracefully disconnected (client was " ++ show addr ++ ")"
             S.sClose conn
         return ()
+
