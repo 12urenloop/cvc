@@ -1,6 +1,7 @@
 language: haskell
 before_install:
   - "cd count-von-count"
+  - "cabal sandbox init"
 notifications:
   email: true
   irc:
