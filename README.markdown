@@ -1,4 +1,4 @@
-# 12UrenLoop [![Build Status](https://secure.travis-ci.org/ZeusWPI/12Urenloop.png)](http://travis-ci.org/ZeusWPI/12Urenloop) [![Analytics](https://ga-beacon.appspot.com/UA-25444917-6/ZeusWPI/12Urenloop/README.markdown?pixel)](https://github.com/igrigorik/ga-beacon)
+# 12UrenLoop [![Build Status](https://travis-ci.org/ZeusWPI/12urenloop.svg?branch=master)](https://travis-ci.org/ZeusWPI/12urenloop) [![Analytics](https://ga-beacon.appspot.com/UA-25444917-6/ZeusWPI/12Urenloop/README.markdown?pixel)](https://github.com/igrigorik/ga-beacon)
 
 **TL;DR**: People run laps. We count, give them points and monitor it all.
 
