@@ -10,7 +10,7 @@ module Main
 import           Control.Concurrent             (forkIO)
 import qualified Data.Aeson                     as A
 import qualified Network.WebSockets             as WS
-import qualified Network.WebSockets.Util.PubSub as WS
+import qualified Network.WebSockets.Util.PubSub as PS
 import qualified System.Remote.Monitoring       as Ekg
 
 
@@ -43,7 +43,7 @@ main = do
     _ <- Ekg.forkServer "0.0.0.0" (configEkgPort config)
 
     -- Create the pubsub system
-    pubSub <- WS.newPubSub
+    pubSub <- PS.newPubSub
 
     -- Start the counter
     counter <- Counter.newCounter logger database (configCircuitLength config)
@@ -55,13 +55,13 @@ main = do
     -- the Web module.
     subscribe eventBase "WS counter handler" $ \ce -> case ce of
         Counter.PositionEvent team cstate ->
-            WS.publish pubSub $ WS.textData $ A.encode $
+            PS.publish pubSub $ WS.DataMessage $ WS.Text $ A.encode $
             Views.counterState (configCircuitLength config) team (Just cstate)
         _ -> return ()
 
     -- Publish baton watchdog events to browser
     subscribe eventBase "baton handler" $ \deadBatons ->
-        WS.publish pubSub $ WS.textData $ A.encode $
+        PS.publish pubSub $ WS.DataMessage $ WS.Text $ A.encode $
             Views.deadBatons deadBatons
 
     -- Initialize boxxy

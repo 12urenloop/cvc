@@ -7,7 +7,7 @@ module CountVonCount.Web
 
 --------------------------------------------------------------------------------
 import           Control.Applicative            ((<$>), (<*>), (<|>))
-import           Control.Monad                  (forM, forM_, unless)
+import           Control.Monad                  (forM, forM_, unless, (>=>))
 import           Control.Monad.Reader           (ReaderT, ask, runReaderT)
 import           Control.Monad.Trans            (liftIO)
 import           Data.Text                      (Text)
@@ -17,7 +17,7 @@ import           Data.Time                      (getCurrentTimeZone)
 import           Data.Traversable               (traverse)
 import qualified Network.WebSockets             as WS
 import qualified Network.WebSockets.Snap        as WS
-import qualified Network.WebSockets.Util.PubSub as WS
+import qualified Network.WebSockets.Util.PubSub as PS
 import qualified Snap.Blaze                     as Snap
 import qualified Snap.Core                      as Snap
 import qualified Snap.Http.Server               as Snap
@@ -47,7 +47,7 @@ data WebEnv = WebEnv
     , webLog       :: Log
     , webEventBase :: EventBase
     , webDatabase  :: Database
-    , webPubSub    :: WS.PubSub WS.Hybi00
+    , webPubSub    :: PS.PubSub
     , webCounter   :: Counter
     , webBoxxies   :: Boxxies
     }
@@ -75,10 +75,8 @@ monitorFeed = do
     pubSub <- webPubSub <$> ask
     Snap.liftSnap $ WS.runWebSocketsSnap $ wsApp pubSub
   where
-    wsApp :: WS.PubSub WS.Hybi00 -> WS.Request -> WS.WebSockets WS.Hybi00 ()
-    wsApp pubSub req = do
-        WS.acceptRequest req
-        WS.subscribe pubSub
+    wsApp :: PS.PubSub -> WS.ServerApp
+    wsApp pubSub = WS.acceptRequest >=> PS.subscribe pubSub
 
 management :: Web ()
 management = do
@@ -207,7 +205,7 @@ site = Snap.route
     , ("/multibonus",          multibonus)
     ] <|> Snap.serveDirectory "static"
 
-listen :: Config -> Log -> EventBase -> Database -> WS.PubSub WS.Hybi00
+listen :: Config -> Log -> EventBase -> Database -> PS.PubSub
        -> Counter -> Boxxies -> IO ()
 listen conf logger eventBase db pubSub counter boxxies' =
     Snap.httpServe snapConfig $ runReaderT site env
