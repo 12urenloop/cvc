@@ -1,7 +1,10 @@
 language: haskell
+ghc: 7.8
 before_install:
   - "cd count-von-count"
   - "cabal sandbox init"
+install:
+  - "cabal install --only-dependencies --enable-tests --reorder-goals"
 notifications:
   email: true
   irc:
