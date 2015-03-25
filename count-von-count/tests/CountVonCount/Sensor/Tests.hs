@@ -26,6 +26,7 @@ import           Test.HUnit                     (assert)
 import           CountVonCount.EventBase
 import qualified CountVonCount.Log              as Log
 import           CountVonCount.Sensor
+import           CountVonCount.Protocols.CSV
 
 
 --------------------------------------------------------------------------------
@@ -44,7 +45,7 @@ sensorTest = do
     subscribe eventBase "prepend handler" $ \raw ->
         atomicModifyIORef ref $ \rs -> (raw : rs, ())
 
-    threadId <- forkIO $ listen logger eventBase port
+    threadId <- forkIO $ listen csv logger eventBase port
     threadDelay 100000
     handle <- connectTo "127.0.0.1" (PortNumber $ fromIntegral port)
     forM_ inputs $ \i -> hPutStrLn handle i >> hFlush handle
