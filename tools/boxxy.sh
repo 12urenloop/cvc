@@ -1,6 +1,6 @@
 
 send() {
-    echo curl -XPUT localhost:8080/state \
+    curl -XPUT localhost:8080/state \
          -H 'Content-Type: application/json' \
          -u 'count-von-count:tetten' \
          -d "$1"
