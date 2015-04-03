@@ -21,9 +21,16 @@ $(document).ready(function() {
 
     var interval = 5;
     setInterval(function () {
+        $(".slow").removeClass("slow");
+        $(".broken").removeClass("broken");
         $('.last-update').each(function () {
             var number = parseInt($(this).html());
             $(this).html(number + interval);
+            if(number + interval > 60) {
+                $(this).parents(".team").first().addClass("broken");
+            } else if(number + interval > 30) {
+                $(this).parents(".team").first().addClass("slow");
+            }
         });
     }, interval * 1000);
 });

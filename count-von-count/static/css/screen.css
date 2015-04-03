@@ -103,6 +103,14 @@ div#monitor div.team {
     width: 260px;
 }
 
+div#monitor div.team.slow {
+    color: orange;
+}
+
+div#monitor div.team.broken {
+    color: red;
+}
+
 div#monitor div.team span.speed {
     font-size: 24px;
 }
