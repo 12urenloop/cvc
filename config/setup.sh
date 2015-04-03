@@ -1,7 +1,9 @@
 #!/bin/bash
 
+apt-get update
+
 apt-get remove network-manager
-apt-get install bridge-utiles
+apt-get install bridge-utils
 
 update-rc.d -f ntp remove
 update-rc.d -f dnsmasq remove
