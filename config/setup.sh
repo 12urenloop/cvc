@@ -9,7 +9,7 @@ rm /etc/apt/sources.list.d/bluemap.list
 
 apt-get update
 
-apt-get remove network-manager
+apt-get -y remove network-manager
 apt-get -y install bridge-utils
 apt-get -y install vim
 
