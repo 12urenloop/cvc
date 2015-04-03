@@ -2,10 +2,8 @@
 -- | Communication with sensors (i.e. Gyrid)
 {-# LANGUAGE OverloadedStrings #-}
 module CountVonCount.Sensor
-    ( RawSensorEvent (..)
-    , listen
+    ( listen
     ) where
-
 
 --------------------------------------------------------------------------------
 import           Control.Concurrent        (forkIO)

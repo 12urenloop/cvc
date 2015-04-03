@@ -1,7 +1,8 @@
 --------------------------------------------------------------------------------
 {-# LANGUAGE OverloadedStrings #-}
 module CountVonCount.Protocols.Gyrid
-    ( gyrid
+    ( gyridInput
+    , gyridOutput
     ) where
 
 
@@ -26,19 +27,10 @@ import qualified Text.ProtocolBuffers.WireMessage as WM
 
 --------------------------------------------------------------------------------
 import           CountVonCount.Log
-import           CountVonCount.Protocol
+import           CountVonCount.RawSensorEvent
 import           CountVonCount.Types
 --------------------------------------------------------------------------------
 type Payload = ByteString
-
-
---------------------------------------------------------------------------------
-
-gyrid :: Protocol
-gyrid = Protocol {
-    input  = gyridInput,
-    output = gyridOutput
-}
 
 --------------------------------------------------------------------------------
 gyridOutput :: Streams.OutputStream B.ByteString -> IO ()

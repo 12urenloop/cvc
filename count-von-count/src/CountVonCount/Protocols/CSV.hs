@@ -2,7 +2,8 @@
 {-# LANGUAGE BangPatterns      #-}
 {-# LANGUAGE OverloadedStrings #-}
 module CountVonCount.Protocols.CSV
-    ( csv
+    ( csvInput
+    , csvOutput
     ) where
 
 
@@ -18,16 +19,8 @@ import           System.IO.Streams.Attoparsec
 
 --------------------------------------------------------------------------------
 import           CountVonCount.Log
-import           CountVonCount.Protocol
+import           CountVonCount.RawSensorEvent
 import           CountVonCount.Types
---------------------------------------------------------------------------------
-
-csv :: Protocol
-csv = Protocol {
-    input  = csvInput,
-    output = csvOutput
-}
-
 
 --------------------------------------------------------------------------------
 csvOutput :: Streams.OutputStream B.ByteString -> IO ()

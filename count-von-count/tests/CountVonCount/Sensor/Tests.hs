@@ -25,8 +25,9 @@ import           Test.HUnit                     (assert)
 --------------------------------------------------------------------------------
 import           CountVonCount.EventBase
 import qualified CountVonCount.Log              as Log
+import           CountVonCount.Protocol         (csv)
+import           CountVonCount.RawSensorEvent
 import           CountVonCount.Sensor
-import           CountVonCount.Protocols.CSV
 
 
 --------------------------------------------------------------------------------

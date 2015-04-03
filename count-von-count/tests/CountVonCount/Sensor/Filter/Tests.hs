@@ -13,7 +13,7 @@ import           Test.HUnit                     ((@=?))
 
 --------------------------------------------------------------------------------
 import           CountVonCount.Persistence
-import           CountVonCount.Sensor
+import           CountVonCount.RawSensorEvent
 import           CountVonCount.Sensor.Filter
 import           CountVonCount.TestSuite.Util
 
