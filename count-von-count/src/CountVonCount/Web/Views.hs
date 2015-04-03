@@ -221,8 +221,8 @@ multibonus teams view = template "Multibonus" $ block "multibonus" $ do
 counterState :: Double -> Team -> Maybe CounterState -> Partial
 counterState circuitLength team cs = partial selector $ H.div
     ! A.class_ "team"
-    ! H.dataAttribute "team-id" (H.toValue $ refToText $ teamId team) $ do
-        H.h2 $ H.toHtml $ teamName team
+    ! H.dataAttribute "team-id" (H.toValue $ teamIdText) $ do
+        H.h2 $ H.toHtml $ T.concat [teamIdText, ". ", teamName team]
         H.span ! A.class_ "laps" $ H.toHtml $ teamLaps team
         " laps "
         case cs of
@@ -243,6 +243,7 @@ counterState circuitLength team cs = partial selector $ H.div
                 H.div ! A.class_ "progress" $
                     H.div ! A.class_ "fill" ! A.style (H.toValue style) $ ""
   where
+    teamIdText = refToText $ teamId team
     selector = T.concat
         ["[data-team-id = \"", refToText (teamId team), "\"]"]
 
