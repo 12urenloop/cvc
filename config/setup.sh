@@ -3,6 +3,8 @@
 # For some reason, sysrq pops up on every shift, control or command action.
 sysctl -w kernel.sysrq=0
 
+rm /etc/apt/sources.list.d/bluemap.list
+
 apt-get update
 
 apt-get remove network-manager
