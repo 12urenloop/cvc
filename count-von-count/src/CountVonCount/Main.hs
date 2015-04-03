@@ -10,7 +10,7 @@ module Main
 import           Control.Concurrent             (forkIO)
 import qualified Data.Aeson                     as A
 import qualified Network.WebSockets             as WS
-import qualified Network.WebSockets.Util.PubSub as WS
+import qualified Network.WebSockets.Util.PubSub as PS
 import qualified System.Remote.Monitoring       as Ekg
 
 
@@ -27,7 +27,6 @@ import qualified CountVonCount.Sensor.Replay    as Replay
 import qualified CountVonCount.Web              as Web
 import qualified CountVonCount.Web.Views        as Views
 
-
 --------------------------------------------------------------------------------
 main :: IO ()
 main = do
@@ -42,7 +41,7 @@ main = do
     _ <- Ekg.forkServer "0.0.0.0" (configEkgPort config)
 
     -- Create the pubsub system
-    pubSub <- WS.newPubSub
+    pubSub <- PS.newPubSub
 
     -- Start the counter
     counter <- Counter.newCounter logger database (configCircuitLength config)
@@ -54,13 +53,13 @@ main = do
     -- the Web module.
     subscribe eventBase "WS counter handler" $ \ce -> case ce of
         Counter.PositionEvent team cstate ->
-            WS.publish pubSub $ WS.textData $ A.encode $
+            PS.publish pubSub $ WS.DataMessage $ WS.Text $ A.encode $
             Views.counterState (configCircuitLength config) team (Just cstate)
         _ -> return ()
 
     -- Publish baton watchdog events to browser
-    subscribe eventBase "baton handler" $ \deadBatons -> do
-        WS.publish pubSub $ WS.textData $ A.encode $
+    subscribe eventBase "baton handler" $ \deadBatons ->
+        PS.publish pubSub $ WS.DataMessage $ WS.Text $ A.encode $
             Views.deadBatons deadBatons
 
     -- Initialize boxxy
@@ -73,7 +72,7 @@ main = do
     Replay.subscribe eventBase (configReplayLog config)
 
     -- Start the sensor
-    _ <- forkIO $ Sensor.listen logger eventBase (configSensorPort config)
+    _ <- forkIO $ Sensor.listen (configProtocol config) logger eventBase (configSensorPort config)
 
     -- Start the baton watchdog
     _ <- forkIO $ Counter.watchdog counter eventBase

@@ -10,20 +10,20 @@ module CountVonCount.Sensor.Filter
 
 
 --------------------------------------------------------------------------------
-import           Control.Applicative       (pure, (<$>), (<*>))
-import           Data.Foldable             (forM_)
-import qualified Data.Text                 as T
-import           Data.Time                 (UTCTime)
-import           Data.Typeable             (Typeable)
+import           Control.Applicative          (pure, (<$>), (<*>))
+import           Data.Foldable                (forM_)
+import qualified Data.Text                    as T
+import           Data.Time                    (UTCTime)
+import           Data.Typeable                (Typeable)
 
 
 --------------------------------------------------------------------------------
-import           CountVonCount.EventBase   (EventBase)
-import qualified CountVonCount.EventBase   as EventBase
-import           CountVonCount.Log         (Log)
-import qualified CountVonCount.Log         as Log
+import           CountVonCount.EventBase      (EventBase)
+import qualified CountVonCount.EventBase      as EventBase
+import           CountVonCount.Log            (Log)
+import qualified CountVonCount.Log            as Log
 import           CountVonCount.Persistence
-import           CountVonCount.Sensor
+import           CountVonCount.RawSensorEvent
 
 
 --------------------------------------------------------------------------------

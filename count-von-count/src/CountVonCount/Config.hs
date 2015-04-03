@@ -10,18 +10,20 @@ module CountVonCount.Config
 
 
 --------------------------------------------------------------------------------
-import           Control.Applicative   ((<$>), (<*>))
-import           Control.Monad         (mzero)
-import           Data.Aeson            (FromJSON(..), (.!=), (.:?))
-import qualified Data.Aeson            as A
-import           Data.ByteString       (ByteString)
-import qualified Data.ByteString.Char8 as BC
-import           Data.Maybe            (fromMaybe, isNothing)
-import           Data.Text             (Text)
-import qualified Data.Text             as T
-import           Data.Time             (UTCTime(..), getCurrentTime)
-import           Data.Yaml             (decodeFile)
+import           Control.Applicative    ((<$>), (<*>))
+import           Control.Monad          (mzero)
+import           Data.Aeson             (FromJSON (..), (.!=), (.:?))
+import qualified Data.Aeson             as A
+import           Data.ByteString        (ByteString)
+import qualified Data.ByteString.Char8  as BC
+import           Data.Maybe             (fromMaybe, isNothing)
+import           Data.Text              (Text)
+import qualified Data.Text              as T
+import           Data.Time              (UTCTime (..), getCurrentTime)
+import           Data.Yaml              (decodeFile)
 
+--------------------------------------------------------------------------------
+import           CountVonCount.Protocol
 
 --------------------------------------------------------------------------------
 data BoxxyConfig = BoxxyConfig
@@ -77,6 +79,7 @@ data Config = Config
     , configBoxxies               :: [BoxxyConfig]
     , configWebPort               :: Int
     , configEkgPort               :: Int
+    , configProtocol              :: Protocol
     } deriving (Show)
 
 
@@ -94,7 +97,8 @@ instance FromJSON Config where
         o .:? "rssiThreshold"         .!= configRssiThreshold         d <*>
         o .:? "boxxies"               .!= configBoxxies               d <*>
         o .:? "webPort"               .!= configWebPort               d <*>
-        o .:? "ekgPort"               .!= configEkgPort               d
+        o .:? "ekgPort"               .!= configEkgPort               d <*>
+        o .:? "protocol"              .!= configProtocol              d
       where
         d = defaultConfig
 
@@ -116,6 +120,7 @@ defaultConfig = Config
     , configBoxxies               = [defaultBoxxyConfig]
     , configWebPort               = 8000
     , configEkgPort               = 8001
+    , configProtocol              = csv
     }
 
 

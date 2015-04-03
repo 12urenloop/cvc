@@ -29,7 +29,9 @@ import           Data.Text                   (Text)
 import qualified Data.Text                   as T
 import qualified Data.Text.Encoding          as T
 import           Data.Time                   (UTCTime)
-import qualified Network.HTTP.Conduit        as Http
+import qualified Network.HTTP.Conduit        as Conduit
+import qualified Network.HTTP.Client         as Client
+import qualified Web.Cookie                  as Cookie
 
 
 --------------------------------------------------------------------------------
@@ -46,22 +48,22 @@ import           CountVonCount.Util
 --------------------------------------------------------------------------------
 makeRequest :: BoxxyConfig -> Text -> A.Value -> IO ()
 makeRequest config path body = do
-    let rq = Http.applyBasicAuth (boxxyUser config) (boxxyPassword config) $
-                Http.def
-                    { Http.method         = "PUT"
-                    , Http.host           = T.encodeUtf8 (boxxyHost config)
-                    , Http.port           = boxxyPort config
-                    , Http.path           = T.encodeUtf8 path'
-                    , Http.requestBody    = Http.RequestBodyLBS (A.encode body)
-                    , Http.requestHeaders =
+    let rq = Conduit.applyBasicAuth (boxxyUser config) (boxxyPassword config) $
+                Cookie.def
+                    { Conduit.method         = "PUT"
+                    , Conduit.host           = T.encodeUtf8 (boxxyHost config)
+                    , Conduit.port           = boxxyPort config
+                    , Conduit.path           = T.encodeUtf8 path'
+                    , Conduit.requestBody    = Conduit.RequestBodyLBS (A.encode body)
+                    , Conduit.requestHeaders =
                         [ ("Connection", "Close")
                         , ("Content-Type", "application/json")
                         ]
                     }
 
-    manager <- Http.newManager Http.def
-    _       <- C.runResourceT $ Http.httpLbs rq manager
-    Http.closeManager manager
+    manager <- Conduit.newManager Client.defaultManagerSettings
+    _       <- C.runResourceT $ Conduit.httpLbs rq manager
+    Conduit.closeManager manager
   where
     path' = boxxyPath config `T.append` path
 
