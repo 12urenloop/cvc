@@ -3,6 +3,7 @@
 
 # For some reason, sysrq pops up on every shift, control or command action.
 echo "sysctl -w kernel.sysrq=0" >> ~/.bashrc
+source ~/.bashrc
 
 rm /etc/apt/sources.list.d/bluemap.list
 
