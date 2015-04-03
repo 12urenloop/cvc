@@ -8,7 +8,6 @@ source ~/.bashrc
 rm /etc/apt/sources.list.d/bluemap.list
 
 apt-get update
-apt-get -y upgrade
 
 apt-get remove network-manager
 apt-get -y install bridge-utils
