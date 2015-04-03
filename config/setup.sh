@@ -12,6 +12,7 @@ apt-get -y upgrade
 
 apt-get remove network-manager
 apt-get install bridge-utils
+apt-get install vim
 
 update-rc.d -f ntp remove
 update-rc.d -f dnsmasq remove
