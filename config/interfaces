@@ -1,7 +1,3 @@
-# interfaces(5) file used by ifup(8) and ifdown(8)
-# Include files from /etc/network/interfaces.d:
-source-directory /etc/network/interfaces.d
-
 auto lo
 iface lo inet loopback
 
@@ -14,7 +10,8 @@ iface br0 inet static
   gateway 10.1.2.1
   netmask 255.255.255.0
   bridge_ports eth0 eth1
-  bridge_stp on
-  bridge_fd 5
-  bridge_maxage 10
-  bridge_bridgeprio 4096 # Lower is closer to the switch
+# Disabling STP as it seems to work without, and it doesn't work with  
+#  bridge_stp on
+#  bridge_fd 5
+#  bridge_maxage 10
+#  bridge_bridgeprio 4096 # Lower is closer to the switch
