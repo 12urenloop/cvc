@@ -3,6 +3,10 @@
   "version": "0.2.0",
   "author": "Jasper Van der Jeugt <m@jaspervdj.be>",
   "description": "Application proxy for http://12urenloop.be",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ZeusWPI/12urenloop.git"
+  },
   "contributors": [
     {
       "name": "Michiel Van de Berghe"
