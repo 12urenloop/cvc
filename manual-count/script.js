@@ -1,5 +1,5 @@
 var DELAY = 30; // delay to prevent accidental double taps
-var BUTTONS_PER_VIEW = 9
+var BUTTONS_PER_VIEW = 10
 var error = '';
 
 // Detect local storage
@@ -67,7 +67,7 @@ function overlay() {
 function createAdminView(){
 	overlay();
 	toggleAdminNotification(false);
-	
+
 	var errorContainer = $('#overlayError');
 	errorContainer.empty();
 	errorContainer.append($('<span>' + error + '</span>'));
@@ -112,7 +112,7 @@ function addLap(teamId) {
 
     storage.setItem('requestQueue', JSON.stringify(queue));
     storage.setItem(teamId, JSON.stringify(team));
-	
+
     if(queue.length > 1) return;
     else processQueue();
 }
