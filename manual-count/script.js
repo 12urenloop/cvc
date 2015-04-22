@@ -21,9 +21,8 @@ function initStorage() {
     if(!teams) return;
 
     for(var teamId in teams) {
-        if(!storage.getItem(teamId)) {
-            storage.setItem(teamId, JSON.stringify(teams[teamId]));
-        }
+      /* Update the shown laps to the server */
+      storage.setItem(teamId, JSON.stringify(teams[teamId]));
     }
     storage.setItem('teams', JSON.stringify(Object.keys(teams)));
 }
@@ -155,7 +154,7 @@ $(function() {
     $('#viewSwitcher').click(function() {
         currentView = currentView == 0 ? 1 : 0;
         createView(currentView);
-        $(this).text('iPad ' + (currentView + 1) + '/2');
+        $(this).text('Surface ' + (currentView + 1) + '/2');
     });
 
 	$('#adminButton').click(function() {
