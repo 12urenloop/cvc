@@ -30,11 +30,13 @@ INSERT INTO `teams` (`id`, `name`, `laps`) VALUES
 (7, 'VTK', 0),
 (8, 'HILOK', 0),
 (9, 'VBK', 0),
-(10, 'VGK', 0),
-(11, 'Politeia', 0),
-(12, 'VPPK', 0),
-(13, 'Veto, Moeder Lies, LILA & Hermes', 0),
-(14, 'VRG & Farma', 0),
-(15, 'SeniorenKonvent', 0),
-(16, 'Home Konvent', 0),
-(17, 'Urgent & Schamper', 0)
+(10, 'VDK', 0),
+(11, 'VGK', 0),
+(12, 'Politeia', 0),
+(13, 'VPPK', 0),
+(14, 'Veto, LILA & Hermes', 0),
+(15, 'VRG & Farma', 0),
+(16, 'SeniorenKonvent', 0),
+(17, 'Home Konvent', 0),
+(18, 'Urgent & Schamper', 0)
+(19, 'Moeder Lies', 0)
