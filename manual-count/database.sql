@@ -38,5 +38,5 @@ INSERT INTO `teams` (`id`, `name`, `laps`) VALUES
 (15, 'VRG & Farma', 0),
 (16, 'SeniorenKonvent', 0),
 (17, 'Home Konvent', 0),
-(18, 'Urgent & Schamper', 0)
+(18, 'Urgent & Schamper', 0),
 (19, 'Moeder Lies', 0)
