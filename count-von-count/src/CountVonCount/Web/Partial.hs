@@ -8,7 +8,7 @@ import Data.Aeson (ToJSON (..), object, (.=))
 import Data.Text (Text)
 import Text.Blaze (ToMarkup (..))
 import Text.Blaze.Html (Html)
-import Text.Blaze.Html.Renderer.Utf8 (renderHtml)
+import Text.Blaze.Html.Renderer.Text (renderHtml)
 
 data Partial = Partial
     { partialSelector :: Text

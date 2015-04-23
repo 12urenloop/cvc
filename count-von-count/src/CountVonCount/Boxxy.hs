@@ -17,38 +17,42 @@ module CountVonCount.Boxxy
 
 
 --------------------------------------------------------------------------------
-import           Control.Applicative         (pure, (<$>), (<*>))
-import           Control.Concurrent          (forkIO)
-import           Control.Monad               (forM, forM_, void, when)
-import           Data.Aeson                  ((.=))
-import qualified Data.Aeson                  as A
-import qualified Data.Conduit                as C
-import           Data.IORef                  (IORef, newIORef, readIORef, writeIORef)
-import           Data.Maybe                  (isNothing)
-import           Data.Text                   (Text)
-import qualified Data.Text                   as T
-import qualified Data.Text.Encoding          as T
-import           Data.Time                   (UTCTime)
-import qualified Network.HTTP.Conduit        as Conduit
-import qualified Network.HTTP.Client         as Client
-import qualified Web.Cookie                  as Cookie
+import           Control.Applicative          (pure, (<$>), (<*>))
+import           Control.Concurrent           (forkIO)
+import           Control.Monad                (forM, forM_, void, when)
+import           Control.Monad.Trans.Resource (runResourceT)
+import           Data.Aeson                   ((.=))
+import qualified Data.Aeson                   as A
+import qualified Data.Conduit                 as C
+import           Data.IORef                   (IORef, newIORef, readIORef,
+                                               writeIORef)
+import           Data.Maybe                   (isNothing)
+import           Data.Text                    (Text)
+import qualified Data.Text                    as T
+import qualified Data.Text.Encoding           as T
+import           Data.Time                    (UTCTime)
+import qualified Network.HTTP.Client          as Client
+import qualified Network.HTTP.Conduit         as Conduit
+import qualified Web.Cookie                   as Cookie
 
 
 --------------------------------------------------------------------------------
 import           CountVonCount.Config
-import qualified CountVonCount.Counter       as Counter
+import qualified CountVonCount.Counter        as Counter
 import           CountVonCount.EventBase
-import           CountVonCount.Log           (Log)
-import qualified CountVonCount.Log           as Log
-import qualified CountVonCount.Persistence   as P
-import           CountVonCount.Sensor.Filter (SensorEvent(..))
+import           CountVonCount.Log            (Log)
+import qualified CountVonCount.Log            as Log
+import qualified CountVonCount.Persistence    as P
+import           CountVonCount.Sensor.Filter  (SensorEvent (..))
 import           CountVonCount.Util
 
 
 --------------------------------------------------------------------------------
 makeRequest :: BoxxyConfig -> Text -> A.Value -> IO ()
 makeRequest config path body = do
-    let rq = Conduit.applyBasicAuth (boxxyUser config) (boxxyPassword config) $
+    let rq = Conduit.applyBasicAuth
+                (T.encodeUtf8 $ boxxyUser config)
+                (T.encodeUtf8 $ boxxyPassword config) $
                 Cookie.def
                     { Conduit.method         = "PUT"
                     , Conduit.host           = T.encodeUtf8 (boxxyHost config)
@@ -62,7 +66,7 @@ makeRequest config path body = do
                     }
 
     manager <- Conduit.newManager Client.defaultManagerSettings
-    _       <- C.runResourceT $ Conduit.httpLbs rq manager
+    _       <- runResourceT $ Conduit.httpLbs rq manager
     Conduit.closeManager manager
   where
     path' = boxxyPath config `T.append` path

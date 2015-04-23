@@ -30,8 +30,8 @@ data BoxxyConfig = BoxxyConfig
     { boxxyHost     :: Text
     , boxxyPort     :: Int
     , boxxyPath     :: Text
-    , boxxyUser     :: ByteString
-    , boxxyPassword :: ByteString
+    , boxxyUser     :: Text
+    , boxxyPassword :: Text
     }
 
 
@@ -39,7 +39,7 @@ data BoxxyConfig = BoxxyConfig
 instance Show BoxxyConfig where
     show (BoxxyConfig host port path user password) =
         T.unpack host ++ ":" ++ show port ++ "/" ++ T.unpack path ++
-        " (" ++ BC.unpack user ++ ":" ++ BC.unpack password ++ ")"
+        " (" ++ T.unpack user ++ ":" ++ T.unpack password ++ ")"
 
 
 --------------------------------------------------------------------------------

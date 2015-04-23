@@ -10,11 +10,11 @@ import           Control.Monad        (unless, when)
 import           Data.List            (intercalate)
 import           Data.List.Split      (splitOn)
 import           Data.Time            (NominalDiffTime, UTCTime, addUTCTime,
-                                       diffUTCTime, getCurrentTime, parseTime)
-import qualified Network              as Network
+                                       defaultTimeLocale, diffUTCTime,
+                                       getCurrentTime, parseTime)
+import qualified Network
 import           System.Environment   (getArgs, getProgName)
 import qualified System.IO            as IO
-import           System.Locale        (defaultTimeLocale)
 
 
 --------------------------------------------------------------------------------

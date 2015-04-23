@@ -16,7 +16,6 @@ import           Control.Concurrent.MVar (MVar, newEmptyMVar, putMVar, takeMVar)
 import           Control.Monad           (when)
 import qualified Data.Time               as Time
 import qualified System.IO               as IO
-import           System.Locale           (defaultTimeLocale)
 
 
 --------------------------------------------------------------------------------
@@ -81,7 +80,7 @@ string logger fname str = do
     tz  <- Time.getCurrentTimeZone
     utc <- Time.getCurrentTime
     let time = Time.utcToLocalTime tz utc
-        fmt  = Time.formatTime defaultTimeLocale "[%H:%M:%S]" time
+        fmt  = Time.formatTime Time.defaultTimeLocale "[%H:%M:%S]" time
     raw logger $ fmt ++ " " ++ fname ++ ": " ++ str
 
 
