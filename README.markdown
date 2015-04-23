@@ -2,7 +2,7 @@
 
 **TL;DR**: People run laps. We count, give them points and monitor it all.
 
-This software is made for the yearly [12-Urenloop](http://12urenloop.be/) event. Small embedded computers with Bluetooth sensors running [Gyrid](https://github.com/Rulus/Gyrid) are placed around the circuit and forward information on detected Bluetooth devices (i.e. our batons).
+This software is made for the yearly [12-Urenloop](http://12urenloop.be/) event. Small embedded computers with Bluetooth sensors running [Gyrid](https://github.com/Roel/Gyrid) are placed around the circuit and forward information on detected Bluetooth devices (i.e. our batons).
 
 ## count-von-count
 
