@@ -1,18 +1,35 @@
 html, body {
-    height: 100%;
     margin: 0;
     padding: 0;
-    background: #FF0019; /* CHROMAH KEY */
+    /* background: #FF0019; [> CHROMAH KEY <] */
     overflow: hidden;
 }
+
 #marquee-top {
     position: fixed; top: 0;
     height: 100px; width: 100%;
     background-color: #fff;
-
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 70px;
     line-height: 1;
+}
+#marquee-top ol {
+    position: relative;
+    margin: 0;
+    list-style-type: none;
+    width: 99999px;
+}
+#marquee-top li {
+    padding-top: 10px;
+    margin-right: 50px;
+    float: left;
+}
+
+#sponsors img {
+    height: calc(100vh - 150px);
+}
+.carousel-inner > .item > img {
+    margin: 0 auto;
 }
 
 #marquee {
@@ -42,17 +59,6 @@ html, body {
 }
 #marquee li {
     padding-top: 35px;
-    margin-right: 50px;
-    float: left;
-}
-#marquee-top ol {
-    position: relative;
-    margin: 0;
-    list-style-type: none;
-    width: 99999px;
-}
-#marquee-top li {
-    padding-top: 10px;
     margin-right: 50px;
     float: left;
 }

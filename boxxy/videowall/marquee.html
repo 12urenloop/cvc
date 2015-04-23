@@ -1,187 +1,281 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Marquee</title>
-        <link rel="stylesheet" type="text/css" href="css/videowall.css" />
+    <title>Marquee</title>
 
-        <script src="http://live.12urenloop.be/js/boxxy.js"></script>
-        <script src="http://live.12urenloop.be/js/jquery-1.7.1.min.js"></script>
-        <script src="http://live.12urenloop.be/socket.io/socket.io.js"></script>
-    </head>
-    <body>
-        <!-- Uncomment for the dj-contest -->
-        <!--
-           - <div id="marquee-top">
-           -     <ol>
-           -         <li>SMS HOT or NOT naar 0478 012 970<li>
-           -     </ol>
-           - </div>
-           -->
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/videowall.css" />
+  </head>
+  <body>
+    <!-- Uncomment for the dj-contest -->
+    <!--
+      - <div id="marquee-top">
+      -     <ol>
+      -         <li>SMS HOT or NOT naar 0478 012 970<li>
+      -     </ol>
+      - </div>
+    -->
 
-        <div id="marquee">
-            <ol>
-            </ol>
-            <div id="marquee-fade"></div>
+    <div id="sponsors" class="carousel slide" data-ride="carousel">
+      <div class="carousel-inner" role="listbox">
+        <div class="item active">
+          <img src="img/sponsors/kbc.png" alt="KBC">
         </div>
+        <div class="item">
+          <img src="img/sponsors/maes-music.png" alt="Maes Music">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/stadium.jpg" alt="Stadium">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/gsr.png" alt="GSR">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/mobile-viking.jpg" alt="Mobile Vikings">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/students-gent.png" alt="Students at Gent">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/desperados.png" alt="Desperados">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/redbull.png" alt="Red Bull">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/boardx.jpg" alt="BoardX">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/deltaworks.jpg" alt="Delta Works">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/cocacola.jpg" alt="Coca-Cola">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/bond-moyson.png" alt="Bond Moyson">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/peterman.png" alt="Peterman">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/farys.png" alt="Farys">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/tonixx.png" alt="TonixX">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/jeka.png" alt="Jeka">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/salamander.png" alt="De Salamander">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/overpoort-bowl.jpg" alt="Overpoort Bowl">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/twitch.jpg" alt="Twitch">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/cuba-libre.jpg" alt="Cuba Libre">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/charlatan.png" alt="Charlatan">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/kinky.png" alt="Kinky">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/tkofschip.jpg" alt="'t Kofschip'">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/stad-gent.png" alt="Stad Gent">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/augent.png" alt="AUGent">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/urgent.jpg" alt="Urgent.fm">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/schamper.png" alt="Schamper">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/zeus.png" alt="Zeus WPI">
+        </div>
+        <div class="item">
+          <img src="img/sponsors/geografie.png" alt="Geografie">
+        </div>
+      </div>
+    </div>
 
-        <script>
-            // Set up boxxy
-            var boxxy = boxxy.initialize(),
-                boxxyHost = 'http://live.12urenloop.be:8080',
-                initialTimeout = 2000,
-                interval = 3500,
-                marqueeDuration = 6,  // Higher is slower
-                loop = [
-                  //{command: 'runMarquee', content: 'volgLive'},
-                  //{command: 'runMarquee', content: 'smsHotOrNot'},
-                  //{command: 'runMarquee', content: 'kmGelopen'},
-                  //{command: 'runMarquee', content: 'tijdPerRonde'},
-                  //{command: 'runMarquee', content: 'randomStats'},
-                  {command: 'runMarquee', content: 'scores'},
-                  {command: 'goToLink', link: 'videowallscores.html'}
-                ],
-                commandIdx = -1, command;
+    <div id="marquee">
+      <ol>
+      </ol>
+      <div id="marquee-fade"></div>
+    </div>
 
-            var contentGenerators = {
-              scores: function() {
-                var teams = boxxy.teamsByScore();
-                var content = [];
-                for (var i = 0; i < teams.length; i++) {
-                  content.push((i+1) + '. ' + teams[i].name + ' (' + teams[i].laps + ')');
-                };
-                return content;
-              },
-              kmGelopen: function() {
-                var teams = boxxy.teamsByScore();
-                var content = [];
-                for (var i = 0; i < teams.length; i++) {
-                  var afstand = teams[i].laps * boxxy.circuitLength;
-                  var afstandS = afstand < 20000 ? '' + afstand : '' + Math.round(afstand/1000) + 'k';
-                  content.push(teams[i].name + ' heeft ' + afstandS + 'm gelopen. &nbsp; &nbsp; &nbsp;');
-                }
-                return content;
-              },
-              tijdPerRonde: function() {
-                var teams = boxxy.teamsByScore();
-                var tijd = (Date.parse(Date()) - Date.parse(boxxy.startTime)) / 1000;
-                var content = [];
-                for (var i = 0; i < teams.length; i++) {
-                  var perRonde = Math.round(tijd / teams[i].laps);
-                  var tijdS = '';
-                  if (perRonde < 60){
-                    tijdS = perRonde + 's';
-                  } else {
-                    tijdS = Math.round(perRonde / 60) + 'min' + perRonde % 60 + 's'
-                  }
-                  content.push(teams[i].name + ' doet ' + tijdS + ' over een ronde. &nbsp; &nbsp; &nbsp;');
-                }
-                return content;
-              },
-              randomStats: function() {
-                var teams = boxxy.teamsByScore();
-                var tijd = (Date.parse(Date()) - Date.parse(boxxy.startTime)) / 1000;
-                var totaleRondjes = 0;
-                for (var i = 0; i < teams.length; i++) {
-                  totaleRondjes += teams[i].laps;
-                };
-                var afstand = Math.round(totaleRondjes * boxxy.circuitLength / 1000);
-                var content = [];
-                content.push(totaleRondjes + ' gelopen rondjes, da\'s ' + afstand + ' km.');
-                content.push('Da\'s '+ makePuntedInts(Math.round(afstand * 4666.355)) + ' tandenborstels.');
-                content.push('Of ' + Math.round(afstand/5854*100) + '% van de afstand tot New York.');
-                // content.push('Er is al 3000l bier gedronken, en 350 hot dogs gemaakt');
-                var tijdS = '';
-                var iTijd = (12*3600) - tijd;
-                if (iTijd > 3600){
-                  tijdS = '' + Math.floor(iTijd/3600) + 'u' + Math.floor((iTijd%3600)/60) + 'm';
-                } else {
-                  tijdS = Math.floor(iTijd/60) + 'm' ;
-                }
-                content.push('Nog ' + tijdS + ' om te lopen.');
-                return content;
-              },
-              volgLive: function() {
-                return ['Volg op live.12urenloop.be!'];
-              },
-              smsHotOrNot: function() {
-                return ['Stuur sms HOT or NOT naar 0487 012 370'];
-              }
-            };
+    <script src="http://live.12urenloop.be/js/boxxy.js"></script>
+    <script src="http://live.12urenloop.be/js/jquery-1.7.1.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="http://live.12urenloop.be/socket.io/socket.io.js"></script>
+    <script>
+      // Set up boxxy
+      var boxxy = boxxy.initialize(),
+          boxxyHost = 'http://live.12urenloop.be:8080',
+          initialTimeout = 2000,
+          interval = 3500,
+          marqueeDuration = 6,  // Higher is slower
+          loop = [
+            //{command: 'runMarquee', content: 'volgLive'},
+            //{command: 'runMarquee', content: 'smsHotOrNot'},
+            //{command: 'runMarquee', content: 'kmGelopen'},
+            //{command: 'runMarquee', content: 'tijdPerRonde'},
+            //{command: 'runMarquee', content: 'randomStats'},
+            {command: 'runMarquee', content: 'scores'},
+            {command: 'goToLink', link: 'videowallscores.html'}
+          ],
+          commandIdx = -1, command;
 
-            function makePuntedInts(number) {
-              var numberString = '';
-              var bool = true;
-              while (number >= 1000){
-                if (bool) {
-                  numberString = number % 1000 + numberString;
-                  bool = false;
-                } else {
-                  numberString = number % 1000 + '.' + numberString;
-                }
-                number = Math.round(number/1000);
-              }
-              if (number > 1) {
-                numberString = number + '.' + numberString;
-              }
-              return numberString;
+      var contentGenerators = {
+        scores: function() {
+          var teams = boxxy.teamsByScore();
+          var content = [];
+          for (var i = 0; i < teams.length; i++) {
+            content.push((i+1) + '. ' + teams[i].name + ' (' + teams[i].laps + ')');
+          };
+          return content;
+        },
+        kmGelopen: function() {
+          var teams = boxxy.teamsByScore();
+          var content = [];
+          for (var i = 0; i < teams.length; i++) {
+            var afstand = teams[i].laps * boxxy.circuitLength;
+            var afstandS = afstand < 20000 ? '' + afstand : '' + Math.round(afstand/1000) + 'k';
+            content.push(teams[i].name + ' heeft ' + afstandS + 'm gelopen. &nbsp; &nbsp; &nbsp;');
+          }
+          return content;
+        },
+        tijdPerRonde: function() {
+          var teams = boxxy.teamsByScore();
+          var tijd = (Date.parse(Date()) - Date.parse(boxxy.startTime)) / 1000;
+          var content = [];
+          for (var i = 0; i < teams.length; i++) {
+            var perRonde = Math.round(tijd / teams[i].laps);
+            var tijdS = '';
+            if (perRonde < 60){
+              tijdS = perRonde + 's';
+            } else {
+              tijdS = Math.round(perRonde / 60) + 'min' + perRonde % 60 + 's'
             }
+            content.push(teams[i].name + ' doet ' + tijdS + ' over een ronde. &nbsp; &nbsp; &nbsp;');
+          }
+          return content;
+        },
+        randomStats: function() {
+          var teams = boxxy.teamsByScore();
+          var tijd = (Date.parse(Date()) - Date.parse(boxxy.startTime)) / 1000;
+          var totaleRondjes = 0;
+          for (var i = 0; i < teams.length; i++) {
+            totaleRondjes += teams[i].laps;
+          };
+          var afstand = Math.round(totaleRondjes * boxxy.circuitLength / 1000);
+          var content = [];
+          content.push(totaleRondjes + ' gelopen rondjes, da\'s ' + afstand + ' km.');
+          content.push('Da\'s '+ makePuntedInts(Math.round(afstand * 4666.355)) + ' tandenborstels.');
+          content.push('Of ' + Math.round(afstand/5854*100) + '% van de afstand tot New York.');
+          // content.push('Er is al 3000l bier gedronken, en 350 hot dogs gemaakt');
+          var tijdS = '';
+          var iTijd = (12*3600) - tijd;
+          if (iTijd > 3600){
+            tijdS = '' + Math.floor(iTijd/3600) + 'u' + Math.floor((iTijd%3600)/60) + 'm';
+          } else {
+            tijdS = Math.floor(iTijd/60) + 'm' ;
+          }
+          content.push('Nog ' + tijdS + ' om te lopen.');
+          return content;
+        },
+        volgLive: function() {
+          return ['Volg op live.12urenloop.be!'];
+        },
+        smsHotOrNot: function() {
+          return ['Stuur sms HOT or NOT naar 0487 012 370'];
+        }
+      };
 
-            function waitAndRunNextCommand(timeout) {
-              commandIdx = (commandIdx + 1) % loop.length;
-              command = loop[commandIdx];
-              setTimeout(function() {
-                executeCommand();
-              }, timeout);
-            }
+      function makePuntedInts(number) {
+        var numberString = '';
+        var bool = true;
+        while (number >= 1000){
+          if (bool) {
+            numberString = number % 1000 + numberString;
+            bool = false;
+          } else {
+            numberString = number % 1000 + '.' + numberString;
+          }
+          number = Math.round(number/1000);
+        }
+        if (number > 1) {
+          numberString = number + '.' + numberString;
+        }
+        return numberString;
+      }
 
-            function executeCommand() {
-              if (command.command == 'runMarquee') {
-                runMarquee(command.content);
-              } else if (command.command == 'goToLink') {
-                window.location.assign(command.link);
-              }
-            }
+      function waitAndRunNextCommand(timeout) {
+        commandIdx = (commandIdx + 1) % loop.length;
+        command = loop[commandIdx];
+        setTimeout(function() {
+          executeCommand();
+        }, timeout);
+      }
 
-            function runMarquee(contentType) {
-              var container = $('#marquee ol'),
-                  marqueeLength = 0,
-                  contentGenerator = contentGenerators[contentType];
+      function executeCommand() {
+        if (command.command == 'runMarquee') {
+          runMarquee(command.content);
+        } else if (command.command == 'goToLink') {
+          window.location.assign(command.link);
+        }
+      }
 
-              // Add the content
-              var content = contentGenerator();
-              for (var i = 0; i < content.length; i++) {
-                container.append('<li>' + content[i] + '</li>');
-              }
-              // Calculate the size of the content
-              container.children().each(function() {
-                marqueeLength += $(this).outerWidth(true);
-              });
+      function runMarquee(contentType) {
+        var container = $('#marquee ol'),
+            marqueeLength = 0,
+            contentGenerator = contentGenerators[contentType];
 
-              // Push content to the right edge of the marquee
-              container.css('left', $('#marquee').width());
-              // Let the marquee pop up from the bottom
-              $('#marquee').animate({'margin-bottom': 0}, 1000, function() {
-                // Let the content slide from right to left
-                var widthWithEdges = marqueeLength + $('#marquee').width() + 200;
-                var duration = widthWithEdges * marqueeDuration;
-                container.animate({left: -marqueeLength + 200}, duration, 'linear', function() {
-                  // When done, empty it ...
-                  container.empty();
-                  // ... let the marquee slide away ...
-                  $('#marquee').animate({'margin-bottom': -$('#marquee').height()}, 1000);
-                  // ... and run the next command
-                  waitAndRunNextCommand(interval + 1000);
-                });
-              });
-            }
+        // Add the content
+        var content = contentGenerator();
+        for (var i = 0; i < content.length; i++) {
+          container.append('<li>' + content[i] + '</li>');
+        }
+        // Calculate the size of the content
+        container.children().each(function() {
+          marqueeLength += $(this).outerWidth(true);
+        });
 
-            $(document).ready(function () {
-              boxxy.listen(boxxyHost);
-              waitAndRunNextCommand(initialTimeout);
-            });
-        </script>
-    </body>
+        // Push content to the right edge of the marquee
+        container.css('left', $('#marquee').width());
+        // Let the marquee pop up from the bottom
+        $('#marquee').animate({'margin-bottom': 0}, 1000, function() {
+          // Let the content slide from right to left
+          var widthWithEdges = marqueeLength + $('#marquee').width() + 200;
+          var duration = widthWithEdges * marqueeDuration;
+          container.animate({left: -marqueeLength + 200}, duration, 'linear', function() {
+            // When done, empty it ...
+            container.empty();
+            // ... let the marquee slide away ...
+            $('#marquee').animate({'margin-bottom': -$('#marquee').height()}, 1000);
+            // ... and run the next command
+            waitAndRunNextCommand(interval + 1000);
+          });
+        });
+      }
+
+      $(document).ready(function () {
+        boxxy.listen(boxxyHost);
+        waitAndRunNextCommand(initialTimeout);
+      });
+    </script>
+  </body>
 </html>
