@@ -1,0 +1,124 @@
+>>> main()
+ * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+{}
+127.0.0.1 - - [24/Apr/2015 01:27:25] "PUT /ping HTTP/1.1" 200 -
+{'laps': [{'timestamp': '2015-04-06T21:53:21.029Z', 'count': 1, 'reason': None, 'team': '1', 'id': '2615', 'total': 154}, {'timestamp': '2015-04-06T21:53:20.030Z', 'count': 1, 'reason': None, 'team': '15', 'id': '2614', 'total': 157}, {'timestamp': '2015-04-06T21:53:10.998Z', 'count': 1, 'reason': None, 'team': '17', 'id': '2613', 'total': 149}, {'timestamp': '2015-04-06T21:53:09.993Z', 'count': 1, 'reason': None, 'team': '9', 'id': '2612', 'total': 152}, {'timestamp': '2015-04-06T21:53:05.982Z', 'count': 1, 'reason': None, 'team': '6', 'id': '2611', 'total': 155}, {'timestamp': '2015-04-06T21:52:34.886Z', 'count': 1, 'reason': None, 'team': '14', 'id': '2610', 'total': 151}, {'timestamp': '2015-04-06T21:52:21.849Z', 'count': 1, 'reason': None, 'team': '12', 'id': '2609', 'total': 158}, {'timestamp': '2015-04-06T21:51:49.755Z', 'count': 1, 'reason': None, 'team': '2', 'id': '2608', 'total': 151}, {'timestamp': '2015-04-06T21:51:12.663Z', 'count': 1, 'reason': None, 'team': '5', 'id': '2607', 'total': 155}, {'timestamp': '2015-04-06T21:50:37.560Z', 'count': 1, 'reason': None, 'team': '7', 'id': '2606', 'total': 155}], 'teams': {'11': {'station': None, 'laps': 159, 'name': 'Politeia', 'id': '11', 'updated': None}, '1': {'station': None, 'laps': 154, 'name': 'KVHV', 'id': '1', 'updated': None}, '13': {'station': None, 'laps': 155, 'name': 'Veto, Moeder Lies, LILA & Hermes', 'id': '13', 'updated': None}, '15': {'station': None, 'laps': 157, 'name': 'SeniorenKonvent', 'id': '15', 'updated': None}, '7': {'station': None, 'laps': 155, 'name': 'VTK', 'id': '7', 'updated': None}, '3': {'station': None, 'laps': 156, 'name': 'Wetenschappen & VLAK', 'id': '3', 'updated': None}, '6': {'station': None, 'laps': 155, 'name': 'VLK', 'id': '6', 'updated': None}, '9': {'station': None, 'laps': 152, 'name': 'VBK', 'id': '9', 'updated': None}, '2': {'station': None, 'laps': 151, 'name': 'Kofschipclubs', 'id': '2', 'updated': None}, '10': {'station': None, 'laps': 152, 'name': 'VGK', 'id': '10', 'updated': None}, '5': {'station': None, 'laps': 155, 'name': 'VEK', 'id': '5', 'updated': None}, '14': {'station': None, 'laps': 151, 'name': 'VRG & Farma', 'id': '14', 'updated': None}, '4': {'station': None, 'laps': 152, 'name': 'Blandinia', 'id': '4', 'updated': None}, '16': {'station': None, 'laps': 151, 'name': 'Home Konvent', 'id': '16', 'updated': None}, '17': {'station': None, 'laps': 149, 'name': 'Urgent & Schamper', 'id': '17', 'updated': None}, '8': {'station': None, 'laps': 153, 'name': 'HILOK', 'id': '8', 'updated': None}, '12': {'station': None, 'laps': 158, 'name': 'VPPK', 'id': '12', 'updated': None}}, 'stations': {'1': {'name': 'gyrid1', 'id': '1', 'position': 45.0}, '2': {'name': 'gyrid2', 'id': '2', 'position': 120.0}, '4': {'name': 'gyrid6', 'id': '4', 'position': 280.0}, '3': {'name': 'gyrid3', 'id': '3', 'position': 190.0}, '5': {'name': 'gyrid5', 'id': '5', 'position': 370.0}}, 'circuitLength': 380.0, 'startTime': '2015-04-23T23:27:25.683Z'}
+127.0.0.1 - - [24/Apr/2015 01:27:25] "PUT /state HTTP/1.1" 200 -
+{'station': '2', 'timestamp': '2015-04-23T23:27:48.145Z', 'team': '10'}
+127.0.0.1 - - [24/Apr/2015 01:27:48] "PUT /position HTTP/1.1" 200 -
+{'station': '2', 'timestamp': '2015-04-23T23:28:34.293Z', 'team': '9'}
+127.0.0.1 - - [24/Apr/2015 01:28:34] "PUT /position HTTP/1.1" 200 -
+{'station': '3', 'timestamp': '2015-04-23T23:28:36.302Z', 'team': '10'}
+127.0.0.1 - - [24/Apr/2015 01:28:36] "PUT /position HTTP/1.1" 200 -
+{'station': '2', 'timestamp': '2015-04-23T23:28:38.308Z', 'team': '7'}
+127.0.0.1 - - [24/Apr/2015 01:28:38] "PUT /position HTTP/1.1" 200 -
+{'station': '2', 'timestamp': '2015-04-23T23:28:44.326Z', 'team': '3'}
+127.0.0.1 - - [24/Apr/2015 01:28:44] "PUT /position HTTP/1.1" 200 -
+{'station': '2', 'timestamp': '2015-04-23T23:28:46.334Z', 'team': '8'}
+127.0.0.1 - - [24/Apr/2015 01:28:46] "PUT /position HTTP/1.1" 200 -
+{'station': '2', 'timestamp': '2015-04-23T23:28:47.336Z', 'team': '2'}
+127.0.0.1 - - [24/Apr/2015 01:28:47] "PUT /position HTTP/1.1" 200 -
+{'station': '2', 'timestamp': '2015-04-23T23:28:52.358Z', 'team': '14'}
+127.0.0.1 - - [24/Apr/2015 01:28:52] "PUT /position HTTP/1.1" 200 -
+{'station': '2', 'timestamp': '2015-04-23T23:29:03.393Z', 'team': '15'}
+127.0.0.1 - - [24/Apr/2015 01:29:03] "PUT /position HTTP/1.1" 200 -
+{'station': '2', 'timestamp': '2015-04-23T23:29:08.407Z', 'team': '6'}
+127.0.0.1 - - [24/Apr/2015 01:29:08] "PUT /position HTTP/1.1" 200 -
+{'station': '2', 'timestamp': '2015-04-23T23:29:11.417Z', 'team': '17'}
+127.0.0.1 - - [24/Apr/2015 01:29:11] "PUT /position HTTP/1.1" 200 -
+{'station': '3', 'timestamp': '2015-04-23T23:29:17.434Z', 'team': '14'}
+127.0.0.1 - - [24/Apr/2015 01:29:17] "PUT /position HTTP/1.1" 200 -
+{'station': '2', 'timestamp': '2015-04-23T23:29:18.437Z', 'team': '4'}
+127.0.0.1 - - [24/Apr/2015 01:29:18] "PUT /position HTTP/1.1" 200 -
+{'station': '2', 'timestamp': '2015-04-23T23:29:23.455Z', 'team': '16'}
+127.0.0.1 - - [24/Apr/2015 01:29:23] "PUT /position HTTP/1.1" 200 -
+{'station': '2', 'timestamp': '2015-04-23T23:29:24.456Z', 'team': '1'}
+127.0.0.1 - - [24/Apr/2015 01:29:24] "PUT /position HTTP/1.1" 200 -
+{'station': '2', 'timestamp': '2015-04-23T23:29:36.493Z', 'team': '13'}
+127.0.0.1 - - [24/Apr/2015 01:29:36] "PUT /position HTTP/1.1" 200 -
+{'station': '3', 'timestamp': '2015-04-23T23:29:40.505Z', 'team': '9'}
+127.0.0.1 - - [24/Apr/2015 01:29:40] "PUT /position HTTP/1.1" 200 -
+{'station': '3', 'timestamp': '2015-04-23T23:29:42.513Z', 'team': '2'}
+127.0.0.1 - - [24/Apr/2015 01:29:42] "PUT /position HTTP/1.1" 200 -
+{'station': '3', 'timestamp': '2015-04-23T23:29:52.538Z', 'team': '6'}
+127.0.0.1 - - [24/Apr/2015 01:29:52] "PUT /position HTTP/1.1" 200 -
+{'station': '4', 'timestamp': '2015-04-23T23:29:55.547Z', 'team': '9'}
+127.0.0.1 - - [24/Apr/2015 01:29:55] "PUT /position HTTP/1.1" 200 -
+{'station': '3', 'timestamp': '2015-04-23T23:29:56.550Z', 'team': '7'}
+127.0.0.1 - - [24/Apr/2015 01:29:56] "PUT /position HTTP/1.1" 200 -
+{'station': '2', 'timestamp': '2015-04-23T23:29:59.560Z', 'team': '11'}
+127.0.0.1 - - [24/Apr/2015 01:29:59] "PUT /position HTTP/1.1" 200 -
+{'station': '4', 'timestamp': '2015-04-23T23:30:00.563Z', 'team': '10'}
+127.0.0.1 - - [24/Apr/2015 01:30:00] "PUT /position HTTP/1.1" 200 -
+{'station': '2', 'timestamp': '2015-04-23T23:30:06.581Z', 'team': '5'}
+127.0.0.1 - - [24/Apr/2015 01:30:06] "PUT /position HTTP/1.1" 200 -
+{'station': '4', 'timestamp': '2015-04-23T23:30:07.583Z', 'team': '2'}
+127.0.0.1 - - [24/Apr/2015 01:30:07] "PUT /position HTTP/1.1" 200 -
+{'station': '3', 'timestamp': '2015-04-23T23:30:17.622Z', 'team': '15'}
+127.0.0.1 - - [24/Apr/2015 01:30:17] "PUT /position HTTP/1.1" 200 -
+{'station': '3', 'timestamp': '2015-04-23T23:30:20.630Z', 'team': '8'}
+127.0.0.1 - - [24/Apr/2015 01:30:20] "PUT /position HTTP/1.1" 200 -
+{'station': '4', 'timestamp': '2015-04-23T23:30:21.633Z', 'team': '6'}
+127.0.0.1 - - [24/Apr/2015 01:30:21] "PUT /position HTTP/1.1" 200 -
+{'station': '3', 'timestamp': '2015-04-23T23:30:22.636Z', 'team': '3'}
+127.0.0.1 - - [24/Apr/2015 01:30:22] "PUT /position HTTP/1.1" 200 -
+{'station': '3', 'timestamp': '2015-04-23T23:30:24.642Z', 'team': '1'}
+127.0.0.1 - - [24/Apr/2015 01:30:24] "PUT /position HTTP/1.1" 200 -
+{'station': '3', 'timestamp': '2015-04-23T23:30:25.645Z', 'team': '4'}
+127.0.0.1 - - [24/Apr/2015 01:30:25] "PUT /position HTTP/1.1" 200 -
+{'station': '3', 'timestamp': '2015-04-23T23:30:36.680Z', 'team': '13'}
+127.0.0.1 - - [24/Apr/2015 01:30:36] "PUT /position HTTP/1.1" 200 -
+{'station': '5', 'timestamp': '2015-04-23T23:30:37.683Z', 'team': '9'}
+127.0.0.1 - - [24/Apr/2015 01:30:37] "PUT /position HTTP/1.1" 200 -
+{'station': '4', 'timestamp': '2015-04-23T23:30:43.697Z', 'team': '7'}
+127.0.0.1 - - [24/Apr/2015 01:30:43] "PUT /position HTTP/1.1" 200 -
+{'station': '4', 'timestamp': '2015-04-23T23:30:45.704Z', 'team': '1'}
+127.0.0.1 - - [24/Apr/2015 01:30:45] "PUT /position HTTP/1.1" 200 -
+{'station': '4', 'timestamp': '2015-04-23T23:30:49.719Z', 'team': '3'}
+127.0.0.1 - - [24/Apr/2015 01:30:49] "PUT /position HTTP/1.1" 200 -
+{'station': '2', 'timestamp': '2015-04-23T23:30:55.737Z', 'team': '12'}
+127.0.0.1 - - [24/Apr/2015 01:30:55] "PUT /position HTTP/1.1" 200 -
+{'station': '3', 'timestamp': '2015-04-23T23:30:57.746Z', 'team': '17'}
+127.0.0.1 - - [24/Apr/2015 01:30:57] "PUT /position HTTP/1.1" 200 -
+{'station': '4', 'timestamp': '2015-04-23T23:31:18.807Z', 'team': '14'}
+127.0.0.1 - - [24/Apr/2015 01:31:18] "PUT /position HTTP/1.1" 200 -
+{'station': '4', 'timestamp': '2015-04-23T23:31:19.812Z', 'team': '17'}
+127.0.0.1 - - [24/Apr/2015 01:31:19] "PUT /position HTTP/1.1" 200 -
+{'station': '3', 'timestamp': '2015-04-23T23:31:25.831Z', 'team': '12'}
+127.0.0.1 - - [24/Apr/2015 01:31:25] "PUT /position HTTP/1.1" 200 -
+{'station': '5', 'timestamp': '2015-04-23T23:31:26.835Z', 'team': '2'}
+127.0.0.1 - - [24/Apr/2015 01:31:26] "PUT /position HTTP/1.1" 200 -
+{'station': '3', 'timestamp': '2015-04-23T23:31:29.846Z', 'team': '5'}
+127.0.0.1 - - [24/Apr/2015 01:31:29] "PUT /position HTTP/1.1" 200 -
+{'station': '4', 'timestamp': '2015-04-23T23:31:31.851Z', 'team': '4'}
+127.0.0.1 - - [24/Apr/2015 01:31:31] "PUT /position HTTP/1.1" 200 -
+{'station': '5', 'timestamp': '2015-04-23T23:31:36.865Z', 'team': '1'}
+127.0.0.1 - - [24/Apr/2015 01:31:36] "PUT /position HTTP/1.1" 200 -
+{'station': '5', 'timestamp': '2015-04-23T23:31:39.877Z', 'team': '3'}
+127.0.0.1 - - [24/Apr/2015 01:31:39] "PUT /position HTTP/1.1" 200 -
+{'station': '5', 'timestamp': '2015-04-23T23:31:40.882Z', 'team': '7'}
+127.0.0.1 - - [24/Apr/2015 01:31:40] "PUT /position HTTP/1.1" 200 -
+{'station': '4', 'timestamp': '2015-04-23T23:31:41.888Z', 'team': '8'}
+127.0.0.1 - - [24/Apr/2015 01:31:41] "PUT /position HTTP/1.1" 200 -
+{'station': '5', 'timestamp': '2015-04-23T23:31:51.915Z', 'team': '10'}
+127.0.0.1 - - [24/Apr/2015 01:31:51] "PUT /position HTTP/1.1" 200 -
+{'station': '4', 'timestamp': '2015-04-23T23:31:55.930Z', 'team': '13'}
+127.0.0.1 - - [24/Apr/2015 01:31:55] "PUT /position HTTP/1.1" 200 -
+{'station': '5', 'timestamp': '2015-04-23T23:31:56.934Z', 'team': '6'}
+127.0.0.1 - - [24/Apr/2015 01:31:56] "PUT /position HTTP/1.1" 200 -
+{'timestamp': '2015-04-23T23:32:03.957Z', 'count': 1, 'reason': None, 'team': '2', 'id': '2616', 'total': 152}
+127.0.0.1 - - [24/Apr/2015 01:32:03] "PUT /lap HTTP/1.1" 200 -
+{'station': '1', 'timestamp': '2015-04-23T23:32:03.957Z', 'team': '2'}
+127.0.0.1 - - [24/Apr/2015 01:32:03] "PUT /position HTTP/1.1" 200 -
+{'timestamp': '2015-04-23T23:32:07.967Z', 'count': 1, 'reason': None, 'team': '6', 'id': '2617', 'total': 156}
+127.0.0.1 - - [24/Apr/2015 01:32:07] "PUT /lap HTTP/1.1" 200 -
+{'station': '1', 'timestamp': '2015-04-23T23:32:07.967Z', 'team': '6'}
+127.0.0.1 - - [24/Apr/2015 01:32:08] "PUT /position HTTP/1.1" 200 -
+{'station': '4', 'timestamp': '2015-04-23T23:32:09.975Z', 'team': '15'}
+127.0.0.1 - - [24/Apr/2015 01:32:09] "PUT /position HTTP/1.1" 200 -
+{'timestamp': '2015-04-23T23:32:10.977Z', 'count': 1, 'reason': None, 'team': '7', 'id': '2618', 'total': 156}
+127.0.0.1 - - [24/Apr/2015 01:32:11] "PUT /lap HTTP/1.1" 200 -
+{'station': '1', 'timestamp': '2015-04-23T23:32:10.977Z', 'team': '7'}
+127.0.0.1 - - [24/Apr/2015 01:32:11] "PUT /position HTTP/1.1" 200 -
+{'station': '4', 'timestamp': '2015-04-23T23:32:11.980Z', 'team': '5'}
+127.0.0.1 - - [24/Apr/2015 01:32:11] "PUT /position HTTP/1.1" 200 -
