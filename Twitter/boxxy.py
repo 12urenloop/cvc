@@ -2,7 +2,14 @@
 
 from functools import wraps
 from flask import Flask, request, Response
+from collections import deque
+
 app = Flask(__name__)
+
+DISTANCES = deque([
+    #(distance,name),
+    
+    ])
 
 def main():
     boxxy = Boxxy()
@@ -16,7 +23,16 @@ def main():
         app.route(path, methods=['PUT'])(requires_auth(method))
     app.run()
 
+class Team:
+
+    def __init__(self,name):
+        self.name = name
+        self.shortestLap = sys.maxint #in milliseconds
+        self.lastLapTimeStamp
+
 class Boxxy(object):
+
+    teams = []
 
     def ping(self):
         print(request.json)
@@ -24,10 +40,40 @@ class Boxxy(object):
 
     def state(self):
         print(request.json)
+        state = request.json
+
+        for teamjson in state["teams"]:
+            teams[teamjson["id"]] = Team(teamjson["name"])
+
         return "OK"
 
     def lap(self):
         print(request.json)
+        lap = request.json
+
+        team = teams[lap["id"]]
+        team.laps = lap["total"]
+        totalLaps = lap["id"]
+
+        #check teamtriggers
+        laptime = lap["timestamp"] - team.lastLapTimeStamp
+        if laptime < team.shortestLap and team.laps > 10:
+            team.shortestLap = laptime
+            #TRIGGER SHORTESTLAP
+
+        if team.laps % 100 == 0:
+            #TRIGGER LAPMILESTONE
+
+        #check globaltriggers
+        if laptime < shortestLapGlobal and totalLaps > 100:
+            shortestLapGlobal = laptime
+            #TRIGGER SHORTESTLAPGLOBAL
+
+        distance = totalLaps * OMTREK
+        if distance
+
+        team.lastLapTimeStamp = lap["timestamp"]
+
         return "OK"
 
     def position(self):
@@ -56,4 +102,7 @@ def requires_auth(f):
             return authenticate()
         return f(*args, **kwargs)
     return decorated
+
+def tweet(msg):
+    pass
 

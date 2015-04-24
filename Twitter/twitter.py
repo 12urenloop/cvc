@@ -1,59 +1,63 @@
 import json
 
-class team:
-    shortestlaptime = ''
+OMTREK = 384
 
-    def __init__(self,id,name):
-        self.teamid = teamid
+class Team:
+
+    def __init__(self,name):
         self.name = name
-        self.shortestLap = ''
-        self.distance = ''
-        self.laps
-
-    def get_distance():
-        return laps * 384
-
+        self.shortestLap = sys.maxint #in milliseconds
+        self.lastLapTimeStamp
 
 #krijg statejson
 
-with open('data.json') as data_file:    
-    data = json.load(data_file)
+with open('statejson.json') as data_file:    
+    state = json.load(data_file)
 
-teamDict = {}
-for teamJson in data["teams"]:
-    teamDict[teamJson['"id"']] = teamjson["name"]
+teams = []
+for teamjson in state["teams"]:
+    teams[teamjson["id"]] = Team(teamjson["name"])
 
 
-totalDist = ''
-shortestLapGlobal = ''
-totalLaps = ''
-
+shortestLapGlobal = sys.maxint #in milliseconds
+totalLaps = 0
 
 #krijg lapjson
-#teamlijst[  #gesorteerd op positie
-#   team[
-#       shortestlaptime,
-#       pos,
-#   ]
-#]
+
+    #update teamstata
+    team = teams[lap["id"]]
+    team.laps = lap["total"]
+    totalLaps = lap["id"]
+
+    #check teamtriggers
+    laptime = lap["timestamp"] - team.lastLapTimeStamp
+    if laptime < team.shortestLap and team.laps > 10:
+        team.shortestLap = laptime
+        #TRIGGER SHORTESTLAP
+
+    if team.laps % 100 == 0:
+        #TRIGGER LAPMILESTONE
+
+    #check globaltriggers
+    if laptime < shortestLapGlobal and totalLaps > 100:
+        shortestLapGlobal = laptime
+        #TRIGGER SHORTESTLAPGLOBAL
+
+    distance = totalLaps * OMTREK
+    if distance
+
+    team.lastLapTimeStamp = lap["timestamp"]
+
 
 #pas triggeren als 10 team 15 rondjes gelopen hebben
-def teamPassed(team1,team2):
-    pass
 # TEAM1 heeft net TEAM2 ingehaald
 
 #pas triggeren als TEAM 15 rondjes gelopen heeft
-def newShortestLap(team,time):
-    pass
 # TEAM heeft hun laatste rondje in TIME gelopen. Dat is hun nieuwe snelste tijd!
 
 #pas triggeren als 10 teams 15 rondjes gelopen hebben
-def newShortestLapGlobal(team, time):
-    pass
 # :tada::tada: TEAM heeft hun laatste rondje in TIME gelopen. Dat is het snelste rondje van de dag! :tada::tada:
 
-def lapMilestone(team, laps):
-    pass
 # TEAM heeft LAPS rondjes gelopen.
 
 def tweet(msg):
