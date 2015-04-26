@@ -11,7 +11,7 @@ class Team:
 
 #krijg statejson
 
-with open('statejson.json') as data_file:    
+with open('statejson.json') as data_file:
     state = json.load(data_file)
 
 teams = []
@@ -24,29 +24,29 @@ totalLaps = 0
 
 #krijg lapjson
 
-    #update teamstata
-    team = teams[lap["id"]]
-    team.laps = lap["total"]
-    totalLaps = lap["id"]
+#update teamstata
+team = teams[lap["id"]]
+team.laps = lap["total"]
+totalLaps = lap["id"]
 
-    #check teamtriggers
-    laptime = lap["timestamp"] - team.lastLapTimeStamp
-    if laptime < team.shortestLap and team.laps > 10:
-        team.shortestLap = laptime
-        #TRIGGER SHORTESTLAP
+#check teamtriggers
+laptime = lap["timestamp"] - team.lastLapTimeStamp
+if laptime < team.shortestLap and team.laps > 10:
+    team.shortestLap = laptime
+    #TRIGGER SHORTESTLAP
 
-    if team.laps % 100 == 0:
-        #TRIGGER LAPMILESTONE
+if team.laps % 100 == 0:
+    #TRIGGER LAPMILESTONE
 
-    #check globaltriggers
-    if laptime < shortestLapGlobal and totalLaps > 100:
-        shortestLapGlobal = laptime
-        #TRIGGER SHORTESTLAPGLOBAL
+#check globaltriggers
+if laptime < shortestLapGlobal and totalLaps > 100:
+    shortestLapGlobal = laptime
+    #TRIGGER SHORTESTLAPGLOBAL
 
-    distance = totalLaps * OMTREK
-    if distance
+distance = totalLaps * OMTREK
+if distance
 
-    team.lastLapTimeStamp = lap["timestamp"]
+team.lastLapTimeStamp = lap["timestamp"]
 
 
 #pas triggeren als 10 team 15 rondjes gelopen hebben
@@ -62,4 +62,3 @@ totalLaps = 0
 
 def tweet(msg):
     pass
-
