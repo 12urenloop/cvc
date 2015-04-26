@@ -1,5 +1,8 @@
 backports.ssl-match-hostname==3.4.0.2
+jsonpickle==0.9.2
+oauth==1.0.1
 requests==2.6.1
 six==1.9.0
 socketIO-client==0.5.5
+twitter==1.17.0
 websocket-client==0.29.0

@@ -3,7 +3,9 @@ from functools import wraps
 from datetime import datetime, timedelta
 from collections import deque
 from random import choice
+from os.path import isfile
 from twitter import Twitter, OAuth
+import jsonpickle as jp
 
 from config import *
 
@@ -72,9 +74,17 @@ TOTAL_DISTANCE = [
     "Alle teams tesamen hebben al de afstand van Gent tot {location}{andBack} overbrugt. Dat is niet minder dan {distance}!",
     "Blijven lopen: de lopers hebben al {distance} gelopen. Dat is ongeveer de afstand van Gent tot {location}{andBack}."]
 
+FILENAME = 'save.json'
 
 def main():
-    boxxy = Boxxy()
+    boxxy = None
+    if isfile(FILENAME):
+        # save file so create boxxy from file
+        with open(FILENAME, 'r') as f:
+            boxxy = jp.decode(f.read())
+    else:
+        # no save so create new client
+        boxxy = Boxxy()
     socketIO = SocketIO('live.12urenloop.be', 8080, LoggingNamespace, resource='socket.io')
 
     paths = {
@@ -88,7 +98,6 @@ def main():
 
     socketIO.wait(seconds=3600 * 12)
 
-
 class Team:
     def __init__(self, name):
         self.name = name
@@ -98,11 +107,10 @@ class Team:
 
 class Boxxy(object):
     def __init__(self):
-        self.auth = OAuth(ACCESS_KEY, ACCESS_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
-        self.twitter = Twitter(auth=self.auth)
         self.teams = {}
         self.shortestLapGlobal = None
         self.omtrek = float("inf")
+        self.distances = DISTANCES
 
     def ping(self, json):
         pass
@@ -133,37 +141,39 @@ class Boxxy(object):
             # TRIGGER SHORTESTLAP
             if team.laps > 10:
                 msg = choice(SHORTEST_LAP)
-                self.tweet(msg.format(team=team.name, time=convert_laptime(laptime), verb=pluralize(team.name)))
+                tweet(msg.format(team=team.name, time=convert_laptime(laptime), verb=pluralize(team.name)))
 
         if team.laps % 100 == 0:
-            self.tweet(choice(TEAM_RUN_ROUNDS).format(team=team.name, laps=team.laps, verb=pluralize(team.name)))
+            tweet(choice(TEAM_RUN_ROUNDS).format(team=team.name, laps=team.laps, verb=pluralize(team.name)))
 
         # check globaltriggers
         if laptime < self.shortestLapGlobal:
             self.shortestLapGlobal = laptime
             if totalLaps > 100:
                 msg = choice(GLOBAL_FASTEST_LAP)
-                self.tweet(msg.format(team=team.name, time=convert_laptime(laptime), verb=pluralize(team.name)))
+                tweet(msg.format(team=team.name, time=convert_laptime(laptime), verb=pluralize(team.name)))
 
         distance = totalLaps * self.omtrek
-        if distance > DISTANCES[0][0]:
-            loc = DISTANCES.popleft()
+        if distance > self.distances[0][0]:
+            loc = self.distances.popleft()
             # create msg
             andBack = ' (en terug)' if not loc[2] else ''
-            self.tweet(
+            tweet(
                 choice(TOTAL_DISTANCE).format(location=loc[1], andBack=andBack, distance=convert_distance(distance)))
 
         team.lastLapTimeStamp = lapEndTimeStamp
 
+        self.dump()
+
     def position(self, position):
         pass
 
-    def tweet(self, msg):
-        print("Tweet: " + msg + " (" + str(len(msg)) + ")")
-        try:
-            _ = self.twitter.statuses.update(status=msg)
-        except:
-            print("Twitter error")
+    def dump(self):
+        with open(FILENAME, 'w') as f:
+            print(jp.encode(self), end='', file=f)
+
+auth = OAuth(ACCESS_KEY, ACCESS_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
+twitter = Twitter(auth=auth)
 
 
 def parse_time(time):
@@ -182,5 +192,13 @@ def convert_laptime(time):
 
 def convert_distance(distance):
     return str(int(distance/1000)) + "km"
+
+
+def tweet(msg):
+    print("Tweet: " + msg + " (" + str(len(msg)) + ")")
+    try:
+        _ = twitter.statuses.update(status=msg)
+    except:
+        print("Twitter error")
 
 main()
