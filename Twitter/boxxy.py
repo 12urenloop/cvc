@@ -97,16 +97,16 @@ class Boxxy(object):
 
         for teamid in state["teams"]:
             teamjson = state['teams'][teamid]
-            self.teams[teamjson["name"]] = Team(teamjson["name"])
+            self.teams[teamid] = Team(teamjson["name"])
 
     def lap(self, lap):
-
-        team = teams[lap["id"]]
+        print(lap)
+        team = self.teams[lap["team"]]
         team.laps = lap["total"]
         totalLaps = lap["id"]
 
         #check teamtriggers
-        laptime = lap["timestamp"] - team.lastLapTimeStamp
+        '''laptime = lap["timestamp"] - team.lastLapTimeStamp
         if laptime < team.shortestLap and team.laps > 10:
             team.shortestLap = laptime
             #TRIGGER SHORTESTLAP
@@ -129,7 +129,7 @@ class Boxxy(object):
             #TRIGGER AFSTANDGELOPEN
             #_ = twitter.statuses.update(status=msg)
 
-        team.lastLapTimeStamp = lap["timestamp"]
+        team.lastLapTimeStamp = lap["timestamp"]'''
 
     def position(self, position):
         print(position)
