@@ -1,13 +1,15 @@
-from socketIO_client import SocketIO, LoggingNamespace
-from functools import wraps
 from datetime import datetime, timedelta
 from collections import deque
 from random import choice
 from os.path import isfile
+import traceback
+import sys
+
+from socketIO_client import SocketIO, LoggingNamespace
 from twitter import Twitter, OAuth
 import jsonpickle as jp
 
-from config import *
+from config import ACCESS_KEY, ACCESS_SECRET, CONSUMER_KEY, CONSUMER_SECRET
 
 DISTANCES = deque([
     (261290, 'Parijs', True),
@@ -77,6 +79,7 @@ TOTAL_DISTANCE = [
 FILENAME = 'save.json'
 
 def main():
+    global TWITTER
     boxxy = None
     if isfile(FILENAME):
         # save file so create boxxy from file
@@ -97,6 +100,7 @@ def main():
         socketIO.on(path, method)
 
     socketIO.wait(seconds=3600 * 12)
+
 
 class Team:
     def __init__(self, name):
@@ -172,9 +176,6 @@ class Boxxy(object):
         with open(FILENAME, 'w') as f:
             print(jp.encode(self), end='', file=f)
 
-auth = OAuth(ACCESS_KEY, ACCESS_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
-twitter = Twitter(auth=auth)
-
 
 def parse_time(time):
     return datetime.strptime(time, "%Y-%m-%dT%H:%M:%S.%fZ")
@@ -194,11 +195,15 @@ def convert_distance(distance):
     return str(int(distance/1000)) + "km"
 
 
+auth = OAuth(ACCESS_KEY, ACCESS_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
+twitter = Twitter(auth=auth)
+
 def tweet(msg):
     print("Tweet: " + msg + " (" + str(len(msg)) + ")")
     try:
         _ = twitter.statuses.update(status=msg)
     except:
         print("Twitter error")
+        traceback.print_exc(file=sys.stdout)
 
 main()
