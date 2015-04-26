@@ -62,15 +62,15 @@ SHORTEST_LAP = ["{team} {verb} net een rondje in {time} gelopen. Dat is hun snel
 GLOBAL_FASTEST_LAP = [
     "{team} {verb} net een rondje in {time} gelopen. Dat is tot nog toe het snelste rondje van de dag! Proficiat!",
     "De titel Snelste Rondje Van De Dag gaat momenteel naar {team}. Zij hebben hun laatste rondje in {time} gelopen! Proficiat!",
-    "Een nieuw snelheidsrecord: {team} {verb} hun laatste rondje in {time} gelopen. Dat is Tot nu toe het snelste rondje van de dag! Proficiat!"]
+    "Een nieuw snelheidsrecord: {team} {verb} hun laatste rondje in {time} gelopen. Dat is tot nu toe het snelste rondje van de dag! Proficiat!"]
 
 TEAM_RUN_ROUNDS = ["{team} {verb} al {laps} laps achter de rug.",
                    "{team} {verb} al {laps} laps gelopen.",
                    "Nog eens honderd laps erbij! {team} {verb} al {laps} laps gelopen."]
 
 TOTAL_DISTANCE = [
-    "Alle teams tesamen hebben al de afstand van Gent tot {location}{andBack} overbrugt. Dat is niet minder dan {distance}!"
-    "Blijven lopen: de lopers hebben al {distance} gelopen. Dat is zo ongeveer de afstand van Gent tot {location}{andBack}."]
+    "Alle teams tesamen hebben al de afstand van Gent tot {location}{andBack} overbrugt. Dat is niet minder dan {distance}!",
+    "Blijven lopen: de lopers hebben al {distance} gelopen. Dat is ongeveer de afstand van Gent tot {location}{andBack}."]
 
 
 def main():
@@ -127,7 +127,6 @@ class Boxxy(object):
         # check
         lapEndTimeStamp = parse_time(lap["timestamp"])
         laptime = lapEndTimeStamp - team.lastLapTimeStamp
-        print(laptime)
         if laptime < team.shortestLap:
             team.shortestLap = laptime
             # TRIGGER SHORTESTLAP
@@ -155,7 +154,7 @@ class Boxxy(object):
             # create msg
             andBack = ' (en terug)' if loc[2] else ''
             self.tweet(
-                choice(TOTAL_DISTANCE).format(location=loc[1], andBack=andBack, distance=str(loc[0] / 1000) + "km"))
+                choice(TOTAL_DISTANCE).format(location=loc[1], andBack=andBack, distance=str(int(distance/ 1000)) + "km"))
 
         team.lastLapTimeStamp = lapEndTimeStamp
 
@@ -163,6 +162,7 @@ class Boxxy(object):
         pass
 
     def tweet(self, msg):
+        print("Tweet: " + msg)
         try:
             _ = self.twitter.statuses.update(status=msg)
         except:
