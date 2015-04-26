@@ -114,6 +114,8 @@ class Boxxy(object):
 
             #check teamtriggers
             laptime = lap["timestamp"] - team.lastLapTimeStamp
+            #'2015-04-06T21:53:21.029Z'
+            #datetime.strptime(lap["timestamp"], "%Y-%m-%dT%H:%M:%S.%fZ")
             if laptime < team.shortestLap and team.laps > 10:
                 team.shortestLap = laptime
                 #TRIGGER SHORTESTLAP
