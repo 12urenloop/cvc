@@ -1,10 +1,11 @@
-
 from socketIO_client import SocketIO, LoggingNamespace
 from functools import wraps
 from datetime import datetime, timedelta
 from collections import deque
+from random import choice
 from twitter import Twitter, OAuth
 
+from config import *
 
 DISTANCES = deque([
     (261290, 'Parijs', True),
@@ -53,11 +54,23 @@ DISTANCES = deque([
     (3807320, 'Sint', False),
     (4357700, 'Istanbul', False),
     (4506520, 'Moskou', False),
-    ])
-ACCESS_KEY = ''
-ACCESS_SECRET = ''
-CONSUMER_KEY = ''
-CONSUMER_SECRET = ''
+])
+
+SHORTEST_LAP = ["{team} {verb} net een rondje in {time} gelopen. Dat is hun snelste rondje tot nog toe!",
+                "{team} {verb} hun persoonlijk record verbeterd: hun laatste rondje duurde slechts {time}. Doe zo voort!"]
+
+GLOBAL_FASTEST_LAP = [
+    "{team} {verb} net een rondje in {time} gelopen. Dat is tot nog toe het snelste rondje van de dag! Proficiat!",
+    "De titel Snelste Rondje Van De Dag gaat momenteel naar {team}. Zij hebben hun laatste rondje in {time} gelopen! Proficiat!",
+    "Een nieuw snelheidsrecord: {team} {verb} hun laatste rondje in {time} gelopen. Dat is Tot nu toe het snelste rondje van de dag! Proficiat!"]
+
+TEAM_RUN_ROUNDS = ["{team} {verb} al {laps} laps achter de rug.",
+                   "{team} {verb} al {laps} laps gelopen.",
+                   "Nog eens honderd laps erbij! {team} {verb} al {laps} laps gelopen."]
+
+TOTAL_DISTANCE = [
+    "Alle teams tesamen hebben al de afstand van Gent tot {location}{andBack} overbrugt. Dat is niet minder dan {distance}!"
+    "Blijven lopen: de lopers hebben al {distance} gelopen. Dat is zo ongeveer de afstand van Gent tot {location}{andBack}."]
 
 
 def main():
@@ -69,91 +82,99 @@ def main():
         "/state": boxxy.state,
         "/lap": boxxy.lap,
         "/position": boxxy.position
-        }
+    }
     for path, method in paths.items():
         socketIO.on(path, method)
 
-    socketIO.wait(seconds=3600*12)
+    socketIO.wait(seconds=3600 * 12)
 
 
 class Team:
-
-    def __init__(self,name):
+    def __init__(self, name):
         self.name = name
-        self.shortestLap = timedelta(hours=12)
-        self.lastLapTimeStamp = datetime.utcnow() - timedelta(hours=1) # be certain
-        print(self.lastLapTimeStamp)
+        self.shortestLap = timedelta(minutes=12)
+        self.lastLapTimeStamp = datetime.utcnow() - timedelta(hours=1)  # be certain
+
 
 class Boxxy(object):
-
     def __init__(self):
         self.auth = OAuth(ACCESS_KEY, ACCESS_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
-        self.twitter = Twitter(auth = self.auth)
+        self.twitter = Twitter(auth=self.auth)
         self.teams = {}
         self.shortestLapGlobal = None
         self.omtrek = float("inf")
 
     def ping(self, json):
-        print(json)
+        pass
 
     def state(self, state):
-        print(state)
+        print("new state")
 
         # set important vars
         self.omtrek = int(state["circuitLength"])
         if self.shortestLapGlobal is None:
-            self.shortestLapGlobal = parse_time(state["startTime"]) - datetime.now()
+            self.shortestLapGlobal = timedelta(minutes=12)
 
         for teamid in state["teams"]:
             teamjson = state['teams'][teamid]
             self.teams[teamid] = Team(teamjson["name"])
 
     def lap(self, lap):
-        print(lap)
         team = self.teams[lap["team"]]
         team.laps = lap["total"]
         totalLaps = int(lap["id"])
 
-        #check
+        # check
         lapEndTimeStamp = parse_time(lap["timestamp"])
         laptime = lapEndTimeStamp - team.lastLapTimeStamp
         print(laptime)
-        if laptime < team.shortestLap and team.laps > 10:
+        if laptime < team.shortestLap:
             team.shortestLap = laptime
-            #TRIGGER SHORTESTLAP
+            # TRIGGER SHORTESTLAP
             print("shortest lap ", laptime)
-            #_ = twitter.statuses.update(status=msg)
+            if team.laps > 10:
+                msg = choice(SHORTEST_LAP)
+                self.tweet(msg.format(team=team.name, time=str(laptime)[3:-3], verb=pluralize(team.name)))
 
         if team.laps % 100 == 0:
             print("%d laps" % team.laps)
-            #TRIGGER LAPMILESTONE
-            #_ = twitter.statuses.update(status=msg)
+            self.tweet(choice(TEAM_RUN_ROUNDS).format(team=team.name, laps=team.laps, verb=pluralize(team.name)))
 
-        #check globaltriggers
-        if laptime < self.shortestLapGlobal and totalLaps > 100:
+        # check globaltriggers
+        if laptime < self.shortestLapGlobal:
             print("shortest global time", laptime)
-            shortestLapGlobal = laptime
-            #TRIGGER SHORTESTLAPGLOBAL
-            #_ = twitter.statuses.update(status=msg)
+            self.shortestLapGlobal = laptime
+            if totalLaps > 100:
+                msg = choice(GLOBAL_FASTEST_LAP)
+                self.tweet(msg.format(team=team.name, time=str(laptime)[3:-3], verb=pluralize(team.name)))
 
         distance = totalLaps * self.omtrek
         if distance > DISTANCES[0][0]:
-            print("distance %d", distance)
-            #create msg
-            DISTANCES.popleft()
-            #TRIGGER AFSTANDGELOPEN
-            #_ = twitter.statuses.update(status=msg)
+            loc = DISTANCES.popleft()
+            print("distance %d" % distance)
+            # create msg
+            andBack = ' (en terug)' if loc[2] else ''
+            self.tweet(
+                choice(TOTAL_DISTANCE).format(location=loc[1], andBack=andBack, distance=str(loc[0] / 1000) + "km"))
 
         team.lastLapTimeStamp = lapEndTimeStamp
 
     def position(self, position):
-        print(position)
+        pass
+
+    def tweet(self, msg):
+        try:
+            _ = self.twitter.statuses.update(status=msg)
+        except:
+            print("Twitter error")
+
 
 def parse_time(time):
     return datetime.strptime(time, "%Y-%m-%dT%H:%M:%S.%fZ")
 
-def tweet(msg):
-    pass
-    #_ = twitter.statuses.update(status = msg)
+def pluralize(teamname):
+    if '&' in teamname or teamname[-1] is 's':
+        return "hebben"
+    return "heeft"
 
 main()
