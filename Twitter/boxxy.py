@@ -80,7 +80,7 @@ class Team:
 
     def __init__(self,name):
         self.name = name
-        self.shortestLap = -timedelta(hours=12) #in milliseconds
+        self.shortestLap = timedelta(hours=12)
         self.lastLapTimeStamp = datetime.utcnow() - timedelta(hours=1) # be certain
         print(self.lastLapTimeStamp)
 
