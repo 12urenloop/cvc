@@ -21,19 +21,21 @@ import           Text.Regex.PCRE        ((=~))
 
 
 --------------------------------------------------------------------------------
-djs2014 :: [Dj]
-djs2014 =
+djs2015 :: [Dj]
+djs2015 =
     -- TODO add a base rating by us?
-    [ Dj "Vyncue"                         1 (Time 10 30) (Time 11 30)
-    , Dj "DJ Plancke"                     2 (Time 12 30) (Time 13 30)
-    , Dj "Bouclé"                         3 (Time 13 30) (Time 14 30)
-    , Dj "Bassick"                        4 (Time 14 30) (Time 15 30)
-    , Dj "Bollé"                          5 (Time 15 30) (Time 16 30)
-    , Dj "Snap-ah"                        6 (Time 16 30) (Time 17 30)
-    , Dj "B-tech"                         7 (Time 17 30) (Time 18 30)
-    , Dj "Pulp Mixion"                    8 (Time 18 30) (Time 19 30)
-    , Dj "Tous les deux"                  9 (Time 19 30) (Time 20 30)
-    , Dj "Sennen"                        10 (Time 20 30) (Time 21 30)
+    [ Dj "Semper Fi"                      1 (Time 11 35) (Time 12 35)
+    , Dj "SRGN"                           2 (Time 12 35) (Time 13 35)
+    , Dj "Thomassive"                     3 (Time 13 35) (Time 14 35)
+    , Dj "B2B-Major"                      4 (Time 14 35) (Time 15 35)
+    , Dj "Clatz & Helios"                 5 (Time 15 35) (Time 16 35)
+    , Dj "Wasted On Sound"                6 (Time 16 35) (Time 17 35)
+
+    , Dj "JEKA 1"                         7 (Time 18 00) (Time 18 35)
+    , Dj "JEKA 2"                         8 (Time 18 35) (Time 19 10)
+    , Dj "JEKA 3"                         9 (Time 19 10) (Time 19 45)
+    , Dj "JEKA 4"                        10 (Time 19 45) (Time 20 20)
+    , Dj "JEKA 5"                        11 (Time 20 20) (Time 20 55)
     ]
 
 
@@ -171,7 +173,7 @@ ratings filePath = do
         "SELECT SenderNumber, TextDecoded, ReceivingDateTime FROM inbox"
 
     -- Parse into votes
-    votes <- fmap catMaybes $ forM smss $ \s -> case voteFromSms djs2014 s of
+    votes <- fmap catMaybes $ forM smss $ \s -> case voteFromSms djs2015 s of
         Left err -> putStrLn ("Warning: " ++ err) >> return Nothing
         Right v  -> do
             putStrLn $ (T.unpack $ smsText s) ++ " => " ++
@@ -179,7 +181,7 @@ ratings filePath = do
             return (Just v)
 
     -- Calculate and print rating
-    let rating = zip [1 :: Int ..] $ rateDjs djs2014 votes
+    let rating = zip [1 :: Int ..] $ rateDjs djs2015 votes
     forM_ rating $ \(i, (Dj name _ _ _, r)) ->
         putStrLn $ printf "%2d: %s (%.3f: %d HOT, %d NOT)"
             i (T.unpack name) (ratingCilb r) (ratingHots r) (ratingNots r)
