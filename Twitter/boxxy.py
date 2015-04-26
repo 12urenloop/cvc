@@ -92,7 +92,7 @@ def main():
 class Team:
     def __init__(self, name):
         self.name = name
-        self.shortestLap = timedelta(minutes=12)
+        self.shortestLap = 5*60  # 5 min
         self.lastLapTimeStamp = datetime.utcnow() - timedelta(hours=1)  # be certain
 
 
@@ -113,7 +113,7 @@ class Boxxy(object):
         # set important vars
         self.omtrek = int(state["circuitLength"])
         if self.shortestLapGlobal is None:
-            self.shortestLapGlobal = timedelta(minutes=12)
+            self.shortestLapGlobal = 5*60  # 5 min
 
         for teamid in state["teams"]:
             teamjson = state['teams'][teamid]
@@ -127,34 +127,31 @@ class Boxxy(object):
         # check
         lapEndTimeStamp = parse_time(lap["timestamp"])
         laptime = lapEndTimeStamp - team.lastLapTimeStamp
+        laptime = int(laptime.total_seconds())
         if laptime < team.shortestLap:
             team.shortestLap = laptime
             # TRIGGER SHORTESTLAP
-            print("shortest lap ", laptime)
             if team.laps > 10:
                 msg = choice(SHORTEST_LAP)
-                self.tweet(msg.format(team=team.name, time=str(laptime)[3:-3], verb=pluralize(team.name)))
+                self.tweet(msg.format(team=team.name, time=convert_laptime(laptime), verb=pluralize(team.name)))
 
         if team.laps % 100 == 0:
-            print("%d laps" % team.laps)
             self.tweet(choice(TEAM_RUN_ROUNDS).format(team=team.name, laps=team.laps, verb=pluralize(team.name)))
 
         # check globaltriggers
         if laptime < self.shortestLapGlobal:
-            print("shortest global time", laptime)
             self.shortestLapGlobal = laptime
             if totalLaps > 100:
                 msg = choice(GLOBAL_FASTEST_LAP)
-                self.tweet(msg.format(team=team.name, time=str(laptime)[3:-3], verb=pluralize(team.name)))
+                self.tweet(msg.format(team=team.name, time=convert_laptime(laptime), verb=pluralize(team.name)))
 
         distance = totalLaps * self.omtrek
         if distance > DISTANCES[0][0]:
             loc = DISTANCES.popleft()
-            print("distance %d" % distance)
             # create msg
-            andBack = ' (en terug)' if loc[2] else ''
+            andBack = ' (en terug)' if not loc[2] else ''
             self.tweet(
-                choice(TOTAL_DISTANCE).format(location=loc[1], andBack=andBack, distance=str(int(distance/ 1000)) + "km"))
+                choice(TOTAL_DISTANCE).format(location=loc[1], andBack=andBack, distance=convert_distance(distance)))
 
         team.lastLapTimeStamp = lapEndTimeStamp
 
@@ -162,7 +159,7 @@ class Boxxy(object):
         pass
 
     def tweet(self, msg):
-        print("Tweet: " + msg)
+        print("Tweet: " + msg + " (" + str(len(msg)) + ")")
         try:
             _ = self.twitter.statuses.update(status=msg)
         except:
@@ -172,9 +169,18 @@ class Boxxy(object):
 def parse_time(time):
     return datetime.strptime(time, "%Y-%m-%dT%H:%M:%S.%fZ")
 
+
 def pluralize(teamname):
     if '&' in teamname or teamname[-1] is 's':
         return "hebben"
     return "heeft"
+
+
+def convert_laptime(time):
+    return str(time) + "s"
+
+
+def convert_distance(distance):
+    return str(int(distance/1000)) + "km"
 
 main()
