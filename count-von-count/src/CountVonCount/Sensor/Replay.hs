@@ -7,8 +7,7 @@ module CountVonCount.Sensor.Replay
 --------------------------------------------------------------------------------
 import           Data.List                   (intercalate)
 import qualified Data.Text                   as T
-import           Data.Time                   (formatTime)
-import           System.Locale               (defaultTimeLocale)
+import           Data.Time                   (formatTime, defaultTimeLocale)
 
 
 --------------------------------------------------------------------------------

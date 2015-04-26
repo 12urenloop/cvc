@@ -20,10 +20,9 @@ module CountVonCount.Web.Views
 --------------------------------------------------------------------------------
 import           Control.Monad                (forM_)
 import qualified Data.Text                    as T
-import           Data.Time                    (TimeZone, formatTime,
-                                               utcToLocalTime)
+import           Data.Time                    (TimeZone, defaultTimeLocale,
+                                               formatTime, utcToLocalTime)
 import           Prelude                      hiding (div)
-import           System.Locale                (defaultTimeLocale)
 import           Text.Blaze.Html              (Html, (!))
 import qualified Text.Blaze.Html5             as H
 import qualified Text.Blaze.Html5.Attributes  as A
