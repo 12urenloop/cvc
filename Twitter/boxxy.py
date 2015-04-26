@@ -1,8 +1,9 @@
 
 from socketIO_client import SocketIO, LoggingNamespace
 from functools import wraps
+from datetime import datetime, timedelta
 from collections import deque
-#from twitter import *
+from twitter import Twitter, OAuth
 
 
 DISTANCES = deque([
@@ -79,21 +80,29 @@ class Team:
 
     def __init__(self,name):
         self.name = name
-        self.shortestLap = float('inf') #in milliseconds
-        self.lastLapTimeStamp = float('inf')
+        self.shortestLap = -timedelta(hours=12) #in milliseconds
+        self.lastLapTimeStamp = datetime.utcnow() - timedelta(hours=1) # be certain
+        print(self.lastLapTimeStamp)
 
 class Boxxy(object):
 
     def __init__(self):
-        #self.auth = OAuth(ACCESS_KEY, ACCESS_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
-        #self.twitter = Twitter(auth = auth)
+        self.auth = OAuth(ACCESS_KEY, ACCESS_SECRET, CONSUMER_KEY, CONSUMER_SECRET)
+        self.twitter = Twitter(auth = self.auth)
         self.teams = {}
+        self.shortestLapGlobal = None
+        self.omtrek = float("inf")
 
     def ping(self, json):
         print(json)
 
     def state(self, state):
         print(state)
+
+        # set important vars
+        self.omtrek = int(state["circuitLength"])
+        if self.shortestLapGlobal is None:
+            self.shortestLapGlobal = parse_time(state["startTime"]) - datetime.now()
 
         for teamid in state["teams"]:
             teamjson = state['teams'][teamid]
@@ -103,37 +112,45 @@ class Boxxy(object):
         print(lap)
         team = self.teams[lap["team"]]
         team.laps = lap["total"]
-        totalLaps = lap["id"]
+        totalLaps = int(lap["id"])
 
-        #check teamtriggers
-        '''laptime = lap["timestamp"] - team.lastLapTimeStamp
+        #check
+        lapEndTimeStamp = parse_time(lap["timestamp"])
+        laptime = lapEndTimeStamp - team.lastLapTimeStamp
+        print(laptime)
         if laptime < team.shortestLap and team.laps > 10:
             team.shortestLap = laptime
             #TRIGGER SHORTESTLAP
+            print("shortest lap ", laptime)
             #_ = twitter.statuses.update(status=msg)
 
         if team.laps % 100 == 0:
-            pass
+            print("%d laps" % team.laps)
             #TRIGGER LAPMILESTONE
             #_ = twitter.statuses.update(status=msg)
 
         #check globaltriggers
-        if laptime < shortestLapGlobal and totalLaps > 100:
+        if laptime < self.shortestLapGlobal and totalLaps > 100:
+            print("shortest global time", laptime)
             shortestLapGlobal = laptime
             #TRIGGER SHORTESTLAPGLOBAL
             #_ = twitter.statuses.update(status=msg)
 
-        distance = totalLaps * OMTREK
-        if distance > DISTANCES[0]:
+        distance = totalLaps * self.omtrek
+        if distance > DISTANCES[0][0]:
+            print("distance %d", distance)
+            #create msg
             DISTANCES.popleft()
             #TRIGGER AFSTANDGELOPEN
             #_ = twitter.statuses.update(status=msg)
 
-        team.lastLapTimeStamp = lap["timestamp"]'''
+        team.lastLapTimeStamp = lapEndTimeStamp
 
     def position(self, position):
         print(position)
 
+def parse_time(time):
+    return datetime.strptime(time, "%Y-%m-%dT%H:%M:%S.%fZ")
 
 def tweet(msg):
     pass
