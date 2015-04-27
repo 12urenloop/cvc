@@ -136,7 +136,7 @@ class Boxxy(object):
             teamjson = state['teams'][teamid]
             self.teams[teamid] = Team(teamid, teamjson["name"])
 
-        positions = list(sorted(teams, key=(lambda x: (x.laps,x.tid)))
+        positions = sorted(self.teams.values(), key=(lambda x: (x.laps,x.tid)))
 
     def lap(self, lap):
         team = self.teams[lap["team"]]
@@ -173,7 +173,7 @@ class Boxxy(object):
                 tweet(
                     choice(TOTAL_DISTANCE).format(location=loc[1], andBack=andBack, distance=convert_distance(distance)))
 
-            temppositions = list(sorted(teams, key=(lambda x: (x.laps,x.tid))))
+            temppositions = sorted(self.teams.values(), key=(lambda x: (x.laps,x.tid)))
             if (positions != temppositions):
 
                 for x in range(0,len(positions)):
