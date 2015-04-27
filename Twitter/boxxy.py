@@ -136,7 +136,7 @@ class Boxxy(object):
             teamjson = state['teams'][teamid]
             self.teams[teamid] = Team(teamid, teamjson["name"])
 
-        positions = sorted(self.teams.values(), key=(lambda x: (x.laps,x.tid)))
+        self.positions = sorted(self.teams.values(), key=(lambda x: (x.laps,x.tid)))
 
     def lap(self, lap):
         team = self.teams[lap["team"]]
@@ -174,14 +174,14 @@ class Boxxy(object):
                     choice(TOTAL_DISTANCE).format(location=loc[1], andBack=andBack, distance=convert_distance(distance)))
 
             temppositions = sorted(self.teams.values(), key=(lambda x: (x.laps,x.tid)))
-            if (positions != temppositions):
+            if (self.positions != temppositions):
 
-                for x in range(0,len(positions)):
-                    if positions[x] != temppositions[x]:
+                for x in range(0,len(self.positions)):
+                    if self.positions[x] != temppositions[x]:
                         msg = choice(POSITION_CHANGE)
-                        tweet(msg.format(team1=team.name, hebben=pluralize_hebben(team.name), team2=positions[x].name, staan=pluralize_staan(team.name), plaats=x))
+                        tweet(msg.format(team1=team.name, hebben=pluralize_hebben(team.name), team2=self.positions[x].name, staan=pluralize_staan(team.name), plaats=x))
 
-            positions = temppositions
+            self.positions = temppositions
 
 
         team.lastLapTimeStamp = lapEndTimeStamp
