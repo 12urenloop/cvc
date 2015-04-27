@@ -103,7 +103,8 @@ def main():
 
 
 class Team:
-    def __init__(self, name):
+    def __init__(self, tid, name):
+        self.tid = tid
         self.name = name
         self.shortestLap = 5*60  # 5 min
         self.lastLapTimeStamp = datetime.utcnow() - timedelta(hours=1)  # be certain
