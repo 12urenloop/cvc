@@ -42,7 +42,7 @@ DISTANCES = deque([
     (1769690, 'Boekarest', True),
     (1829620, 'Wenen', False),
     (1836200, 'Kiev', True),
-    (1903660, 'Sint', True),
+    (1903660, 'Sint-Petersburg', True),
     (2125780, 'Barcelona', False),
     (2178850, 'Istanbul', True),
     (2253260, 'Moskou', True),
@@ -55,7 +55,7 @@ DISTANCES = deque([
     (3395660, 'Sofia', False),
     (3539380, 'Boekarest', False),
     (3672400, 'Kiev', False),
-    (3807320, 'Sint', False),
+    (3807320, 'Sint-Petersburg', False),
     (4357700, 'Istanbul', False),
     (4506520, 'Moskou', False),
 ])
@@ -68,9 +68,9 @@ GLOBAL_FASTEST_LAP = [
     "De titel Snelste Rondje Van De Dag gaat momenteel naar {team}. Zij hebben hun laatste rondje in {time} gelopen! Proficiat!",
     "Een nieuw snelheidsrecord: {team} {verb} hun laatste rondje in {time} gelopen. Dat is tot nu toe het snelste rondje van de dag! Proficiat!"]
 
-TEAM_RUN_ROUNDS = ["{team} {verb} al {laps} laps achter de rug.",
-                   "{team} {verb} al {laps} laps gelopen.",
-                   "Nog eens honderd laps erbij! {team} {verb} al {laps} laps gelopen."]
+TEAM_RUN_ROUNDS = ["{team} {verb} al {laps} rondjes achter de rug.",
+                   "{team} {verb} al {laps} rondjes gelopen.",
+                   "Nog eens honderd laps erbij! {team} {verb} al {laps} rondjes gelopen."]
 
 TOTAL_DISTANCE = [
     "Alle teams tesamen hebben al de afstand van Gent tot {location}{andBack} overbrugt. Dat is niet minder dan {distance}!",
