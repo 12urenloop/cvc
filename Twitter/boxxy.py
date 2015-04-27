@@ -76,6 +76,11 @@ TOTAL_DISTANCE = [
     "Alle teams tesamen hebben al de afstand van Gent tot {location}{andBack} overbrugt. Dat is niet minder dan {distance}!",
     "Blijven lopen: de lopers hebben al {distance} gelopen. Dat is ongeveer de afstand van Gent tot {location}{andBack}."]
 
+POSITION_CHANGE = [
+    "{team1} {hebben} net {team2} ingehaald! {team1} {staan} nu op plaats nr {plaats}."
+    "{team1} verwisselt van plaats met {team2}. {team1} {staan} nu op plaats nr {plaats}."
+    ]
+
 FILENAME = 'save.json'
 
 def main():
@@ -108,12 +113,13 @@ class Team:
         self.name = name
         self.shortestLap = 5*60  # 5 min
         self.lastLapTimeStamp = datetime.utcnow() - timedelta(hours=1)  # be certain
-
+        self.laps = 0
 
 class Boxxy(object):
     def __init__(self):
         self.teams = {}
-        self.shortestLapGlobal = None
+        self.positions = []
+        self.shortestLapGlobal = 300
         self.omtrek = float("inf")
         self.distances = DISTANCES
 
@@ -125,12 +131,12 @@ class Boxxy(object):
 
         # set important vars
         self.omtrek = int(state["circuitLength"])
-        if self.shortestLapGlobal is None:
-            self.shortestLapGlobal = 5*60  # 5 min
 
         for teamid in state["teams"]:
             teamjson = state['teams'][teamid]
-            self.teams[teamid] = Team(teamjson["name"])
+            self.teams[teamid] = Team(teamid, teamjson["name"])
+
+        positions = list(sorted(teams, key=(lambda x: (x.laps,x.tid)))
 
     def lap(self, lap):
         team = self.teams[lap["team"]]
@@ -146,25 +152,37 @@ class Boxxy(object):
             # TRIGGER SHORTESTLAP
             if team.laps > 10:
                 msg = choice(SHORTEST_LAP)
-                tweet(msg.format(team=team.name, time=convert_laptime(laptime), verb=pluralize(team.name)))
+                tweet(msg.format(team=team.name, time=convert_laptime(laptime), verb=pluralize_hebben(team.name)))
 
         if team.laps % 100 == 0:
-            tweet(choice(TEAM_RUN_ROUNDS).format(team=team.name, laps=team.laps, verb=pluralize(team.name)))
+            tweet(choice(TEAM_RUN_ROUNDS).format(team=team.name, laps=team.laps, verb=pluralize_hebben(team.name)))
 
         # check globaltriggers
-        if laptime < self.shortestLapGlobal:
-            self.shortestLapGlobal = laptime
-            if totalLaps > 100:
-                msg = choice(GLOBAL_FASTEST_LAP)
-                tweet(msg.format(team=team.name, time=convert_laptime(laptime), verb=pluralize(team.name)))
+        if totalLaps > 30:
+            if laptime < self.shortestLapGlobal:
+                self.shortestLapGlobal = laptime
+                if totalLaps > 100:
+                    msg = choice(GLOBAL_FASTEST_LAP)
+                    tweet(msg.format(team=team.name, time=convert_laptime(laptime), verb=pluralize_hebben(team.name)))
 
-        distance = totalLaps * self.omtrek
-        if distance > self.distances[0][0]:
-            loc = self.distances.popleft()
-            # create msg
-            andBack = ' (en terug)' if not loc[2] else ''
-            tweet(
-                choice(TOTAL_DISTANCE).format(location=loc[1], andBack=andBack, distance=convert_distance(distance)))
+            distance = totalLaps * self.omtrek
+            if distance > self.distances[0][0]:
+                loc = self.distances.popleft()
+                # create msg
+                andBack = ' (en terug)' if not loc[2] else ''
+                tweet(
+                    choice(TOTAL_DISTANCE).format(location=loc[1], andBack=andBack, distance=convert_distance(distance)))
+
+            temppositions = list(sorted(teams, key=(lambda x: (x.laps,x.tid))))
+            if (positions != temppositions):
+
+                for x in range(0,len(positions)):
+                    if positions[x] != temppositions[x]:
+                        msg = choice(POSITION_CHANGE)
+                        tweet(msg.format(team1=team.name, hebben=pluralize_hebben(team.name), team2=positions[x].name, staan=pluralize_staan(team.name), plaats=x))
+
+            positions = temppositions
+
 
         team.lastLapTimeStamp = lapEndTimeStamp
 
@@ -182,10 +200,15 @@ def parse_time(time):
     return datetime.strptime(time, "%Y-%m-%dT%H:%M:%S.%fZ")
 
 
-def pluralize(teamname):
+def pluralize_hebben(teamname):
     if '&' in teamname or teamname[-1] is 's':
         return "hebben"
     return "heeft"
+
+def pluralize_staan(teamname):
+    if '&' in teamname or teamname[-1] is 's':
+        return "staan"
+    return "staat"
 
 
 def convert_laptime(time):
