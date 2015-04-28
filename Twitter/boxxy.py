@@ -174,6 +174,8 @@ class Boxxy(object):
                     choice(TOTAL_DISTANCE).format(location=loc[1], andBack=andBack, distance=convert_distance(distance)))
 
             # voor elk team dat dit team heeft ingehaald deze ronde
+	    # we can't just replace self.positions with a new ordering to avoid
+            # changing the order of other (irrelevant) teams by accident
             while team.position != 0 and self.positions[team.position -1 ].laps <= team.laps -2:
                 # switch team positions
                 self.positions[team.position] = self.positions[team.position-1]
