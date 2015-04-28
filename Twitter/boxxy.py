@@ -136,6 +136,10 @@ class Boxxy(object):
         team.laps = lap["total"]
         totalLaps = int(lap["id"])
 
+        if not lap["reason"] or len(lap["reason"]) > 0:
+            print("Special lap")
+            return
+
         # check
         lapEndTimeStamp = parse_time(lap["timestamp"])
         laptime = lapEndTimeStamp - team.lastLapTimeStamp
