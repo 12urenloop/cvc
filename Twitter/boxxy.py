@@ -83,6 +83,8 @@ POSITION_CHANGE = [
 
 FILENAME = 'save.json'
 
+GLOBAL_TRIGGERS_MIN_SETTING = 30
+
 def main():
     global TWITTER
     boxxy = None
@@ -136,8 +138,6 @@ class Boxxy(object):
             teamjson = state['teams'][teamid]
             self.teams[teamid] = Team(teamid, teamjson["name"])
 
-        self.positions = sorted(self.teams.values(), key=(lambda x: (x.laps,x.tid)))
-
     def lap(self, lap):
         team = self.teams[lap["team"]]
         team.laps = lap["total"]
@@ -158,7 +158,7 @@ class Boxxy(object):
             tweet(choice(TEAM_RUN_ROUNDS).format(team=team.name, laps=team.laps, verb=pluralize_hebben(team.name)))
 
         # check globaltriggers
-        if totalLaps > 30:
+        if totalLaps > GLOBAL_TRIGGERS_MIN_SETTING:
             if laptime < self.shortestLapGlobal:
                 self.shortestLapGlobal = laptime
                 if totalLaps > 100:
@@ -173,16 +173,23 @@ class Boxxy(object):
                 tweet(
                     choice(TOTAL_DISTANCE).format(location=loc[1], andBack=andBack, distance=convert_distance(distance)))
 
-            temppositions = sorted(self.teams.values(), key=(lambda x: (x.laps,x.tid)))
-            if (self.positions != temppositions):
-
-                for x in range(0,len(self.positions)):
-                    if self.positions[x] != temppositions[x]:
-                        msg = choice(POSITION_CHANGE)
-                        tweet(msg.format(team1=team.name, hebben=pluralize_hebben(team.name), team2=self.positions[x].name, staan=pluralize_staan(team.name), plaats=x))
-
-            self.positions = temppositions
-
+            # voor elk team dat dit team heeft ingehaald deze ronde
+	    # we can't just replace self.positions with a new ordering to avoid
+            # changing the order of other (irrelevant) teams by accident
+            while team.position != 0 and self.positions[team.position -1 ].laps <= team.laps -2:
+                # switch team positions
+                self.positions[team.position] = self.positions[team.position-1]
+                self.positions[team.position].position += 1
+                self.position[team.position-1] = team
+                team.position -= 1
+                # Warning: if a team passes multiple teams in one lap this might get spammy
+                msg = choice(POSITION_CHANGE)
+                tweet(msg.format(team1=team.name, hebben=pluralize_hebben(team.name), team2=self.positions[team.position+1].name, staan=pluralize_staan(team.name), plaats=team.position+1))
+        elif totalLaps == GLOBAL_TRIGGERS_MIN_SETTING:
+            # init order once, just before global triggers take care of maintaining it.
+            self.positions = sorted(self.teams.values(), key=(lambda x: (x.laps,x.lastLapTimeStamp,x.tid)))
+            for x in range(0,len(self.positions)):
+                self.positions[x].position = x
 
         team.lastLapTimeStamp = lapEndTimeStamp
 
@@ -194,7 +201,6 @@ class Boxxy(object):
     def dump(self):
         with open(FILENAME, 'w') as f:
             print(jp.encode(self), end='', file=f)
-
 
 def parse_time(time):
     return datetime.strptime(time, "%Y-%m-%dT%H:%M:%S.%fZ")
