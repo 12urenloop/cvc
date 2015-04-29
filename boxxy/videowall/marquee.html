@@ -143,6 +143,7 @@
       // Set up boxxy
       var boxxy = boxxy.initialize(),
           boxxyHost = 'http://live.12urenloop.be:8080',
+          circuitLength = 306.48,  // Override if necessary, boxxy.circuitLength
           initialTimeout = 2000,
           marqueeInterval = 3000,
           sponsorDuration = 3000,  // In ms
@@ -176,7 +177,7 @@
           var teams = boxxy.teamsByScore();
           var content = [];
           for (var i = 0; i < teams.length; i++) {
-            var afstand = teams[i].laps * boxxy.circuitLength;
+            var afstand = teams[i].laps * circuitLength;
             var afstandS = afstand < 20000 ? '' + afstand : '' + Math.round(afstand/1000) + 'k';
             content.push(teams[i].name + ' heeft ' + afstandS + 'm gelopen. &nbsp; &nbsp; &nbsp;');
           }
@@ -205,7 +206,7 @@
           for (var i = 0; i < teams.length; i++) {
             totaleRondjes += teams[i].laps;
           };
-          var afstand = Math.round(totaleRondjes * boxxy.circuitLength / 1000);
+          var afstand = Math.round(totaleRondjes * circuitLength / 1000);
           var content = [];
           content.push(totaleRondjes + ' gelopen rondjes, da\'s ' + afstand + ' km.');
           content.push('Da\'s '+ makePuntedInts(Math.round(afstand * 4666.355)) + ' tandenborstels.');
