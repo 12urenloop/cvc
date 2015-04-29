@@ -80,6 +80,7 @@ app.put('/ping', basicAuth, function(req, res) {
 });
 
 app.put('/state', basicAuth, function(req, res) {
+    req.body.teams['16'].name = "VRG";
     req.body.teams['19'].name = "Urgent.fm & Schamper";
     console.log('PUT /state');
     boxxyState.putState(req.body);

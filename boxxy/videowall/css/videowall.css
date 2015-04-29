@@ -6,7 +6,6 @@ html, body {
 }
 
 #marquee-top {
-    position: fixed; top: 0;
     height: 100px; width: 100%;
     background-color: #fff;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
