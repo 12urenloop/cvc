@@ -11,11 +11,13 @@
   </head>
   <body>
     <!-- Uncomment for the dj-contest -->
-   <div id="marquee-top">
-       <ol>
-           <li>SMS HOT or NOT naar 0478 012 970<li>
-       </ol>
-   </div>
+   <!--
+      - <div id="marquee-top">
+      -     <ol>
+      -         <li>SMS HOT or NOT naar 0478 012 970<li>
+      -     </ol>
+      - </div>
+      -->
 
     <div id="sponsors" class="carousel slide" data-ride="carousel">
       <div class="carousel-inner" role="listbox">
@@ -149,15 +151,15 @@
           loop = [
             {command: 'runMarquee', content: 'volgLive'},
             {command: 'runMarquee', content: 'kmGelopen'},
-            {command: 'runMarquee', content: 'smsHotOrNot'},
+            //{command: 'runMarquee', content: 'smsHotOrNot'},
             {command: 'runMarquee', content: 'scores'},
             {command: 'runMarquee', content: 'volgLive'},
             {command: 'runMarquee', content: 'randomStats'},
-            {command: 'runMarquee', content: 'smsHotOrNot'},
+            //{command: 'runMarquee', content: 'smsHotOrNot'},
             {command: 'runMarquee', content: 'scores'},
             {command: 'runMarquee', content: 'volgLive'},
             {command: 'runMarquee', content: 'tijdPerRonde'},
-            {command: 'runMarquee', content: 'smsHotOrNot'},
+            //{command: 'runMarquee', content: 'smsHotOrNot'},
             {command: 'goToLink', link: 'videowallscores.html'}
           ],
           commandIdx = -1, command;
