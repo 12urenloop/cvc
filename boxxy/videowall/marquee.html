@@ -150,161 +150,164 @@
           loop = [
             {command: 'runMarquee', content: 'volgLive'},
             {command: 'runMarquee', content: 'kmGelopen'},
-            {command: 'runMarquee', content: 'tijdPerRonde'},
-            {command: 'runMarquee', content: 'randomStats'},
-            //{command: 'runMarquee', content: 'smsHotOrNot'},
             {command: 'runMarquee', content: 'scores'},
+            {command: 'runMarquee', content: 'volgLive'},
+            {command: 'runMarquee', content: 'randomStats'},
+            {command: 'runMarquee', content: 'scores'},
+            {command: 'runMarquee', content: 'volgLive'},
+            {command: 'runMarquee', content: 'tijdPerRonde'},
+            //{command: 'runMarquee', content: 'smsHotOrNot'},
             {command: 'goToLink', link: 'videowallscores.html'}
           ],
           commandIdx = -1, command;
 
-//      var contentGenerators = {
-//        scores: function() {
-//          var teams = boxxy.teamsByScore();
-//          var content = [];
-//          for (var i = 0; i < teams.length; i++) {
-//            content.push((i+1) + '. ' + teams[i].name + ' (' + teams[i].laps + ')');
-//          };
-//          return content;
-//        },
-//        kmGelopen: function() {
-//          var teams = boxxy.teamsByScore();
-//          var content = [];
-//          for (var i = 0; i < teams.length; i++) {
-//            var afstand = teams[i].laps * boxxy.circuitLength;
-//            var afstandS = afstand < 20000 ? '' + afstand : '' + Math.round(afstand/1000) + 'k';
-//            content.push(teams[i].name + ' heeft ' + afstandS + 'm gelopen. &nbsp; &nbsp; &nbsp;');
-//          }
-//          return content;
-//        },
-//        tijdPerRonde: function() {
-//          var teams = boxxy.teamsByScore();
-//          var tijd = (Date.parse(Date()) - Date.parse(boxxy.startTime)) / 1000;
-//          var content = [];
-//          for (var i = 0; i < teams.length; i++) {
-//            var perRonde = Math.round(tijd / teams[i].laps);
-//            var tijdS = '';
-//            if (perRonde < 60){
-//              tijdS = perRonde + 's';
-//            } else {
-//              tijdS = Math.round(perRonde / 60) + 'min' + perRonde % 60 + 's'
-//            }
-//            content.push(teams[i].name + ' doet ' + tijdS + ' over een ronde. &nbsp; &nbsp; &nbsp;');
-//          }
-//          return content;
-//        },
-//        randomStats: function() {
-//          var teams = boxxy.teamsByScore();
-//          var tijd = (Date.parse(Date()) - Date.parse(boxxy.startTime)) / 1000;
-//          var totaleRondjes = 0;
-//          for (var i = 0; i < teams.length; i++) {
-//            totaleRondjes += teams[i].laps;
-//          };
-//          var afstand = Math.round(totaleRondjes * boxxy.circuitLength / 1000);
-//          var content = [];
-//          content.push(totaleRondjes + ' gelopen rondjes, da\'s ' + afstand + ' km.');
-//          content.push('Da\'s '+ makePuntedInts(Math.round(afstand * 4666.355)) + ' tandenborstels.');
-//          content.push('Of ' + Math.round(afstand/5854*100) + '% van de afstand tot New York.');
-//          // content.push('Er is al 3000l bier gedronken, en 350 hot dogs gemaakt');
-//          var tijdS = '';
-//          var iTijd = (12*3600) - tijd;
-//          if (iTijd > 3600){
-//            tijdS = '' + Math.floor(iTijd/3600) + 'u' + Math.floor((iTijd%3600)/60) + 'm';
-//          } else {
-//            tijdS = Math.floor(iTijd/60) + 'm' ;
-//          }
-//          content.push('Nog ' + tijdS + ' om te lopen.');
-//          return content;
-//        },
-//        volgLive: function() {
-//          return ['Volg op live.12urenloop.be!'];
-//        },
-//        smsHotOrNot: function() {
-//          return ['Stuur sms HOT or NOT naar 0487 012 370'];
-//        }
-//      };
-//
-//      function makePuntedInts(number) {
-//        var numberString = '';
-//        var bool = true;
-//        while (number >= 1000){
-//          if (bool) {
-//            numberString = number % 1000 + numberString;
-//            bool = false;
-//          } else {
-//            numberString = number % 1000 + '.' + numberString;
-//          }
-//          number = Math.round(number/1000);
-//        }
-//        if (number > 1) {
-//          numberString = number + '.' + numberString;
-//        }
-//        return numberString;
-//      }
-//
-//      function waitAndRunNextCommand(timeout) {
-//        commandIdx = (commandIdx + 1) % loop.length;
-//        command = loop[commandIdx];
-//        setTimeout(function() {
-//          executeCommand();
-//        }, timeout);
-//      }
-//
-//      function executeCommand() {
-//        if (command.command == 'runMarquee') {
-//          runMarquee(command.content);
-//        } else if (command.command == 'goToLink') {
-//          window.location.assign(command.link);
-//        }
-//      }
-//
-//      function runMarquee(contentType) {
-//        var container = $('#marquee ol'),
-//            marqueeLength = 0,
-//            contentGenerator = contentGenerators[contentType];
-//
-//        // Add the content
-//        var content = contentGenerator();
-//        for (var i = 0; i < content.length; i++) {
-//          container.append('<li>' + content[i] + '</li>');
-//        }
-//        // Calculate the size of the content
-//        container.children().each(function() {
-//          marqueeLength += $(this).outerWidth(true);
-//        });
-//
-//        // Push content to the right edge of the marquee
-//        container.css('left', $('#marquee').width());
-//        // Let the marquee pop up from the bottom
-//        $('#marquee').animate({'margin-bottom': 0}, 1000, function() {
-//          // Let the content slide from right to left
-//          var widthWithEdges = marqueeLength + $('#marquee').width() + 200;
-//          var duration = widthWithEdges * marqueeDuration;
-//          container.animate({left: -marqueeLength + 200}, duration, 'linear', function() {
-//            // When done, empty it ...
-//            container.empty();
-//            // ... let the marquee slide away ...
-//            $('#marquee').animate({'margin-bottom': -$('#marquee').height()}, 1000);
-//            // ... and run the next command
-//            waitAndRunNextCommand(marqueeInterval);
-//          });
-//        });
-//      }
-//
+      var contentGenerators = {
+        scores: function() {
+          var teams = boxxy.teamsByScore();
+          var content = [];
+          for (var i = 0; i < teams.length; i++) {
+            content.push((i+1) + '. ' + teams[i].name + ' (' + teams[i].laps + ')');
+          };
+          return content;
+        },
+        kmGelopen: function() {
+          var teams = boxxy.teamsByScore();
+          var content = [];
+          for (var i = 0; i < teams.length; i++) {
+            var afstand = teams[i].laps * boxxy.circuitLength;
+            var afstandS = afstand < 20000 ? '' + afstand : '' + Math.round(afstand/1000) + 'k';
+            content.push(teams[i].name + ' heeft ' + afstandS + 'm gelopen. &nbsp; &nbsp; &nbsp;');
+          }
+          return content;
+        },
+        tijdPerRonde: function() {
+          var teams = boxxy.teamsByScore();
+          var tijd = (Date.parse(Date()) - Date.parse(boxxy.startTime)) / 1000;
+          var content = [];
+          for (var i = 0; i < teams.length; i++) {
+            var perRonde = Math.round(tijd / teams[i].laps);
+            var tijdS = '';
+            if (perRonde < 60){
+              tijdS = perRonde + 's';
+            } else {
+              tijdS = Math.round(perRonde / 60) + 'min' + perRonde % 60 + 's'
+            }
+            content.push(teams[i].name + ' doet ' + tijdS + ' over een ronde. &nbsp; &nbsp; &nbsp;');
+          }
+          return content;
+        },
+        randomStats: function() {
+          var teams = boxxy.teamsByScore();
+          var tijd = (Date.parse(Date()) - Date.parse(boxxy.startTime)) / 1000;
+          var totaleRondjes = 0;
+          for (var i = 0; i < teams.length; i++) {
+            totaleRondjes += teams[i].laps;
+          };
+          var afstand = Math.round(totaleRondjes * boxxy.circuitLength / 1000);
+          var content = [];
+          content.push(totaleRondjes + ' gelopen rondjes, da\'s ' + afstand + ' km.');
+          content.push('Da\'s '+ makePuntedInts(Math.round(afstand * 4666.355)) + ' tandenborstels.');
+          content.push('Of ' + Math.round(afstand/5854*100) + '% van de afstand tot New York.');
+          // content.push('Er is al 3000l bier gedronken, en 350 hot dogs gemaakt');
+          var tijdS = '';
+          var iTijd = (12*3600) - tijd;
+          if (iTijd > 3600){
+            tijdS = '' + Math.floor(iTijd/3600) + 'u' + Math.floor((iTijd%3600)/60) + 'm';
+          } else {
+            tijdS = Math.floor(iTijd/60) + 'm' ;
+          }
+          content.push('Nog ' + tijdS + ' om te lopen.');
+          return content;
+        },
+        volgLive: function() {
+          return ['Volg op live.12urenloop.be!'];
+        },
+        smsHotOrNot: function() {
+          return ['Stuur sms HOT or NOT naar 0487 012 370'];
+        }
+      };
+
+      function makePuntedInts(number) {
+        var numberString = '';
+        var bool = true;
+        while (number >= 1000){
+          if (bool) {
+            numberString = number % 1000 + numberString;
+            bool = false;
+          } else {
+            numberString = number % 1000 + '.' + numberString;
+          }
+          number = Math.round(number/1000);
+        }
+        if (number > 1) {
+          numberString = number + '.' + numberString;
+        }
+        return numberString;
+      }
+
+      function waitAndRunNextCommand(timeout) {
+        commandIdx = (commandIdx + 1) % loop.length;
+        command = loop[commandIdx];
+        setTimeout(function() {
+          executeCommand();
+        }, timeout);
+      }
+
+      function executeCommand() {
+        if (command.command == 'runMarquee') {
+          runMarquee(command.content);
+        } else if (command.command == 'goToLink') {
+          window.location.assign(command.link);
+        }
+      }
+
+      function runMarquee(contentType) {
+        var container = $('#marquee ol'),
+            marqueeLength = 0,
+            contentGenerator = contentGenerators[contentType];
+
+        // Add the content
+        var content = contentGenerator();
+        for (var i = 0; i < content.length; i++) {
+          container.append('<li>' + content[i] + '</li>');
+        }
+        // Calculate the size of the content
+        container.children().each(function() {
+          marqueeLength += $(this).outerWidth(true);
+        });
+
+        // Push content to the right edge of the marquee
+        container.css('left', $('#marquee').width());
+        // Let the marquee pop up from the bottom
+        $('#marquee').animate({'margin-bottom': 0}, 1000, function() {
+          // Let the content slide from right to left
+          var widthWithEdges = marqueeLength + $('#marquee').width() + 200;
+          var duration = widthWithEdges * marqueeDuration;
+          container.animate({left: -marqueeLength + 200}, duration, 'linear', function() {
+            // When done, empty it ...
+            container.empty();
+            // ... let the marquee slide away ...
+            $('#marquee').animate({'margin-bottom': -$('#marquee').height()}, 1000);
+            // ... and run the next command
+            waitAndRunNextCommand(marqueeInterval);
+          });
+        });
+      }
+
       $('.carousel').carousel({
         interval: sponsorDuration,
         pause: "false"
       });
-//
-//      $(document).ready(function () {
-//        boxxy.listen(boxxyHost);
-//        waitAndRunNextCommand(initialTimeout);
-//      });
-//
-//      // Quick calculation to adapt the sponsor loop to the marquee loop
-//      //   34 sponsors * sponsor_duration (in ms)
-//      //   = marqueeDuration * (marqueeLength + $('#marquee').width() + 200)
-//      //       + amountOfMarquees * marqueeInterval
+
+      $(document).ready(function () {
+        boxxy.listen(boxxyHost);
+        waitAndRunNextCommand(initialTimeout);
+      });
+
+      // Quick calculation to adapt the sponsor loop to the marquee loop
+      //   34 sponsors * sponsor_duration (in ms)
+      //   = marqueeDuration * (marqueeLength + $('#marquee').width() + 200)
+      //       + amountOfMarquees * marqueeInterval
     </script>
   </body>
 </html>
