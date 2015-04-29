@@ -11,13 +11,11 @@
   </head>
   <body>
     <!-- Uncomment for the dj-contest -->
-    <!--
-      - <div id="marquee-top">
-      -     <ol>
-      -         <li>SMS HOT or NOT naar 0478 012 970<li>
-      -     </ol>
-      - </div>
-    -->
+   <div id="marquee-top">
+       <ol>
+           <li>SMS HOT or NOT naar 0478 012 970<li>
+       </ol>
+   </div>
 
     <div id="sponsors" class="carousel slide" data-ride="carousel">
       <div class="carousel-inner" role="listbox">
@@ -143,6 +141,7 @@
       // Set up boxxy
       var boxxy = boxxy.initialize(),
           boxxyHost = 'http://live.12urenloop.be:8080',
+          circuitLength = 306.48,  // Override if necessary, boxxy.circuitLength
           initialTimeout = 2000,
           marqueeInterval = 3000,
           sponsorDuration = 3000,  // In ms
@@ -150,13 +149,15 @@
           loop = [
             {command: 'runMarquee', content: 'volgLive'},
             {command: 'runMarquee', content: 'kmGelopen'},
+            {command: 'runMarquee', content: 'smsHotOrNot'},
             {command: 'runMarquee', content: 'scores'},
             {command: 'runMarquee', content: 'volgLive'},
             {command: 'runMarquee', content: 'randomStats'},
+            {command: 'runMarquee', content: 'smsHotOrNot'},
             {command: 'runMarquee', content: 'scores'},
             {command: 'runMarquee', content: 'volgLive'},
             {command: 'runMarquee', content: 'tijdPerRonde'},
-            //{command: 'runMarquee', content: 'smsHotOrNot'},
+            {command: 'runMarquee', content: 'smsHotOrNot'},
             {command: 'goToLink', link: 'videowallscores.html'}
           ],
           commandIdx = -1, command;
@@ -174,7 +175,7 @@
           var teams = boxxy.teamsByScore();
           var content = [];
           for (var i = 0; i < teams.length; i++) {
-            var afstand = teams[i].laps * boxxy.circuitLength;
+            var afstand = teams[i].laps * circuitLength;
             var afstandS = afstand < 20000 ? '' + afstand : '' + Math.round(afstand/1000) + 'k';
             content.push(teams[i].name + ' heeft ' + afstandS + 'm gelopen. &nbsp; &nbsp; &nbsp;');
           }
@@ -203,7 +204,7 @@
           for (var i = 0; i < teams.length; i++) {
             totaleRondjes += teams[i].laps;
           };
-          var afstand = Math.round(totaleRondjes * boxxy.circuitLength / 1000);
+          var afstand = Math.round(totaleRondjes * circuitLength / 1000);
           var content = [];
           content.push(totaleRondjes + ' gelopen rondjes, da\'s ' + afstand + ' km.');
           content.push('Da\'s '+ makePuntedInts(Math.round(afstand * 4666.355)) + ' tandenborstels.');
@@ -223,7 +224,7 @@
           return ['Volg op live.12urenloop.be!'];
         },
         smsHotOrNot: function() {
-          return ['Stuur sms HOT or NOT naar 0487 012 370'];
+          return ['Stuur sms HOT or NOT naar 0478 01 29 70'];
         }
       };
 
