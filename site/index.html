@@ -56,12 +56,12 @@
   <div id="intro">
     <div class="bg1"></div>
 
-    <!-- <div class="play-button">
+    <div class="play-button">
       <a href="#?custom=true&amp;width=620&amp;height=350">
         <div class="small">Volg de 12urenloop</div>
         <div class="large">LIVE</div>
       </a>
-    </div>  -->
+    </div>
 
     <div class="title">
       <div class="intro-line"></div>
@@ -99,8 +99,7 @@
 
   <div id="home">
     <div class="container">
-<!--	<div id="live-results"><table><tr><td class="placeholder">De resultaten worden geladen</td></tr>
-	</table></div> -->
+      <div id="live-results"><table><tr><td class="placeholder">De resultaten worden geladen</td></tr> </table></div>
 <!--
       <div id="live-results"><table>
         <tr id="teams3">
@@ -521,8 +520,8 @@
   <script src="javascripts/smooth-scroll.js" type="text/javascript"></script>
   <script src="javascripts/jquery.flexslider.js" type="text/javascript"></script>
   <script src="javascripts/jquery.prettyPhoto.js" type="text/javascript"></script>
-  <!-- <script src="http://live.12urenloop.be/js/boxxy.js"></script> -->
-  <!-- <script src="http://live.12urenloop.be/socket.io/socket.io.js"></script> -->
+  <script src="http://live.12urenloop.be/js/boxxy.js"></script>
+  <script src="http://live.12urenloop.be/socket.io/socket.io.js"></script>
   <script type="text/javascript" src="http://filesvideo.ugent.be/jwplayer6/jwplayer.js"></script>
   <script type="text/javascript">jwplayer.key="mdGdaKfVbO3+1sGvEDiR4cXDtQ5BEevfGnD2os7p5do=";</script>
   <script src="contact-form.js"></script>
@@ -549,7 +548,6 @@
       });
     });
 
-/*
     var boxxy = boxxy.initialize(),
         container = $('#live-results table');
     boxxy.onUpdate = function() {
@@ -586,7 +584,7 @@
         container.append(row);
       }
     }
-    boxxy.listen('http://live.12urenloop.be:8080'); */
+    boxxy.listen('http://live.12urenloop.be:8080');
 
     /* Livestream player */
     function initPlayer() {
