@@ -9,32 +9,32 @@ main = do
     db <- newDatabase "count-von-count.db"
     deleteAll db
 
-    addStation db "gyrid4" "00:01:95:0b:ac:02" 300 -- Marked 113
+    addStation db "gyrid101" "00:24:01:eb:c2:68" 20
+    addStation db "gyrid102" "00:21:91:f1:f1:39" 70
+    addStation db "gyrid103" "00:21:91:f1:f1:33" 100
+    addStation db "gyrid104" "00:01:95:0b:ac:02" 150
+    addStation db "gyrid105" "00:01:95:0a:56:32" 290
+    addStation db "gyrid106" "00:21:91:f1:ea:11" 320
 
-    --addStation db "gyrid1" "00:1c:f0:f1:f8:25"  45
-    --addStation db "gyrid2" "00:24:01:eb:c2:68" 120
-    --addStation db "gyrid3" "00:1c:f0:6c:39:32" 190
-    --addStation db "gyrid4" "00:21:91:f1:f1:33" 300
-    --addStation db "gyrid6" "00:1c:f0:6c:39:3e" 280
-    --addStation db "gyrid5" "00:24:01:eb:c2:65" 370
-
-    t1  <- addTeam db "KVHV"
-    t2  <- addTeam db "Kofschipclubs"
-    t3  <- addTeam db "Wetenschappen & VLAK"
-    t4  <- addTeam db "Blandinia"
+    t1  <- addTeam db "HILOK"
+    t2  <- addTeam db "VGK"
+    t3  <- addTeam db "VDK"
+    t4  <- addTeam db "VBK"
     t5  <- addTeam db "VEK"
-    t6  <- addTeam db "VLK"
-    t7  <- addTeam db "VTK"
-    t8  <- addTeam db "HILOK"
-    t9  <- addTeam db "VBK"
-    t10 <- addTeam db "VGK"
+    t6  <- addTeam db "Wetenschappen & VLAK"
+    t7  <- addTeam db "Veto, LILA, Hermes"
+    t8  <- addTeam db "Blandinia"
+    t9  <- addTeam db "VPPK"
+    t10 <- addTeam db "Moeder Lies"
     t11 <- addTeam db "Politeia"
-    t12 <- addTeam db "VPPK"
-    t13 <- addTeam db "Veto, Moeder Lies, LILA & Hermes"
-    t14 <- addTeam db "VRG & Farma"
-    t15 <- addTeam db "SeniorenKonvent"
-    t16 <- addTeam db "Home Konvent"
-    t17 <- addTeam db "Urgent & Schamper"
+    t12 <- addTeam db "Kofschipclubs"
+    t13 <- addTeam db "SK"
+    t14 <- addTeam db "HK"
+    t15 <- addTeam db "KVHV"
+    t16 <- addTeam db "VRG & Farma"
+    t17 <- addTeam db "VTK"
+    t18 <- addTeam db "VLK"
+    t19 <- addTeam db "Schamper"
 
     b1  <- addBaton db "20:13:01:24:11:15" "Baton A"
     b2  <- addBaton db "20:13:01:30:03:69" "Baton B"
@@ -80,5 +80,9 @@ main = do
     setTeamBaton db t15 $ Just b15
     setTeamBaton db t16 $ Just b16
     setTeamBaton db t17 $ Just b17
+    setTeamBaton db t18 $ Just b18
+    setTeamBaton db t19 $ Just b19
+
 
     closeDatabase db
+
