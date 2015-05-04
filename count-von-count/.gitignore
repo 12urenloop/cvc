@@ -1,3 +1,6 @@
 dist
 log
 *.db
+.cabal-sandbox
+cabal.sandbox.config
+external_sources
