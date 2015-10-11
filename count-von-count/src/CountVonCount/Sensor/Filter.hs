@@ -10,7 +10,6 @@ module CountVonCount.Sensor.Filter
 
 
 --------------------------------------------------------------------------------
-import           Control.Applicative          (pure, (<$>), (<*>))
 import           Data.Foldable                (forM_)
 import qualified Data.Text                    as T
 import           Data.Time                    (UTCTime)

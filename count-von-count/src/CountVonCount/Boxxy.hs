@@ -17,13 +17,11 @@ module CountVonCount.Boxxy
 
 
 --------------------------------------------------------------------------------
-import           Control.Applicative          (pure, (<$>), (<*>))
 import           Control.Concurrent           (forkIO)
 import           Control.Monad                (forM, forM_, void, when)
 import           Control.Monad.Trans.Resource (runResourceT)
 import           Data.Aeson                   ((.=))
 import qualified Data.Aeson                   as A
-import qualified Data.Conduit                 as C
 import           Data.IORef                   (IORef, newIORef, readIORef,
                                                writeIORef)
 import           Data.Maybe                   (isNothing)

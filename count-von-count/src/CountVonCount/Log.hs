@@ -9,7 +9,6 @@ module CountVonCount.Log
 
 
 --------------------------------------------------------------------------------
-import           Control.Applicative     ((<$>), (<*>))
 import           Control.Concurrent      (forkIO)
 import           Control.Concurrent.Chan (Chan, newChan, readChan, writeChan)
 import           Control.Concurrent.MVar (MVar, newEmptyMVar, putMVar, takeMVar)

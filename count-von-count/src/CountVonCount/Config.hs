@@ -10,12 +10,9 @@ module CountVonCount.Config
 
 
 --------------------------------------------------------------------------------
-import           Control.Applicative    ((<$>), (<*>))
 import           Control.Monad          (mzero)
 import           Data.Aeson             (FromJSON (..), (.!=), (.:?))
 import qualified Data.Aeson             as A
-import           Data.ByteString        (ByteString)
-import qualified Data.ByteString.Char8  as BC
 import           Data.Maybe             (fromMaybe, isNothing)
 import           Data.Text              (Text)
 import qualified Data.Text              as T

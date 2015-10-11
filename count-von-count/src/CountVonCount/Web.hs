@@ -6,7 +6,7 @@ module CountVonCount.Web
 
 
 --------------------------------------------------------------------------------
-import           Control.Applicative            ((<$>), (<*>), (<|>))
+import           Control.Applicative            ((<|>))
 import           Control.Monad                  (forM, forM_, unless, (>=>))
 import           Control.Monad.Reader           (ReaderT, ask, runReaderT)
 import           Control.Monad.Trans            (liftIO)
@@ -14,7 +14,6 @@ import           Data.Text                      (Text)
 import qualified Data.Text                      as T
 import qualified Data.Text.Encoding             as T
 import           Data.Time                      (getCurrentTimeZone)
-import           Data.Traversable               (traverse)
 import qualified Network.WebSockets             as WS
 import qualified Network.WebSockets.Snap        as WS
 import qualified Network.WebSockets.Util.PubSub as PS

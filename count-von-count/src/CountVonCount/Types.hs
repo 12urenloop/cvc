@@ -9,14 +9,13 @@ module CountVonCount.Types
 
 
 --------------------------------------------------------------------------------
-import           Data.ByteString       (ByteString)
-import qualified Data.ByteString.Char8 as BC
-import qualified Data.ByteString.Lazy as BL
-import           Data.Monoid           (mappend)
-import           Data.Text             (Text)
-import qualified Data.Text.Encoding    as T
-import Data.ByteString.Lazy.Builder.ASCII (lazyByteStringHexFixed)
-import Data.ByteString.Lazy.Builder (toLazyByteString)
+import           Data.ByteString                    (ByteString)
+import qualified Data.ByteString.Char8              as BC
+import           Data.ByteString.Lazy.Builder.ASCII (lazyByteStringHexFixed)
+import           Data.ByteString.Lazy.Builder       (toLazyByteString)
+import qualified Data.ByteString.Lazy               as BL
+import           Data.Text                          (Text)
+import qualified Data.Text.Encoding                 as T
 
 
 --------------------------------------------------------------------------------

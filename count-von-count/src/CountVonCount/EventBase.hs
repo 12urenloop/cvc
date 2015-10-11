@@ -10,7 +10,6 @@ module CountVonCount.EventBase
 
 
 --------------------------------------------------------------------------------
-import           Control.Applicative ((<$>))
 import           Control.Monad       (forM_)
 import           Data.IORef          (IORef, atomicModifyIORef, newIORef,
                                       readIORef)

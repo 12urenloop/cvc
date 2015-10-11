@@ -8,7 +8,6 @@ module CountVonCount.Protocols.CSV
 
 
 --------------------------------------------------------------------------------
-import           Control.Applicative          ((*>), (<$>))
 import           Control.Monad                (liftM)
 import qualified Data.Attoparsec              as A
 import qualified Data.ByteString              as B

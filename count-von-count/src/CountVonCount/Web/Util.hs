@@ -2,15 +2,14 @@
 module CountVonCount.Web.Util
     ( refFromParam
     , readParam
-	, json
+    , json
     ) where
 
-import Control.Applicative ((<$>))
-import Data.ByteString (ByteString)
-import qualified Snap.Core as Snap
-import qualified Snap.Util.Readable as Snap
-import qualified Data.Aeson as A
+import qualified Data.Aeson            as A
+import           Data.ByteString       (ByteString)
 import qualified Data.ByteString.Char8 as BC
+import qualified Snap.Core             as Snap
+import qualified Snap.Util.Readable    as Snap
 
 import CountVonCount.Persistence
 

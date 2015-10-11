@@ -42,7 +42,6 @@ module CountVonCount.Persistence
 
 
 --------------------------------------------------------------------------------
-import           Control.Applicative     ((<$>), (<*>))
 import           Control.Concurrent.MVar (MVar, newMVar, putMVar, takeMVar)
 import           Control.Exception       (finally)
 import           Data.Int                (Int64)

@@ -7,7 +7,6 @@ module CountVonCount.Protocols.Gyrid
 
 
 --------------------------------------------------------------------------------
-import           Control.Applicative              ((<$>))
 import           Control.Monad                    (guard, liftM)
 import           Data.Bits                        (shiftL, shiftR, (.&.), (.|.))
 import           Data.ByteString                  (ByteString)

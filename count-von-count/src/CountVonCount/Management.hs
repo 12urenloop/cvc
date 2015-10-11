@@ -9,7 +9,6 @@ module CountVonCount.Management
 
 
 --------------------------------------------------------------------------------
-import           Control.Applicative       ((<$>))
 import           Control.Arrow             ((&&&))
 import           Control.Monad.Trans       (liftIO)
 import           Data.Foldable             (forM_)

@@ -18,16 +18,14 @@ module Network.WebSockets.Util.PubSub
     , subscribe
     ) where
 
-import Control.Applicative ((<$>))
-import Control.Exception (IOException, handle)
-import Control.Monad (foldM, forever)
-import Data.IntMap (IntMap)
-import Data.List (foldl')
+import           Control.Exception       (IOException, handle)
+import           Control.Monad           (foldM, forever)
+import           Data.IntMap             (IntMap)
+import qualified Data.IntMap             as IM
+import           Data.List               (foldl')
 import qualified Control.Concurrent.MVar as MV
+import           Network.WebSockets
 
-import qualified Data.IntMap as IM
-
-import Network.WebSockets
 
 data PubSub_ = PubSub_
     { pubSubNextId :: Int

@@ -24,7 +24,6 @@ module CountVonCount.Counter
 
 
 --------------------------------------------------------------------------------
-import           Control.Applicative         ((<$>), (<*>))
 import           Control.Concurrent          (threadDelay)
 import           Control.Concurrent.MVar     (MVar, newMVar, putMVar, takeMVar)
 import           Control.Monad               (forM, forever)
