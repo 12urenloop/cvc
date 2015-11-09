@@ -1,3 +1,3 @@
 #! /bin/sh
 
-mysql urenloop -p < database.sql
+mysql urenloop -u root -p < database.sql
