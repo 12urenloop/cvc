@@ -1,5 +1,6 @@
+sudo: false
 language: haskell
-ghc: 7.8
+ghc: 7.10
 before_install:
   - "cd count-von-count"
 install:
@@ -11,5 +12,3 @@ after_script:
   - "hpc-coveralls count-von-count-tests --exclude-dir=tests --exclude-dir=src/Gyrid --display-report"
 notifications:
   email: true
-  irc:
-    - "wina.ugent.be#hydra"
