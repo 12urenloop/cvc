@@ -1,8 +1,8 @@
 .centered {
   margin: auto;
   text-align: center;
-  width: 768px;
   margin-bottom: 10px;
+  width: 670px;
 }
 
 .two-numbers {
@@ -36,4 +36,39 @@
   text-align: center;
   text-transform: uppercase;
   padding-top: 1em;
+}
+
+@media only screen and (min-width: 480px) and (max-width: 767px) {
+  .number {
+    width: 1em;
+    font-size: 3.1em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+  }
+
+  .number-sub {
+    font-size: 1.5em;
+  }
+
+  .centered {
+    width: 450px;
+  }
+}
+
+@media only screen and (max-width: 479px) {
+  .number {
+    width: 1em;
+    font-size: 2.1em;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+  }
+
+  .number-sub {
+    font-size: 1em;
+  }
+
+  .centered {
+    margin-bottom: 0;
+    width: 300px;
+  }
 }

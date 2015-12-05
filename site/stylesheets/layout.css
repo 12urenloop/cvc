@@ -14,7 +14,7 @@ h1 {
 }
 
 h1.small {
-    font-size: 52px;
+    font-size: 45px;
     line-height: 66px;
     margin-bottom: 24px;
 }
@@ -538,16 +538,24 @@ nav select {
     }
 
     .title {
-        top: 40px;
+        top: 30px;
     }
 
     h1 {
         font-size: 100px;
         margin-bottom: 60px;
     }
-}
 
-@media only screen and (max-width: 1024px) {
+    h1.small {
+      font-size: 35px;
+      margin-bottom: 10px;
+      margin-top: -20px;
+    }
+
+    .social-intro {
+      margin-top: 10px;
+    }
+
     .bg1, .bg2, .bg3, .bg4 {
         background-attachment: scroll;
     }
@@ -564,7 +572,7 @@ nav select {
     }
 
     h1.small {
-        font-size: 40px;
+        font-size: 25px;
         line-height: 50px;
         margin-bottom: 20px;
     }
@@ -583,6 +591,20 @@ nav select {
         padding-left: 15px;
         padding-right: 15px;
     }
+
+    .social-intro a {
+        width: 190px; height: 40px;
+        font-size: 18px;
+        margin: 0 0 10px 10px;
+    }
+
+    a.social-facebook {
+      background: #39599f url('../images/icn-facebook-intro.png') no-repeat 0px center;
+    }
+
+    a.social-twitter {
+      background: #7ad2f4 url('../images/icn-twitter-intro.png') no-repeat 0px center;
+    }
 }
 
 @media only screen and (max-width: 479px) {
@@ -591,7 +613,7 @@ nav select {
     }
 
     .title {
-        top: 30px;
+        top: 20px;
     }
 
     .intro-line {
@@ -604,9 +626,10 @@ nav select {
     }
 
     h1.small {
-        font-size: 24px;
+        font-size: 20px;
         line-height: 28px;
         margin-bottom: 10px;
+        margin-top: 10px;
     }
 
     .title p {
@@ -630,10 +653,19 @@ nav select {
     }
 
     .social-intro a {
-        width: 180px; height: 26px;
+        width: 140px; height: 26px;
         font-size: 14px;
         line-height: 25px;
         opacity: 1;
+        margin: 0 0 10px 10px;
+    }
+
+    a.social-facebook {
+      background: #39599f url('../images/icn-facebook-intro.png') no-repeat 0px center;
+    }
+
+    a.social-twitter {
+      background: #7ad2f4 url('../images/icn-twitter-intro.png') no-repeat 0px center;
     }
 }
 
