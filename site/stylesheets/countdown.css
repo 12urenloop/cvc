@@ -30,7 +30,9 @@
 .number-sub {
   color: #ededed;
   display: block;
-  font-family: 'League Gothic', sans-serif;
+  text-shadow: 0px 2px 4px #000000;
+  font-family: 'Oswald', sans-serif;
+  margin-bottom: 5px;
   font-size: 1.85em;
   font-weight: bold;
   text-align: center;
