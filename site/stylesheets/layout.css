@@ -192,7 +192,7 @@ p.separator {
 
 #intro {
     width: 100%;
-    height: 550px;
+    height: 580px;
     position: relative;
 }
 
@@ -574,6 +574,7 @@ nav select {
     h1.small {
         font-size: 25px;
         line-height: 50px;
+        margin-top: 20px;
         margin-bottom: 20px;
     }
 
