@@ -610,7 +610,7 @@ nav select {
 
 @media only screen and (max-width: 479px) {
     #intro {
-        height: 250px;
+        height: 260px;
     }
 
     .title {
@@ -669,6 +669,13 @@ nav select {
       background: #7ad2f4 url('../images/icn-twitter-intro.png') no-repeat 0px center;
     }
 }
+
+@media only screen and (max-width: 345px) {
+    #intro {
+        height: 320px;
+    }
+}
+
 
 #live-results {
     margin-bottom: 2em;
