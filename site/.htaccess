@@ -1,3 +1,4 @@
 RewriteEngine On
 RewriteCond %{HTTP_HOST} !^www\.12urenloop\.be$ [NC]
+Redirect /location https://www.google.be/maps/place/Yachtdreef,+9000+Gent/@51.0464748,3.7001267,17z/data=!3m1!4b1!4m2!3m1!1s0x47c371653312d467:0xaacd4c55bf1abe5e
 RewriteRule ^(.*)$ http://www.12urenloop.be/$1 [L,R=301]
