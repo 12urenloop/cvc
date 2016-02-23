@@ -1,0 +1,23 @@
+name:                filtermap
+version:             0.0.0.0
+license:             WTFPL
+license-file:        LICENSE
+author:              Ilion Beyst
+maintainer:          ilion.beyst@gmail.com
+build-type:          Simple
+cabal-version:       >=1.10
+
+executable filtermap
+  main-is:             Main.hs
+  build-depends:       base >= 4.8 && <4.9,
+                       bytestring >= 0.10 && < 0.11,
+                       text >= 1.2 && < 1.3,
+                       pipes >= 4.1 && < 4.2,
+                       pipes-bytestring >= 2.1 && < 2.2,
+                       pipes-aeson >= 0.4 && < 0.5,
+                       unordered-containers >= 0.2 && < 0.3,
+                       aeson >= 0.9 && < 0.10,
+                       lens-family
+  ghc-options:         -Wall -O2
+  hs-source-dirs:      src
+  default-language:    Haskell2010
