@@ -24,8 +24,11 @@ encodeObjects = for cat (P.fromLazy . encode)
 
 observation :: A.Parser Observation
 observation = Observation <$> time  <* A.char ','
+                          <*  field <* A.char ','
                           <*> text  <* A.char ','
+                          <*  field <* A.char ','
                           <*> text  <* A.char ','
+                          <*  field <* A.char ','
                           <*  field <* A.char '\n'
 
 field :: A.Parser BS.ByteString
