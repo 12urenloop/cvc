@@ -2,22 +2,29 @@
 
 import           Data.Aeson
 import qualified Data.Attoparsec.ByteString.Char8 as A
-import           Data.ByteString.Char8            as BS
+import qualified Data.ByteString.Char8            as BS
 import           Data.Text
 import           Data.Text.Encoding
 import           Data.Time
+import           System.Exit                      (exitFailure)
+import           System.IO                        (hPutStrLn, stderr)
 
 import           Pipes
 import qualified Pipes.Attoparsec                 as P
 import qualified Pipes.ByteString                 as P
+import           Pipes.Lift
 
 import           Observation
 
 main :: IO ()
 main = do
-    runEffect $ ((P.parsed observation P.stdin) >> return ())
-                    >-> encodeObjects >-> P.stdout
-    return ()
+    res <- runEffect . runErrorP $
+        errorP (P.parsed observation P.stdin)
+        >-> encodeObjects
+        >-> P.stdout
+    case res of
+      Right _     -> return ()
+      Left (e, _) -> hPutStrLn stderr (P.peMessage e) >> exitFailure
 
 encodeObjects :: (ToJSON a, Monad m) => Pipe a BS.ByteString m r
 encodeObjects = for cat (P.fromLazy . encode)
