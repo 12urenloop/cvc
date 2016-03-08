@@ -1,5 +1,6 @@
-import qualified Lap         as Lap
-import qualified Observation as Obs
+import           Counter.Map
+import           Sighting
+
 
 main :: IO ()
 main = return ()

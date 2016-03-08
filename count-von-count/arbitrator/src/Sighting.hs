@@ -7,6 +7,7 @@ import           Data.Aeson
 import           Data.Text
 import           Data.Time     (UTCTime)
 
+
 data Sighting = Sighting
     { sightingTime :: UTCTime
     , sightingTeam :: Text
