@@ -1,6 +1,7 @@
 --------------------------------------------------------------------------------
 -- | This module implements the counter logic for a /single/ team
 {-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE OverloadedStrings  #-}
 module Counter.Core
     ( CounterCoreEvent (..)
     , isLapEvent
@@ -14,19 +15,20 @@ module Counter.Core
 
 
 --------------------------------------------------------------------------------
-import           Control.Monad                (when)
-import           Control.Monad.State          (State, get, put, runState)
-import           Control.Monad.Writer         (WriterT, runWriterT, tell)
-import           Data.List                    (minimumBy)
-import           Data.Ord                     (comparing)
-import           Data.Time                    (UTCTime, diffUTCTime)
-import           Data.Typeable                (Typeable)
-import           Text.Printf                  (printf)
+import           Control.Monad        (when)
+import           Control.Monad.State  (State, get, put, runState)
+import           Control.Monad.Writer (WriterT, runWriterT, tell)
+import           Data.Aeson
+import           Data.List            (minimumBy)
+import           Data.Ord             (comparing)
+import           Data.Time            (UTCTime, diffUTCTime)
+import           Data.Typeable        (Typeable)
+import           Text.Printf          (printf)
 
 
 --------------------------------------------------------------------------------
-import           Sighting
 import           Counter.Modulo
+import           Sighting
 
 
 --------------------------------------------------------------------------------
@@ -35,6 +37,19 @@ data CounterCoreEvent
     = PositionCoreEvent UTCTime Double Double
     | LapCoreEvent UTCTime Double
     deriving (Show)
+
+
+--------------------------------------------------------------------------------
+instance ToJSON CounterCoreEvent where
+    toJSON (PositionCoreEvent time pos speed) = object
+        [ "position" .= object
+            [ "timestamp" .= time
+            , "position"  .= pos
+            , "speed"     .= speed
+            ]
+        ]
+    toJSON (LapCoreEvent time _) = object
+        [ "lap" .= object ["timestamp" .= time ]]
 
 
 --------------------------------------------------------------------------------
