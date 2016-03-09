@@ -14,9 +14,10 @@ import qualified Pipes.Prelude             as P
 import           Control.Monad.State
 import           Control.Monad.Trans.Error
 import qualified Data.ByteString           as BS
+import           Data.List                 (intercalate)
 import           Lens.Family2              (view)
-import System.Exit
-import System.IO (hPutStrLn, stderr)
+import           System.Exit
+import           System.IO                 (hPutStrLn, stderr)
 
 import           Counter.Core
 import           Counter.Map
@@ -29,7 +30,8 @@ main = do
       Right _ -> exitSuccess
       Left (e, _) -> do
           hPutStrLn stderr $ case e of
-            A.AttoparsecError (P.ParsingError _ msg) -> msg
+            A.AttoparsecError (P.ParsingError ctx msg) ->
+                intercalate ": " $ ctx ++ [msg]
             A.FromJSONError msg -> msg
           exitFailure
 
