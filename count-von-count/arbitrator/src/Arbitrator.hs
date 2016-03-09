@@ -1,43 +1,61 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE OverloadedStrings          #-}
+
 import           Data.Aeson
 
 import           Pipes
-import qualified Pipes.Aeson.Unchecked as A
-import qualified Pipes.ByteString      as P (stdin, stdout)
-import qualified Pipes.Prelude         as P
+import qualified Pipes.Aeson               as A
+import qualified Pipes.Aeson.Unchecked     as AU
+import qualified Pipes.Attoparsec          as P
+import qualified Pipes.ByteString          as P (stdin, stdout)
+import qualified Pipes.Lift                as P
+import qualified Pipes.Prelude             as P
 
 import           Control.Monad.State
-import           Lens.Family2          (view)
+import           Control.Monad.Trans.Error
+import qualified Data.ByteString           as BS
+import           Lens.Family2              (view)
+import System.Exit
+import System.IO (hPutStrLn, stderr)
 
 import           Counter.Core
 import           Counter.Map
 import           Sighting
 
-
 main :: IO ()
-main = runArbitratorT emptyCounterMap $ runEffect count
+main = do
+    res <- runArbitratorT emptyCounterMap . runEffect . P.runErrorP $ count
+    case res of
+      Right _ -> exitSuccess
+      Left (e, _) -> do
+          hPutStrLn stderr $ case e of
+            A.AttoparsecError (P.ParsingError _ msg) -> msg
+            A.FromJSONError msg -> msg
+          exitFailure
 
 
-observations :: MonadIO m => Producer Sighting m ()
-observations = view A.decoded P.stdin >> return ()
+type Err m = ErrorT (A.DecodingError, Producer BS.ByteString m ()) m
+
+
+observations :: MonadIO m => Producer Sighting (Err (ArbitratorT m)) ()
+observations = P.errorP $ view AU.decoded P.stdin
 
 
 
-count :: MonadIO m => Effect (ArbitratorT m) ()
+count :: MonadIO m => Effect (Err (ArbitratorT m)) ()
 count = observations
-        >-> P.mapM step
+        >-> P.mapM (lift . step)
         >-> P.concat
-        >-> for cat  (A.encode . toJSON)
+        >-> for cat  (AU.encode . toJSON)
         >-> P.stdout
 
 
 newtype ArbitratorT m a = ArbitratorT (StateT CounterMap m a)
     deriving (Functor, Applicative, Monad, MonadState CounterMap, MonadIO)
 
+
 runArbitratorT :: Monad m => CounterMap -> ArbitratorT m a -> m a
 runArbitratorT counter (ArbitratorT a) = evalStateT a counter
-
 
 
 -- TODO: tells
@@ -47,6 +65,7 @@ step sighting = do
     let (events, tells, map') = stepCounterMap maxSpeed sighting counterMap
     put map'
     return events
+
 
 -- TODO
 maxSpeed :: Double
