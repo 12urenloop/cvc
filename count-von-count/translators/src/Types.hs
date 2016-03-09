@@ -1,7 +1,7 @@
 --------------------------------------------------------------------------------
 -- | TODO: Move this module or give it a better name
 {-# LANGUAGE OverloadedStrings #-}
-module CountVonCount.Types
+module Types
     ( Mac
     , parseMac
     , parseHexMac

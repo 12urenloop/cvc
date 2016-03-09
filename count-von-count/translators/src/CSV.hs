@@ -1,57 +1,67 @@
-{-# LANGUAGE BangPatterns #-}
+{-# LANGUAGE BangPatterns      #-}
+{-# LANGUAGE OverloadedStrings #-}
 
-import qualified Data.Aeson                    as JSON
-import           Control.Monad                 (liftM)
-{- import           Control.Applicative           ((<$>)) -}
-import qualified Data.Attoparsec               as A
-import qualified Data.ByteString               as B
-import           Data.Time                     (UTCTime, getCurrentTime)
-import qualified System.IO.Streams             as Streams
-import           System.IO.Streams.Handle      (stdin, stdout)
-import qualified System.IO.Streams.Combinators as Streams
-import           System.IO.Streams.Attoparsec  (parserToInputStream)
+
 --------------------------------------------------------------------------------
-import           CountVonCount.Translator.SensorEvent  (SensorEvent(..))
-import           CountVonCount.Types                   (Mac, parseMac)
+import Data.Aeson
+import qualified Data.Attoparsec.ByteString.Char8 as A
+import qualified Data.ByteString.Char8            as B
+import           Data.Time                        (getCurrentTime)
 
+import           Pipes
+import qualified Pipes.Aeson.Unchecked                     as P
+import qualified Pipes.Attoparsec                 as P
+import qualified Pipes.ByteString                 as P
+import qualified Pipes.Prelude as P
+
+
+--------------------------------------------------------------------------------
+import           SensorEvent                      (SensorEvent (..))
+import           Types                            (Mac, parseMac)
+
+
+--------------------------------------------------------------------------------
 main :: IO ()
-main = do
-    sensorEventStream <- csvInput stdin
-    outputStream <- Streams.map JSON.encode sensorEventStream
-    Streams.supply outputStream stdout
+main = runEffect $ gyrids >-> P.mapM gyridToEvent >-> encodeJSON >-> P.stdout
+
 
 --------------------------------------------------------------------------------
-instance JSON.ToJSON SensorEvent
+gyrids :: MonadIO m => Producer Gyrid m ()
+gyrids = P.parsed gyrid P.stdin >-> catMaybes >> return ()
+
 
 --------------------------------------------------------------------------------
-csvInput :: Streams.InputStream B.ByteString
-    -> IO (Streams.InputStream SensorEvent)
-csvInput inStream = do
-    gyridStream <- parserToInputStream (Just <$> gyrid) inStream
-    Streams.mapM gToEvent gyridStream >>= Streams.mapMaybe id
-        where gToEvent g = liftM (gyridToEvent g) getCurrentTime
+encodeJSON :: (ToJSON a, Monad m) => Pipe a B.ByteString m r
+encodeJSON = for cat $ P.encode
+
 
 --------------------------------------------------------------------------------
-gyridToEvent :: Gyrid -> UTCTime -> Maybe SensorEvent
-gyridToEvent Ignored       _    = Nothing
-gyridToEvent (Event s b d) time = Just $ SensorEvent time s b d
+gyridToEvent :: Gyrid -> IO SensorEvent
+gyridToEvent (Event s b _) = do
+    time <- getCurrentTime
+    return $ SensorEvent time s b
+
 
 --------------------------------------------------------------------------------
-data Gyrid
-    = Event Mac Mac Double
-    | Ignored
+catMaybes :: Monad m => Pipe (Maybe a) a m r
+catMaybes = for cat $ maybe (return ()) (yield)
+
+
+--------------------------------------------------------------------------------
+data Gyrid = Event Mac Mac Double
     deriving (Show)
 
+
 --------------------------------------------------------------------------------
-gyrid :: A.Parser Gyrid
+gyrid :: A.Parser (Maybe Gyrid)
 gyrid = do
     line <- lineParser
     return $ case B.split ',' line of
-        ("MSG" : _)     -> Ignored
-        ("INFO" : _)    -> Ignored
-        [!s, _, !b, !r] ->
+        ("MSG" : _)     -> Nothing
+        ("INFO" : _)    -> Nothing
+        [!s, _, !b, !r] -> Just $
             Event (parseMac s) (parseMac b) (toDouble r)
-        _ -> Ignored
+        _ -> Nothing
     where
         newline x = x `B.elem` "\r\n"
         lineParser = A.skipWhile newline *> A.takeWhile (not . newline)

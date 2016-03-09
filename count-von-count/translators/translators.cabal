@@ -10,8 +10,8 @@ maintainer:          ilion.beyst@gmail.com
 build-type:          Simple
 cabal-version:       >=1.10
 
-executable replay
-  main-is:             Replay.hs
+executable csv
+  main-is:             CSV.hs
   build-depends:       base >=4.8 && <4.9,
                        time >= 1.5 && < 1.7,
                        text >= 1.2 && < 1.3,
