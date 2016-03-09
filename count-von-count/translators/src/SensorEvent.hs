@@ -1,18 +1,31 @@
-{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE OverloadedStrings #-}
 
-module CountVonCount.Translator.SensorEvent
+module SensorEvent
     ( SensorEvent (..)
     ) where
 
---------------------------------------------------------------------------------
-import CountVonCount.Types
-import Data.Time            (UTCTime)
-import GHC.Generics         (Generic)
---------------------------------------------------------------------------------
 
+--------------------------------------------------------------------------------
+import Data.Aeson
+import Data.Time            (UTCTime)
+
+
+--------------------------------------------------------------------------------
+import Types
+
+
+--------------------------------------------------------------------------------
 data SensorEvent = SensorEvent
     { sensorTime    :: UTCTime
     , sensorStation :: Mac
     , sensorBaton   :: Mac
-    , sensorRssi    :: Double
-    } deriving (Show, Generic)
+    } deriving (Show)
+
+
+--------------------------------------------------------------------------------
+instance ToJSON SensorEvent where
+    toJSON (SensorEvent time station baton) = object
+        [ "timestamp" .= time
+        , "station"   .= station
+        , "baton"     .= baton
+        ]
