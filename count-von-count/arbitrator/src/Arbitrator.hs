@@ -60,12 +60,12 @@ runArbitratorT :: Monad m => CounterMap -> ArbitratorT m a -> m a
 runArbitratorT counter (ArbitratorT a) = evalStateT a counter
 
 
--- TODO: tells
-step :: Monad m => Sighting -> ArbitratorT m [CounterCoreEvent]
+step :: MonadIO m => Sighting -> ArbitratorT m [CounterCoreEvent]
 step sighting = do
     counterMap <- get
     let (events, tells, map') = stepCounterMap maxSpeed sighting counterMap
     put map'
+    liftIO $ mapM_ (hPutStrLn stderr) tells
     return events
 
 
