@@ -1,0 +1,18 @@
+[
+  {
+    "icon": {
+      "background": "cd-green",
+      "image": "img/cd-icon-picture.svg"
+    },
+    "content": "<b>Message 1</b>",
+    "time": "09:30"
+  },
+  {
+    "icon": {
+      "background": "cd-yellow",
+      "image": "img/cd-icon-location.svg"
+    },
+    "content": "<img src=\"img/bg1.jpg\" />",
+    "time": "09:45"
+  }
+]

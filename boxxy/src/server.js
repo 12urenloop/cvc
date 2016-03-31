@@ -157,4 +157,14 @@ page('/scores', 'content/scores.html', {
     "bg": "bg1"
 });
 
+page('/timeline', 'content/timeline.html', {
+    "title": "Timeline",
+    "scripts": [
+      "/js/jquery-1.7.1.min.js",
+      "/js/timeline.js"
+    ],
+    "container": "timeline",
+    "bg": "bg1"
+});
+
 server.listen(config.BOXXY_PORT);

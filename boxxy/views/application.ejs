@@ -19,6 +19,7 @@
         <link rel="stylesheet" type="text/css" href="/css/base.css">
         <link rel="stylesheet" type="text/css" href="/css/layout.css">
         <link rel="stylesheet" type="text/css" href="/css/skeleton.css">
+        <link rel="stylesheet" type="text/css" href="/css/timeline.css">
     </head>
 <body>
 
@@ -37,6 +38,7 @@
 			<li><a href="/scores">Scores</a></li>
 			<li><a href="/dj-contest">DJ Contest</a></li>
 			<li><a href="/special-laps">Speciale rondes</a></li>
+			<li><a href="/timeline">Timeline</a></li>
 		</ul>
 
 		<select name="dropdown" size="1" onChange="location.href=this.value">
@@ -44,10 +46,11 @@
 			<option value="/scores">Scores</option>
 			<option value="/dj-contest">DJ Contest</option>
 			<option value="/special-laps">Speciale rondes</option>
+			<option value="/timeline">Timeline</option>
 		</select>
 	</nav>
 
-    <div class="container">
+    <div class="container <%= container %>">
     <h2><%= title %></h2>
 	<%- content %>
     </div>
