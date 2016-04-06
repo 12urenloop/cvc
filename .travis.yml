@@ -1,16 +1,14 @@
 sudo: false
 language: haskell
 ghc: 7.10
-install: true
-script: true
-# before_install:
-#   - "cd count-von-count"
-# install:
-#   - "cabal install --only-dependencies --enable-tests --reorder-goals"
-# script:
-#   - "cabal configure --enable-tests --enable-library-coverage && cabal build && cabal test"
-# after_script:
-#   - "cabal install hpc-coveralls"
-#   - "hpc-coveralls count-von-count-tests --exclude-dir=tests --exclude-dir=src/Gyrid --display-report"
+before_install:
+  - "cd count-von-count"
+install:
+  - "cabal install --only-dependencies --enable-tests --reorder-goals"
+script:
+  - "cabal configure --enable-tests --enable-library-coverage && cabal build && cabal test"
+after_script:
+  - "cabal install hpc-coveralls"
+  - "hpc-coveralls count-von-count-tests --exclude-dir=tests --exclude-dir=src/Gyrid --display-report"
 notifications:
   email: true
