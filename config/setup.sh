@@ -13,7 +13,6 @@ apt-get -y remove network-manager
 apt-get -y install bridge-utils
 apt-get -y install vim
 
-update-rc.d -f ntp remove
 update-rc.d -f dnsmasq remove
 update-rc.d -f ip-routing remove
 update-rc.d -f mobile-internet remove
