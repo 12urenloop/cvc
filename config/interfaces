@@ -9,9 +9,9 @@ iface br0 inet static
   address 10.1.2.x
   gateway 10.1.2.1
   netmask 255.255.255.0
+
   bridge_ports eth0 eth1
-# Disabling STP as it seems to work without, and it doesn't work with  
-#  bridge_stp on
-#  bridge_fd 5
-#  bridge_maxage 10
-#  bridge_bridgeprio 4096 # Lower is closer to the switch
+  bridge_stp on
+  bridge_fd 5
+  bridge_maxage 10
+  bridge_bridgeprio 61440 # Lower is closer to the switch
