@@ -75,6 +75,13 @@ p {
     color: #3d3d3d;
 }
 
+a[name]:before {
+    content: "";
+    display: block;
+    margin: -30px 0 0;
+    height: 30px;
+}
+
 .white, .white p {
     color: #f9f9f9;
 }
