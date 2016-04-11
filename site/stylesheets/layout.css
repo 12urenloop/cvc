@@ -397,8 +397,7 @@ p.mid-text {
 }
 
 #locatie {
-    background: #fff;
-    position: relative;
+    background: url(../images/bg-dark.jpg) repeat;
     z-index: 300;
     padding-top: 40px;
     padding-bottom: 40px;
