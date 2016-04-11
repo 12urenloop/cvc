@@ -97,8 +97,6 @@ def main():
 class Team:
     def __init__(self, name):
         self.name = name
-        self.lastLapTimeStamp = datetime.utcnow() - timedelta(hours=1)  # be certain
-
 
 class Boxxy(object):
     def __init__(self):
@@ -128,11 +126,6 @@ class Boxxy(object):
             print("Special lap")
             return
 
-        # check
-        lapEndTimeStamp = parse_time(lap["timestamp"])
-        laptime = lapEndTimeStamp - team.lastLapTimeStamp
-        laptime = int(laptime.total_seconds())
-
         if team.laps % 100 == 0:
             tweet(choice(TEAM_RUN_ROUNDS).format(team=team.name, laps=team.laps, verb=pluralize(team.name)))
 
@@ -145,8 +138,6 @@ class Boxxy(object):
             andBack = ' (en terug)' if not loc[2] else ''
             tweet(
                 choice(TOTAL_DISTANCE).format(location=loc[1], andBack=andBack, distance=convert_distance(distance)))
-
-        team.lastLapTimeStamp = lapEndTimeStamp
 
         self.dump()
 
@@ -166,11 +157,6 @@ def pluralize(teamname):
     if '&' in teamname or teamname[-1] is 's':
         return "hebben"
     return "heeft"
-
-
-def convert_laptime(time):
-    return str(time) + "s"
-
 
 def convert_distance(distance):
     return str(int(distance/1000)) + "km"
