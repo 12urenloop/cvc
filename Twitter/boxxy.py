@@ -60,14 +60,6 @@ DISTANCES = deque([
     (4506520, 'Moskou', False),
 ])
 
-SHORTEST_LAP = ["{team} {verb} net een rondje in {time} gelopen. Dat is hun snelste rondje tot nog toe!",
-                "{team} {verb} hun persoonlijk record verbeterd: hun laatste rondje duurde slechts {time}. Doe zo voort!"]
-
-GLOBAL_FASTEST_LAP = [
-    "{team} {verb} net een rondje in {time} gelopen. Dat is tot nog toe het snelste rondje van de dag! Proficiat!",
-    "De titel Snelste Rondje Van De Dag gaat momenteel naar {team}. Zij hebben hun laatste rondje in {time} gelopen! Proficiat!",
-    "Een nieuw snelheidsrecord: {team} {verb} hun laatste rondje in {time} gelopen. Dat is tot nu toe het snelste rondje van de dag! Proficiat!"]
-
 TEAM_RUN_ROUNDS = ["{team} {verb} al {laps} rondjes achter de rug.",
                    "{team} {verb} al {laps} rondjes gelopen.",
                    "Nog eens honderd laps erbij! {team} {verb} al {laps} rondjes gelopen."]
@@ -105,14 +97,10 @@ def main():
 class Team:
     def __init__(self, name):
         self.name = name
-        self.shortestLap = 5*60  # 5 min
-        self.lastLapTimeStamp = datetime.utcnow() - timedelta(hours=1)  # be certain
-
 
 class Boxxy(object):
     def __init__(self):
         self.teams = {}
-        self.shortestLapGlobal = None
         self.omtrek = float("inf")
         self.distances = DISTANCES
 
@@ -124,8 +112,6 @@ class Boxxy(object):
 
         # set important vars
         self.omtrek = int(state["circuitLength"])
-        if self.shortestLapGlobal is None:
-            self.shortestLapGlobal = 5*60  # 5 min
 
         for teamid in state["teams"]:
             teamjson = state['teams'][teamid]
@@ -140,26 +126,10 @@ class Boxxy(object):
             print("Special lap")
             return
 
-        # check
-        lapEndTimeStamp = parse_time(lap["timestamp"])
-        laptime = lapEndTimeStamp - team.lastLapTimeStamp
-        laptime = int(laptime.total_seconds())
-        if laptime < team.shortestLap:
-            team.shortestLap = laptime
-            # TRIGGER SHORTESTLAP
-            if team.laps > 10:
-                msg = choice(SHORTEST_LAP)
-                tweet(msg.format(team=team.name, time=convert_laptime(laptime), verb=pluralize(team.name)))
-
         if team.laps % 100 == 0:
             tweet(choice(TEAM_RUN_ROUNDS).format(team=team.name, laps=team.laps, verb=pluralize(team.name)))
 
         # check globaltriggers
-        if laptime < self.shortestLapGlobal:
-            self.shortestLapGlobal = laptime
-            if totalLaps > 100:
-                msg = choice(GLOBAL_FASTEST_LAP)
-                tweet(msg.format(team=team.name, time=convert_laptime(laptime), verb=pluralize(team.name)))
 
         distance = totalLaps * self.omtrek
         if distance > self.distances[0][0]:
@@ -168,8 +138,6 @@ class Boxxy(object):
             andBack = ' (en terug)' if not loc[2] else ''
             tweet(
                 choice(TOTAL_DISTANCE).format(location=loc[1], andBack=andBack, distance=convert_distance(distance)))
-
-        team.lastLapTimeStamp = lapEndTimeStamp
 
         self.dump()
 
@@ -189,11 +157,6 @@ def pluralize(teamname):
     if '&' in teamname or teamname[-1] is 's':
         return "hebben"
     return "heeft"
-
-
-def convert_laptime(time):
-    return str(time) + "s"
-
 
 def convert_distance(distance):
     return str(int(distance/1000)) + "km"
