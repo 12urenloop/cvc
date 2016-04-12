@@ -1,0 +1,7 @@
+interface=eth0
+interface=eth0.4
+interface=eth0.5
+
+dhcp-range=interface:eth0,10.1.1.2,10.1.1.254,4h
+dhcp-range=interface:eth0.4,10.1.4.2,10.1.4.254,4h
+dhcp-range=interface:eth0.5,10.1.5.2,10.1.5.254,4h
