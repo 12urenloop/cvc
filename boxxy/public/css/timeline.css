@@ -1,3 +1,13 @@
+@media only screen and (max-width: 767px) {
+  .container {
+    width: 100%;
+  }
+}
+@media only screen and (max-width: 479px) {
+  .container {
+    width: 100%;
+  }
+}
 *, *:after, *:before {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -219,6 +229,8 @@ Modules - reusable parts of our design
 }
 .cd-timeline-content h2 {
   color: #303e49;
+  margin-bottom: 0;
+  margin-top: 0;
 }
 .cd-timeline-content p, .cd-timeline-content .cd-read-more, .cd-timeline-content .cd-date {
   font-size: 13px;
@@ -294,23 +306,34 @@ Modules - reusable parts of our design
     font-size: 16px;
     font-size: 1rem;
   }
-  .cd-timeline-block:nth-child(even) .cd-timeline-content {
+  .cd-timeline-block.right .cd-timeline-content {
     float: right;
   }
-  .cd-timeline-block:nth-child(even) .cd-timeline-content::before {
+  .cd-timeline-block.right .cd-timeline-content::before {
     top: 24px;
     left: auto;
     right: 100%;
     border-color: transparent;
     border-right-color: white;
   }
-  .cd-timeline-block:nth-child(even) .cd-timeline-content .cd-read-more {
+  .cd-timeline-block.right .cd-timeline-content .cd-read-more {
     float: right;
   }
-  .cd-timeline-block:nth-child(even) .cd-timeline-content .cd-date {
+  .cd-timeline-block.right .cd-timeline-content .cd-date {
     left: auto;
     right: 122%;
     text-align: right;
+  }
+  .cd-timeline-block.fill .cd-timeline-content {
+    width: 100%;
+  }
+  .cd-timeline-block.fill .cd-timeline-content::before {
+    border: 0;
+  }
+  .cd-timeline-block.fill .cd-timeline-img {
+    z-index: 1;
+    top: 15px;
+    left: 50px;
   }
   .cssanimations .cd-timeline-content.is-hidden {
     visibility: hidden;
@@ -325,7 +348,7 @@ Modules - reusable parts of our design
 
 @media only screen and (min-width: 1170px) {
   /* inverse bounce effect on even content blocks */
-  .cssanimations .cd-timeline-block:nth-child(even) .cd-timeline-content.bounce-in {
+  .cssanimations .cd-timeline-block.right .cd-timeline-content.bounce-in {
     -webkit-animation: cd-bounce-2-inverse 0.6s;
     -moz-animation: cd-bounce-2-inverse 0.6s;
     animation: cd-bounce-2-inverse 0.6s;
