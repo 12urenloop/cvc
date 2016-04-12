@@ -327,6 +327,13 @@ Modules - reusable parts of our design
   .cd-timeline-block.fill .cd-timeline-content {
     width: 100%;
   }
+  .cd-timeline-block.fill .cd-date {
+    position: relative;
+    width: 100%;
+    text-align: right;
+    margin-top: -55px;
+    left: 0;
+  }
   .cd-timeline-block.fill .cd-timeline-content::before {
     border: 0;
   }
@@ -335,6 +342,7 @@ Modules - reusable parts of our design
     top: 15px;
     left: 50px;
   }
+  .cd-time
   .cssanimations .cd-timeline-content.is-hidden {
     visibility: hidden;
   }
