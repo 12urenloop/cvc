@@ -80,7 +80,7 @@ def main():
     else:
         # no save so create new client
         boxxy = Boxxy()
-    socketIO = SocketIO('live.12urenloop.be', 8080, LoggingNamespace, resource='socket.io')
+    socketIO = SocketIO('https://live.12urenloop.be', 80, LoggingNamespace, resource='socket.io')
 
     paths = {
         "/ping": boxxy.ping,
