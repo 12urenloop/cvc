@@ -197,12 +197,12 @@
   },
   {
     "icon": {
-      "background": "cd-green",
-      "image": "img/cd-icon-start.svg"
+      "background": "cd-red",
+      "image": "img/cd-icon-dj.png"
     },
-    "content": "<h2>Winnaar DJ-contest</h2>",
+    "content": "DJ: Winnaar DJ-contest",
     "time": "23:00",
-    "align": "fill"
+    "align": "right"
   },
   {
     "icon": {
