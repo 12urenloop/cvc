@@ -173,8 +173,8 @@
     },
     "content": "<h2>Afterparty</h2>",
     "time": "21:00",
-    "link_to": "/special-laps",
-    "align": "fill"
+    "align": "fill",
+    "link_to": "/afterparty"
   },
   {
     "icon": {
@@ -183,7 +183,8 @@
     },
     "content": "Bart Ricardo",
     "time": "21:15",
-    "align": "right"
+    "align": "right",
+    "link_to": "/afterparty"
   },
   {
     "icon": {
@@ -192,8 +193,8 @@
     },
     "content": "<h2>Bekendmaking winnaars</h2>",
     "time": "22:45",
-    "link_to": "/dj-contest",
-    "align": "fill"
+    "align": "fill",
+    "link_to": "/scores"
   },
   {
     "icon": {
@@ -202,7 +203,8 @@
     },
     "content": "Winnaar DJ-contest",
     "time": "23:00",
-    "align": "right"
+    "align": "right",
+    "link_to": "/afterparty"
   },
   {
     "icon": {
@@ -211,7 +213,8 @@
     },
     "content": "DJ Natick",
     "time": "23:30",
-    "align": "right"
+    "align": "right",
+    "link_to": "/afterparty"
   },
   {
     "icon": {
@@ -220,7 +223,8 @@
     },
     "content": "Chillout mix by Fou Concept",
     "time": "01:00",
-    "align": "right"
+    "align": "right",
+    "link_to": "/afterparty"
   },
   {
     "icon": {
