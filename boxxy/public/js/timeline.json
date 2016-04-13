@@ -49,7 +49,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "Speciale ronde: Faculteitsronde",
+    "content": "Speciale ronde: Wetsuitronde",
     "time": "13:30",
     "link_to": "/special-laps"
   },
@@ -86,7 +86,7 @@
       "image": "img/cd-icon-dj.png"
     },
     "content": "DJ: C-Bass",
-    "time": "16:30",
+    "time": "17:15",
     "align": "right",
     "link_to": "/dj-contest"
   },
@@ -134,7 +134,7 @@
       "image": "img/cd-icon-dj.png"
     },
     "content": "DJ: FOCVS",
-    "time": "18:35",
+    "time": "19:15",
     "align": "right",
     "link_to": "/dj-contest"
   },
@@ -153,7 +153,7 @@
       "image": "img/cd-icon-dj.png"
     },
     "content": "DJ: Audiowave",
-    "time": "19:30",
+    "time": "19:55",
     "align": "right",
     "link_to": "/dj-contest"
   },
@@ -174,6 +174,61 @@
     "content": "<h2>Afterparty</h2>",
     "time": "21:00",
     "link_to": "/special-laps",
+    "align": "fill"
+  },
+  {
+    "icon": {
+      "background": "cd-red",
+      "image": "img/cd-icon-dj.png"
+    },
+    "content": "DJ: Bart Ricardo",
+    "time": "21:15",
+    "align": "right"
+  },
+  {
+    "icon": {
+      "background": "cd-green",
+      "image": "img/cd-icon-start.svg"
+    },
+    "content": "<h2>Bekendmaking winnaars</h2>",
+    "time": "22:45",
+    "link_to": "/dj-contest",
+    "align": "fill"
+  },
+  {
+    "icon": {
+      "background": "cd-green",
+      "image": "img/cd-icon-start.svg"
+    },
+    "content": "<h2>Winnaar DJ-contest</h2>",
+    "time": "23:00",
+    "align": "fill"
+  },
+  {
+    "icon": {
+      "background": "cd-red",
+      "image": "img/cd-icon-dj.png"
+    },
+    "content": "DJ: DJ Natick",
+    "time": "23:30",
+    "align": "right"
+  },
+  {
+    "icon": {
+      "background": "cd-red",
+      "image": "img/cd-icon-dj.png"
+    },
+    "content": "DJ: Chillout mix by Fou Concept",
+    "time": "01:00",
+    "align": "right"
+  },
+  {
+    "icon": {
+      "background": "cd-green",
+      "image": "img/cd-icon-start.svg"
+    },
+    "content": "<h2>Eind Afterparty</h2>",
+    "time": "02:00",
     "align": "fill"
   }
 ]
