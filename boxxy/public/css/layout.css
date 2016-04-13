@@ -689,6 +689,10 @@ li {
     color: #999;
 }
 
+#scoresresult p {
+  text-align: center;
+}
+
 #scoresresult ol {
     padding: 0px;
 }
