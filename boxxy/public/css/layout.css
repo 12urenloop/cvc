@@ -527,7 +527,7 @@ nav select {
     }
 }
 
-@media only screen and (min-width: 480px) and (max-width: 767px) {
+@media only screen and (min-width: 660px) and (max-width: 767px) {
     h1 {
         font-size: 70px;
         margin-bottom: 20px;
@@ -559,7 +559,7 @@ nav select {
     }
 }
 
-@media only screen and (max-width: 479px) {
+@media only screen and (max-width: 659px) {
     #intro {
         height: 115px;
     }
