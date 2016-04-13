@@ -16,7 +16,7 @@
 
 .timeline {
   font-size: 100%;
-  font-family: "Droid Serif", serif;
+  font-family: "Open Sans", sans-serif;
   color: #7f8c97;
   background-color: #e9f0f5;
 }
@@ -24,7 +24,6 @@
 .timeline a {
   color: #acb7c0;
   text-decoration: none;
-  font-family: "Open Sans", sans-serif;
 }
 
 .timeline img {
@@ -32,7 +31,6 @@
 }
 
 .timeline h1, .timeline h2 {
-  font-family: "Open Sans", sans-serif;
   font-weight: bold;
 }
 
