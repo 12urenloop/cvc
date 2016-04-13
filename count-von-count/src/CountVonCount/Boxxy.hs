@@ -30,6 +30,7 @@ import qualified Data.Text                    as T
 import qualified Data.Text.Encoding           as T
 import           Data.Time                    (UTCTime)
 import qualified Network.HTTP.Client          as Client
+import qualified Network.HTTP.Client.TLS      (defaultManagerSettings)
 import qualified Network.HTTP.Conduit         as Conduit
 import qualified Web.Cookie                   as Cookie
 
@@ -63,7 +64,7 @@ makeRequest config path body = do
                         ]
                     }
 
-    manager <- Conduit.newManager Client.defaultManagerSettings
+    manager <- Conduit.newManager tlsManagerSettings
     _       <- runResourceT $ Conduit.httpLbs rq manager
     Conduit.closeManager manager
   where
