@@ -147,6 +147,11 @@ page('/special-laps', 'content/special-laps.html', {
     "bg": "bg3"
 });
 
+page('/afterparty', 'content/afterparty.html', {
+    "title": "Afterparty",
+    "bg": "bg5"
+});
+
 page('/scores', 'content/scores.html', {
     "title": "Live Scores",
     "scripts": [
