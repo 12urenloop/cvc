@@ -121,7 +121,7 @@ app.get('/js/boxxy.js', function(req, res) {
 // ==================
 
 app.get('/', function(req, res) {
-    res.redirect('/scores');
+    res.redirect('/timeline');
 });
 
 // DRY
@@ -145,6 +145,11 @@ page('/dj-contest', 'content/dj-contest.html', {
 page('/special-laps', 'content/special-laps.html', {
     "title": "Speciale rondes",
     "bg": "bg3"
+});
+
+page('/afterparty', 'content/afterparty.html', {
+    "title": "Afterparty",
+    "bg": "bg5"
 });
 
 page('/scores', 'content/scores.html', {

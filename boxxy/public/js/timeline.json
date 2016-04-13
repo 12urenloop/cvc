@@ -2,17 +2,178 @@
   {
     "icon": {
       "background": "cd-green",
-      "image": "img/cd-icon-picture.svg"
+      "image": "img/cd-icon-start.svg"
     },
-    "content": "<b>Message 1</b>",
-    "time": "09:30"
+    "content": "<h2>Startschot</h2>",
+    "time": "09:00",
+    "align": "fill"
   },
   {
     "icon": {
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<img src=\"img/bg1.jpg\" />",
-    "time": "09:45"
+    "content": "Speciale ronde: KBC ronde",
+    "time": "09:30",
+    "link_to": "/special-laps"
+  },
+  {
+    "icon": {
+      "background": "cd-yellow",
+      "image": "img/cd-icon-location.svg"
+    },
+    "content": "Speciale ronde: Mediaronde",
+    "time": "10:30",
+    "link_to": "/special-laps"
+  },
+  {
+    "icon": {
+      "background": "cd-yellow",
+      "image": "img/cd-icon-location.svg"
+    },
+    "content": "Speciale ronde: Julienronde",
+    "time": "11:30",
+    "link_to": "/special-laps"
+  },
+  {
+    "icon": {
+      "background": "cd-yellow",
+      "image": "img/cd-icon-location.svg"
+    },
+    "content": "Speciale ronde: Knokke le zoute syndroom ronde",
+    "time": "12:30",
+    "link_to": "/special-laps"
+  },
+  {
+    "icon": {
+      "background": "cd-yellow",
+      "image": "img/cd-icon-location.svg"
+    },
+    "content": "Speciale ronde: Faculteitsronde",
+    "time": "13:30",
+    "link_to": "/special-laps"
+  },
+  {
+    "icon": {
+      "background": "cd-yellow",
+      "image": "img/cd-icon-location.svg"
+    },
+    "content": "Speciale ronde: Tutorial Ronde",
+    "time": "14:30",
+    "link_to": "/special-laps"
+  },
+  {
+    "icon": {
+      "background": "cd-yellow",
+      "image": "img/cd-icon-location.svg"
+    },
+    "content": "Speciale ronde: JEKA Festivalronde",
+    "time": "15:30",
+    "link_to": "/special-laps"
+  },
+  {
+    "icon": {
+      "background": "cd-yellow",
+      "image": "img/cd-icon-location.svg"
+    },
+    "content": "Speciale ronde: Schaarsgeklede mannenronde",
+    "time": "16:30",
+    "link_to": "/special-laps"
+  },
+  {
+    "icon": {
+      "background": "cd-red",
+      "image": "img/cd-icon-dj.png"
+    },
+    "content": "DJ: C-Bass",
+    "time": "16:30",
+    "align": "right",
+    "link_to": "/dj-contest"
+  },
+  {
+    "icon": {
+      "background": "cd-yellow",
+      "image": "img/cd-icon-location.svg"
+    },
+    "content": "Speciale ronde: Onesieronde",
+    "time": "17:30",
+    "link_to": "/special-laps"
+  },
+  {
+    "icon": {
+      "background": "cd-red",
+      "image": "img/cd-icon-dj.png"
+    },
+    "content": "DJ: Miss Charlie",
+    "time": "17:55",
+    "align": "right",
+    "link_to": "/dj-contest"
+  },
+  {
+    "icon": {
+      "background": "cd-yellow",
+      "image": "img/cd-icon-location.svg"
+    },
+    "content": "Speciale ronde: Schaarsgeklede vrouwenronde",
+    "time": "18:30",
+    "link_to": "/special-laps"
+  },
+  {
+    "icon": {
+      "background": "cd-red",
+      "image": "img/cd-icon-dj.png"
+    },
+    "content": "DJ: FREESTYLE",
+    "time": "18:35",
+    "align": "right",
+    "link_to": "/dj-contest"
+  },
+  {
+    "icon": {
+      "background": "cd-red",
+      "image": "img/cd-icon-dj.png"
+    },
+    "content": "DJ: FOCVS",
+    "time": "18:35",
+    "align": "right",
+    "link_to": "/dj-contest"
+  },
+  {
+    "icon": {
+      "background": "cd-yellow",
+      "image": "img/cd-icon-location.svg"
+    },
+    "content": "Speciale ronde: Draag de praesesronde",
+    "time": "19:30",
+    "link_to": "/special-laps"
+  },
+  {
+    "icon": {
+      "background": "cd-red",
+      "image": "img/cd-icon-dj.png"
+    },
+    "content": "DJ: Audiowave",
+    "time": "19:30",
+    "align": "right",
+    "link_to": "/dj-contest"
+  },
+  {
+    "icon": {
+      "background": "cd-yellow",
+      "image": "img/cd-icon-location.svg"
+    },
+    "content": "Speciale ronde: Petermanronde",
+    "time": "20:30",
+    "link_to": "/special-laps"
+  },
+  {
+    "icon": {
+      "background": "cd-green",
+      "image": "img/cd-icon-start.svg"
+    },
+    "content": "<h2>Afterparty</h2>",
+    "time": "21:00",
+    "link_to": "/special-laps",
+    "align": "fill"
   }
 ]
