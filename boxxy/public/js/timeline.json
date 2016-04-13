@@ -13,7 +13,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "KBC-ronde",
+    "content": "<div>KBC-ronde</div>",
     "time": "09:30",
     "link_to": "/special-laps"
   },
@@ -22,7 +22,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "Trouwronde",
+    "content": "<div>Trouwronde</div>",
     "time": "10:30",
     "link_to": "/special-laps"
   },
@@ -31,7 +31,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "Julienronde",
+    "content": "<div>Julienronde</div>",
     "time": "11:30",
     "link_to": "/special-laps"
   },
@@ -40,7 +40,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "Knokke-Le-Zoute-syndroomronde",
+    "content": "<div>Knokke-Le-Zoute-syndroomronde<div>",
     "time": "12:30",
     "link_to": "/special-laps"
   },
@@ -49,7 +49,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "Wetsuitronde",
+    "content": "<div>Wetsuitronde</div>",
     "time": "13:30",
     "link_to": "/special-laps"
   },
@@ -58,7 +58,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "Tutorialronde",
+    "content": "<div>Tutorialronde</div>",
     "time": "14:30",
     "link_to": "/special-laps"
   },
@@ -67,7 +67,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "JEKA Festivalronde",
+    "content": "<div>JEKA Festivalronde</div>",
     "time": "15:30",
     "link_to": "/special-laps"
   },
@@ -76,7 +76,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "Schaarsgekledemannenronde",
+    "content": "<div>Schaarsgekledemannenronde</div>",
     "time": "16:30",
     "link_to": "/special-laps"
   },
@@ -85,7 +85,7 @@
       "background": "cd-red",
       "image": "img/cd-icon-dj.png"
     },
-    "content": "C-Bass",
+    "content": "<div>C-Bass</div>",
     "time": "17:15",
     "align": "right",
     "link_to": "/dj-contest"
@@ -95,7 +95,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "Bomberronde",
+    "content": "<div>Bomberronde</div>",
     "time": "17:30",
     "link_to": "/special-laps"
   },
@@ -104,7 +104,7 @@
       "background": "cd-red",
       "image": "img/cd-icon-dj.png"
     },
-    "content": "Miss Charlie",
+    "content": "<div>Miss Charlie</div>",
     "time": "17:55",
     "align": "right",
     "link_to": "/dj-contest"
@@ -114,7 +114,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "Schaarsgekledevrouwenronde",
+    "content": "<div>Schaarsgekledevrouwenronde</div>",
     "time": "18:30",
     "link_to": "/special-laps"
   },
@@ -123,7 +123,7 @@
       "background": "cd-red",
       "image": "img/cd-icon-dj.png"
     },
-    "content": "FREESTYLE",
+    "content": "<div>FREESTYLE</div>",
     "time": "18:35",
     "align": "right",
     "link_to": "/dj-contest"
@@ -133,7 +133,7 @@
       "background": "cd-red",
       "image": "img/cd-icon-dj.png"
     },
-    "content": "FOCVS",
+    "content": "<div>FOCVS</div>",
     "time": "19:15",
     "align": "right",
     "link_to": "/dj-contest"
@@ -143,7 +143,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "Draag-de-praesesronde",
+    "content": "<div>Draag-de-praesesronde</div>",
     "time": "19:30",
     "link_to": "/special-laps"
   },
@@ -152,7 +152,7 @@
       "background": "cd-red",
       "image": "img/cd-icon-dj.png"
     },
-    "content": "Audiowave",
+    "content": "<div>Audiowave</div>",
     "time": "19:55",
     "align": "right",
     "link_to": "/dj-contest"
@@ -162,7 +162,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "Petermanronde",
+    "content": "<div>Petermanronde</div>",
     "time": "20:30",
     "link_to": "/special-laps"
   },
@@ -181,7 +181,7 @@
       "background": "cd-red",
       "image": "img/cd-icon-dj.png"
     },
-    "content": "Bart Ricardo",
+    "content": "<div>Bart Ricardo</div>",
     "time": "21:15",
     "align": "right",
     "link_to": "/afterparty"
@@ -201,7 +201,7 @@
       "background": "cd-red",
       "image": "img/cd-icon-dj.png"
     },
-    "content": "Winnaar DJ-contest",
+    "content": "<div>Winnaar DJ-contest</div>",
     "time": "23:00",
     "align": "right",
     "link_to": "/afterparty"
@@ -211,7 +211,7 @@
       "background": "cd-red",
       "image": "img/cd-icon-dj.png"
     },
-    "content": "DJ Natick",
+    "content": "<div>DJ Natick</div>",
     "time": "23:30",
     "align": "right",
     "link_to": "/afterparty"
@@ -221,7 +221,7 @@
       "background": "cd-red",
       "image": "img/cd-icon-dj.png"
     },
-    "content": "Chillout mix by Fou Concept",
+    "content": "<div>Chillout mix by Fou Concept</div>",
     "time": "01:00",
     "align": "right",
     "link_to": "/afterparty"
