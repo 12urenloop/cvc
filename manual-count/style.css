@@ -34,7 +34,7 @@ h1 {
 
 #buttonHolder {
   /* TODO: determine width @media-queries */
-  width: 1200px; /* Portrait: 740px; */
+  width: 1024px; /* Portrait: 740px; */
   margin: 40px auto 0; padding: 0;
 }
 
