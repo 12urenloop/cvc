@@ -219,6 +219,10 @@ p.separator {
     background-image: url(../img/bg3.jpg);
 }
 
+#intro .bg4 {
+    background-image: url(../img/bg4.jpg);
+}
+
 #intro .bg5 {
     background-image: url(../img/bg5.jpg);
 }

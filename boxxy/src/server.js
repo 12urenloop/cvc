@@ -159,7 +159,7 @@ page('/scores', 'content/scores.html', {
         "/js/jquery-1.7.1.min.js",
         "/socket.io/socket.io.js"
     ],
-    "bg": "bg1"
+    "bg": "bg4"
 });
 
 page('/timeline', 'content/timeline.html', {
