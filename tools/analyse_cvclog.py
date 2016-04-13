@@ -12,7 +12,7 @@ import itertools
 import sys
 import collections
 
-length = 380
+length = 290
 start = 9 # o'clock
 now = 60 * 60 * 12 # how many seconds after the start the given log was taken
 

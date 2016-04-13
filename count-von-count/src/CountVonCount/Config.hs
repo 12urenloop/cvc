@@ -106,7 +106,7 @@ instance FromJSON Config where
 defaultConfig :: Config
 defaultConfig = Config
     { configStartTime             = Nothing
-    , configCircuitLength         = 400
+    , configCircuitLength         = 290
     , configMaxSpeed              = 12  -- 12m/s should be plenty?
     , configBatonWatchdogLifespan = 30
     , configBatonWatchdogInterval = 5

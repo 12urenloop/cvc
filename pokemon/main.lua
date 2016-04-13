@@ -1,7 +1,7 @@
 require 'team'
 require 'station'
 
-local circuitLength = 400
+local circuitLength = 290
 local function makeTeam(mac, spritePath)
   return team.Team:new(mac, love.graphics.newImage(spritePath), circuitLength)
 end
