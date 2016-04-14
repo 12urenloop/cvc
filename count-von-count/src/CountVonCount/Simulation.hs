@@ -81,7 +81,7 @@ simulation = do
         render
         step
         sensor
-        liftIO $ threadDelay $ 1000 * 1000
+        liftIO $ threadDelay $ 1000 * 200
 
 
 --------------------------------------------------------------------------------

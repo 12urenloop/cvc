@@ -13,7 +13,7 @@ protocol:  csv
 
 boxxies:
     - host:     "live.12urenloop.be"
-      port:     8080
+      port:     80
       path:     ""
       user:     "count-von-count"
       password: "tetten"
