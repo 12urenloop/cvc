@@ -340,7 +340,7 @@
       <p class="white">Dankzij de digitale rondetelling van <a href="http://zeus.ugent.be/">Zeus</a> is het mogelijk om tijdens de wedstrijd hier live het klassement te volgen. Na het evenement wordt hier ook de eindscore bekend gemaakt.</p>
 
       <!-- <div class="action" style="text-align: center">
-        <a href="http://live.12urenloop.be"><div class="button2">Volg hier live de resultaten</div></a>
+        <a href="https://live.12urenloop.be"><div class="button2">Volg hier live de resultaten</div></a>
         </div> -->
     </div>
 
@@ -682,7 +682,7 @@
         row.append('<td>' + (teams[0].rankingPosition+1) + '. ' + teams[0].name);
         row.append('<td>' + (teams[1].rankingPosition+1) + '. ' + teams[1].name);
         row.append('<td>' + (teams[2].rankingPosition+1) + '. ' + teams[2].name);
-        row.append('<td rowspan="4" class="follow-link">Volg alles live op <a href="http://live.12urenloop.be">live.12urenloop.be');
+        row.append('<td rowspan="4" class="follow-link">Volg alles live op <a href="https://live.12urenloop.be">live.12urenloop.be');
         container.append(row);
 
         var row = $('<tr id="laps3">');
@@ -704,11 +704,11 @@
         container.append(row);
 
         var row = $('<tr class="follow-link-bottom">');
-        row.append('<td colspan="3">Volg alles live op <a href="http://live.12urenloop.be">live.12urenloop.be');
+        row.append('<td colspan="3">Volg alles live op <a href="https://live.12urenloop.be">live.12urenloop.be');
         container.append(row);
       }
     }
-    boxxy.listen('http://live.12urenloop.be:8080');
+    boxxy.listen('https://live.12urenloop.be');
 
     /* Livestream player */
     function initPlayer() {
