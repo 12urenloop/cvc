@@ -17,8 +17,8 @@
         </script>
 
         <link rel="stylesheet" type="text/css" href="/css/base.css">
-        <link rel="stylesheet" type="text/css" href="/css/layout.css">
         <link rel="stylesheet" type="text/css" href="/css/skeleton.css">
+        <link rel="stylesheet" type="text/css" href="/css/layout.css">
         <link rel="stylesheet" type="text/css" href="/css/timeline.css">
     </head>
 <body>
@@ -52,9 +52,9 @@
 		</select>
 	</nav>
 
-    <div class="container <%= (!!locals.container) ? container: '' %>">
-    <h2><%= title %></h2>
-	<%- content %>
+    <div class="container <%= (!!locals.container) ? container : '' %>">
+      <h2><%= title %></h2>
+      <%- content %>
     </div>
 
     <div class="sixteen columns">

@@ -24,18 +24,11 @@ import           Text.Regex.PCRE        ((=~))
 djs2015 :: [Dj]
 djs2015 =
     -- TODO add a base rating by us?
-    [ Dj "Semper Fi"                      1 (Time 11 35) (Time 12 35)
-    , Dj "SRGN"                           2 (Time 12 35) (Time 13 35)
-    , Dj "Thomassive"                     3 (Time 13 35) (Time 14 35)
-    , Dj "B2B-Major"                      4 (Time 14 35) (Time 15 35)
-    , Dj "Clatz & Helios"                 5 (Time 15 35) (Time 16 35)
-    , Dj "Wasted On Sound"                6 (Time 16 35) (Time 17 35)
-
-    , Dj "JEKA 1"                         7 (Time 18 00) (Time 18 35)
-    , Dj "JEKA 2"                         8 (Time 18 35) (Time 19 10)
-    , Dj "JEKA 3"                         9 (Time 19 10) (Time 19 45)
-    , Dj "JEKA 4"                        10 (Time 19 45) (Time 20 20)
-    , Dj "JEKA 5"                        11 (Time 20 20) (Time 20 55)
+    [ Dj "C-Bass"                         1 (Time 17 15) (Time 17 55)
+    , Dj "Miss Charlie"                   2 (Time 17 55) (Time 18 35)
+    , Dj "FREESTYLE"                      3 (Time 18 35) (Time 19 15)
+    , Dj "FOCVS"                          4 (Time 19 15) (Time 19 55)
+    , Dj "Audiowave"                      5 (Time 19 55) (Time 20 35)
     ]
 
 

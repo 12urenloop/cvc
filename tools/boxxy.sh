@@ -1,6 +1,6 @@
 
 send() {
-    curl -XPUT live.12urenloop.be:8080/state \
+    curl -XPUT https://live.12urenloop.be/state \
          -H 'Content-Type: application/json' \
          -u 'count-von-count:tetten' \
          -d "$1"

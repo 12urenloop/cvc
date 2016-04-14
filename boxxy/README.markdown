@@ -3,7 +3,7 @@
 Boxxy
 =====
 
-Boxxy is the application which powers <http://live.12urenloop.be>. It
+Boxxy is the application which powers <https://live.12urenloop.be>. It
 functionality can be divided into two big parts:
 
 - Receive info and updates from `count-von-count`
