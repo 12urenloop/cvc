@@ -3,13 +3,13 @@ maxSpeed:      15
 
 batonWatchdogLifespan: 30
 
-sensorPort: 9001
+sensorPort: 2583
 webPort:    8000
 ekgPort:    8001
 
 log:       log/count-von-count.log
 replayLog: log/replay.log
-protocol:  csv
+protocol:  gyrid
 
 boxxies:
     - host:     "live.12urenloop.be"
