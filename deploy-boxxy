@@ -1,0 +1,12 @@
+#!/bin/bash
+set -e
+
+git stash
+git pull
+git stash pop || true
+
+cd boxxy
+npm install
+pkill -u urenloop nodejs || true
+sleep 1
+nohup nodejs src/server.js >> ../../log/application.log &

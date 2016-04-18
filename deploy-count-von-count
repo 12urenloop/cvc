@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+
+git stash
+git pull
+git stash pop
+
+cd count-von-count
+cabal configure
+pkill -u urenloop count-von-count || true
+sleep 1
+cabal build
+
+nohup scripts/loop-replayer.sh >> ~/log/count-von-count-replayer.log &
