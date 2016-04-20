@@ -43,19 +43,16 @@ main = do
     b7  <- addBaton db "20:13:02:18:02:86" "Baton H"
     b8  <- addBaton db "20:13:02:19:15:17" "Baton I"
     b9  <- addBaton db "20:13:01:31:01:32" "Baton J"
-    b10 <- addBaton db "20:13:02:20:16:95" "Baton K'"
-    b11 <- addBaton db "20:13:01:24:00:28" "Baton L"
-    b12 <- addBaton db "20:11:02:15:01:90" "Baton M"
-    b13 <- addBaton db "20:11:02:15:01:67" "Baton N"
-    b14 <- addBaton db "00:12:02:01:00:04" "Baton P"
-    b15 <- addBaton db "00:12:02:01:08:76" "Baton Q"
-    b16 <- addBaton db "20:11:02:15:01:93" "Baton R"
-    b17 <- addBaton db "20:11:02:15:01:77" "Baton T"
-    b18 <- addBaton db "20:11:02:15:01:34" "Baton U"
-    b19 <- addBaton db "00:12:02:01:06:25" "Baton W"
-    b20 <- addBaton db "00:12:02:01:07:82" "Baton X"
-    b21 <- addBaton db "20:11:02:15:01:79" "Baton Y"
-    b22 <- addBaton db "20:13:12:06:90:49" "Baton Z"
+    b10 <- addBaton db "20:13:01:24:00:28" "Baton L"
+    b11 <- addBaton db "20:11:02:15:01:67" "Baton N"
+    b12 <- addBaton db "00:12:02:01:08:76" "Baton Q"
+    b13 <- addBaton db "20:11:02:15:01:93" "Baton R"
+    b14 <- addBaton db "20:11:02:15:01:77" "Baton T"
+    b15 <- addBaton db "20:11:02:15:01:34" "Baton U"
+    b16 <- addBaton db "00:12:02:01:06:25" "Baton W"
+    b17 <- addBaton db "00:12:02:01:07:82" "Baton X"
+    b18 <- addBaton db "20:11:02:15:01:79" "Baton Y"
+    b19 <- addBaton db "20:13:12:06:90:49" "Baton Z"
 
     -- Connect teams to batons
     setTeamBaton db t1  $ Just b1
@@ -70,6 +67,6 @@ main = do
     setTeamBaton db t10 $ Just b10
     setTeamBaton db t11 $ Just b11
     setTeamBaton db t12 $ Just b12
-    setTeamBaton db t13 $ Just b20
+    setTeamBaton db t13 $ Just b13
 
     closeDatabase db
