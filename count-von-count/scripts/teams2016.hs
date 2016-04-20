@@ -16,7 +16,7 @@ main = do
     addStation db "gyrid104" "00:01:95:0d:d1:eb" 130
     addStation db "gyrid105" "00:01:95:0d:cf:e4" 200
     addStation db "gyrid112" "00:01:95:0a:56:01" 250
-    {- addStation db "gyrid113" "00:01:95:0d:cf:e4" 80 -}
+    {- addStation db "gyrid102" "00:01:95:0d:cf:e7" 80 -}
 
     -- Define teams
     t1  <- addTeam db "HILOK"
@@ -70,6 +70,6 @@ main = do
     setTeamBaton db t10 $ Just b10
     setTeamBaton db t11 $ Just b11
     setTeamBaton db t12 $ Just b12
-    setTeamBaton db t13 $ Just b14
+    setTeamBaton db t13 $ Just b20
 
     closeDatabase db
