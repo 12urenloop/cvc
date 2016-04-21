@@ -94,7 +94,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong>Tutorialronde</strong><div>Deze ronde werd gewonnen door het VTK. VEK komt op de tweede plaats, gevolgd door het VPPK op de derde plaats.</div>",
+    "content": "<strong>Tutorialronde</strong><div>Deze ronde werd gewonnen door het VTK. VEK  komt op de tweede plaats, gevolgd door het VPPK op de derde plaats.</div>",
     "time": {
 		"day" : 21,
 		"month": 3,
@@ -109,7 +109,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<div>Festivalexplorers ronde</div>",
+    "content": "<strong>Festivalexplorers ronde</strong><div>De VTK heeft de hipste festivalgangers en wint deze ronde. Het VEK  werd als tweedes verkozen en het VPPK kreeg de derde plaats.</div>",
     "time": {
 		"day" : 21,
 		"month": 3,
@@ -124,7 +124,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<div>Schaarsgekledemannenronde</div>",
+    "content": "<strong>Schaarsgekledemannenronde</strong><div>De meest sexy man is bij het VGK te vinden: Joran Beek sleepte de overwinning in de wacht. Rens Accoe (VLK) kreeg de tweede plaats en Laurens Descamps (Hermes & LILA) werd derdes.</div>",
     "time": {
 		"day" : 21,
 		"month": 3,
