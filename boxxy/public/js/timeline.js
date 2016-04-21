@@ -6,9 +6,25 @@ $(document).ready(function() {
             timeline.empty();
 
             $.each( data, function(i, e) {
+                var time = new Date();
+                var split = e.time.split(':');
+                time.setHours(split[0]);
+                time.setMinutes(split[1]);
+                time.setSeconds(0);
+
+                var isPassed = Date.now() > time.getTime();
+                var background;
+
+                if(isPassed){
+                  background = "cd-grey";
+                } else {
+                  background = e.icon.background;
+                }
+
+                
                 var block = $('<div>', { class: 'cd-timeline-block ' + e.align })
                     .append(
-                        $('<div>', { class: 'cd-timeline-img ' + e.icon.background })
+                        $('<div>', { class: 'cd-timeline-img ' + background })
                             .append(
                                 $('<img>', { src: e.icon.image })
                             )

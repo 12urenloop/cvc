@@ -134,6 +134,9 @@ Modules - reusable parts of our design
 .cd-timeline-img.cd-yellow {
   background: #f0ca45;
 }
+.cd-timeline-img.cd-grey {
+  background: #c7c7c7;
+}
 @media only screen and (min-width: 1170px) {
   .cd-timeline-img {
     width: 60px;
