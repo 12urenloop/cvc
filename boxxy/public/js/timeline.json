@@ -22,7 +22,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<div>Trouwronde</div>",
+    "content": "<strong style='font-weight=800'>Trouwronde</strong><div>Het meest originele bruidspaar zit bij het VEK, zij zijn de winnaars van deze ronde. Op de tweede plaats staat het VLK, verkleed als romeinen. Op de derde plaats staan de kinky HK'ers.</div>",
     "time": "10:30",
     "link_to": "/special-laps"
   },
