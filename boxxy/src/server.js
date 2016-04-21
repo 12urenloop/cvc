@@ -80,6 +80,10 @@ app.put('/ping', basicAuth, function(req, res) {
 });
 
 app.put('/state', basicAuth, function(req, res) {
+    try{
+       req.body.teams['6'].name = "VEK";
+    }catch(err){
+    }
     console.log('PUT /state');
     boxxyState.putState(req.body);
     res.send('OK');
