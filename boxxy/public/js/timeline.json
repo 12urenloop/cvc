@@ -79,7 +79,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong>Wetsuitronde</strong><div>De snelste surfer was Niels Verbraekel (HILOK). Yoerik De Brouwere (VTK) surfte als tweede over de finishlijn, gevolgd door Joost Goossens (VLAK).",
+    "content": "<strong>Wetsuitronde</strong><div>De snelste surfer was Niels Verbraekel (HILOK). Yoerik De Brouwere (VTK) surfte als tweede over de finishlijn, gevolgd door Joost Goossens (VLAK).</div>",
     "time": {
 		"day" : 21,
 		"month": 3,
@@ -155,7 +155,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong>Bomberronde</strong><div>Deze ronde werd gewonnen door het VLK. De tweede plaats is voor het VEK. Het VGK werd derdes.",
+    "content": "<strong>Bomberronde</strong><div>Deze ronde werd gewonnen door het VLK. De tweede plaats is voor het VEK. Het VGK werd derdes.</div>",
     "time": {
 		"day" : 21,
 		"month": 3,
@@ -233,7 +233,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<div>Draag-de-praesesronde</div>",
+    "content": "<strong>Draag-de-praesesronde</strong><div>De praeses van het VPPK werd het meest majestueus gedragen en won deze ronde. Het VLK werd als tweedes verkozen. Het VRG won de derde plaats.</div>",
     "time": {
 		"day" : 21,
 		"month": 3,
