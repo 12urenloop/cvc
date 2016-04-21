@@ -19,7 +19,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong>KBC-ronde</strong><div>De snelste loper was Arthur Bruneel (Wetenschappen/VLAK), gevolgd door Joris Verdonck (VPPK) en op de derde plaats staat Emiel Steen (VLK).</div>",
+    "content": "<strong>KBC-ronde</strong><div>De snelste loper was Arthur Bruneel (Wetenschappen & VLAK), gevolgd door Joris Verdonck (VPPK) en op de derde plaats staat Emiel Steen (VLK).</div>",
     "time": {
 		"day" : 21,
 		"month": 3,
@@ -34,7 +34,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong>Trouwronde</strong><div>Het meest originele bruidspaar zit bij het VEK, zij zijn de winnaars van deze ronde. Op de tweede plaats staat het VLK, verkleed als romeinen. Op de derde plaats staan de kinky HK'ers.</div>",
+    "content": "<strong>Trouwronde</strong><div>Het meest originele bruidspaar zit bij het VEK , zij zijn de winnaars van deze ronde. Op de tweede plaats staat het VLK, verkleed als romeinen. Op de derde plaats staan de kinky HK'ers.</div>",
     "time": {
 		"day" : 21,
 		"month": 3,
@@ -94,7 +94,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong>Tutorialronde</strong><div>Deze ronde werd gewonnen door het VTK. VEK komt op de tweede plaats, gevolgd door het VPPK op de derde plaats.</div>",
+    "content": "<strong>Tutorialronde</strong><div>Deze ronde werd gewonnen door het VTK. VEK  komt op de tweede plaats, gevolgd door het VPPK op de derde plaats.</div>",
     "time": {
 		"day" : 21,
 		"month": 3,
@@ -109,7 +109,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong>Festivalexplorers ronde</strong><div>De VTK heeft de hipste festivalgangers en wint deze ronde. Het VEK werd als tweedes verkozen en het VPPK kreeg de derde plaats.</div>",
+    "content": "<strong>Festivalexplorers ronde</strong><div>De VTK heeft de hipste festivalgangers en wint deze ronde. Het VEK  werd als tweedes verkozen en het VPPK kreeg de derde plaats.</div>",
     "time": {
 		"day" : 21,
 		"month": 3,
@@ -124,7 +124,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<div>Schaarsgekledemannenronde</div>",
+    "content": "<strong>Schaarsgekledemannenronde</strong><div>De meest sexy man is bij het VGK te vinden: Joran Beek sleepte de overwinning in de wacht. Rens Accoe (VLK) kreeg de tweede plaats en Laurens Descamps (Hermes & LILA) werd derdes.</div>",
     "time": {
 		"day" : 21,
 		"month": 3,
