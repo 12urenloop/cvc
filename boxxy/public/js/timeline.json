@@ -13,7 +13,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<div>KBC-ronde</div>",
+    "content": "<strong style='font-weight=800'>KBC-ronde</strong><div>De snelste loper was Arthur Bruneel (Wetenschappen/VLAK), gevolgd door Joris Verdonck (VPPK) en op de derde plaats staat Emiel Steen (VLK).</div>",
     "time": "09:30",
     "link_to": "/special-laps"
   },
