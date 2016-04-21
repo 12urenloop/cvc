@@ -6,11 +6,14 @@ $(document).ready(function() {
             timeline.empty();
 
             $.each( data, function(i, e) {
-                var time = new Date();
-                var split = e.time.split(':');
-                time.setHours(split[0]);
-                time.setMinutes(split[1]);
-                time.setSeconds(0);
+                var time = new Date(
+                    e.time.year,
+                    e.time.month,
+                    e.time.day,
+                    e.time.hour,
+                    e.time.minute,
+                    0
+                );
 
                 var isPassed = Date.now() > time.getTime();
                 var background;
