@@ -121,7 +121,7 @@ app.get('/js/boxxy.js', function(req, res) {
 // ==================
 
 app.get('/', function(req, res) {
-    res.redirect('/timeline');
+    res.redirect('/scores');
 });
 
 // DRY
