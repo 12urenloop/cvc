@@ -37,7 +37,7 @@ $(document).ready(function() {
                     .append(e.content)
                     .append(
                         $('<span>', { class: 'cd-date' })
-                        .append(e.time)
+                        .append(time.toTimeString().substring(0,5))
                         );
 
                 var content_link;
