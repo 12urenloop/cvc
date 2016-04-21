@@ -116,6 +116,7 @@ a[name]:before {
     font-family: 'Source Sans Pro', sans-serif;
 }
 
+
 .button1:hover,input[type="submit"]:hover,input[type="reset"]:hover,input[type="button"]:hover {
     color: #3a3a3a;
     background: #e8e8e8;
@@ -141,6 +142,10 @@ a[name]:before {
     line-height: normal;
     padding: 6px 10px;
     font-family: 'Source Sans Pro', sans-serif;
+}
+
+.button2.live{
+    font-size: 20px;
 }
 
 .button2:hover {
