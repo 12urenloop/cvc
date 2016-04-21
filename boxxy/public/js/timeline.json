@@ -64,7 +64,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<div>Knokke-Le-Zoute-syndroomronde<div>",
+    "content": "<strong>Knokke-Le-Zoute-syndroomronde</strong><div>Deze ronde werd gewonnen door het VRG. Op de tweede plaats staat het VGK en op de derde plaats het VPPK.</div>",
     "time": {
 		"day" : 21,
 		"month": 3,
