@@ -186,7 +186,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<div>Schaarsgekledevrouwenronde</div>",
+    "content": "<strong>Schaarsgekledevrouwenronde</strong><div>De mooiste vrouwtjes zijn te spotten bij het VGK. De meisjes van het VRG zijn ook niet mis en komen op de tweede plaats. Het vrouwvolk van het VTK kan er ook mee door, zij kwamen derdes.</div>",
     "time": {
 		"day" : 21,
 		"month": 3,
