@@ -6,7 +6,7 @@ $(document).ready(function() {
             timeline.empty();
 
             $.each( data, function(i, e) {
-                var time = new Date(
+                e.date = new Date(
                     e.time.year,
                     e.time.month,
                     e.time.day,
@@ -14,10 +14,18 @@ $(document).ready(function() {
                     e.time.minute,
                     0
                 );
+            });
+            data.sort(function(a,b){return a.date.getTime() - b.date.getTime();});
+            
+            var isPassed = true;
+            $.each( data, function(i, e) {
+                if(isPassed && Date.now() < e.date.getTime()){
+                  var currentLine = "<div id='current-time'></div>"
+                  timeline.append(currentLine);
+                  isPassed = false;
+                }
 
-                var isPassed = Date.now() > time.getTime();
                 var background;
-
                 if(isPassed){
                   background = "cd-grey";
                 } else {
@@ -37,7 +45,7 @@ $(document).ready(function() {
                     .append(e.content)
                     .append(
                         $('<span>', { class: 'cd-date' })
-                        .append(time.toTimeString().substring(0,5))
+                        .append(e.date.toTimeString().substring(0,5))
                         );
 
                 var content_link;

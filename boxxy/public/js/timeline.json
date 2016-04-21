@@ -19,12 +19,12 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong>KBC-ronde</strong><div>De snelste loper was Arthur Bruneel (Wetenschappen/VLAK), gevolgd door Joris Verdonck (VPPK) en op de derde plaats staat Emiel Steen (VLK).</div>",
+    "content": "<strong>Trouwronde</strong><div>Het meest originele bruidspaar zit bij het VEK, zij zijn de winnaars van deze ronde. Op de tweede plaats staat het VLK, verkleed als romeinen. Op de derde plaats staan de kinky HK'ers.</div>",
     "time": {
 		"day" : 21,
 		"month": 3,
 		"year": 2016,
-		"hour": 9,
+		"hour": 10,
 		"minute": 30
 	},
     "link_to": "/special-laps"
@@ -34,12 +34,12 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong>Trouwronde</strong><div>Het meest originele bruidspaar zit bij het VEK, zij zijn de winnaars van deze ronde. Op de tweede plaats staat het VLK, verkleed als romeinen. Op de derde plaats staan de kinky HK'ers.</div>",
+    "content": "<strong>KBC-ronde</strong><div>De snelste loper was Arthur Bruneel (Wetenschappen/VLAK), gevolgd door Joris Verdonck (VPPK) en op de derde plaats staat Emiel Steen (VLK).</div>",
     "time": {
 		"day" : 21,
 		"month": 3,
 		"year": 2016,
-		"hour": 10,
+		"hour": 9,
 		"minute": 30
 	},
     "link_to": "/special-laps"
