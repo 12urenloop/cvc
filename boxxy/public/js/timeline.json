@@ -155,7 +155,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<div>Bomberronde</div>",
+    "content": "<strong>Bomberronde</strong><div>Deze ronde werd gewonnen door het VLK. De tweede plaats is voor het VEK. Het VGK werd derdes.",
     "time": {
 		"day" : 21,
 		"month": 3,
