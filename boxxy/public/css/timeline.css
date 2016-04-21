@@ -220,6 +220,9 @@ Modules - reusable parts of our design
   padding: 1em;
   box-shadow: 0 3px 0 #d7e4ed;
 }
+.cd-timeline-content strong{
+    font-weight: 800;
+}
 .cd-timeline-content:after {
   content: "";
   display: table;

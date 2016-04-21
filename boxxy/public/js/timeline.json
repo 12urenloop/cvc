@@ -13,7 +13,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong style='font-weight=800'>KBC-ronde</strong><div>De snelste loper was Arthur Bruneel (Wetenschappen/VLAK), gevolgd door Joris Verdonck (VPPK) en op de derde plaats staat Emiel Steen (VLK).</div>",
+    "content": "<strong>KBC-ronde</strong><div>De snelste loper was Arthur Bruneel (Wetenschappen/VLAK), gevolgd door Joris Verdonck (VPPK) en op de derde plaats staat Emiel Steen (VLK).</div>",
     "time": "09:30",
     "link_to": "/special-laps"
   },
@@ -22,7 +22,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong style='font-weight=800'>Trouwronde</strong><div>Het meest originele bruidspaar zit bij het VEK, zij zijn de winnaars van deze ronde. Op de tweede plaats staat het VLK, verkleed als romeinen. Op de derde plaats staan de kinky HK'ers.</div>",
+    "content": "<strong>Trouwronde</strong><div>Het meest originele bruidspaar zit bij het VEK, zij zijn de winnaars van deze ronde. Op de tweede plaats staat het VLK, verkleed als romeinen. Op de derde plaats staan de kinky HK'ers.</div>",
     "time": "10:30",
     "link_to": "/special-laps"
   },
@@ -31,7 +31,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong style='font-weight=800'>Julienronde</strong><div>Cedrik Ally (VTK) had het meeste honger en heeft deze ronde gewonnen. Thibaut Allaert (GBK) kwam als tweedes toe. Jonas Desmet (VLK) is derdes geëindigd.</div>",
+    "content": "<strong>Julienronde</strong><div>Cedrik Ally (VTK) had het meeste honger en heeft deze ronde gewonnen. Thibaut Allaert (GBK) kwam als tweedes toe. Jonas Desmet (VLK) is derdes geëindigd.</div>",
     "time": "11:30",
     "link_to": "/special-laps"
   },
