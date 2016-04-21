@@ -13,9 +13,12 @@
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
-
-#current-time{
-    border: 1px dashed #F00;
+#current-time-text{
+    color: #c7c7c7;
+    text-align: right; 
+}
+#current-time-line{
+    border: rgba(255,0,0,0.5) dashed 1px;
 }
 
 .timeline {

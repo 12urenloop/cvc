@@ -20,7 +20,7 @@ $(document).ready(function() {
             var isPassed = true;
             $.each( data, function(i, e) {
                 if(isPassed && Date.now() < e.date.getTime()){
-                  var currentLine = "<div id='current-time'></div>"
+                  var currentLine = "<h4 id='current-time-text'>NU</h4><div id='current-time-line'></div>"
                   timeline.append(currentLine);
                   isPassed = false;
                 }
