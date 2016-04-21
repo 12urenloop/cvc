@@ -264,7 +264,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<div>Petermanronde</div>",
+    "content": "<strong>Petermanronde</strong><div>De cuberdon van HILOK viel het meest in de smaak. Het VPPK eindigde tweedes met hun banaan. De vanille van het VRG won de derde plaats.</div>",
     "time": {
 		"day" : 21,
 		"month": 3,
