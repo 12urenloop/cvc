@@ -79,7 +79,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<div>Wetsuitronde</div>",
+    "content": "<strong>Wetsuitronde</strong><div>De snelste surfer was Niels Verbraekel (HILOK). Yoerik De Brouwere (VTK) surfte als tweede over de finishlijn, gevolgd door Joost Goossens (VLAK).",
     "time": {
 		"day" : 21,
 		"month": 3,
