@@ -5,7 +5,13 @@
       "image": "img/cd-icon-start.svg"
     },
     "content": "<h2>Startschot</h2>",
-    "time": "09:00",
+    "time": {
+		"day" : 21,
+		"month": 4,
+		"year": 2016,
+		"hour": 9,
+		"minute": 0
+	},
     "align": "fill"
   },
   {
@@ -14,7 +20,13 @@
       "image": "img/cd-icon-location.svg"
     },
     "content": "<strong>KBC-ronde</strong><div>De snelste loper was Arthur Bruneel (Wetenschappen/VLAK), gevolgd door Joris Verdonck (VPPK) en op de derde plaats staat Emiel Steen (VLK).</div>",
-    "time": "09:30",
+    "time": {
+		"day" : 21,
+		"month": 4,
+		"year": 2016,
+		"hour": 9,
+		"minute": 30
+	},
     "link_to": "/special-laps"
   },
   {
@@ -23,7 +35,13 @@
       "image": "img/cd-icon-location.svg"
     },
     "content": "<strong>Trouwronde</strong><div>Het meest originele bruidspaar zit bij het VEK, zij zijn de winnaars van deze ronde. Op de tweede plaats staat het VLK, verkleed als romeinen. Op de derde plaats staan de kinky HK'ers.</div>",
-    "time": "10:30",
+    "time": {
+		"day" : 21,
+		"month": 4,
+		"year": 2016,
+		"hour": 10,
+		"minute": 30
+	},
     "link_to": "/special-laps"
   },
   {
@@ -32,7 +50,13 @@
       "image": "img/cd-icon-location.svg"
     },
     "content": "<strong>Julienronde</strong><div>Cedrik Ally (VTK) had het meeste honger en heeft deze ronde gewonnen. Thibaut Allaert (GBK) kwam als tweedes toe. Jonas Desmet (VLK) is derdes geëindigd.</div>",
-    "time": "11:30",
+    "time": {
+		"day" : 21,
+		"month": 4,
+		"year": 2016,
+		"hour": 11,
+		"minute": 30
+	},
     "link_to": "/special-laps"
   },
   {
@@ -41,7 +65,13 @@
       "image": "img/cd-icon-location.svg"
     },
     "content": "<div>Knokke-Le-Zoute-syndroomronde<div>",
-    "time": "12:30",
+    "time": {
+		"day" : 21,
+		"month": 4,
+		"year": 2016,
+		"hour": 12,
+		"minute": 30
+	},
     "link_to": "/special-laps"
   },
   {
@@ -50,7 +80,13 @@
       "image": "img/cd-icon-location.svg"
     },
     "content": "<div>Wetsuitronde</div>",
-    "time": "13:30",
+    "time": {
+		"day" : 21,
+		"month": 4,
+		"year": 2016,
+		"hour": 13,
+		"minute": 30
+	},
     "link_to": "/special-laps"
   },
   {
@@ -59,7 +95,13 @@
       "image": "img/cd-icon-location.svg"
     },
     "content": "<div>Tutorialronde</div>",
-    "time": "14:30",
+    "time": {
+		"day" : 21,
+		"month": 4,
+		"year": 2016,
+		"hour": 14,
+		"minute": 30
+	},
     "link_to": "/special-laps"
   },
   {
@@ -68,7 +110,13 @@
       "image": "img/cd-icon-location.svg"
     },
     "content": "<div>Festivalexplorers ronde</div>",
-    "time": "15:30",
+    "time": {
+		"day" : 21,
+		"month": 4,
+		"year": 2016,
+		"hour": 15,
+		"minute": 30
+	},
     "link_to": "/special-laps"
   },
   {
@@ -77,7 +125,13 @@
       "image": "img/cd-icon-location.svg"
     },
     "content": "<div>Schaarsgekledemannenronde</div>",
-    "time": "16:30",
+    "time": {
+		"day" : 21,
+		"month": 4,
+		"year": 2016,
+		"hour": 16,
+		"minute": 30
+	},
     "link_to": "/special-laps"
   },
   {
@@ -86,7 +140,13 @@
       "image": "img/cd-icon-dj.png"
     },
     "content": "<div>C-Bass</div>",
-    "time": "17:15",
+    "time": {
+		"day" : 21,
+		"month": 4,
+		"year": 2016,
+		"hour": 17,
+		"minute": 15
+	},
     "align": "right",
     "link_to": "/dj-contest"
   },
@@ -96,7 +156,13 @@
       "image": "img/cd-icon-location.svg"
     },
     "content": "<div>Bomberronde</div>",
-    "time": "17:30",
+    "time": {
+		"day" : 21,
+		"month": 4,
+		"year": 2016,
+		"hour": 17,
+		"minute": 30
+	},
     "link_to": "/special-laps"
   },
   {
@@ -105,7 +171,13 @@
       "image": "img/cd-icon-dj.png"
     },
     "content": "<div>Miss Charlie</div>",
-    "time": "17:55",
+    "time": {
+		"day" : 21,
+		"month": 4,
+		"year": 2016,
+		"hour": 17,
+		"minute": 55
+	},
     "align": "right",
     "link_to": "/dj-contest"
   },
@@ -115,7 +187,13 @@
       "image": "img/cd-icon-location.svg"
     },
     "content": "<div>Schaarsgekledevrouwenronde</div>",
-    "time": "18:30",
+    "time": {
+		"day" : 21,
+		"month": 4,
+		"year": 2016,
+		"hour": 18,
+		"minute": 30
+	},
     "link_to": "/special-laps"
   },
   {
@@ -124,7 +202,13 @@
       "image": "img/cd-icon-dj.png"
     },
     "content": "<div>FREESTYLE</div>",
-    "time": "18:35",
+    "time": {
+		"day" : 21,
+		"month": 4,
+		"year": 2016,
+		"hour": 18,
+		"minute": 35
+	},
     "align": "right",
     "link_to": "/dj-contest"
   },
@@ -134,7 +218,13 @@
       "image": "img/cd-icon-dj.png"
     },
     "content": "<div>FOCVS</div>",
-    "time": "19:15",
+    "time": {
+		"day" : 21,
+		"month": 4,
+		"year": 2016,
+		"hour": 19,
+		"minute": 15
+	},
     "align": "right",
     "link_to": "/dj-contest"
   },
@@ -144,7 +234,13 @@
       "image": "img/cd-icon-location.svg"
     },
     "content": "<div>Draag-de-praesesronde</div>",
-    "time": "19:30",
+    "time": {
+		"day" : 21,
+		"month": 4,
+		"year": 2016,
+		"hour": 19,
+		"minute": 30
+	},
     "link_to": "/special-laps"
   },
   {
@@ -153,7 +249,13 @@
       "image": "img/cd-icon-dj.png"
     },
     "content": "<div>Audiowave</div>",
-    "time": "19:55",
+    "time": {
+		"day" : 21,
+		"month": 4,
+		"year": 2016,
+		"hour": 19,
+		"minute": 55
+	},
     "align": "right",
     "link_to": "/dj-contest"
   },
@@ -163,7 +265,13 @@
       "image": "img/cd-icon-location.svg"
     },
     "content": "<div>Petermanronde</div>",
-    "time": "20:30",
+    "time": {
+		"day" : 21,
+		"month": 4,
+		"year": 2016,
+		"hour": 20,
+		"minute": 30
+	},
     "link_to": "/special-laps"
   },
   {
@@ -172,7 +280,13 @@
       "image": "img/cd-icon-start.svg"
     },
     "content": "<h2>Afterparty</h2>",
-    "time": "21:00",
+    "time": {
+		"day" : 21,
+		"month": 4,
+		"year": 2016,
+		"hour": 21,
+		"minute": 0
+	},
     "align": "fill",
     "link_to": "/afterparty"
   },
@@ -182,7 +296,13 @@
       "image": "img/cd-icon-dj.png"
     },
     "content": "<div>Bart Ricardo</div>",
-    "time": "21:15",
+    "time": {
+		"day" : 21,
+		"month": 4,
+		"year": 2016,
+		"hour": 21,
+		"minute": 15
+	},
     "align": "right",
     "link_to": "/afterparty"
   },
@@ -192,7 +312,13 @@
       "image": "img/cd-icon-start.svg"
     },
     "content": "<h2>Bekendmaking winnaars</h2>",
-    "time": "22:45",
+    "time": {
+		"day" : 21,
+		"month": 4,
+		"year": 2016,
+		"hour": 22,
+		"minute": 45
+	},
     "align": "fill",
     "link_to": "/scores"
   },
@@ -202,7 +328,13 @@
       "image": "img/cd-icon-dj.png"
     },
     "content": "<div>Winnaar DJ-contest</div>",
-    "time": "23:00",
+    "time": {
+		"day" : 21,
+		"month": 4,
+		"year": 2016,
+		"hour": 23,
+		"minute": 0
+	},
     "align": "right",
     "link_to": "/afterparty"
   },
@@ -212,7 +344,13 @@
       "image": "img/cd-icon-dj.png"
     },
     "content": "<div>DJ Natick</div>",
-    "time": "23:30",
+    "time": {
+		"day" : 21,
+		"month": 4,
+		"year": 2016,
+		"hour": 23,
+		"minute": 30
+	},
     "align": "right",
     "link_to": "/afterparty"
   },
@@ -222,7 +360,13 @@
       "image": "img/cd-icon-dj.png"
     },
     "content": "<div>Chillout mix by Fou Concept</div>",
-    "time": "01:00",
+    "time": {
+		"day" : 22,
+		"month": 4,
+		"year": 2016,
+		"hour": 1,
+		"minute": 0
+	},
     "align": "right",
     "link_to": "/afterparty"
   },
@@ -232,7 +376,13 @@
       "image": "img/cd-icon-start.svg"
     },
     "content": "<h2>Einde afterparty</h2>",
-    "time": "02:00",
+    "time": {
+		"day" : 22,
+		"month": 4,
+		"year": 2016,
+		"hour": 2,
+		"minute": 0
+	},
     "align": "fill"
   }
 ]
