@@ -6,8 +6,8 @@ iface eth1 inet manual
 
 auto br0
 iface br0 inet static
-  address 10.1.2.x
-  gateway 10.1.2.1
+  address 10.1.3.x
+  gateway 10.1.3.1
   netmask 255.255.255.0
 
   bridge_ports eth0 eth1
