@@ -327,7 +327,7 @@
       "background": "cd-red",
       "image": "img/cd-icon-dj.png"
     },
-    "content": "<div>Winnaar DJ-contest</div>",
+    "content": "<strong>Winnaar DJ-contest</strong><div>Miss Charlie</div>",
     "time": {
 		"day" : 21,
 		"month": 3,
