@@ -58,7 +58,7 @@
     </div>
 
     <div class='eight columns'>
-      <p>Daarnaast valt er aan de <a href='#locatie'>Yachtdreef</a> ook heel wat anders te beleven. Deelnemende kringen en sponsors zorgen voor randanimatie, in de fakbars kan je genieten van een pintje en ondertussen kan je luisteren naar de DJ-contest.</p>
+      <p>Daarnaast valt er aan de <%= item[:location] %> ook heel wat anders te beleven. Deelnemende kringen en sponsors zorgen voor randanimatie, in de fakbars kan je genieten van een pintje en ondertussen kan je luisteren naar de DJ-contest.</p>
       <p>Om 21u stoppen we met lopen en dan maken we er een fantastisch feestje in openlucht van.</p>
     </div>
 
@@ -67,18 +67,14 @@
     <div class='container'>
       <div class='flexslider'>
         <ul class='slides'>
-          <li><img src='images/home/1.jpg' alt='' /></li>
-          <li><img src='images/home/2.jpg' alt='' /></li>
-          <li><img src='images/home/3.jpg' alt='' /></li>
-          <li><img src='images/home/4.jpg' alt='' /></li>
-          <li><img src='images/home/5.jpg' alt='' /></li>
-          <li><img src='images/home/6.jpg' alt='' /></li>
-          <li><img src='images/home/7.jpg' alt='' /></li>
-          <li><img src='images/home/8.jpg' alt='' /></li>
+          <% item[:sliderimages].each do |img| %>
+            <li><img src='<%= img[:src] %>' alt='' /></li>
+          <% end %>
         </ul>
       </div><!-- end flexslider -->
     </div>
 
+    <%# <%= item[:sponsors] %> %>
     <div class='sponsors container'>
       <div class='row'>
         <div class='three columns offset-by-one'>
