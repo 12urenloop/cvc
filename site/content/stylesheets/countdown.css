@@ -1,0 +1,76 @@
+.centered {
+  margin: auto;
+  text-align: center;
+  margin-bottom: 10px;
+  width: 670px;
+}
+
+.two-numbers {
+  float: left;
+  width: 25%;
+}
+
+.number {
+  display: inline-block;
+  vertical-align: baseline;
+  zoom: 1;
+  *display: inline;
+  *vertical-align: auto;
+  background: #ededed;
+  border-radius: 3px;
+  box-shadow: 0 3px 0 #a1a1a1;
+  color: #242a34;
+  font-family: 'League Gothic', sans-serif;
+  font-size: 4.1em;
+  padding: .6em 0 .5em;
+  text-align: center;
+  width: 1.25em;
+}
+
+.number-sub {
+  color: #ededed;
+  display: block;
+  text-shadow: 0px 2px 4px #000000;
+  font-family: 'Oswald', sans-serif;
+  margin-bottom: 5px;
+  font-size: 1.85em;
+  font-weight: bold;
+  text-align: center;
+  text-transform: uppercase;
+  padding-top: 1em;
+}
+
+@media only screen and (min-width: 480px) and (max-width: 767px) {
+  .number {
+    width: 1em;
+    font-size: 3.1em;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+  }
+
+  .number-sub {
+    font-size: 1.5em;
+  }
+
+  .centered {
+    width: 450px;
+  }
+}
+
+@media only screen and (max-width: 479px) {
+  .number {
+    width: 1em;
+    font-size: 2.1em;
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+  }
+
+  .number-sub {
+    font-size: 1em;
+  }
+
+  .centered {
+    margin-bottom: 0;
+    width: 300px;
+  }
+}
