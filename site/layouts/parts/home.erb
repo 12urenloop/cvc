@@ -74,77 +74,12 @@
       </div><!-- end flexslider -->
     </div>
 
-    <%# <%= item[:sponsors] %> %>
     <div class='sponsors container'>
-      <div class='row'>
-        <div class='three columns offset-by-one'>
-          <a href='https://kbc.be/jongeren'><img src='images/sponsors/kbc.jpg' alt='KBC' /></a>
+      <% item[:sponsors].each do |row| %>
+        <div class='row'>
+          <%= render '/partials/sponsors.*', sponsors: row %>
         </div>
-        <div class='three columns'>
-          <a href='https://www.jupiler.be/nl'><img src='images/sponsors/jupiler.png' alt='Jupiler' /></a>
-        </div>
-        <div class='three columns'>
-          <a href='https://www.cocacolabelgium.be/nl'><img src='images/sponsors/coca-cola.jpg' alt='Coca Cola' /></a>
-        </div>
-        <div class='three columns'>
-          <a href='http://www.jeka.be/nl/groepsreizen/html/festival'><img src='images/sponsors/jeka.png' alt='Jeka' /></a>
-        </div>
-        <div class='three columns'>
-          <a href='http://gsr.ugent.be'><img src='images/sponsors/gsr.jpg' alt='Gentse Studentenraad' /></a>
-        </div>
-      </div>
-
-      <div class='row'>
-        <div class='two columns offset-by-one'>
-          <a href='https://foursquare.com/v/père-total'><img src='images/sponsors/pere-total.png' alt='Pere Total' /></a>
-        </div>
-        <div class='one column'>
-          <a href='https://www.facebook.com/Cuba-Gent-33524549495/'><img src='images/sponsors/cuba.jpg' alt='Cuba Gent' /></a>
-        </div>
-        <div class='one column'>
-          <a href='https://vtk.ugent.be/delta/'><img src='images/sponsors/delta.png' alt='Delta' /></a>
-        </div>
-        <div class='one column'>
-          <a href='http://www.g-s-v.be/'><img src='images/sponsors/gsv.jpg' alt='GSV' /></a>
-        </div>
-        <div class='one column'>
-          <a href='http://www.festivalexplorers.be'><img src='images/sponsors/festival-explorers.jpg' alt='Festival Explorers' /></a>
-        </div>
-        <div class='two columns'>
-          <a href='http://www.overpoortbowl.be/'><img src='images/sponsors/overpoort-bowl.png' alt='Overpoort Bowl' /></a>
-        </div>
-        <div class='two columns' style='vertical-align: middle'>
-          <a href='https://kinepolis.be/nl/'><img src='images/sponsors/kinepolis.png' alt='Kinepolis Gent' /></a>
-        </div>
-        <div class='two columns' style='vertical-align: middle'>
-          <a href='https://www.facebook.com/pointfinalgentoverpoort/'><img src='images/sponsors/point-final.png'
-            alt='Point Final' /></a>
-        </div>
-      </div>
-
-      <div class='row'>
-        <div class='one column offset-by-one'>
-          <a href='https://www.facebook.com/pages/Tam-Tam-Gent/241062392644520'><img src='images/sponsors/tamtam.png' alt='Tamtam' /></a>
-        </div>
-        <div class='two columns'>
-          <a href='http://www.bondmoyson.be'><img src='images/sponsors/bond-moyson.png' alt='Bond Moyson' /></a>
-        </div>
-        <div class='two columns'>
-          <a href='http://redbull.be'><img src='images/sponsors/redbull.png' alt='Redbull' /></a>
-        </div>
-        <div class='two columns'>
-          <a href='http://www.vodka-poliakov.com/'><img src='images/sponsors/poliakov.png' alt='Poliakov' /></a>
-        </div>
-        <div class='two columns'>
-          <a href='http://www.peterman.be'><img src='images/sponsors/peterman.png' alt='Peterman' /></a>
-        </div>
-        <div class='two columns'>
-          <a href='https://foursquare.com/v/de-salamander/4ba0c400f964a5202e7c37e3'><img src='images/sponsors/salamander.png' alt='De Salamander' /></a>
-        </div>
-        <div class='one column'>
-          <a href='https://www.facebook.com/hetkof'><img src='images/sponsors/kof.jpg' alt=''t Kofschip' /></a>
-        </div>
-      </div>
+      <% end %>
 
       <p>met medewerking van:</p>
       <div class='row'>

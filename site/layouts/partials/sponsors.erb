@@ -1,0 +1,4 @@
+<%= render '/partials/sponsor.*', href: @sponsors[0][:href], src: @sponsors[0][:src], alt: @sponsors[0][:alt], columns: @sponsors[0][:columns], offset: true %>
+<% @sponsors[1..-1].each do |s| %>
+  <%= render '/partials/sponsor.*', href: s[:href], src: s[:src], alt: s[:alt], columns: s[:columns] %>
+<% end %>
