@@ -4,9 +4,7 @@
 
     <div class='eight columns white'>
       <p>De 12urenloop is een wedstrijd waarbij een aantal kringen het tegen elkaar opnemen in een 12 uur durende
-      loopestafette. In tegenstelling tot de voorgaande jaren, wordt deze wedstrijd georganiseerd aan de
-      <a href='#locatie'>Yachtdreef</a>, over een ovaal parcours van 290 meter. De looprichting
-      gaat in tegenwijzerzin om de atleten onder ons gelukkig te stellen.</p>
+      loopestafette. De looprichting gaat in tegenwijzerzin om de atleten onder ons gelukkig te stellen.</p>
 
       <p>De 12urenloop telt ook mee voor het algemeen klassement van de Interfacultaire Kampioenschappen (IFK). Na de
       loopwedstrijd volgt ook de apotheose en de prijsuitreiking van IFK.</p>
@@ -40,28 +38,19 @@
 
 
   <div class='container'>
+    <% [{ t: 'Speciale rondes', b: 0, e: 5 }, { t: '&nbsp;', b: 6, e: 11 }].each do |m| %>
     <div class='eight columns'>
       <table class='schedule white'>
-        <tr><td colspan='2'><strong>Speciale rondes</strong></td></tr>
-        <tr><th>9u30</th><td>KBC-ronde <span>Loop zo snel mogelijk een rondje. Powered by KBC.</span></td></tr>
-        <tr><th>10u30</th><td>Trouwronde <span>'I can hear the bells ringing!' Maak van deze ronde een zo romantisch en origineel mogelijke trouwfeest!</span></td></tr>
-        <tr><th>11u30</th><td>Julienronde <span>De welgekende klassieker: eet zo snel mogelijk een Julientje en spurt daarna naar de overwinning.</span></td></tr>
-        <tr><th>12u30</th><td>Knokke-Le Zoute-syndroomronde <span>Kleed je alsof je het Knokke-Le Zoute-syndroom hebt. </span></td></tr>
-        <tr><th>13u30</th><td>Wetsuitronde <span>Powered by Belgian Week Surf. Surf zo origineel mogelijk doorheen de ronde!</span></td></tr>
-        <tr><th>14u30</th><td>Tutorialronde <span>Oplossen van een vraagstukje statistiek? Hopelijk geen probleem voor jullie: los de oefening op en loop daarna zo snel mogelijk een rondje!</span></td></tr>
+        <tr><td colspan='2'><strong><%= m[:t] %></strong></td></tr>
+        <% data_from(:special_rounds)[m[:b]..m[:e]].each do |r| %>
+          <tr>
+            <th><%= r['time'] %></th>
+            <td><%= r['name'] %> <span><%= r['description'] %></span></td>
+          </tr>
+        <% end %>
       </table>
     </div>
-    <div class='eight columns'>
-      <table class='schedule white'>
-        <tr><td colspan='2'>&nbsp;</td></tr>
-        <tr><th>15u30</th><td>Festivalexplorers ronde <span>Doe mee aan de Festivalexplorers ronde en loop als meest ludieke en flitsende festivalganger als eerste over de meet.</span></td></tr>
-        <tr><th>16u30</th><td>Schaarsgekledemannenronde <span>Laat die sixpacks en strakke kontjes maar zien! Bierbuiken ook welkom ;-)</span></td></tr>
-        <tr><th>17u30</th><td>Bomberronde <span>Loop zo snel mogelijk een rondje met shiny Bomber glasses! Winners get to keep the glasses!</span></td></tr>
-        <tr><th>18u30</th><td>Schaarsgekledevrouwenronde <span>Hoe minder textiel, hoe beter!</span></td></tr>
-        <tr><th>19u30</th><td>Draag-de-praesesronde <span>Draag je praeses op een zo origineel mogelijke manier rond het plein. Gratis vat voor de winnaar @Tam-Tam</span></td></tr>
-        <tr><th>20u30</th><td>Petermanronde <span>Verkleed je als je favoriete jeneversmaak en win jeneverflessen voor je kring!</span></td></tr>
-      </table>
-    </div>
+    <% end %>
   </div>
 
   <div class='sixteen columns action'>
