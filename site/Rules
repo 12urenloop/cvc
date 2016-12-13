@@ -9,8 +9,16 @@ compile '/**/*.scss' do
   filter :sass, syntax: :scss
 end
 
+compile '/**/*.coffee' do
+  filter :coffeescript
+end
+
 route '/stylesheets/**/*' do
   "#{item.identifier.without_ext}.css"
+end
+
+route '/javascripts/**/*' do
+  "#{item.identifier.without_ext}.js"
 end
 
 route '/**/*.{erb,html,md}' do

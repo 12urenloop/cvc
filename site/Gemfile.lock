@@ -4,10 +4,15 @@ GEM
     adsf (1.2.1)
       rack (>= 1.0.0)
     coderay (1.1.1)
+    coffee-script (2.4.1)
+      coffee-script-source
+      execjs
+    coffee-script-source (1.10.0)
     colored (1.2)
     concurrent-ruby (1.0.2)
     cri (2.7.1)
       colored (~> 1.2)
+    execjs (2.7.0)
     ffi (1.9.14)
     formatador (0.2.5)
     guard (2.14.0)
@@ -62,6 +67,7 @@ PLATFORMS
 
 DEPENDENCIES
   adsf
+  coffee-script
   guard-nanoc
   nanoc (= 4.4.2)
   sass
