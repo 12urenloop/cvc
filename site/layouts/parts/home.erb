@@ -67,15 +67,15 @@
     <div class='container'>
       <div class='flexslider'>
         <ul class='slides'>
-          <% item[:sliderimages].each do |img| %>
-            <li><img src='<%= img[:src] %>' alt='' /></li>
+          <% data_from(:sliderimages).each do |img| %>
+            <li><img src='<%= img['src'] %>' alt='' /></li>
           <% end %>
         </ul>
       </div><!-- end flexslider -->
     </div>
 
     <div class='sponsors container'>
-      <% item[:sponsors].each do |row| %>
+      <% data_from(:sponsors).each do |row| %>
         <div class='row'>
           <%= render '/partials/sponsors.*', sponsors: row %>
         </div>
@@ -83,7 +83,7 @@
 
       <p>met medewerking van:</p>
       <div class='row'>
-        <%= render '/partials/sponsors.*', sponsors: item[:colaboration] %>
+        <%= render '/partials/sponsors.*', sponsors: data_from(:colaboration) %>
       </div>
       </div>
     </div>
