@@ -21,11 +21,12 @@
 
       <table class='schedule'>
         <tr><td colspan='2'><strong>Programma DJ-contest</strong></td></tr>
-        <tr><th>17u15</th><td>C-Bass</td></tr>
-        <tr><th>17u55</th><td>Miss Charlie</td></tr>
-        <tr><th>18u35</th><td>FREESTYLE</td></tr>
-        <tr><th>19u15</th><td>FOCVS</td></tr>
-        <tr><th>19u55</th><td>Audiowave</td></tr>
+        <% data_from('dj-contest').each do |dj| %>
+          <tr>
+            <th><%= dj['time'] %></th>
+            <td><%= dj['name'] %></td>
+          </tr>
+        <% end %>
       </table>
 
       <!--
@@ -38,7 +39,7 @@
 
       <h3><span class='lines'>Multimedia</span></h3>
 
-      <p><a href='http://www.urgent.fm'>Urgent.fm</a> zendt de hele dag live uit van aan de Yachtdreef. Je hoort er de volledige DJ-sets, toffe interviews en het laatste nieuws over de 12urenloop.</p>
+      <p><a href='http://www.urgent.fm'>Urgent.fm</a> zendt de hele dag live uit van op het <%= item[:location] %>. Je hoort er de volledige DJ-sets, toffe interviews en het laatste nieuws over de 12urenloop.</p>
 
       <p>Ook <a href='http://schamper.ugent.be'>Schamper</a> verhuist zijn redactie voor een dag en houdt je de hele dag door up-to-date via de sociale media.</p>
 
@@ -59,8 +60,8 @@ function popUp(URL) {
     <div class='eight columns'>
       <h3><span class='lines'>Fakbars</span></h3>
 
-      <p>Elke ploeg die deelneemt aan de 12urenloop zet voor de gelegenheid ook een eigen café op voor één dag aan de
-      Yachtdreef, met voordelige drankjes, snacks en een toffe sfeer.</p>
+      <p>Elke ploeg die deelneemt aan de 12urenloop zet voor de gelegenheid ook een eigen café op voor één dag op het
+      <%= item[:location] %>, met voordelige drankjes, snacks en een toffe sfeer.</p>
 
       <p><img src='images/animatie/fakbars.jpg' class='scale-with-grid' alt='Fakbar geografica' /></p>
 
@@ -70,12 +71,12 @@ function popUp(URL) {
       feestje met een paar fantastische DJ's.</p>
 
       <table class='schedule'>
-        <tr><th>21u00</th><td>Eindceremonie met fakkel- en vlaggentocht,<br />begeleid door de Gentse Studentenfanfare</td></tr>
-        <tr><th>21u15</th><td>Bart Ricardo</td></tr>
-        <tr><th>22u45</th><td>Bekendmaking winnaars 12urenloop en prijsuitreiking</td></tr>
-        <tr><th>23u00</th><td>Winnaar DJ-contest</td></tr>
-        <tr><th>23u30</th><td>DJ Natick</td></tr>
-        <tr><th>01u00</th><td>Chillout mix by Fou Concept</td></tr>
+        <% data_from(:afterparty).each do |a| %>
+          <tr>
+            <th><%= a['time'] %></th>
+            <td><%= a['description'] %></td>
+          </tr>
+        <% end %>
       </table>
 
       <p><img src='images/animatie/afterparty.jpg' class='scale-with-grid' alt='Afterparty' /></p>

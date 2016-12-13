@@ -38,13 +38,9 @@
 
         <p class='white'>
         <strong>Coördinatoren 12urenloop-comité</strong><br />
-        Hoofdcoördinatoren &mdash; Matthias De Wannemaeker &amp; Chanel Baert<br />
-        Finance and Administration &mdash; Norah Schuermans<br />
-        Public Relations &mdash; Sam Van Cleemputte<br />
-        Run and Animation &mdash; Flore Goes<br />
-        Marketing and Communication &mdash; Axel Baeyens<br />
-        Build and Deconstruction  &mdash; Donaat Mortelmans<br />
-        I(C)T &mdash; Stijn Seghers
+        <% data_from(:contact).each do |c| %>
+          <%= c['function'] %> &mdash; <%= c['name'] %><br />
+        <% end %>
         </p>
         <p class='white'>
         <img src='images/icn-email.png' alt='' />
