@@ -90,7 +90,7 @@ checks:
     exclude_files: []
 
 deploy:
-  public:
+  default:
     kind: rsync
     dst:  urenloop@zeus.ugent.be:/home/urenloop/public
     options: [ '-glpPrtvz', '-e', 'ssh -p 2222', '--delete']
