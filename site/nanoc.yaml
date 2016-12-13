@@ -88,3 +88,9 @@ checks:
     # E.g.:
     #   exclude_files: ['blog/page']
     exclude_files: []
+
+deploy:
+  public:
+    kind: rsync
+    dst:  urenloop@zeus.ugent.be:/home/urenloop/public
+    options: [ '-glpPrtvz', '-e', 'ssh -p 2222', '--delete']
