@@ -5,15 +5,13 @@ compile '/**/*.erb' do
   layout '/default.*'
 end
 
+compile '/**/*.scss' do
+  filter :sass, syntax: :scss
+end
 
-# This is an example rule that matches Markdown (.md) files, and filters them
-# using the :kramdown filter. It is commented out by default, because kramdown
-# is not bundled with Nanoc or Ruby.
-#
-#compile '/**/*.md' do
-#  filter :kramdown
-#  layout '/default.*'
-#end
+route '/stylesheets/**/*' do
+  "#{item.identifier.without_ext}.css"
+end
 
 route '/**/*.{erb,html,md}' do
   if item.identifier =~ '/index.*'

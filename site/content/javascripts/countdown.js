@@ -21,7 +21,7 @@ var countdown = function () {
         hours = 0,
         minutes = 0,
         strings = {},
-        diff = Math.round(moment('2016042110', 'YYYYMMDDHH').diff(moment()) / 1000);
+        diff = Math.round(moment('2017042110', 'YYYYMMDDHH').diff(moment()) / 1000);
 
     weeks = Math.floor(diff / 604800);
     strings.weeks = pad(weeks.toString(), 2).split('');

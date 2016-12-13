@@ -183,3 +183,10 @@
 	.remove-bottom { margin-bottom: 0 !important; }
 	.half-bottom { margin-bottom: 10px !important; }
 	.add-bottom { margin-bottom: 20px !important; }
+
+.centered {
+  margin: auto;
+  text-align: center;
+  margin-bottom: 10px;
+  width: 670px;
+}
