@@ -39,19 +39,19 @@ countdown = ->
   strings.minutes = pad(minutes.toString(), 2).split('')
 
   $.each strings, (key, value) ->
-    numbers = $("#countdown-#{key}").find('.number');
+    numbers = $("#countdown-#{key}").find('.number')
 
     $.each value, (key, number) ->
       $(numbers[key]).text number
 
   # No idea why
-  days = hours = minutes = strings = diff = null;
+  days = hours = minutes = strings = diff = null
 
 pad = (number, length) ->
   str = "#{number}"
   while str.length < length
-      str = "0#{str}";
-  return str;
+      str = "0#{str}"
+  return str
 
 $(document).ready ->
   # Countdown
