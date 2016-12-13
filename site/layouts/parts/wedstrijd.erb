@@ -9,15 +9,10 @@
       <p>De 12urenloop telt ook mee voor het algemeen klassement van de Interfacultaire Kampioenschappen (IFK). Na de
       loopwedstrijd volgt ook de apotheose en de prijsuitreiking van IFK.</p>
 
-      <table class='schedule white'>
-        <tr><td colspan='2'><strong>Loopteams</strong></td></tr>
-        <tr><th>1.</th><td>HILOK</td>                    <th>7.</th><td>VPPK</td></tr>
-        <tr><th>2.</th><td>VGK</td>                      <th>8.</th><td>Hermes &amp; LILA</td></tr>
-        <tr><th>3.</th><td>VTK</td>                      <th>9.</th><td>Wetenschappen &amp; VLAK</td></tr>
-        <tr><th>4.</th><td>VLK</td>                      <th>10.</th><td>VBK</td></tr>
-        <tr><th>5.</th><td>VRG</td>                      <th>11.</th><td>HK</td></tr>
-        <tr><th>6.</th><td>VEK</td>    <th>12.</th><td>SK</td></tr>
-      </table>
+      <% teams = data_from(:teams) %>
+      <% offset = (teams.length/2.0).ceil %>
+      <%= render '/partials/teams.*', t: 'Loopteams', offset: 0, teams: teams[0..offset-1] %>
+      <%= render '/partials/teams.*', t: '&nbsp;', offset: offset, teams: teams[(teams.length/2.0).ceil..teams.length] %>
     </div>
 
     <div class='eight columns'>
@@ -38,19 +33,9 @@
 
 
   <div class='container'>
-    <% [{ t: 'Speciale rondes', b: 0, e: 5 }, { t: '&nbsp;', b: 6, e: 11 }].each do |m| %>
-    <div class='eight columns'>
-      <table class='schedule white'>
-        <tr><td colspan='2'><strong><%= m[:t] %></strong></td></tr>
-        <% data_from(:special_rounds)[m[:b]..m[:e]].each do |r| %>
-          <tr>
-            <th><%= r['time'] %></th>
-            <td><%= r['name'] %> <span><%= r['description'] %></span></td>
-          </tr>
-        <% end %>
-      </table>
-    </div>
-    <% end %>
+    <% special_rounds = data_from(:special_rounds) %>
+    <%= render '/partials/special_rounds.*', t: 'Speciale rondes', rounds: special_rounds[0..5] %>
+    <%= render '/partials/special_rounds.*', t: '&nbsp;', rounds: special_rounds[6..11] %>
   </div>
 
   <div class='sixteen columns action'>
