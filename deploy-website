@@ -1,6 +1,0 @@
-#!/bin/bash
-set -e
-
-git stash
-git pull
-git stash pop
