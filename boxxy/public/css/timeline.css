@@ -13,6 +13,13 @@
   -moz-box-sizing: border-box;
   box-sizing: border-box;
 }
+#current-time-text{
+    color: #c7c7c7;
+    text-align: right; 
+}
+#current-time-line{
+    border: rgba(255,0,0,0.5) dashed 1px;
+}
 
 .timeline {
   font-size: 100%;
@@ -134,6 +141,9 @@ Modules - reusable parts of our design
 .cd-timeline-img.cd-yellow {
   background: #f0ca45;
 }
+.cd-timeline-img.cd-grey {
+  background: #c7c7c7;
+}
 @media only screen and (min-width: 1170px) {
   .cd-timeline-img {
     width: 60px;
@@ -219,6 +229,9 @@ Modules - reusable parts of our design
   border-radius: 0.25em;
   padding: 1em;
   box-shadow: 0 3px 0 #d7e4ed;
+}
+.cd-timeline-content strong{
+    font-weight: 800;
 }
 .cd-timeline-content:after {
   content: "";
