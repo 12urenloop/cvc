@@ -1,13 +1,8 @@
 -
   -
-    href: https://kbc.be/jongeren
-    src: images/sponsors/kbc.jpg
-    alt: KBC
-    columns: three
-  -
-    href: https://www.jupiler.be/nl
-    src: images/sponsors/jupiler.png
-    alt: Jupiler
+    href: http://www.bondmoyson.be
+    src: images/sponsors/bond-moyson.png
+    alt: Bond Moyson
     columns: three
   -
     href: https://www.cocacolabelgium.be/nl
@@ -15,89 +10,17 @@
     alt: Coca Cola
     columns: three
   -
-    href: http://www.jeka.be/nl/groepsreizen/html/festival
-    src: images/sponsors/jeka.png
-    alt: Jeka
-    columns: three
-  -
-    href: http://gsr.ugent.be
-    src: images/sponsors/gsr.jpg
-    alt: Gentse Studentenraad
-    columns: three
--
-  -
-    href: https://foursquare.com/v/père-total
-    src: images/sponsors/pere-total.png
-    alt: Pere Total
-    columns: two
-  -
-    href: https://www.facebook.com/Cuba-Gent-33524549495/
-    src: images/sponsors/cuba.jpg
-    alt: Cuba Gent
-    columns: one
-  -
-    href: https://vtk.ugent.be/delta/
-    src: images/sponsors/delta.png
-    alt: Delta
-    columns: one
-  -
-    href: http://www.g-s-v.be/
-    src: images/sponsors/gsv.jpg
-    alt: GSV
-    columns: one
-  -
-    href: http://www.festivalexplorers.be
-    src: images/sponsors/festival-explorers.jpg
-    alt: Festival Explorers
-    columns: one
-  -
-    href: http://www.overpoortbowl.be
-    src: images/sponsors/overpoort-bowl.png
-    alt: Overpoort Bowl
-    columns: two
-  -
-    href: https://kinepolis.be/nl/
-    src: images/sponsors/kinepolis.png
-    alt: Kinepolis Gent
-    columns: two
-  -
-    href: www.facebook.com/pointfinalgentoverpoort/
-    src: images/sponsors/point-final.png
-    alt: Point Final
-    columns: two
--
-  -
-    href: https://www.facebook.com/pages/Tam-Tam-Gent/241062392644520
-    src: images/sponsors/tamtam.png
-    alt: Tamtam
-    columns: one
-  -
-    href: http://www.bondmoyson.be
-    src: images/sponsors/bond-moyson.png
-    alt: Bond Moyson
-    columns: two
-  -
     href: http://redbull.be
-    src: images/sponsors/redbull.png
+    src: images/sponsors/redbull.jpg
     alt: Redbull
-    columns: two
+    columns: three
   -
-    href: http://www.vodka-poliakov.com/
-    src: images/sponsors/poliakov.png
-    alt: Poliakov
-    columns: two
+    href: https://www.stadium.be/nl
+    src: images/sponsors/stadium.jpeg
+    alt: Stadium
+    columns: three
   -
-    href: http://www.peterman.be
-    src: images/sponsors/peterman.png
-    alt: Peterman
-    columns: two
-  -
-    href: https://foursquare.com/v/de-salamander/4ba0c400f964a5202e7c37e3
-    src: images/sponsors/salamander.png
-    alt: De Salamander
-    columns: two
-  -
-    href: https://www.facebook.com/hetkof
-    src: images/sponsors/kof.jpg
-    alt: \'t Kofschip
-    columns: one
+    href: http://www.pwc.be/nl/
+    src: images/sponsors/PwC.jpg
+    alt: PwC
+    columns: three
