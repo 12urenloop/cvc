@@ -33,11 +33,11 @@
     </div>
 
     <p class='white justify'>
-      Elk uur is er ook een speciale ronde, waarvoor elke deelnemende kring een
-      extra punt ontvangt. Deze ludieke rondes gaan door tussen de loopwedstrijd
+      Elk uur is er ook een speciale ronde. Deze ludieke rondes gaan door tussen de loopwedstrijd
       zelf maar pas op, de uitvoering is vaak belangrijker dan de snelheid van de
       loper! De beste(n) van elke ronde worden beloond met naturaprijzen
       geschonken door onze sponsors.
+      <strong>De speciale rondes worden binnenkort aangekondigd.</strong>
     </p>
 
     <p class='white justify'>
@@ -51,8 +51,8 @@
 
   <div class='container'>
     <% special_rounds = data_from(:special_rounds) %>
-    <%= render '/partials/special_rounds.*', t: 'Speciale rondes van vorig jaar', rounds: special_rounds[0..5] %>
-    <%= render '/partials/special_rounds.*', t: '&nbsp;', rounds: special_rounds[6..11] %>
+    <% render '/partials/special_rounds.*', t: 'Speciale rondes van vorig jaar', rounds: special_rounds[0..5] %>
+    <% render '/partials/special_rounds.*', t: '&nbsp;', rounds: special_rounds[6..11] %>
   </div>
 
   <div class='sixteen columns action'>
