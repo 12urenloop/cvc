@@ -1,26 +1,25 @@
 -
-  -
-    href: http://www.bondmoyson.be
-    src: images/sponsors/bond-moyson.png
-    alt: Bond Moyson
-    columns: three
-  -
-    href: https://www.cocacolabelgium.be/nl
-    src: images/sponsors/coca-cola.jpg
-    alt: Coca Cola
-    columns: three
-  -
-    href: http://redbull.be
-    src: images/sponsors/redbull.jpg
-    alt: Redbull
-    columns: three
-  -
-    href: https://www.stadium.be/nl
-    src: images/sponsors/stadium.jpeg
-    alt: Stadium
-    columns: three
-  -
-    href: http://www.pwc.be/nl/
-    src: images/sponsors/PwC.jpg
-    alt: PwC
-    columns: three
+  href: http://www.bondmoyson.be
+  src: images/sponsors/bond-moyson.png
+  alt: Bond Moyson
+  columns: three
+-
+  href: https://www.cocacolabelgium.be/nl
+  src: images/sponsors/coca-cola.jpg
+  alt: Coca Cola
+  columns: three
+-
+  href: http://redbull.be
+  src: images/sponsors/redbull.jpg
+  alt: Redbull
+  columns: three
+-
+  href: https://www.stadium.be/nl
+  src: images/sponsors/stadium.jpeg
+  alt: Stadium
+  columns: three
+-
+  href: http://www.pwc.be/nl/
+  src: images/sponsors/PwC.jpg
+  alt: PwC
+  columns: three
