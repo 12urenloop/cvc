@@ -37,7 +37,6 @@
       zelf maar pas op, de uitvoering is vaak belangrijker dan de snelheid van de
       loper! De beste(n) van elke ronde worden beloond met naturaprijzen
       geschonken door onze sponsors.
-      <strong>De speciale rondes worden binnenkort aangekondigd.</strong>
     </p>
 
     <p class='white justify'>
@@ -51,8 +50,8 @@
 
   <div class='container'>
     <% special_rounds = data_from(:special_rounds) %>
-    <% render '/partials/special_rounds.*', t: 'Speciale rondes van vorig jaar', rounds: special_rounds[0..5] %>
-    <% render '/partials/special_rounds.*', t: '&nbsp;', rounds: special_rounds[6..11] %>
+    <%= render '/partials/special_rounds.*', t: 'Speciale rondes van vorig jaar', rounds: special_rounds[0..11] %>
+    <%= render '/partials/special_rounds.*', t: 'Speciale rondes van dit jaar', rounds: special_rounds[12..30] %>
   </div>
 
   <div class='sixteen columns action'>
