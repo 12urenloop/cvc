@@ -50,8 +50,8 @@
 
   <div class='container'>
     <% special_rounds = data_from(:special_rounds) %>
-    <%= render '/partials/special_rounds.*', t: 'Speciale rondes van vorig jaar', rounds: special_rounds[0..11] %>
-    <%= render '/partials/special_rounds.*', t: 'Speciale rondes van dit jaar', rounds: special_rounds[12..30] %>
+    <%= render '/partials/special_rounds.*', t: 'Speciale rondes', rounds: special_rounds[12..17] %>
+    <%= render '/partials/special_rounds.*', t: '&nbsp', rounds: special_rounds[18..30] %>
   </div>
 
   <div class='sixteen columns action'>
