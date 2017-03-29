@@ -92,16 +92,28 @@ a[name]:before {
 .white a, .white a:visited { color: #ddd; }
 .white a:hover, .white a:focus { color: #fff; }
 
-.sponsors {
-    text-align: center;
+.sponsor-row {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
 }
-.sponsors img {
+
+.sponsor {
+  img {
     max-width: 100%;
+  }
 }
 
 @media only screen and (min-width: 960px) {
-    .sponsors .one.column { width: 60px; }
-    .sponsors .two.columns { width: 120px; }
+  .sponsors .sponsor { width: 60px; }
+  .sponsors .sponsor { width: 120px; }
+}
+
+@media only screen and (max-width: 960px) {
+  .sponsor-row {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
 }
 
 .button1,input[type="submit"],input[type="reset"],input[type="button"] {

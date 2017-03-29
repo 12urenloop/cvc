@@ -1,4 +1,9 @@
-<%= render '/partials/sponsor.*', sponsor: @sponsors[0], offset: true %>
-<% @sponsors[1..-1].each do |s| %>
-  <%= render '/partials/sponsor.*', sponsor: s %>
+<div class='sponsor-row'>
+<% @sponsors.each do |s| %>
+<div class='sponsor'>
+  <a href='<%= s['href'] %>'>
+    <img src='<%= s['src'] %>' alt='<%= s['alt'] %>' />
+  </a>
+</div>
 <% end %>
+</div>
