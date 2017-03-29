@@ -49,50 +49,50 @@
   name: "Peterman ronde"
   time: 20u30
 -
-  description: ~
+  description: "Kom verkleed als de mooiste prinses van het hele land. Wie door de vakjury als beste prinses beoordeeld wordt, wint. 1 persoon per loopteam."
   name: "Prinsessen ronde"
   time: 9u30
 -
-  description: ~
-  name: TBA
+  description: "Vorm een festivalbende van max. 5 personen, gekleed in eenzelfde (herkenbaar) thema/muziekgenre en dans een rondje in dat thema/genre. De origineelste bende wint. 1 inzending per loopteam."
+  name: "Festival Explorers ronde"
   time: 10u30
 -
-  description: "De welgekende klassieker: eet zo snel mogelijk een Julientje en spurt daarna naar de overwinning."
-  name: "Julien ronde"
+  description: "Heb je altijd geweten dat je over een bijzonder talent beschikt? Dat jij niet bent zoals de anderen? Kom dan hier bewijzen dat je spijsverteringsstelsel even sterk is als de tijd waarin je een rondje loopt. Moge de snelste all-round kandidaat winnen. 1 inzending per loopteam. Ps: gratis lunch."
+  name: "Julientjes ronde"
   time: 11u30
 -
-  description: ~
+  description: "Na 5 jaar komt de Red Bull Zeepkistenrace terug naar België! Maak jullie eigen zeepkist (minimum voorwaarde: het moet bollen), het Red Bull team kiest de meest originele inzending als winnaar. 1 inzending per loopteam."
   name: "Red Bull zeepkisten ronde"
   time: 12u30
 -
-  description: ~
-  name: "Lumberjack ronde"
+  description: "Mannen met baarden in geruite hemden, gespierde vrouwen in strakke witte marcelletjes. De meest overtuigende lumberjack of lumber Jill (ja das is de officiële benaming) wint deze ronde! 1 inzending per loopteam."
+  name: "Lumberjack/jill ronde"
   time: 13u30
 -
-  description: ~
+  description: "We halen onze mosterd bij de Number Game zoals gezien in de Britse shows 'Countdown’ en ‘8 Out of 10 Cats Does Countdown’. We kunnen alvast verklappen dat de uitkomst 200 zal zijn. De 6 cijfers om tot die uitkomst te komen, krijg je bij de start. De snelste rekenaar en loper wint. 1 inzending per loopteam"
   name: "200 jaar UGent ronde"
   time: 14u30
 -
-  description: ~
-  name: "Blandino ronde"
+  description: TBA
+  name: "Schamper ronde"
   time: 15u30
 -
-  description: "Laat die sixpacks en strakke kontjes maar zien! Bierbuiken ook welkom ;)"
+  description: "Maak uw ouders trots en toon aan dat je ook praktisch-volledig-naakt de snelste loper bent! Openbare zedenschennis wordt bestraft, bedek wat we niet willen zien rondzwaaien tijdens het lopen aub. 1 inzending per loopteam."
   name: "Schaars-geklede-mannen ronde"
   time: 16u30
 -
-  description: ~
-  name: "Tovenaren ronde"
+  description: "Hoeden en toverstokken in de aanslag! Wij voorzien jullie van een Nimbus 2000, aan jullie om daar zo snel mogelijk (en verkleed) mee over de finish te vliegen. 1 inzending per loopteam."
+  name: "Tovenaars ronde"
   time: 17u30
 -
-  description: "Hoe minder textiel, hoe beter!"
+  description: "We zullen nooit weten of het voor deze ronde of gewoon het uur van de dag is, maar rond deze tijd is het altijd verdacht druk op het plein.. Dames: shake what your mama gave ya, bedek net voldoende om geen bekeuring voor openbare zedenschennis te krijgen en loop zo snel mogelijk je rondje uit. 1 inzending per loopteam."
   name: "Schaars-geklede-vrouwen ronde"
   time: 18u30
 -
-  description: "Draag je praeses op een zo origineel mogelijke manier rond het plein."
+  description: "Tijdens deze ronde dient de praeses een rondje lang op originele wijze gedragen worden. Doe nekeer zot! De meest originele kring wint."
   name: "Draag-de-praeses ronde"
   time: 19u30
 -
-  description: ~
+  description: "De mascotte van onze hoofdsponsor UPKOT is een kip. Meer kunnen we voorlopig nog niet prijsgeven over de inkleding van deze ronde. 1 inzending per loopteam."
   name: "UpKot ronde"
   time: 20u30
