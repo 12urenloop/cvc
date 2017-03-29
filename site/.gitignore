@@ -1,0 +1,5 @@
+output/
+tmp/
+.sass-cache/
+crash.log
+.bundle/

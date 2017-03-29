@@ -1,0 +1,73 @@
+<div id='animatie'>
+  <div class='container'>
+
+    <div class='sixteen columns'>
+      <h2><span class='lines'>Animatie</span></h2>
+    </div>
+
+    <div class='eight columns'>
+      <% render '/parts/animation/dj-contest.*' %>
+
+      <h3><span class='lines'>Multimedia</span></h3>
+
+      <p class="justify">
+        <a href='http://www.urgent.fm'>Urgent.fm</a> zendt de hele dag live uit
+        van op het <%= item[:location] %>. Je hoort er toffe interviews en het
+        laatste nieuws over de 12urenloop.
+      </p>
+
+      <p class="justify">
+        Ook <a href='http://schamper.ugent.be'>Schamper</a> verhuist zijn
+        redactie voor een dag en houdt je de hele dag door up-to-date via de
+        sociale media.
+      </p>
+
+      <h3><span class='lines'>Fakbars</span></h3>
+
+      <p class="justify">
+        Elke studentenvereniging die deelneemt aan de 12urenloop zet voor de
+        gelegenheid ook een eigen fakbar op poten op het <%= item[:location] %>
+        met voordelige drankjes, snacks en een toffe sfeer.
+      </p>
+
+      <!--
+        <div style='text-align: center;'>
+        <script>
+function popUp(URL) {
+  day = new Date();
+  id = day.getTime();
+  window.open(URL, '' + id + '', 'toolbar=0,scrollbars=0,location=0,statusbar=0,menubar=0,resizable=0,width=450,height=250,left = 735,top = 415');
+}
+        </script>
+        <a href='javascript:popUp('http://urgent.fm/player/liveplayer.html')'><div class='button1'>Luister online naar Urgent.fm</div></a>
+        </div>
+        -->
+    </div>
+
+    <div class='eight columns'>
+      <h3><span class='lines'>UNIEKE SFEER</span></h3>
+
+      <p class="justify">
+        Onder het motto 'voor ieder wat wils' selecteerden we enkele mooie namen 
+        opdat het Sint-Pietersplein reeds voorbereid is op het feestje dat vanaf 21u start.
+      </p>
+
+      <table class='schedule'>
+        <% data_from(:afterparty).each do |a| %>
+          <tr>
+            <th><%= a['time'] %></th>
+            <td><%= a['description'] %></td>
+          </tr>
+        <% end %>
+      </table>
+    </div>
+
+    <div class='clear'></div>
+
+    <div id="photo-row">
+      <div id="photo-column"><p><img src='images/animatie/fakbars.jpg' class='scale-with-grid' alt='Fakbar geografica' /></p></div>
+      <div id="photo-column"><p><img src='images/animatie/afterparty.jpg' class='scale-with-grid' alt='Afterparty' /></p></div>
+    </div>
+
+  </div> <!-- end container -->
+</div> <!-- end about -->

@@ -1,0 +1,4 @@
+<%= render '/partials/sponsor.*', sponsor: @sponsors[0], offset: true %>
+<% @sponsors[1..-1].each do |s| %>
+  <%= render '/partials/sponsor.*', sponsor: s %>
+<% end %>
