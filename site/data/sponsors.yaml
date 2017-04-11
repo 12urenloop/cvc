@@ -24,3 +24,8 @@
     src: images/sponsors/PwC.jpg
     alt: PwC
     columns: three
+  -
+    href: http://www.bioshop.be/y
+    src: images/sponsors/BioShop.jpg
+    alt: BioShop
+    columns: three
