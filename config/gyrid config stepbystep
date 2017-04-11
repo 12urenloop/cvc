@@ -1,0 +1,15 @@
+
+recover gyrid.img van abyss
+  haal de geheugenkaart uit de gyrid
+  flash gyrid.img op de geheugenkaart met behulp van de kaartlezer
+
+installeer screen
+vind seriele kabel -> usb
+  verbind gyrid met usbpoort
+  `sudo screen /dev/ttyUSB0 38400`
+  login met root:rundataDR42
+  verander hostname naar iets logisch in /etc/hostname
+  verander de config in /etc/network/interfaces zodat het de correcte interface gebruikt en een passend ip adres instelt
+
+steel de SKO router (ubiquity edgerouter)
+  reset hem en run de wizard
