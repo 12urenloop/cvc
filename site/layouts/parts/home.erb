@@ -80,16 +80,12 @@
     </div>
 
     <div class='sponsors container'>
-      <% data_from(:sponsors).each do |row| %>
-        <div class='row'>
-          <%= render '/partials/sponsors.*', sponsors: row %>
-        </div>
+      <% data_from(:sponsors).each_slice(5) do |row| %>
+      <%= render '/partials/sponsors.*', sponsors: row %>
       <% end %>
 
       <p>met medewerking van:</p>
-      <div class='row'>
-        <%= render '/partials/sponsors.*', sponsors: data_from(:collaboration) %>
-      </div>
+      <%= render '/partials/sponsors.*', sponsors: data_from(:collaboration) %>
       </div>
     </div>
   </div>
