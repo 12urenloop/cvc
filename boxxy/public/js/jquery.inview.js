@@ -1,1 +1,1 @@
-../../../site/javascripts/jquery.inview.js
+../../../site/content/javascripts/jquery.inview.js
