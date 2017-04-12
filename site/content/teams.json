@@ -1,0 +1,1 @@
+<%= data_from(:teams).map { |t| t } %>

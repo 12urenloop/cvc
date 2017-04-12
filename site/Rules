@@ -29,6 +29,11 @@ route '/**/*.{erb,html,md}' do
   end
 end
 
+compile '/**/*.json' do
+  filter :erb
+  write item.identifier.to_s
+end
+
 compile '/**/*' do
   write item.identifier.to_s
 end
