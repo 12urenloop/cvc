@@ -137,11 +137,6 @@ function page(route, content, locals) {
     });
 }
 
-page('/dj-contest', 'content/dj-contest.html', {
-    "title": "DJ Contest",
-    "bg": "bg2"
-});
-
 page('/special-laps', 'content/special-laps.html', {
     "title": "Speciale rondes",
     "bg": "bg3"

@@ -1,1 +1,1 @@
-../../../site/javascripts/nbw-parallax.js
+../../../site/content/javascripts/nbw-parallax.js

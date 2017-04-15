@@ -1,1 +1,1 @@
-../../../site/javascripts/jquery.sticky.js
+../../../site/content/javascripts/jquery.sticky.js

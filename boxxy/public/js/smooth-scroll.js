@@ -1,1 +1,1 @@
-../../../site/javascripts/smooth-scroll.js
+../../../site/content/javascripts/smooth-scroll.js
