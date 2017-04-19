@@ -1,0 +1,40 @@
+#regeling {
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 23px;
+  color: #3d3d3d;
+  padding-bottom: 20px;
+
+  h1 {
+    text-shadow: none;
+    color: #3d3d3d;
+    line-height: 1;
+    margin-bottom: 10px;
+    font-size: 60px;
+  }
+
+  ol {
+    padding-top: 20px;
+
+    ul {
+      list-style: initial;
+    }
+
+    & > li {
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px dotted #3d3d3d;
+    }
+  }
+
+  table {
+    margin-top: 10px;
+
+    td {
+      border-top: 1px solid #E1E1E1;
+      border-bottom: 1px solid #E1E1E1;
+      padding: 10px;
+    }
+  }
+}
