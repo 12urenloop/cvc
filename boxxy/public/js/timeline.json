@@ -19,7 +19,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong>Princessenronde</strong><div>Kom verkleed als de mooiste prinses van het hele land. Wie door de vakjury als beste prinses beoordeeld wordt, wint. 1 persoon per loopteam.</div>",
+    "content": "<strong>Princessenronde</strong><div>Kom verkleed als de mooiste prinses van het hele land. Wie door de vakjury als beste prinses beoordeeld wordt, wint.</div>",
     "time": {
 		"day" : 26,
 		"month": 3,
@@ -34,7 +34,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong>Festival Explorersronde</strong><div>Vorm een festivalbende van max. 5 personen, gekleed in eenzelfde (herkenbaar) thema/muziekgenre en dans een rondje in dat thema/genre. De origineelste bende wint. 1 inzending per loopteam.</div>",
+    "content": "<strong>Festival Explorersronde</strong><div>Vorm een festivalbende van max. 5 personen, gekleed in eenzelfde (herkenbaar) thema/muziekgenre en dans een rondje in dat thema/genre. De origineelste bende wint.</div>",
     "time": {
 		"day" : 26,
 		"month": 3,
@@ -49,7 +49,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong>Julientjesronde</strong><div>Heb je altijd geweten dat je over een bijzonder talent beschikt? Dat jij niet bent zoals de anderen? Kom dan hier bewijzen dat je spijsverteringsstelsel even sterk is als de tijd waarin je een rondje loopt. Moge de snelste all-round kandidaat winnen. 1 inzending per loopteam. Ps: gratis lunch.</div>",
+    "content": "<strong>Julientjesronde</strong><div>Heb je altijd geweten dat je over een bijzonder talent beschikt? Dat jij niet bent zoals de anderen? Kom dan hier bewijzen dat je spijsverteringsstelsel even sterk is als de tijd waarin je een rondje loopt. Moge de snelste all-round kandidaat winnen. Ps: gratis lunch.</div>",
     "time": {
 		"day" : 26,
 		"month": 3,
@@ -64,7 +64,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong>Red Bull zeepkistenronde</strong><div>Na 5 jaar komt de Red Bull Zeepkistenrace terug naar België! Maak jullie eigen zeepkist (minimum voorwaarde: het moet bollen), het Red Bull team kiest de meest originele inzending als winnaar. 1 inzending per loopteam.</div>",
+    "content": "<strong>Red Bull zeepkistenronde</strong><div>Na 5 jaar komt de Red Bull Zeepkistenrace terug naar België! Maak jullie eigen zeepkist (minimum voorwaarde: het moet bollen), het Red Bull team kiest de meest originele inzending als winnaar.</div>",
     "time": {
 		"day" : 26,
 		"month": 3,
@@ -79,7 +79,7 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong>Lumberjack/jillronde</strong><div>Mannen met baarden in geruite hemden, gespierde vrouwen in strakke witte marcelletjes. De meest overtuigende lumberjack of lumber Jill (ja das is de officiële benaming) wint deze ronde! 1 inzending per loopteam.</div>",
+    "content": "<strong>Lumberjack/jillronde</strong><div>Mannen met baarden in geruite hemden, gespierde vrouwen in strakke witte marcelletjes. De meest overtuigende lumberjack of lumber Jill (ja das is de officiële benaming) wint deze ronde!</div>",
     "time": {
 		"day" : 26,
 		"month": 3,
