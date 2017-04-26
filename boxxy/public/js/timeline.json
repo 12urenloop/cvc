@@ -6,9 +6,9 @@
     },
     "content": "<h2>Startschot</h2>",
     "time": {
-		"day" : 21,
-		"month": 3,
-		"year": 2016,
+		"day" : 26,
+		"month": 4,
+		"year": 2017,
 		"hour": 9,
 		"minute": 0
 	},
@@ -19,26 +19,11 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong>Trouwronde</strong><div>Het meest originele bruidspaar zit bij het VEK, zij zijn de winnaars van deze ronde. Op de tweede plaats staat het VLK, verkleed als romeinen. Op de derde plaats staan de kinky HK'ers.</div>",
+    "content": "<strong>Princessenronde</strong><div>Kom verkleed als de mooiste prinses van het hele land. Wie door de vakjury als beste prinses beoordeeld wordt, wint. 1 persoon per loopteam.</div>",
     "time": {
-		"day" : 21,
-		"month": 3,
-		"year": 2016,
-		"hour": 10,
-		"minute": 30
-	},
-    "link_to": "/special-laps"
-  },
-  {
-    "icon": {
-      "background": "cd-yellow",
-      "image": "img/cd-icon-location.svg"
-    },
-    "content": "<strong>KBC-ronde</strong><div>De snelste loper was Arthur Bruneel (Wetenschappen/VLAK), gevolgd door Joris Verdonck (VPPK) en op de derde plaats staat Emiel Steen (VLK).</div>",
-    "time": {
-		"day" : 21,
-		"month": 3,
-		"year": 2016,
+		"day" : 26,
+		"month": 4,
+		"year": 2017,
 		"hour": 9,
 		"minute": 30
 	},
@@ -49,11 +34,26 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong>Julienronde</strong><div>Cedrik Ally (VTK) had het meeste honger en heeft deze ronde gewonnen. Thibaut Allaert (GBK) kwam als tweedes toe. Jonas Desmet (VLK) is derdes geëindigd.</div>",
+    "content": "<strong>Festival Explorersronde</strong><div>Vorm een festivalbende van max. 5 personen, gekleed in eenzelfde (herkenbaar) thema/muziekgenre en dans een rondje in dat thema/genre. De origineelste bende wint. 1 inzending per loopteam.</div>",
     "time": {
-		"day" : 21,
-		"month": 3,
-		"year": 2016,
+		"day" : 26,
+		"month": 4,
+		"year": 2017,
+		"hour": 10,
+		"minute": 30
+	},
+    "link_to": "/special-laps"
+  },
+  {
+    "icon": {
+      "background": "cd-yellow",
+      "image": "img/cd-icon-location.svg"
+    },
+    "content": "<strong>Julientjesronde</strong><div>Heb je altijd geweten dat je over een bijzonder talent beschikt? Dat jij niet bent zoals de anderen? Kom dan hier bewijzen dat je spijsverteringsstelsel even sterk is als de tijd waarin je een rondje loopt. Moge de snelste all-round kandidaat winnen. 1 inzending per loopteam. Ps: gratis lunch.</div>",
+    "time": {
+		"day" : 26,
+		"month": 4,
+		"year": 2017,
 		"hour": 11,
 		"minute": 30
 	},
@@ -64,11 +64,11 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong>Knokke-Le-Zoute-syndroomronde</strong><div>Deze ronde werd gewonnen door het VRG. Op de tweede plaats staat het VGK en op de derde plaats het VPPK.</div>",
+    "content": "<strong>Red Bull zeepkistenronde</strong><div>Na 5 jaar komt de Red Bull Zeepkistenrace terug naar België! Maak jullie eigen zeepkist (minimum voorwaarde: het moet bollen), het Red Bull team kiest de meest originele inzending als winnaar. 1 inzending per loopteam.</div>",
     "time": {
-		"day" : 21,
-		"month": 3,
-		"year": 2016,
+		"day" : 26,
+		"month": 4,
+		"year": 2017,
 		"hour": 12,
 		"minute": 30
 	},
@@ -79,11 +79,11 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong>Wetsuitronde</strong><div>De snelste surfer was Niels Verbraekel (HILOK). Yoerik De Brouwere (VTK) surfte als tweede over de finishlijn, gevolgd door Joost Goossens (VLAK).</div>",
+    "content": "<strong>Lumberjack/jillronde</strong><div>Mannen met baarden in geruite hemden, gespierde vrouwen in strakke witte marcelletjes. De meest overtuigende lumberjack of lumber Jill (ja das is de officiële benaming) wint deze ronde! 1 inzending per loopteam.</div>",
     "time": {
-		"day" : 21,
-		"month": 3,
-		"year": 2016,
+		"day" : 26,
+		"month": 4,
+		"year": 2017,
 		"hour": 13,
 		"minute": 30
 	},
@@ -94,11 +94,11 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong>Tutorialronde</strong><div>Deze ronde werd gewonnen door het VTK. VEK  komt op de tweede plaats, gevolgd door het VPPK op de derde plaats.</div>",
+    "content": "<strong>200 jaar UGentronde</strong><div>We halen onze mosterd bij de Number Game zoals gezien in de Britse shows 'Countdown’ en ‘8 Out of 10 Cats Does Countdown’. We kunnen alvast verklappen dat de uitkomst 200 zal zijn. De 6 cijfers om tot die uitkomst te komen, krijg je bij de start. De snelste rekenaar en loper wint.</div>",
     "time": {
-		"day" : 21,
-		"month": 3,
-		"year": 2016,
+		"day" : 26,
+		"month": 4,
+		"year": 2017,
 		"hour": 14,
 		"minute": 30
 	},
@@ -109,11 +109,11 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong>Festivalexplorers ronde</strong><div>De VTK heeft de hipste festivalgangers en wint deze ronde. Het VEK  werd als tweedes verkozen en het VPPK kreeg de derde plaats.</div>",
+    "content": "<strong>Schamperronde</strong><div>In deze tijden van 'Fake News' is het belangrijk dat men de waarheid onderscheidt van de leugen. Voer daarom je beste Mark Peeters-imitatie op en onderricht de mensheid met jouw conspiracytheorie. Het team met de origineelste theorie wint.</div>",
     "time": {
-		"day" : 21,
-		"month": 3,
-		"year": 2016,
+		"day" : 26,
+		"month": 4,
+		"year": 2017,
 		"hour": 15,
 		"minute": 30
 	},
@@ -124,11 +124,11 @@
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong>Schaarsgekledemannenronde</strong><div>De meest sexy man is bij het VGK te vinden: Joran Beek sleepte de overwinning in de wacht. Rens Accoe (VLK) kreeg de tweede plaats en Laurens Descamps (Hermes & LILA) werd derdes.</div>",
+    "content": "<strong>Schaarsgekledemannenronde</strong><div>Maak uw ouders trots en toon aan dat je ook praktisch-volledig-naakt de snelste loper bent! Openbare zedenschennis wordt bestraft, bedek wat we niet willen zien rondzwaaien tijdens het lopen aub.</div>",
     "time": {
-		"day" : 21,
-		"month": 3,
-		"year": 2016,
+		"day" : 26,
+		"month": 4,
+		"year": 2017,
 		"hour": 16,
 		"minute": 30
 	},
@@ -136,30 +136,14 @@
   },
   {
     "icon": {
-      "background": "cd-red",
-      "image": "img/cd-icon-dj.png"
-    },
-    "content": "<div>C-Bass</div>",
-    "time": {
-		"day" : 21,
-		"month": 3,
-		"year": 2016,
-		"hour": 17,
-		"minute": 15
-	},
-    "align": "right",
-    "link_to": "/dj-contest"
-  },
-  {
-    "icon": {
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong>Bomberronde</strong><div>Deze ronde werd gewonnen door het VLK. De tweede plaats is voor het VEK. Het VGK werd derdes.</div>",
+    "content": "<strong>Tovenaarsronde</strong><div>Hoeden en toverstokken in de aanslag! Wij voorzien jullie van een Nimbus 2000, aan jullie om daar zo snel mogelijk (en verkleed) mee over de finish te vliegen.</div>",
     "time": {
-		"day" : 21,
-		"month": 3,
-		"year": 2016,
+		"day" : 26,
+		"month": 4,
+		"year": 2017,
 		"hour": 17,
 		"minute": 30
 	},
@@ -167,66 +151,18 @@
   },
   {
     "icon": {
-      "background": "cd-red",
-      "image": "img/cd-icon-dj.png"
-    },
-    "content": "<div>Miss Charlie</div>",
-    "time": {
-		"day" : 21,
-		"month": 3,
-		"year": 2016,
-		"hour": 17,
-		"minute": 55
-	},
-    "align": "right",
-    "link_to": "/dj-contest"
-  },
-  {
-    "icon": {
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong>Schaarsgekledevrouwenronde</strong><div>De mooiste vrouwtjes zijn te spotten bij het VGK. De meisjes van het VRG zijn ook niet mis en komen op de tweede plaats. Het vrouwvolk van het VTK kan er ook mee door, zij kwamen derdes.</div>",
+    "content": "<strong>Schaarsgekledevrouwenronde</strong><div>We zullen nooit weten of het voor deze ronde of gewoon het uur van de dag is, maar rond deze tijd is het altijd verdacht druk op het plein.. Dames: shake what your mama gave ya, bedek net voldoende om geen bekeuring voor openbare zedenschennis te krijgen en loop zo snel mogelijk je rondje uit. /div>",
     "time": {
-		"day" : 21,
-		"month": 3,
-		"year": 2016,
+		"day" : 26,
+		"month": 4,
+		"year": 2017,
 		"hour": 18,
 		"minute": 30
 	},
     "link_to": "/special-laps"
-  },
-  {
-    "icon": {
-      "background": "cd-red",
-      "image": "img/cd-icon-dj.png"
-    },
-    "content": "<div>FREESTYLE</div>",
-    "time": {
-		"day" : 21,
-		"month": 3,
-		"year": 2016,
-		"hour": 18,
-		"minute": 35
-	},
-    "align": "right",
-    "link_to": "/dj-contest"
-  },
-  {
-    "icon": {
-      "background": "cd-red",
-      "image": "img/cd-icon-dj.png"
-    },
-    "content": "<div>FOCVS</div>",
-    "time": {
-		"day" : 21,
-		"month": 3,
-		"year": 2016,
-		"hour": 19,
-		"minute": 15
-	},
-    "align": "right",
-    "link_to": "/dj-contest"
   },
   {
     "icon": {
@@ -235,9 +171,9 @@
     },
     "content": "<strong>Draag-de-praesesronde</strong><div>De praeses van het VPPK werd het meest majestueus gedragen en won deze ronde. Het VLK werd als tweedes verkozen. Het VRG won de derde plaats.</div>",
     "time": {
-		"day" : 21,
-		"month": 3,
-		"year": 2016,
+		"day" : 26,
+		"month": 4,
+		"year": 2017,
 		"hour": 19,
 		"minute": 30
 	},
@@ -245,30 +181,14 @@
   },
   {
     "icon": {
-      "background": "cd-red",
-      "image": "img/cd-icon-dj.png"
-    },
-    "content": "<div>Audiowave</div>",
-    "time": {
-		"day" : 21,
-		"month": 3,
-		"year": 2016,
-		"hour": 19,
-		"minute": 55
-	},
-    "align": "right",
-    "link_to": "/dj-contest"
-  },
-  {
-    "icon": {
       "background": "cd-yellow",
       "image": "img/cd-icon-location.svg"
     },
-    "content": "<strong>Petermanronde</strong><div>De cuberdon van HILOK viel het meest in de smaak. Het VPPK eindigde tweedes met hun banaan. De vanille van het VRG won de derde plaats.</div>",
+    "content": "<strong>UpKotronde</strong><div>De mascotte van onze hoofdsponsor UPKOT is een kip. Meer kunnen we voorlopig nog niet prijsgeven over de inkleding van deze ronde.</div>",
     "time": {
-		"day" : 21,
-		"month": 3,
-		"year": 2016,
+		"day" : 26,
+		"month": 4,
+		"year": 2017,
 		"hour": 20,
 		"minute": 30
 	},
@@ -281,9 +201,9 @@
     },
     "content": "<h2>Afterparty</h2>",
     "time": {
-		"day" : 21,
-		"month": 3,
-		"year": 2016,
+		"day" : 26,
+		"month": 4,
+		"year": 2017,
 		"hour": 21,
 		"minute": 0
 	},
@@ -297,9 +217,9 @@
     },
     "content": "<div>Bart Ricardo</div>",
     "time": {
-		"day" : 21,
-		"month": 3,
-		"year": 2016,
+		"day" : 26,
+		"month": 4,
+		"year": 2017,
 		"hour": 21,
 		"minute": 15
 	},
@@ -313,9 +233,9 @@
     },
     "content": "<h2>Bekendmaking winnaars</h2>",
     "time": {
-		"day" : 21,
-		"month": 3,
-		"year": 2016,
+		"day" : 26,
+		"month": 4,
+		"year": 2017,
 		"hour": 22,
 		"minute": 45
 	},
@@ -329,9 +249,9 @@
     },
     "content": "<strong>Winnaar DJ-contest</strong><div>Miss Charlie</div>",
     "time": {
-		"day" : 21,
-		"month": 3,
-		"year": 2016,
+		"day" : 26,
+		"month": 4,
+		"year": 2017,
 		"hour": 23,
 		"minute": 0
 	},
@@ -345,9 +265,9 @@
     },
     "content": "<div>DJ Natick</div>",
     "time": {
-		"day" : 21,
-		"month": 3,
-		"year": 2016,
+		"day" : 26,
+		"month": 4,
+		"year": 2017,
 		"hour": 23,
 		"minute": 30
 	},
@@ -359,16 +279,135 @@
       "background": "cd-red",
       "image": "img/cd-icon-dj.png"
     },
-    "content": "<div>Chillout mix by Fou Concept</div>",
+    "content": "<div>Ochtendgymnastiek met Bonuzz</div>",
     "time": {
-		"day" : 22,
-		"month": 3,
-		"year": 2016,
-		"hour": 1,
+		"day": 26,
+		"month": 4,
+		"year": 2017,
+		"hour": 9,
 		"minute": 0
 	},
-    "align": "right",
-    "link_to": "/afterparty"
+    "align": "right"
+  },
+  {
+    "icon": {
+      "background": "cd-red",
+      "image": "img/cd-icon-dj.png"
+    },
+    "content": "<div>Sickatron</div>",
+    "time": {
+		"day": 26,
+		"month": 4,
+		"year": 2017,
+		"hour": 10,
+		"minute": 30
+	},
+    "align": "right"
+  },
+  {
+    "icon": {
+      "background": "cd-red",
+      "image": "img/cd-icon-dj.png"
+    },
+    "content": "<div>Loosebeat</div>",
+    "time": {
+		"day": 26,
+		"month": 4,
+		"year": 2017,
+		"hour": 12,
+		"minute": 0
+	},
+    "align": "right"
+  },
+  {
+    "icon": {
+      "background": "cd-red",
+      "image": "img/cd-icon-dj.png"
+    },
+    "content": "<div>LeBass</div>",
+    "time": {
+		"day": 26,
+		"month": 4,
+		"year": 2017,
+		"hour": 13,
+		"minute": 30
+	},
+    "align": "right"
+  },
+  {
+    "icon": {
+      "background": "cd-red",
+      "image": "img/cd-icon-dj.png"
+    },
+    "content": "<div>WULP</div>",
+    "time": {
+		"day": 26,
+		"month": 4,
+		"year": 2017,
+		"hour": 15,
+		"minute": 0
+	},
+    "align": "right"
+  },
+  {
+    "icon": {
+      "background": "cd-red",
+      "image": "img/cd-icon-dj.png"
+    },
+    "content": "<div>Flavour Drop</div>",
+    "time": {
+		"day": 26,
+		"month": 4,
+		"year": 2017,
+		"hour": 17,
+		"minute": 0
+	},
+    "align": "right"
+  },
+  {
+    "icon": {
+      "background": "cd-red",
+      "image": "img/cd-icon-dj.png"
+    },
+    "content": "<div>Cultivar</div>",
+    "time": {
+		"day": 26,
+		"month": 4,
+		"year": 2017,
+		"hour": 19,
+		"minute": 0
+	},
+    "align": "right"
+  },
+  {
+    "icon": {
+      "background": "cd-red",
+      "image": "img/cd-icon-dj.png"
+    },
+    "content": "<div>Broken Bottle Big Band</div>",
+    "time": {
+		"day": 26,
+		"month": 4,
+		"year": 2017,
+		"hour": 21,
+		"minute": 0
+	},
+    "align": "right"
+  },
+  {
+    "icon": {
+      "background": "cd-red",
+      "image": "img/cd-icon-dj.png"
+    },
+    "content": "<div>Alpha Party</div>",
+    "time": {
+		"day": 26,
+		"month": 4,
+		"year": 2017,
+		"hour": 22,
+		"minute": 30
+	},
+    "align": "right"
   },
   {
     "icon": {
@@ -377,10 +416,10 @@
     },
     "content": "<h2>Einde afterparty</h2>",
     "time": {
-		"day" : 22,
-		"month": 3,
-		"year": 2016,
-		"hour": 2,
+		"day" : 27,
+		"month": 4,
+		"year": 2017,
+		"hour": 1,
 		"minute": 0
 	},
     "align": "fill"
