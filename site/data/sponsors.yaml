@@ -34,7 +34,19 @@
   alt: PwC
   columns: three
 -
-  href: http://www.bioshop.be/y
+  href: http://www.bioshop.be/
   src: images/sponsors/BioShop.jpg
   alt: BioShop
+  columns: three
+-
+  src: images/sponsors/goliath.png
+  alt: Goliath
+  columns: three
+-
+  src: images/sponsors/salto.png
+  alt: salto
+  columns: three
+-
+  src: images/sponsors/AAVO.png
+  alt: AAVO Architects
   columns: three
