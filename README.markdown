@@ -1,4 +1,4 @@
-# 12urenloop [![Build Status](https://travis-ci.org/ZeusWPI/12urenloop.svg?branch=master)](https://travis-ci.org/ZeusWPI/12urenloop) [![Coverage Status](https://coveralls.io/repos/ZeusWPI/12urenloop/badge.svg?branch=master)](https://coveralls.io/r/ZeusWPI/12urenloop?branch=master) [![Analytics](https://ga-beacon.appspot.com/UA-25444917-6/ZeusWPI/12Urenloop/README.markdown?pixel)](https://github.com/igrigorik/ga-beacon)
+# 12urenloop [![Build Status](https://travis-ci.org/ZeusWPI/12urenloop.svg?branch=master)](https://travis-ci.org/ZeusWPI/12urenloop) [![Coverage Status](https://coveralls.io/repos/ZeusWPI/12urenloop/badge.svg?branch=master)](https://coveralls.io/r/ZeusWPI/12urenloop?branch=master) [![Analytics](https://ga-beacon.appspot.com/UA-25444917-6/ZeusWPI/12Urenloop/README.markdown?pixel)](https://github.com/igrigorik/ga-beacon)[![GetBadges Game](https://zeuswpi-12urenloop.getbadges.io/shield/company/zeuswpi-12urenloop)](https://zeuswpi-12urenloop.getbadges.io/?ref=shield-game)
 
 **TL;DR**: People run laps. We count, give them points and monitor it all.
 
