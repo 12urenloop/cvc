@@ -1,0 +1,46 @@
+.header {
+  h1 {
+    color: #4a4a4a;
+    text-transform: uppercase;
+    line-height: 1.125;
+    font-family: 'LeagueGothic-Regular';
+    font-size: 5em;
+    font-weight: 300;
+  }
+
+  background: url('/assets/background.png');
+  background-size: cover;
+
+  .images {
+    .column {
+      padding: 0;
+    }
+  }
+
+  .form-wrapper {
+    padding: 20px;
+  }
+}
+
+.bsa {
+  padding: 2rem;
+
+  .columns {
+    min-height: 120px;
+  }
+}
+
+.teams {
+  .columns:nth-child(odd) {
+    flex-direction: row-reverse;
+  }
+}
+
+label.required:after{
+  content: "*";
+}
+
+.success {
+  background: url('/assets/success.png');
+  background-size: cover;
+}

@@ -1,0 +1,41 @@
+<div class='columns'>
+  <div class='column is-8-desktop is-offset-2-desktop'>
+    <div class='card'>
+      <div class='card-content'>
+        <%= form_for @motivation do |f| %>
+          <div class='field'>
+            <%= f.label :name, 'Naam', class: 'label required' %>
+            <p class='control'>
+            <%= f.text_field :name, class: 'input', required: true %>
+            </p>
+          </div>
+
+          <div class='field'>
+            <%= f.label :email, class: 'label required' %>
+            <p class='control'>
+            <%= f.text_field :email, class: 'input', required: true %>
+            </p>
+          </div>
+
+          <div class='field'>
+            <%= f.label :phone, 'Telefoonnummer', class: 'label required' %>
+            <p class='control'>
+            <%= f.text_field :phone, class: 'input', required: true %>
+            </p>
+          </div>
+
+          <div class='field'>
+            <%= f.label :motivation, 'Motivatie', class: 'label' %>
+            <p class='control'>
+            <%= f.text_area :motivation, class: 'textarea' %>
+            </p>
+          </div>
+
+          <p class='control'>
+          <%= f.submit 'Verstuur', class: 'button is-primary' %>
+          </p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
