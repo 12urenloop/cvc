@@ -10,6 +10,9 @@ end
 gem 'rails', '~> 5.1.1'
 # Use sqlite3 as the database for Active Record
 gem 'sqlite3'
+
+gem 'mysql2'
+
 # Use Puma as the app server
 gem 'puma', '~> 3.7'
 # Use SCSS for stylesheets
@@ -42,6 +45,7 @@ group :development, :test do
   gem 'capistrano', '~> 3.6'
   gem 'capistrano-rails', '~> 1.3'
   gem 'capistrano-rbenv', '~> 2.0'
+  gem 'capistrano-passenger'
 end
 
 group :development do
