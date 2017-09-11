@@ -10,8 +10,9 @@
  * files in this directory. Styles in this file should be added after the last require_* statement.
  * It is generally better to create a new file per style scope.
  *
+ *= require bulma
  *= require_tree .
  *= require_self
  */
 
-@import "bulma";
+// @import "bulma";

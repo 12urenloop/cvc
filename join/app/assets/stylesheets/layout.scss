@@ -8,7 +8,9 @@
     font-weight: 300;
   }
 
-  background: url('/assets/background.png');
+  // Sprockets helper
+  // http://guides.rubyonrails.org/asset_pipeline.html#css-and-sass
+  background: image-url('background.png');
   background-size: cover;
 
   .images {
