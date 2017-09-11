@@ -2,6 +2,15 @@
   <div class='column is-8-desktop is-offset-2-desktop'>
     <div class='card'>
       <div class='card-content'>
+        <% if @motivation.errors.any?  %>
+          <div class='message is-danger'>
+            <div class='message-body'>
+              <% @motivation.errors.full_messages.each do |msg| %>
+                <p><%= msg %></p>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
         <%= form_for @motivation do |f| %>
           <div class='field'>
             <%= f.label :name, 'Naam', class: 'label required' %>
@@ -32,7 +41,7 @@
           </div>
 
           <p class='control'>
-          <%= f.submit 'Verstuur', class: 'button is-primary' %>
+          <%= f.submit 'Verstuur', class: 'button is-success' %>
           </p>
         <% end %>
       </div>
