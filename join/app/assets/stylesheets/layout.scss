@@ -49,3 +49,20 @@ label.required:after{
   background: url('/assets/success.png');
   background-size: cover;
 }
+
+.teams {
+  .column {
+    padding: 0.5rem;
+  }
+}
+
+.team {
+  border: 1px solid #000;
+  padding: 5px;
+  height: 100%;
+
+  .team-name {
+    display: block;
+    font-weight: bold;
+  }
+}
