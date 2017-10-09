@@ -1,4 +1,6 @@
 class MotivationsController < ApplicationController
+  http_basic_authenticate_with name: "admin", password: "12ulisdemax", only: :index
+
   def new
     @motivation = Motivation.new
   end
@@ -13,7 +15,7 @@ class MotivationsController < ApplicationController
   end
 
   def index
-    @motivations = Movitation.all
+    @motivations = Motivation.all
   end
 
   private
