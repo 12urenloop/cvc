@@ -1,0 +1,160 @@
+config-file-header
+switch47c9a0
+v1.3.0.62 / R750_NIK_1_3_647_260
+CLI v1.0
+set system
+file SSD indicator encrypted
+@
+ssd-control-start
+ssd config
+ssd file passphrase control unrestricted
+no ssd file integrity control
+ssd-control-end cb0a3fdb1f3a1af4e4430033719968c0
+!
+vlan database
+vlan 2-3
+exit
+voice vlan oui-table add 0001e3 Siemens_AG_phone________
+voice vlan oui-table add 00036b Cisco_phone_____________
+voice vlan oui-table add 00096e Avaya___________________
+voice vlan oui-table add 000fe2 H3C_Aolynk______________
+voice vlan oui-table add 0060b9 Philips_and_NEC_AG_phone
+voice vlan oui-table add 00d01e Pingtel_phone___________
+voice vlan oui-table add 00e075 Polycom/Veritel_phone___
+voice vlan oui-table add 00e0bb 3Com_phone______________
+hostname switch47c9a0
+no passwords complexity enable
+username cisco password encrypted 2607ac14a2a161d1e54ba7a41de400bcd65669fa privilege 15
+!
+interface vlan 1
+ ip address 10.1.3.2 255.255.255.0
+ no ip address dhcp
+!
+interface vlan 2
+ name intern
+!
+interface vlan 3
+ name gyrids
+!
+interface 1
+ switchport forbidden default-vlan
+!
+interface gigabitethernet1
+ switchport forbidden vlan add 2-3
+!
+interface gigabitethernet2
+ switchport forbidden vlan add 2-3
+!
+interface gigabitethernet3
+ switchport forbidden vlan add 2-3
+!
+interface gigabitethernet4
+ switchport trunk native vlan 2
+ switchport forbidden vlan add 3
+ switchport forbidden default-vlan
+!
+interface gigabitethernet5
+ switchport trunk native vlan 2
+ switchport forbidden vlan add 3
+ switchport forbidden default-vlan
+!
+interface gigabitethernet6
+ switchport trunk native vlan 2
+ switchport forbidden vlan add 3
+ switchport forbidden default-vlan
+!
+interface gigabitethernet7
+ switchport trunk native vlan 3
+ switchport forbidden vlan add 2
+ switchport forbidden default-vlan
+!
+interface gigabitethernet8
+ switchport trunk native vlan 3
+ switchport forbidden vlan add 2
+ switchport forbidden default-vlan
+!
+interface gigabitethernet9
+ switchport trunk native vlan 3
+ switchport forbidden vlan add 2
+ switchport forbidden default-vlan
+!
+interface gigabitethernet10
+ switchport trunk native vlan 3
+ switchport forbidden vlan add 2
+ switchport forbidden default-vlan
+!
+interface gigabitethernet11
+ switchport trunk native vlan 3
+ switchport forbidden vlan add 2
+ switchport forbidden default-vlan
+!
+interface gigabitethernet12
+ switchport trunk native vlan 3
+ switchport forbidden vlan add 2
+ switchport forbidden default-vlan
+!
+interface gigabitethernet13
+ switchport forbidden vlan add 2-3
+!
+interface gigabitethernet14
+ switchport forbidden vlan add 2-3
+!
+interface gigabitethernet15
+ switchport forbidden vlan add 2-3
+!
+interface gigabitethernet16
+ switchport trunk native vlan 2
+ switchport forbidden vlan add 3
+ switchport forbidden default-vlan
+!
+interface gigabitethernet17
+ switchport trunk native vlan 2
+ switchport forbidden vlan add 3
+ switchport forbidden default-vlan
+!
+interface gigabitethernet18
+ switchport trunk native vlan 2
+ switchport forbidden vlan add 3
+ switchport forbidden default-vlan
+!
+interface gigabitethernet19
+ switchport trunk native vlan 3
+ switchport forbidden vlan add 2
+ switchport forbidden default-vlan
+!
+interface gigabitethernet20
+ switchport trunk native vlan 3
+ switchport forbidden vlan add 2
+ switchport forbidden default-vlan
+!
+interface gigabitethernet21
+ switchport trunk native vlan 3
+ switchport forbidden vlan add 2
+ switchport forbidden default-vlan
+!
+interface gigabitethernet22
+ switchport trunk native vlan 3
+ switchport forbidden vlan add 2
+ switchport forbidden default-vlan
+!
+interface gigabitethernet23
+ switchport trunk native vlan 3
+ switchport forbidden vlan add 2
+ switchport forbidden default-vlan
+!
+interface gigabitethernet24
+ switchport trunk native vlan 3
+ switchport forbidden vlan add 2
+ switchport forbidden default-vlan
+!
+interface gigabitethernet25
+ switchport trunk native vlan 3
+ switchport forbidden vlan add 2
+ switchport forbidden default-vlan
+!
+interface gigabitethernet26
+ switchport trunk native vlan 3
+ switchport forbidden vlan add 2
+ switchport forbidden default-vlan
+!
+exit

@@ -10,6 +10,20 @@ vind seriele kabel -> usb
   login met root:rundataDR42
   verander hostname naar iets logisch in /etc/hostname
   verander de config in /etc/network/interfaces zodat het de correcte interface gebruikt en een passend ip adres instelt
+  verander de lijn "Passwordauthentication" in `/etc/ssh/sshd_config` naar "yes"
+  herstart ssh met `service ssh restart`
+    ge kunt nu ssh-en naar de gyrids met het rootwachtwoord
+    voeg de publickeys van de comiteleden to aan ~/.ssh/autorized_keys
 
-steel de SKO router (ubiquity edgerouter)
-  reset hem en run de wizard
+
+steel de SKO router flightcase (ubiquity edgerouter + cisco SG200-26)
+  reset de router en run de wizard
+  eth0 is de management interface
+  eth1 is de uplink, deze wordt verbonden met het internet
+  eth2 is de interface voor het intern netwerk, dus hier moet een ip adres op insgesteld worden en een dhcpserver aangemaakt worden voor in die range
+
+reset de switch en stel 3 VLANs in
+  VLAN 1 (de default) is de management VLAN, assigneer een aantal poorten en verbind eth0 hiermee
+  VLAN 2 is de gyrid VLAN, verbind de twee kabels van de gyrids hiermee
+  VLAN 3 is het intern netwerk, verbind eth2 hiermee
+

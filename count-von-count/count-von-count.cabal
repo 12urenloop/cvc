@@ -6,14 +6,13 @@ Author:        Jasper Van der Jeugt <m@jaspervdj.be>
 Maintainer:    Jasper Van der Jeugt <m@jaspervdj.be>
 Category:      Application
 Build-type:    Simple
-Cabal-version: >= 1.2
+Cabal-version: >= 1.8
 
-Executable count-von-count
-  Hs-source-dirs: src
-  Main-is:        CountVonCount/Main.hs
-  Ghc-options:    -Wall -O2 -threaded -rtsopts -with-rtsopts=-T
+Library
+  Hs-source-dirs: lib gen
+  Ghc-options:    -Wall
 
-  Other-modules:
+  Exposed-modules:
     CountVonCount.Boxxy
     CountVonCount.Config
     CountVonCount.Counter
@@ -24,7 +23,12 @@ Executable count-von-count
     CountVonCount.Log
     CountVonCount.Management
     CountVonCount.Persistence
+    CountVonCount.Protocol
+    CountVonCount.Protocols.CSV
+    CountVonCount.Protocols.Gyrid
+    CountVonCount.RawSensorEvent
     CountVonCount.Sensor
+    CountVonCount.Sensor.Filter
     CountVonCount.Sensor.Replay
     CountVonCount.Types
     CountVonCount.Util
@@ -33,95 +37,239 @@ Executable count-von-count
     CountVonCount.Web.Util
     CountVonCount.Web.Views
     CountVonCount.Web.Views.Util
+    Gyrid
+    Gyrid.AntennaTurn
+    Gyrid.Bluetooth_DataIO
+    Gyrid.Bluetooth_DataIO.Move
+    Gyrid.Bluetooth_DataRaw
+    Gyrid.Bluetooth_StateInquiry
+    Gyrid.Info
+    Gyrid.Msg
+    Gyrid.Msg.Type
+    Gyrid.RequestCaching
+    Gyrid.RequestKeepalive
+    Gyrid.RequestStartdata
+    Gyrid.RequestState
+    Gyrid.ScanPattern
+    Gyrid.ScanPattern.Action
+    Gyrid.StateAntenna
+    Gyrid.StateGyrid
+    Gyrid.StateGyrid.Type
+    Gyrid.StateScanning
+    Gyrid.StateScanning.HwType
+    Gyrid.StateScanning.Type
+    Gyrid.Uptime
+    Gyrid.WiFi_DataDevRaw
+    Gyrid.WiFi_DataIO
+    Gyrid.WiFi_DataIO.Move
+    Gyrid.WiFi_DataIO.Type
+    Gyrid.WiFi_DataRaw
+    Gyrid.WiFi_DataRaw.Ctrl
+    Gyrid.WiFi_DataRaw.Ctrl.SubType
+    Gyrid.WiFi_DataRaw.Data
+    Gyrid.WiFi_DataRaw.FrameType
+    Gyrid.WiFi_DataRaw.Mgmt
+    Gyrid.WiFi_DataRaw.Mgmt.Beacon
+    Gyrid.WiFi_DataRaw.Mgmt.Beacon.Type
+    Gyrid.WiFi_DataRaw.Mgmt.ProbeReq
+    Gyrid.WiFi_DataRaw.Mgmt.SubType
+    Gyrid.WiFi_StateFrequency
+    Gyrid.WiFi_StateFrequencyLoop
+    Network.WebSockets.Util.PubSub
 
   Build-depends:
-    aeson                    >= 0.5     && < 0.10,
-    attoparsec               >= 0.10.4  && < 0.14,
-    base                     >= 4.8     && < 4.9,
-    blaze-html               >= 0.5     && < 0.9,
-    blaze-markup             >= 0.5     && < 0.8,
-    bytestring               >= 0.10.2  && < 0.11,
-    conduit                  >= 1.0     && < 1.3,
-    containers               >= 0.3     && < 0.6,
-    cookie                   >= 0.4.1   && < 0.5,
-    data-default             >= 0.5.3   && < 0.6,
-    digestive-functors       >= 0.8     && < 0.9,
-    digestive-functors-blaze >= 0.4     && < 0.7,
-    digestive-functors-snap  >= 0.4     && < 0.7,
-    ekg                      >= 0.3     && < 0.5,
-    http-conduit             >= 1.4     && < 2.2,
-    http-client-tls          >= 0.2.2   && < 0.3,
-    io-streams               >= 1.2.1.0 && < 1.4,
-    mtl                      >= 2.0     && < 2.3,
-    network                  >= 2.3     && < 2.7,
-    protocol-buffers         >= 2.0.14  && < 2.2,
-    resourcet                >= 1.0     && < 1.2,
-    snap-blaze               >= 0.2     && < 0.3,
-    snap-core                >= 0.8     && < 0.10,
-    snap-server              >= 0.8     && < 0.10,
-    sqlite-simple            >= 0.4     && < 0.5,
-    text                     >= 0.10    && < 1.3,
-    time                     >= 1.2     && < 1.6,
-    websockets               >= 0.8     && < 0.10,
-    websockets-snap          >= 0.8.1.0 && < 0.10,
-    yaml                     >= 0.7     && < 0.9
+    aeson                       >= 0.5     && < 1.3,
+    attoparsec                  >= 0.10.4  && < 0.14,
+    base                        >= 4.7     && < 4.10,
+    blaze-html                  >= 0.5     && < 0.10,
+    blaze-markup                >= 0.5     && < 0.9,
+    bytestring                  >= 0.10.2  && < 0.11,
+    containers                  >= 0.3     && < 0.6,
+    cookie                      >= 0.4.1   && < 0.5,
+    data-default                >= 0.5.3   && < 0.8,
+    digestive-functors          >= 0.8     && < 0.9,
+    digestive-functors-blaze    >= 0.4     && < 0.7,
+    digestive-functors-snap     >= 0.4     && < 0.8,
+    ekg                         >= 0.3     && < 0.5,
+    http-client                 >= 0.5     && < 0.6,
+    http-client-tls             >= 0.2.2   && < 0.4,
+    io-streams                  >= 1.2.1.0 && < 1.4,
+    mtl                         >= 2.0     && < 2.3,
+    network                     >= 2.3     && < 2.7,
+    protocol-buffers            >= 2.0.14  && < 2.5,
+    protocol-buffers-descriptor >= 2.0     && < 2.5,
+    resourcet                   >= 1.0     && < 1.2,
+    snap-blaze                  >= 0.2     && < 0.3,
+    snap-core                   >= 0.8     && < 1.1,
+    snap-server                 >= 0.8     && < 1.1,
+    sqlite-simple               >= 0.4     && < 0.5,
+    text                        >= 0.10    && < 1.3,
+    time                        >= 1.5     && < 1.9,
+    websockets                  >= 0.8     && < 0.12,
+    websockets-snap             >= 0.8.1.0 && < 0.11,
+    yaml                        >= 0.7     && < 0.9
+
+
+Executable count-von-count
+  Hs-source-dirs: src
+  Main-is:        CountVonCount.hs
+  Ghc-options:    -Wall -O2 -threaded -rtsopts -with-rtsopts=-T
+
+  Build-depends:
+    count-von-count,
+    -- Copied from 'library' dependencies:
+    aeson                       >= 0.5     && < 1.3,
+    attoparsec                  >= 0.10.4  && < 0.14,
+    base                        >= 4.7     && < 4.10,
+    blaze-html                  >= 0.5     && < 0.10,
+    blaze-markup                >= 0.5     && < 0.9,
+    bytestring                  >= 0.10.2  && < 0.11,
+    containers                  >= 0.3     && < 0.6,
+    cookie                      >= 0.4.1   && < 0.5,
+    data-default                >= 0.5.3   && < 0.8,
+    digestive-functors          >= 0.8     && < 0.9,
+    digestive-functors-blaze    >= 0.4     && < 0.7,
+    digestive-functors-snap     >= 0.4     && < 0.8,
+    ekg                         >= 0.3     && < 0.5,
+    http-client                 >= 0.5     && < 0.6,
+    http-client-tls             >= 0.2.2   && < 0.4,
+    io-streams                  >= 1.2.1.0 && < 1.4,
+    mtl                         >= 2.0     && < 2.3,
+    network                     >= 2.3     && < 2.7,
+    protocol-buffers            >= 2.0.14  && < 2.5,
+    protocol-buffers-descriptor >= 2.0     && < 2.5,
+    resourcet                   >= 1.0     && < 1.2,
+    snap-blaze                  >= 0.2     && < 0.3,
+    snap-core                   >= 0.8     && < 1.1,
+    snap-server                 >= 0.8     && < 1.1,
+    sqlite-simple               >= 0.4     && < 0.5,
+    text                        >= 0.10    && < 1.3,
+    time                        >= 1.5     && < 1.9,
+    websockets                  >= 0.8     && < 0.12,
+    websockets-snap             >= 0.8.1.0 && < 0.11,
+    yaml                        >= 0.7     && < 0.9
 
 Executable count-von-count-simulation
   Hs-source-dirs: src
-  Main-is:        CountVonCount/Simulation.hs
+  Main-is:        Simulation.hs
   Ghc-options:    -Wall -O2 -threaded -rtsopts
 
   Build-depends:
+    count-von-count,
     ansi-terminal >= 0.6 && < 0.7,
-    random        >= 1.0 && < 1.2
+    random        >= 1.0 && < 1.2,
+    -- Copied from 'library' dependencies:
+    aeson                       >= 0.5     && < 1.3,
+    attoparsec                  >= 0.10.4  && < 0.14,
+    base                        >= 4.7     && < 4.10,
+    blaze-html                  >= 0.5     && < 0.10,
+    blaze-markup                >= 0.5     && < 0.9,
+    bytestring                  >= 0.10.2  && < 0.11,
+    containers                  >= 0.3     && < 0.6,
+    cookie                      >= 0.4.1   && < 0.5,
+    data-default                >= 0.5.3   && < 0.8,
+    digestive-functors          >= 0.8     && < 0.9,
+    digestive-functors-blaze    >= 0.4     && < 0.7,
+    digestive-functors-snap     >= 0.4     && < 0.8,
+    ekg                         >= 0.3     && < 0.5,
+    http-client                 >= 0.5     && < 0.6,
+    http-client-tls             >= 0.2.2   && < 0.4,
+    io-streams                  >= 1.2.1.0 && < 1.4,
+    mtl                         >= 2.0     && < 2.3,
+    network                     >= 2.3     && < 2.7,
+    protocol-buffers            >= 2.0.14  && < 2.5,
+    protocol-buffers-descriptor >= 2.0     && < 2.5,
+    resourcet                   >= 1.0     && < 1.2,
+    snap-blaze                  >= 0.2     && < 0.3,
+    snap-core                   >= 0.8     && < 1.1,
+    snap-server                 >= 0.8     && < 1.1,
+    sqlite-simple               >= 0.4     && < 0.5,
+    text                        >= 0.10    && < 1.3,
+    time                        >= 1.5     && < 1.9,
+    websockets                  >= 0.8     && < 0.12,
+    websockets-snap             >= 0.8.1.0 && < 0.11,
+    yaml                        >= 0.7     && < 0.9
 
 Executable count-von-count-replayer
   Hs-source-dirs: src
-  Main-is:        CountVonCount/Replayer.hs
+  Main-is:        Replayer.hs
   Ghc-options:    -Wall -O2 -threaded -rtsopts
 
   Build-depends:
-    split >= 0.2 && < 0.3
+    count-von-count,
+    split >= 0.2 && < 0.3,
+    -- Copied from 'library' dependencies:
+    aeson                       >= 0.5     && < 1.3,
+    attoparsec                  >= 0.10.4  && < 0.14,
+    base                        >= 4.7     && < 4.10,
+    blaze-html                  >= 0.5     && < 0.10,
+    blaze-markup                >= 0.5     && < 0.9,
+    bytestring                  >= 0.10.2  && < 0.11,
+    containers                  >= 0.3     && < 0.6,
+    cookie                      >= 0.4.1   && < 0.5,
+    data-default                >= 0.5.3   && < 0.8,
+    digestive-functors          >= 0.8     && < 0.9,
+    digestive-functors-blaze    >= 0.4     && < 0.7,
+    digestive-functors-snap     >= 0.4     && < 0.8,
+    ekg                         >= 0.3     && < 0.5,
+    http-client                 >= 0.5     && < 0.6,
+    http-client-tls             >= 0.2.2   && < 0.4,
+    io-streams                  >= 1.2.1.0 && < 1.4,
+    mtl                         >= 2.0     && < 2.3,
+    network                     >= 2.3     && < 2.7,
+    protocol-buffers            >= 2.0.14  && < 2.5,
+    protocol-buffers-descriptor >= 2.0     && < 2.5,
+    resourcet                   >= 1.0     && < 1.2,
+    snap-blaze                  >= 0.2     && < 0.3,
+    snap-core                   >= 0.8     && < 1.1,
+    snap-server                 >= 0.8     && < 1.1,
+    sqlite-simple               >= 0.4     && < 0.5,
+    text                        >= 0.10    && < 1.3,
+    time                        >= 1.5     && < 1.9,
+    websockets                  >= 0.8     && < 0.12,
+    websockets-snap             >= 0.8.1.0 && < 0.11,
+    yaml                        >= 0.7     && < 0.9
 
 Test-suite count-von-count-tests
   Type:           exitcode-stdio-1.0
-  Hs-source-dirs: src tests
+  Hs-source-dirs: src tests gen
   Main-is:        CountVonCount/TestSuite.hs
   Ghc-options:    -Wall
 
   Build-depends:
-    HUnit                >= 1.2    && < 1.3,
-    QuickCheck           >= 2.4    && < 2.6,
+    count-von-count,
+    HUnit                >= 1.2    && < 1.7,
+    QuickCheck           >= 2.4    && < 2.10,
     test-framework       >= 0.4    && < 0.9,
     test-framework-hunit >= 0.2    && < 0.4,
-    -- Copied from regular dependencies...
-    aeson                    >= 0.5     && < 0.9,
-    attoparsec               >= 0.10.4  && < 0.13,
-    base                     >= 4       && < 5,
-    blaze-html               >= 0.5     && < 0.8,
-    blaze-markup             >= 0.5     && < 0.7,
-    bytestring               >= 0.10.2  && < 0.11,
-    cookie                   >= 0.4.1   && < 0.5,
-    conduit                  >= 1.0     && < 1.3,
-    containers               >= 0.3     && < 0.6,
-    data-default             >= 0.5.3   && < 0.6,
-    digestive-functors       >= 0.8     && < 0.9,
-    digestive-functors-blaze >= 0.4     && < 0.7,
-    digestive-functors-snap  >= 0.4     && < 0.7,
-    ekg                      >= 0.3     && < 0.5,
-    io-streams               >= 1.2.1.0 && < 1.4,
-    http-conduit             >= 1.4     && < 2.2,
-    http-client-tls          >= 0.2.2   && < 0.3,
-    mtl                      >= 2.0     && < 2.3,
-    network                  >= 2.3     && < 2.7,
-    protocol-buffers         >= 2.0.14  && < 2.1,
-    resourcet                >= 1.0     && < 1.2,
-    snap-blaze               >= 0.2     && < 0.3,
-    snap-core                >= 0.8     && < 0.10,
-    snap-server              >= 0.8     && < 0.10,
-    sqlite-simple            >= 0.4     && < 0.5,
-    text                     >= 0.10    && < 1.3,
-    time                     >= 1.2     && < 1.6,
-    websockets               >= 0.8,
-    websockets-snap          >= 0.8.1.0,
-    yaml                     >= 0.7     && < 0.9
+    -- Copied from 'library' dependencies:
+    aeson                       >= 0.5     && < 1.3,
+    attoparsec                  >= 0.10.4  && < 0.14,
+    base                        >= 4.7     && < 4.10,
+    blaze-html                  >= 0.5     && < 0.10,
+    blaze-markup                >= 0.5     && < 0.9,
+    bytestring                  >= 0.10.2  && < 0.11,
+    containers                  >= 0.3     && < 0.6,
+    cookie                      >= 0.4.1   && < 0.5,
+    data-default                >= 0.5.3   && < 0.8,
+    digestive-functors          >= 0.8     && < 0.9,
+    digestive-functors-blaze    >= 0.4     && < 0.7,
+    digestive-functors-snap     >= 0.4     && < 0.8,
+    ekg                         >= 0.3     && < 0.5,
+    http-client                 >= 0.5     && < 0.6,
+    http-client-tls             >= 0.2.2   && < 0.4,
+    io-streams                  >= 1.2.1.0 && < 1.4,
+    mtl                         >= 2.0     && < 2.3,
+    network                     >= 2.3     && < 2.7,
+    protocol-buffers            >= 2.0.14  && < 2.5,
+    protocol-buffers-descriptor >= 2.0     && < 2.5,
+    resourcet                   >= 1.0     && < 1.2,
+    snap-blaze                  >= 0.2     && < 0.3,
+    snap-core                   >= 0.8     && < 1.1,
+    snap-server                 >= 0.8     && < 1.1,
+    sqlite-simple               >= 0.4     && < 0.5,
+    text                        >= 0.10    && < 1.3,
+    time                        >= 1.5     && < 1.9,
+    websockets                  >= 0.8     && < 0.12,
+    websockets-snap             >= 0.8.1.0 && < 0.11,
+    yaml                        >= 0.7     && < 0.9
