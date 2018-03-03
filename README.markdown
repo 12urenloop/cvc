@@ -26,10 +26,6 @@ Demo application that generates detection events and sends them to a count-von-c
 
 To run, install [LÖVE](https://love2d.org/) and run `love .` from the pokemon-directory or `love pokemon` from the repository root.
 
-### manual-count
-
-Small web application that serves as a backup counting system.
-
 ### `tools/data-analysis`
 
 Checks the gathered data for inconsistencies.
