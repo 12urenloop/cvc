@@ -242,6 +242,8 @@ Modules - reusable parts of our design
   color: #303e49;
   margin-bottom: 0;
   margin-top: 0;
+  font-size: 20px;
+  font-size: 1.25rem;
 }
 .cd-timeline-content p, .cd-timeline-content .cd-read-more, .cd-timeline-content .cd-date {
   font-size: 13px;
