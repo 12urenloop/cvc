@@ -38,3 +38,13 @@ Running files in the `scripts/` directory when using a sandbox:
 
 * count-von-count-simulation
 * count-von-count-replayer
+
+
+## stuff that worked in 2018
+```
+stack init --solver
+(stack --resolver lts-9 install cabal-install als ij komt neuten over een verkeerde cabal versie)
+stack build
+stack runghc scripts/teams2017.hs
+cabal install --only-dependencies
+```
