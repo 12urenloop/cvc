@@ -80,7 +80,7 @@ Library
   Build-depends:
     aeson                       >= 0.5     && < 1.3,
     attoparsec                  >= 0.10.4  && < 0.14,
-    base                        >= 4.7     && < 4.10,
+    base                        >= 4.7     && < 4.11,
     blaze-html                  >= 0.5     && < 0.10,
     blaze-markup                >= 0.5     && < 0.9,
     bytestring                  >= 0.10.2  && < 0.11,
@@ -120,7 +120,7 @@ Executable count-von-count
     -- Copied from 'library' dependencies:
     aeson                       >= 0.5     && < 1.3,
     attoparsec                  >= 0.10.4  && < 0.14,
-    base                        >= 4.7     && < 4.10,
+    base                        >= 4.7     && < 4.11,
     blaze-html                  >= 0.5     && < 0.10,
     blaze-markup                >= 0.5     && < 0.9,
     bytestring                  >= 0.10.2  && < 0.11,
@@ -156,12 +156,12 @@ Executable count-von-count-simulation
 
   Build-depends:
     count-von-count,
-    ansi-terminal >= 0.6 && < 0.7,
+    ansi-terminal >= 0.6 && < 0.8,
     random        >= 1.0 && < 1.2,
     -- Copied from 'library' dependencies:
     aeson                       >= 0.5     && < 1.3,
     attoparsec                  >= 0.10.4  && < 0.14,
-    base                        >= 4.7     && < 4.10,
+    base                        >= 4.7     && < 4.11,
     blaze-html                  >= 0.5     && < 0.10,
     blaze-markup                >= 0.5     && < 0.9,
     bytestring                  >= 0.10.2  && < 0.11,
@@ -201,7 +201,7 @@ Executable count-von-count-replayer
     -- Copied from 'library' dependencies:
     aeson                       >= 0.5     && < 1.3,
     attoparsec                  >= 0.10.4  && < 0.14,
-    base                        >= 4.7     && < 4.10,
+    base                        >= 4.7     && < 4.11,
     blaze-html                  >= 0.5     && < 0.10,
     blaze-markup                >= 0.5     && < 0.9,
     bytestring                  >= 0.10.2  && < 0.11,
@@ -239,13 +239,13 @@ Test-suite count-von-count-tests
   Build-depends:
     count-von-count,
     HUnit                >= 1.2    && < 1.7,
-    QuickCheck           >= 2.4    && < 2.10,
+    QuickCheck           >= 2.4    && < 2.12,
     test-framework       >= 0.4    && < 0.9,
     test-framework-hunit >= 0.2    && < 0.4,
     -- Copied from 'library' dependencies:
     aeson                       >= 0.5     && < 1.3,
     attoparsec                  >= 0.10.4  && < 0.14,
-    base                        >= 4.7     && < 4.10,
+    base                        >= 4.7     && < 4.11,
     blaze-html                  >= 0.5     && < 0.10,
     blaze-markup                >= 0.5     && < 0.9,
     bytestring                  >= 0.10.2  && < 0.11,
