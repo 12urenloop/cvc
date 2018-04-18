@@ -2,7 +2,7 @@
 
 ## Fix your Haskell
 
-First of all, fix your Haskell by installing (Stack)[https://docs.haskellstack.org/en/stable/README/]. (You can use your own package manager, ex. `sudo xbps-install stack`)
+First of all, fix your Haskell by installing [Stack](https://docs.haskellstack.org/en/stable/README/). (You can use your own package manager, ex. `sudo xbps-install stack`)
 
 Next, install cabal-install with `stack install cabal-install`.
 
