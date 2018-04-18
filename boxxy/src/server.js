@@ -131,7 +131,7 @@ function page(route, content, locals) {
             locals.scripts = locals.scripts || [];
             locals.content = data;
             locals.host    =
-                'https://' + config.BOXXY_HOSTNAME + ':' + config.BOXXY_PORT;
+                config.BOXXY_HOSTNAME + ':' + config.BOXXY_CLIENT_PORT;
             res.render('application.ejs', locals);
         });
     });
@@ -167,4 +167,4 @@ page('/timeline', 'content/timeline.html', {
     "bg": "bg1"
 });
 
-server.listen(config.BOXXY_PORT);
+server.listen(config.BOXXY_SERVER_PORT);
