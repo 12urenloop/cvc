@@ -6,7 +6,7 @@ First of all, fix your Haskell by installing [Stack](https://docs.haskellstack.o
 
 Next, install cabal-install with `stack install cabal-install`.
 
-When you are running `cabal` or `ghci` manually (without stack), you're doing it wrong.
+**When you are running or installing `cabal` or `ghci` manually (without stack), you're doing it wrong.**
 
 ## Dependencies
 
