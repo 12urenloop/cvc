@@ -9,36 +9,41 @@ main = do
     db <- newDatabase "count-von-count.db"
     deleteAll db
 
-    -- Define stations
-    addStation db "gyrid104" "00:01:95:0a:cc:3f" 130
+    -- Define stations: gyrid name and MAC-address of its bluetooth stick and distance
+    addStation db "gyrid111" "00:01:95:0d:cf:d7" 1
+    addStation db "gyrid101" "00:01:95:0d:d1:f0" 48
+    addStation db "gyrid102" "00:01:95:0a:56:3b" 111
+    addStation db "gyrid103" "00:01:95:0a:cc:3f" 185
+    addStation db "gyrid105" "00:01:95:0d:cf:e4" 230
+    addStation db "gyrid106" "00:01:95:0b:ad:8e" 283
 
     -- Define teams
-    t1  <- addTeam db "Baton A"
-    t2  <- addTeam db "Baton B"
-    t3  <- addTeam db "Baton C"
-    t4  <- addTeam db "Baton D"
-    t5  <- addTeam db "Baton E"
-    t6  <- addTeam db "Baton F"
-    t7  <- addTeam db "Baton G"
-    t8  <- addTeam db "Baton H"
-    t9  <- addTeam db "Baton I"
-    t10  <- addTeam db "Baton J"
-    t11  <- addTeam db "Baton K"
-    t12  <- addTeam db "Baton L"
-    t13  <- addTeam db "Baton M"
-    t14  <- addTeam db "Baton N"
-    t15  <- addTeam db "Baton O"
-    t16  <- addTeam db "Baton P"
-    t17  <- addTeam db "Baton Q"
-    t18  <- addTeam db "Baton R"
-    t19  <- addTeam db "Baton S"
-    t20  <- addTeam db "Baton T"
-    t21  <- addTeam db "Baton U"
-    t22  <- addTeam db "Baton V"
-    t23  <- addTeam db "Baton W"
-    t24  <- addTeam db "Baton X"
-    t25  <- addTeam db "Baton Y"
-    t26  <- addTeam db "Baton Z"
+    t1  <- addTeam db "Team Baton A"
+    t2  <- addTeam db "Team Baton B"
+    t3  <- addTeam db "Team Baton C"
+    t4  <- addTeam db "Team Baton D"
+    t5  <- addTeam db "Team Baton E"
+    t6  <- addTeam db "Team Baton F"
+    t7  <- addTeam db "Team Baton G"
+    t8  <- addTeam db "Team Baton H"
+    t9  <- addTeam db "Team Baton I"
+    t10  <- addTeam db "Team Baton J"
+    t11  <- addTeam db "Team Baton K"
+    t12  <- addTeam db "Team Baton L"
+    t13  <- addTeam db "Team Baton M"
+    t14  <- addTeam db "Team Baton N"
+    t15  <- addTeam db "Team Baton O"
+    t16  <- addTeam db "Team Baton P"
+    t17  <- addTeam db "Team Baton Q"
+    t18  <- addTeam db "Team Baton R"
+    t19  <- addTeam db "Team Baton S"
+    t20  <- addTeam db "Team Baton T"
+    t21  <- addTeam db "Team Baton U"
+    t22  <- addTeam db "Team Baton V"
+    t23  <- addTeam db "Team Baton W"
+    t24  <- addTeam db "Team Baton X"
+    t25  <- addTeam db "Team Baton Y"
+    t26  <- addTeam db "Team Baton Z"
 
     -- Define batons (tested 18/04/2018)
     -- Broken
@@ -55,8 +60,8 @@ main = do
     b2  <- addBaton db "20:13:01:30:03:69" "Baton B"
     b3  <- addBaton db "20:13:12:06:90:51" "Baton C"
     b4  <- addBaton db "20:13:02:20:15:11" "Baton D"
-    b5  <- addBaton db "20:13:01:24:00:43" "Baton F"
-    b6  <- addBaton db "20:13:01:24:10:46" "Baton E"
+    b5  <- addBaton db "20:13:01:24:10:46" "Baton E"
+    b6  <- addBaton db "20:13:01:24:00:43" "Baton F"
     b7  <- addBaton db "00:11:11:22:07:59" "Baton G"
     b8  <- addBaton db "20:13:02:18:02:86" "Baton H"
     b9  <- addBaton db "20:13:02:19:15:17" "Baton I"
