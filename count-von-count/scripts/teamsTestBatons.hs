@@ -10,7 +10,13 @@ main = do
     deleteAll db
 
     -- Define stations
-    addStation db "gyrid104" "00:01:95:0a:cc:3f" 130
+    -- MAC addr is the MAC of the bluetooth stick
+    addStation db "gyrid101" "00:01:95:0d:d1:f0" 30
+    addStation db "gyrid102" "00:01:95:0a:56:3b" 90
+    addStation db "gyrid103" "00:01:95:0d:cf:e1" 160
+    addStation db "gyrid104" "00:01:95:0d:cf:d7" 130
+    addStation db "gyrid105" "00:01:95:0d:cf:e4" 225
+    addStation db "gyrid106" "00:01:95:0b:ad:8e" 310
 
     -- Define teams
     t1  <- addTeam db "Baton A"
