@@ -100,7 +100,7 @@ stepCounterState len maxSpeed event = do
                 return []
             -- Refused sensor event
             | null possibilities     -> do
-                tell' "Impossibru!"
+                tell' $ "Impossibru@" ++ show curStationName
                 return []
             | otherwise              -> do
                 tell' $ printf "New position: %.2fm (last: %.2fm, %0fs ago)"
@@ -117,7 +117,7 @@ stepCounterState len maxSpeed event = do
           where
             SensorEvent time     station     _ _ _ = event
             SensorEvent prevTime prevStation _ _ _ = prev
-            Station _ _ _ position                 = station
+            Station _ curStationName _ position       = station
             Station _ _ _ prevPosition             = prevStation
 
             dt            = time `diffTime` prevTime
