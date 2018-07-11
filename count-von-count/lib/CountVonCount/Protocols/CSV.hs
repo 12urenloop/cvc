@@ -8,7 +8,7 @@ module CountVonCount.Protocols.CSV
 
 
 --------------------------------------------------------------------------------
-import           Control.Applicative          ((*>), (<$>))
+import           Control.Applicative          ((*>), (<$>), (<|>))
 import           Control.Monad                (liftM)
 import qualified Data.Attoparsec.ByteString   as A
 import qualified Data.ByteString              as B
@@ -32,7 +32,7 @@ csvInput :: Log
     -> Streams.InputStream B.ByteString
     -> IO (Streams.InputStream RawSensorEvent)
 csvInput _ inStream = do
-    gyridStream <- parserToInputStream (Just <$> gyrid) inStream
+    gyridStream <- parserToInputStream ((A.endOfInput >> pure Nothing) <|> (Just <$> gyrid)) inStream
     Streams.mapM gToEvent gyridStream >>= Streams.mapMaybe id
         where gToEvent g = liftM (gyridToEvent g) getCurrentTime
 
