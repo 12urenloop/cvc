@@ -10,7 +10,7 @@ Count-von-count is the central component of the application. It analyzes incomin
 
 All information and actions are permanently stored and can be replayed through the application. APIs to access this information are offered for other tools and score displays.
 
-[More information](count-von-count/README.markdown)
+[More information](count-von-count/README.md)
 
 ## boxxy
 
