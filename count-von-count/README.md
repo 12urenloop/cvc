@@ -34,7 +34,7 @@ stack test
 
 Running files in the `scripts/` directory when using a sandbox:
 
-Run `stack runghci scripts/teams2017.hs`.
+Run `stack runghc scripts/teams2017.hs`.
 
 OR
 
