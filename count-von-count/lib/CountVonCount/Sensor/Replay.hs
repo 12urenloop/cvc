@@ -35,7 +35,7 @@ subscribe eventBase replayLogFile = do
 -- | Format a 'SensorEvent' in order to be readable by the replay log
 toReplay :: SensorEvent -> String
 toReplay (SensorEvent time station baton team rssi) = intercalate ","
-    [ formatTime defaultTimeLocale "%H:%M:%S" time
+    [ formatTime defaultTimeLocale "%F %T" time
     , show (stationId station)
     , T.unpack (stationMac station)
     , show (batonId baton)

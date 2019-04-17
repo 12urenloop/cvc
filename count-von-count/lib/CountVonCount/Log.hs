@@ -81,9 +81,8 @@ string logger fname str = do
     tz  <- Time.getCurrentTimeZone
     utc <- Time.getCurrentTime
     let time = Time.utcToLocalTime tz utc
-        fmt  = Time.formatTime Time.defaultTimeLocale "[%H:%M:%S]" time
+        fmt  = Time.formatTime Time.defaultTimeLocale "[%F %T]" time
     raw logger $ fmt ++ " " ++ fname ++ ": " ++ str
-
 
 --------------------------------------------------------------------------------
 -- | Write a raw line to the log.

@@ -5,6 +5,7 @@ module Main
 
 
 --------------------------------------------------------------------------------
+import           Control.Applicative  ((<|>))
 import           Control.Concurrent   (threadDelay)
 import           Control.Monad        (unless, when)
 import           Data.List            (intercalate)
@@ -71,7 +72,11 @@ replayEvents mDiffTime handle socket = do
 parseReplayEvent :: String -> Maybe (UTCTime, String, String, String)
 parseReplayEvent str = case splitOn "," str of
     [time, _, smac, _, bmac, _, rssi] ->
-        case parseTimeM True defaultTimeLocale "%H:%M:%S" time of
+        case parseDateTime time of
             Nothing -> Nothing
             Just t  -> Just (t, smac, bmac, rssi)
     _ -> Nothing
+    -- The logged datetime format has changed,
+    -- so we try to parse as both formats
+    where parseDateTime t = parseTimeM True defaultTimeLocale "%F %T" t <|>
+                            parseTimeM True defaultTimeLocale "%T" t
