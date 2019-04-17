@@ -33,7 +33,11 @@ import           CountVonCount.Sensor.Filter
 --------------------------------------------------------------------------------
 data CounterCoreEvent
     = PositionCoreEvent UTCTime Station Double
+    -- ^ The position of a team is set to the given station at the given time
+    --   with a speed estimate.
     | LapCoreEvent UTCTime Double
+    -- ^ A team has completed a lap at the given time with the given round
+    --   time (currently not calculated, so always 0, see TODO).
     deriving (Show)
 
 
@@ -111,8 +115,8 @@ stepCounterState len maxSpeed event = do
                 when (numLaps > 0) $ tell' $ printf "Adding %d laps" numLaps
                 put $ CounterState first event speed' time
                 return $
-                    -- TODO: lapTime
-                    replicate numLaps (LapCoreEvent time 0) ++
+                    -- TODO: calculate lapTime
+                    replicate numLaps (LapCoreEvent time 0) ++ -- 0 or 1 times
                     [PositionCoreEvent time station speed]
           where
             SensorEvent time     station     _ _ _ = event

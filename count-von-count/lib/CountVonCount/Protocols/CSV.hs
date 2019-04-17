@@ -34,7 +34,7 @@ csvInput :: Log
 csvInput _ inStream = do
     gyridStream <- parserToInputStream ((A.endOfInput >> pure Nothing) <|> (Just <$> gyrid)) inStream
     Streams.mapM gToEvent gyridStream >>= Streams.mapMaybe id
-        where gToEvent g = liftM (gyridToEvent g) getCurrentTime
+        where gToEvent g = fmap (gyridToEvent g) getCurrentTime
 
 --------------------------------------------------------------------------------
 gyridToEvent :: Gyrid -> UTCTime -> Maybe RawSensorEvent
