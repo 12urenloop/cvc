@@ -9,7 +9,7 @@ ekgPort:    8001
 
 log:       log/count-von-count.log
 replayLog: log/replay.log
-protocol:  gyrid
+protocol:  csv
 
 boxxies:
     - host:     "live.12urenloop.be"
