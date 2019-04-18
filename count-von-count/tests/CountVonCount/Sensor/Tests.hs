@@ -10,13 +10,13 @@ import           Control.Applicative            ((<$>))
 import           Control.Concurrent             (forkIO, killThread,
                                                  threadDelay)
 import           Control.Monad                  (forM_)
-import           System.IO                      (hClose, hFlush, hPutStrLn)
+import qualified System.IO                      as IO
 
 
 --------------------------------------------------------------------------------
 import           Data.IORef                     (atomicModifyIORef, newIORef,
                                                  readIORef)
-import           Network                        (PortID (..), connectTo)
+import qualified Network.Socket                 as S
 import           Test.Framework                 (Test, testGroup)
 import           Test.Framework.Providers.HUnit (testCase)
 import           Test.HUnit                     (assert)
@@ -48,9 +48,9 @@ sensorTest = do
 
     threadId <- forkIO $ listen csv logger eventBase port
     threadDelay 100000
-    handle <- connectTo "127.0.0.1" (PortNumber $ fromIntegral port)
-    forM_ inputs $ \i -> hPutStrLn handle i >> hFlush handle
-    hClose handle
+    handle <- connectTo port
+    forM_ inputs $ \i -> IO.hPutStrLn handle i >> IO.hFlush handle
+    IO.hClose handle
     threadDelay 100000
     outputs <- reverse <$> readIORef ref
     killThread threadId
@@ -73,3 +73,12 @@ sensorTest = do
         [ RawSensorEvent undefined "00:00:00:00:00:00" "10:00:00:00:00:00" 10
         , RawSensorEvent undefined "00:00:00:00:00:00" "20:00:00:40:00:00" (-80)
         ]
+
+    connectTo p = S.withSocketsDo $ do -- Networking boilerplate
+      let hints = S.defaultHints { S.addrSocketType = S.Stream }
+      addr:_ <- S.getAddrInfo (Just hints) (Just "127.0.0.1") (Just $ show p)
+      socket <- S.socket (S.addrFamily addr)
+                         (S.addrSocketType addr)
+                         (S.addrProtocol addr)
+      S.connect socket $ S.addrAddress addr
+      S.socketToHandle socket IO.WriteMode

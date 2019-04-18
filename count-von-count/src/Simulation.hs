@@ -15,9 +15,9 @@ import           Control.Monad.Trans       (liftIO)
 import           Data.List                 (intercalate)
 import           Data.Maybe                (catMaybes, listToMaybe)
 import qualified Data.Text                 as T
-import qualified Network                   as Network
+import qualified Network.Socket            as S
 import qualified System.Console.ANSI       as Ansi
-import           System.IO                 (Handle, hFlush, hPutStrLn)
+import           System.IO                 as IO
 import           System.Random             (randomRIO)
 
 
@@ -65,7 +65,7 @@ data SimulationRead = SimulationRead
 --------------------------------------------------------------------------------
 data SimulationState = SimulationState
     { simulationTeams  :: [(Team, Baton, Position)]
-    , simulationSocket :: Maybe Handle
+    , simulationSocket :: Maybe IO.Handle
     }
 
 
@@ -76,7 +76,7 @@ type Simulation = ReaderT SimulationRead (StateT SimulationState IO)
 --------------------------------------------------------------------------------
 simulation :: Simulation ()
 simulation = do
-    liftIO $ Ansi.clearScreen
+    liftIO Ansi.clearScreen
     forever $ do
         render
         step
@@ -91,7 +91,7 @@ stationAt pos = do
     len      <- simulationLength   <$> ask
     config   <- simulationConfig   <$> ask
     let step' = configCircuitLength config / fromIntegral len
-    return $ listToMaybe $
+    return $ listToMaybe
         [s | s <- stations, pos == floor (stationPosition s / step')]
 
 
@@ -147,16 +147,23 @@ sensor = do
     socket <- liftIO $ handle handler $ do
         socket <- case msocket of
             Just s  -> return s
-            Nothing -> Network.connectTo "127.0.0.1"
-                (Network.PortNumber $ fromIntegral $ configSensorPort config)
+            Nothing -> connectTo $ configSensorPort config
 
-        forM_ sensed $ \(sMac, bMac) -> hPutStrLn socket $ intercalate ","
+        forM_ sensed $ \(sMac, bMac) -> IO.hPutStrLn socket $ intercalate ","
             [T.unpack sMac, "_", T.unpack bMac, "0"]
 
-        hFlush socket
+        IO.hFlush socket
         return $ Just socket
 
     modify $ \s -> s {simulationSocket = socket}
   where
-    handler :: IOException -> IO (Maybe Handle)
+    handler :: IOException -> IO (Maybe IO.Handle)
     handler _ = return Nothing
+    connectTo port = S.withSocketsDo $ do -- Networking boilerplate
+      let hints = S.defaultHints { S.addrSocketType = S.Stream }
+      addr:_ <- S.getAddrInfo (Just hints) (Just "127.0.0.1") (Just $ show port)
+      socket <- S.socket (S.addrFamily addr)
+                         (S.addrSocketType addr)
+                         (S.addrProtocol addr)
+      S.connect socket $ S.addrAddress addr
+      S.socketToHandle socket IO.WriteMode

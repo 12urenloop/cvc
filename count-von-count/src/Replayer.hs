@@ -13,7 +13,7 @@ import           Data.List.Split      (splitOn)
 import           Data.Time            (NominalDiffTime, UTCTime, addUTCTime,
                                        defaultTimeLocale, diffUTCTime,
                                        getCurrentTime, parseTimeM)
-import qualified Network
+import qualified Network.Socket       as S
 import           System.Environment   (getArgs, getProgName)
 import qualified System.IO            as IO
 
@@ -35,15 +35,22 @@ main = do
 
 --------------------------------------------------------------------------------
 replay :: FilePath -> Int -> IO ()
-replay filePath port = do
-    handle <- IO.openFile filePath IO.ReadMode
-    socket <- Network.connectTo "127.0.0.1" $
-        Network.PortNumber $ fromIntegral port
+replay filePath port = S.withSocketsDo $ do
+    filehandle <- IO.openFile filePath IO.ReadMode
 
-    replayEvents Nothing handle socket
+    -- Networking boilerplate
+    let hints = S.defaultHints { S.addrSocketType = S.Stream }
+    addr:_ <- S.getAddrInfo (Just hints) (Just "127.0.0.1") (Just $ show port)
+    socket <- S.socket (S.addrFamily addr)
+                       (S.addrSocketType addr)
+                       (S.addrProtocol addr)
+    S.connect socket $ S.addrAddress addr
 
-    IO.hClose handle
-    IO.hClose socket
+    sockethandle <- S.socketToHandle socket IO.WriteMode
+    replayEvents Nothing filehandle sockethandle
+
+    IO.hClose filehandle
+    S.close socket
 
 
 --------------------------------------------------------------------------------
