@@ -73,8 +73,8 @@ parseReplayEvent :: String -> Maybe (UTCTime, String, String, String)
 parseReplayEvent str = case splitOn "," str of
     [time, _, smac, _, bmac, _, rssi] ->
         case parseDateTime time of
-            Nothing -> Nothing
             Just t  -> Just (t, smac, bmac, rssi)
+            _ -> Nothing
     _ -> Nothing
     -- The logged datetime format has changed,
     -- so we try to parse as both formats
