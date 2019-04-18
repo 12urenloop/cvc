@@ -14,11 +14,11 @@ import           Control.Applicative    ((<$>), (<*>))
 import           Control.Monad          (mzero)
 import           Data.Aeson             (FromJSON (..), (.!=), (.:?))
 import qualified Data.Aeson             as A
-import           Data.Maybe             (fromMaybe, isNothing)
+import           Data.Maybe             (isNothing)
 import           Data.Text              (Text)
 import qualified Data.Text              as T
 import           Data.Time              (UTCTime (..), getCurrentTime)
-import           Data.Yaml              (decodeFile)
+import           Data.Yaml              (decodeFileThrow)
 import           Prelude
 
 --------------------------------------------------------------------------------
@@ -126,8 +126,7 @@ defaultConfig = Config
 --------------------------------------------------------------------------------
 readConfigFile :: FilePath -> IO Config
 readConfigFile filePath = do
-    config <- fromMaybe (error $ "Could not read config: " ++ filePath) <$>
-        decodeFile filePath
+    config <- decodeFileThrow filePath
     if isNothing $ configStartTime config
         then getCurrentTime >>= \t -> return config { configStartTime = Just t }
         else return config

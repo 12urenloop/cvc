@@ -58,4 +58,4 @@ modulo x m =
 
 --------------------------------------------------------------------------------
 binop :: (Double -> Double -> Double) -> Modulo -> Modulo -> Modulo
-binop (<>) (Modulo f) (Modulo g) = Modulo $ \m -> modulo (f m <> g m) m
+binop (<?>) (Modulo f) (Modulo g) = Modulo $ \m -> modulo (f m <?> g m) m
