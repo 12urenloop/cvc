@@ -3,7 +3,6 @@
 module  CountVonCount.Protocol
     ( Protocol (..)
     , csv
-    , gyrid
     ) where
 
 --------------------------------------------------------------------------------
@@ -15,7 +14,6 @@ import           System.IO.Streams
 --------------------------------------------------------------------------------
 import           CountVonCount.Log
 import           CountVonCount.Protocols.CSV   (csvInput, csvOutput)
-import           CountVonCount.Protocols.Gyrid (gyridInput, gyridOutput)
 import           CountVonCount.RawSensorEvent
 
 --------------------------------------------------------------------------------
@@ -31,7 +29,6 @@ instance Show Protocol where
 
 instance FromJSON Protocol where
     parseJSON (String s) = return $ case s of
-        "gyrid" -> gyrid
         _       -> csv
     parseJSON _ = mzero
 
@@ -44,10 +41,3 @@ csv = Protocol
     }
 
 --------------------------------------------------------------------------------
-gyrid :: Protocol
-gyrid = Protocol
-    { name = "Gyrid"
-    , input  = gyridInput
-    , output = gyridOutput
-    }
-
