@@ -38,6 +38,7 @@ Library
     CountVonCount.Web.Views.Util
     Network.WebSockets.Util.PubSub
 
+
   Build-depends:
     aeson                       ,
     attoparsec                  ,
@@ -188,6 +189,18 @@ Test-suite count-von-count-tests
   Hs-source-dirs: src tests
   Main-is:        CountVonCount/TestSuite.hs
   Ghc-options:    -Wall
+
+  Other-modules:
+    CountVonCount.Counter.Core.Tests
+    CountVonCount.Counter.Fixtures
+    CountVonCount.Counter.Fixtures.Internal
+    CountVonCount.Counter.Tests
+    CountVonCount.Management.Tests
+    CountVonCount.Persistence.Tests
+    CountVonCount.Sensor.Filter.Tests
+    CountVonCount.Sensor.Tests
+    CountVonCount.TestSuite.Util
+    CountVonCount.Util.Tests
 
   Build-depends:
     count-von-count,
