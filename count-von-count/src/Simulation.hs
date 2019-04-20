@@ -31,6 +31,11 @@ detectionChance :: Double
 detectionChance = 0.1
 
 --------------------------------------------------------------------------------
+direction :: Int
+direction = 1 -- Go forwards
+-- direction = -1 -- Go backwards, usefull for testing cheat detection
+
+--------------------------------------------------------------------------------
 main :: IO ()
 main = do
     config     <- readConfigFile "count-von-count.yaml"
@@ -62,7 +67,7 @@ type LastDetected = Int
 
 
 --------------------------------------------------------------------------------
-type Rounds = Int
+type Round = Int
 
 
 --------------------------------------------------------------------------------
@@ -75,7 +80,7 @@ data SimulationRead = SimulationRead
 
 --------------------------------------------------------------------------------
 data SimulationState = SimulationState
-    { simulationTeams  :: [(Team, Baton, Position, Rounds, LastDetected)]
+    { simulationTeams  :: [(Team, Baton, Position, Round, LastDetected)]
     , simulationSocket :: Maybe IO.Handle
     }
 
@@ -160,13 +165,21 @@ step = do
 
     let teams' =
             [ if i == idx
-                then (t, b, (p + 1) `mod` len, r + ((p + 1) `quot` len ), l)
+                then (t, b, stepPosition p len, stepRound r p len, l)
                 else (t, b, p, r, l)
             | (i, (t, b, p, r, l)) <- zip [0 ..] teams
             ]
 
     modify $ \s -> s {simulationTeams = teams'}
+  where
+    stepPosition :: Position -> Int -> Position
+    stepPosition p len = (p + direction) `mod` len
 
+    stepRound :: Round -> Position -> Int -> Round
+    stepRound  r p len
+      | p + direction > len = r + 1
+      | p + direction < 0   = r - 1
+      | otherwise           = r
 
 --------------------------------------------------------------------------------
 sensor :: Simulation ()
