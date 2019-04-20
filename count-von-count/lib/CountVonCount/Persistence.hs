@@ -250,7 +250,7 @@ getLap db ref = withConnection db $ \c -> do
 getLatestLaps :: Database -> Maybe (Ref Team) -> Int -> IO [Lap]
 getLatestLaps db Nothing     n = withConnection db $ \c -> Sqlite.query c
     "SELECT * FROM laps ORDER BY id DESC LIMIT ?" (Sqlite.Only n)
-getLatestLaps db !(Just ref) n = withConnection db $ \c -> Sqlite.query c
+getLatestLaps db (Just ref) n = withConnection db $ \c -> Sqlite.query c
     "SELECT * FROM laps WHERE team_id = ? ORDER BY id DESC LIMIT ?"
     (ref, n)
 

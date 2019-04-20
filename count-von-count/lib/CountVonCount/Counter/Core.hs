@@ -73,7 +73,7 @@ type CounterM a = WriterT [String] (State CounterState) a
 --------------------------------------------------------------------------------
 runCounterM :: CounterM a -> CounterState -> (a, [String], CounterState)
 runCounterM c cs =
-    let state             = (runWriterT c)
+    let state             = runWriterT c
         ((x, tells), cs') = runState state cs
     in (x, tells, cs')
 
@@ -154,7 +154,7 @@ stepCounterState len maxSpeed event = do
 
             -- Time between the current event and the start of the lap
             lapTime :: Double
-            lapTime = (time `diffTime` lapStartTime) / (toEnum numLaps)
+            lapTime = (time `diffTime` lapStartTime) / toEnum numLaps
 
             diffTime t1 t2 = fromRational $ toRational $ t1 `diffUTCTime` t2
 
