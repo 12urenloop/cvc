@@ -56,7 +56,7 @@ publishText :: WebSocketsData a => PubSub -> a -> IO ()
 publishText (PubSub mvar) msg = MV.modifyMVar_ mvar $ \pubSub -> do
     -- Take care to detect and remove broken clients
     broken <- foldM publish' [] (IM.toList $ pubSubConns pubSub)
-    return $ foldl' (\p b -> removeClient b p) pubSub broken
+    return $ foldl' (flip removeClient) pubSub broken
   where
     -- Publish the message to a single client, add it to the broken list if an
     -- IOException occurs

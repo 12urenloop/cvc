@@ -22,7 +22,6 @@ import           Control.Monad                (forM_)
 import qualified Data.Text                    as T
 import           Data.Time                    (TimeZone, defaultTimeLocale,
                                                formatTime, utcToLocalTime)
-import           Prelude                      hiding (div)
 import           Text.Blaze.Html              (Html, (!))
 import qualified Text.Blaze.Html5             as H
 import qualified Text.Blaze.Html5.Attributes  as A
@@ -220,7 +219,7 @@ multibonus teams view = template "Multibonus" $ block "multibonus" $ do
 counterState :: Double -> Team -> Maybe CounterState -> Partial
 counterState circuitLength team cs = partial selector $ H.div
     ! A.class_ "team"
-    ! H.dataAttribute "team-id" (H.toValue $ teamIdText) $ do
+    ! H.dataAttribute "team-id" (H.toValue teamIdText) $ do
         H.h2 $ H.toHtml $ T.concat [teamIdText, ". ", teamName team]
         H.span ! A.class_ "laps" $ H.toHtml $ teamLaps team
         " laps "

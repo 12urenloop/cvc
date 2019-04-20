@@ -174,7 +174,7 @@ multibonusForm teams = MultibonusForm
     <*> fmap checked (traverse checkbox teams)
   where
     checked       = map (teamId . fst) . filter snd
-    checkbox team = ((,) team)
+    checkbox team = (,) team
         <$> DF.makeRef (refToText $ teamId team) .: DF.bool (Just False)
 
 multibonus :: Web ()

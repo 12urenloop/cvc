@@ -28,8 +28,7 @@ instance Show Protocol where
     show = name
 
 instance FromJSON Protocol where
-    parseJSON (String s) = return $ case s of
-        _       -> csv
+    parseJSON (String _) = return csv
     parseJSON _ = mzero
 
 --------------------------------------------------------------------------------
