@@ -43,7 +43,7 @@ main = do
             }
 
         simulationState = SimulationState
-            { simulationTeams  = [(t, b, 0) | (t, Just b) <- teams]
+            { simulationTeams  = [(t, b, 0, 0) | (t, Just b) <- teams]
             , simulationSocket = Nothing
             }
 
@@ -52,6 +52,10 @@ main = do
 
 --------------------------------------------------------------------------------
 type Position = Int
+
+
+--------------------------------------------------------------------------------
+type Rounds = Int
 
 
 --------------------------------------------------------------------------------
@@ -64,7 +68,7 @@ data SimulationRead = SimulationRead
 
 --------------------------------------------------------------------------------
 data SimulationState = SimulationState
-    { simulationTeams  :: [(Team, Baton, Position)]
+    { simulationTeams  :: [(Team, Baton, Position, Rounds)]
     , simulationSocket :: Maybe IO.Handle
     }
 
@@ -100,18 +104,19 @@ render :: Simulation ()
 render = do
     teams <- simulationTeams    <$> get
     len   <- simulationLength   <$> ask
-    let nameLen = maximum [T.length (teamName t) | (t, _, _) <- teams] + 1
+    let nameLen = maximum [T.length (teamName t) | (t, _, _, _) <- teams]
 
     liftIO $ Ansi.setCursorPosition 0 0
 
     stationLine <- forM [0 .. len - 1] $ \p -> do
         station <- stationAt p
         return $ maybe ' ' (const 'S') station
-    liftIO $ putStrLn $ replicate nameLen ' ' ++ stationLine
+    liftIO $ putStrLn $ replicate nameLen ' ' ++ " | " ++ stationLine ++ " | Rounds"
 
-    forM_ teams $ \(t, _, p) -> liftIO $ putStrLn $
-        pad nameLen (T.unpack (teamName t)) ++
-        [if i == p then 'X' else ' ' | i <- [0 .. len - 1]]
+    forM_ teams $ \(t, _, p, r) -> liftIO $ putStrLn $
+        pad nameLen (T.unpack (teamName t)) ++ " | " ++
+        [if i == p then 'X' else ' ' | i <- [0 .. len - 1]] ++ " | "
+        ++ show r
   where
     pad len str = str ++ replicate (len - length str) ' '
 
@@ -124,8 +129,10 @@ step = do
     idx   <- liftIO $ randomRIO (0, length teams - 1)
 
     let teams' =
-            [ if i == idx then (t, b, (p + 1) `mod` len) else (t, b, p)
-            | (i, (t, b, p)) <- zip [0 ..] teams
+            [ if i == idx
+                then (t, b, (p + 1) `mod` len, r + ((p + 1) `quot` len ))
+                else (t, b, p, r)
+            | (i, (t, b, p, r)) <- zip [0 ..] teams
             ]
 
     modify $ \s -> s {simulationTeams = teams'}
@@ -138,7 +145,7 @@ sensor = do
     msocket <- simulationSocket <$> get
     config  <- simulationConfig <$> ask
 
-    sensed <- fmap catMaybes $ forM teams $ \(_, b, p) -> do
+    sensed <- fmap catMaybes $ forM teams $ \(_, b, p, _) -> do
         ms <- stationAt p
         case ms of
             Nothing -> return Nothing
