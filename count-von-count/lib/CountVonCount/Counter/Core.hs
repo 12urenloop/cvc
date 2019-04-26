@@ -88,9 +88,10 @@ tell' x = tell [x]
 --------------------------------------------------------------------------------
 stepCounterState :: Double                       -- ^ Length of the circuit
                  -> Double                       -- ^ Absolute maximum speed
+                 -> [Station]                    -- ^ Detection stations
                  -> SensorEvent                  -- ^ Incoming event
                  -> CounterM [CounterCoreEvent]  -- ^ Outgoing events
-stepCounterState len maxSpeed event = do
+stepCounterState len maxSpeed stations event = do
     state <- get
     case state of
         NoCounterState               -> do

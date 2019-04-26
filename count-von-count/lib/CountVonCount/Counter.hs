@@ -24,13 +24,13 @@ module CountVonCount.Counter
 
 
 --------------------------------------------------------------------------------
-import           Control.Applicative         ((<$>), (<*>))
 import           Control.Concurrent          (threadDelay)
 import           Control.Concurrent.MVar     (MVar, newMVar, putMVar, takeMVar)
 import           Control.Monad               (forM, forever)
 import           Data.Foldable               (forM_)
 import           Data.IORef                  (IORef, modifyIORef, newIORef,
                                               readIORef, writeIORef)
+import           Data.List                   (sortBy)
 import           Data.Maybe                  (catMaybes)
 import           Data.Time                   (addUTCTime, getCurrentTime)
 import           Data.Typeable               (Typeable)
@@ -62,6 +62,7 @@ data Counter = Counter
     , counterDatabase      :: P.Database
     , counterCircuitLength :: Double
     , counterMaxSpeed      :: Double
+    , counterStations      :: [P.Station]
     , counterMap           :: IORef CounterMap
     , counterLock          :: MVar ()
     }
@@ -69,9 +70,14 @@ data Counter = Counter
 
 --------------------------------------------------------------------------------
 newCounter :: Log -> P.Database -> Double -> Double -> IO Counter
-newCounter logger database circuitLength maxSpeed =
-    Counter logger database circuitLength maxSpeed
-        <$> newIORef emptyCounterMap <*> newMVar ()
+newCounter logger database circuitLength maxSpeed = do
+    cmap     <- newIORef emptyCounterMap
+    mvar     <- newMVar ()
+    stations <- P.getAllStations database
+    let stations' = sortBy comparePosition stations
+    return $ Counter logger database circuitLength maxSpeed stations' cmap mvar
+  where
+    comparePosition a b = compare (P.stationPosition a) (P.stationPosition b)
 
 
 --------------------------------------------------------------------------------
@@ -88,8 +94,11 @@ step :: Counter -> EventBase -> SensorEvent -> IO ()
 step counter eventBase event = do
     () <- takeMVar $ counterLock counter
     cmap <- readIORef (counterMap counter)
-    let (events, tells, cmap') = stepCounterMap
-            (counterCircuitLength counter) (counterMaxSpeed counter) event cmap
+    let (events, tells, cmap') = stepCounterMap (counterCircuitLength counter)
+                                                (counterMaxSpeed counter)
+                                                (counterStations counter)
+                                                event
+                                                cmap
         cstate = lookupCounterState (P.teamId $ sensorTeam event) cmap'
     forM_ tells $ Log.string logger "CountVonCount.Counter.step"
     process cstate events
