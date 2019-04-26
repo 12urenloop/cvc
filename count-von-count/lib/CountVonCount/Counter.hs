@@ -113,7 +113,7 @@ step counter eventBase event = do
         let team = sensorTeam event
         forM_ events $ \event' -> case event' of
             -- Add the lap in the database and update team record
-            LapCoreEvent time _ -> do
+            LapCoreEvent time _ _ -> do
                 Log.string logger "CountVonCount.Counter.step" $
                     "Lap for " ++ show team
                 lapId' <- P.addLap database (P.teamId team) time

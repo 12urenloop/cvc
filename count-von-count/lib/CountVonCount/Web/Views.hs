@@ -226,7 +226,7 @@ counterState circuitLength team cs = partial selector $ H.div
         case cs of
             Nothing                         -> "No baton assigned."
             Just NoCounterState             -> "Unitialized."
-            Just (CounterState _ e speed _) -> do
+            Just (CounterState _ e _ speed _) -> do
                 H.span ! A.class_ "speed" $
                     H.toHtml (printf "%.2f" speed :: String)
                 " m/s"
