@@ -177,9 +177,9 @@ step = do
 
     stepRound :: Round -> Position -> Int -> Round
     stepRound  r p len
-      | p + direction > len = r + 1
-      | p + direction < 0   = r - 1
-      | otherwise           = r
+      | p + direction >= len = r + 1
+      | p + direction < 0    = r - 1
+      | otherwise            = r
 
 --------------------------------------------------------------------------------
 sensor :: Simulation ()
