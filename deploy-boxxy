@@ -6,7 +6,7 @@ git pull
 git stash pop || true
 
 cd boxxy
-npm install
+npm ci
 pkill -u urenloop nodejs || true
 sleep 1
 nohup nodejs src/server.js >> ../../log/application.log &
