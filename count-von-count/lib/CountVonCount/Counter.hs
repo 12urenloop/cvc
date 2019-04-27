@@ -30,11 +30,12 @@ import           Control.Monad               (forM, forever)
 import           Data.Foldable               (forM_)
 import           Data.IORef                  (IORef, modifyIORef, newIORef,
                                               readIORef, writeIORef)
-import           Data.List                   (sortBy)
+import           Data.List                   (sortBy, intercalate)
 import           Data.Maybe                  (catMaybes)
+import           Data.Text                   (pack)
 import           Data.Time                   (addUTCTime, getCurrentTime)
 import           Data.Typeable               (Typeable)
-import           Prelude
+import           Text.Printf                 (printf)
 
 
 --------------------------------------------------------------------------------
@@ -113,10 +114,11 @@ step counter eventBase event = do
         let team = sensorTeam event
         forM_ events $ \event' -> case event' of
             -- Add the lap in the database and update team record
-            LapCoreEvent time _ _ -> do
+            LapCoreEvent time _ missed -> do
                 Log.string logger "CountVonCount.Counter.step" $
                     "Lap for " ++ show team
-                lapId' <- P.addLap database (P.teamId team) time
+                let message = pack $ reason missed
+                lapId' <- P.addLap database (P.teamId team) time message
                 lap    <- P.getLap database lapId'
                 team'  <- P.getTeam database (P.teamId team)
                 EventBase.publish eventBase $ LapEvent team' lap
@@ -126,6 +128,9 @@ step counter eventBase event = do
                 Log.string logger "CountVonCount.Counter.step" $
                     show team' ++ " @ " ++ show s
                 EventBase.publish eventBase $ PositionEvent team' cstate
+
+    reason []     = "CVC"
+    reason missed = printf "CVC (missed: %s)" $ intercalate ", " (map show missed)
 
 
 --------------------------------------------------------------------------------
