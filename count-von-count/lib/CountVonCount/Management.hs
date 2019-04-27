@@ -61,7 +61,7 @@ addBonus :: EventBase -> Database -> Ref Team -> Text
          -> Int -> IO ()
 addBonus eventBase db ref reason laps = do
     timestamp <- liftIO getCurrentTime
-    lapRef    <- addLaps db ref timestamp (Just reason) laps
+    lapRef    <- addLaps db ref timestamp reason laps
     lap       <- getLap db lapRef
     team      <- getTeam db ref
     EventBase.publish eventBase $ LapEvent team lap
