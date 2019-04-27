@@ -15,9 +15,8 @@ import qualified Data.Text                               as T
 import           Test.Framework                          (Test, testGroup)
 import           Test.Framework.Providers.HUnit          (testCase)
 import           Test.HUnit                              (Assertion,
-                                                          assertEqual, (@=?))
+                                                          assertEqual)
 import           Text.Printf                             (printf)
-import Debug.Trace (trace)
 
 
 --------------------------------------------------------------------------------
@@ -73,8 +72,7 @@ counterTest = testLog $ \logger -> do
     forM_ ts $ \(ref, _, laps) -> do
         team <- getTeam db ref
         assertEqual
-          (printf "Team: %s Expected laps: %s, but was laps: %s"
-            (show team) (show laps) (show $ teamLaps team))
+          (printf "Unexpected lap count for %s" (show team))
           laps $
           teamLaps team
 
