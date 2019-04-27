@@ -42,6 +42,12 @@ counterTest :: Assertion
 counterTest = testLog $ \logger -> do
     -- Initialize stuffs
     db        <- newDatabase "test.db"
+
+    -- Add stations
+    forM_ testStations (\s -> addStation db (stationName s)
+                                            (stationMac s)
+                                            (stationPosition s))
+
     counter   <- Counter.newCounter logger db circuitLength maxSpeed
     eventBase <- newEventBase logger
     Counter.subscribe counter eventBase
