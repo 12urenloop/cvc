@@ -18,6 +18,10 @@
         if(boxxy.notification) {
             $('#notification').html('<p>' + boxxy.notification + '</p>');
         }
+
+        if(boxxy.frozen && !boxxy.notification) {
+            $('#notification').html('<p><strong>Scores are frozen</strong></p>');
+        }
     }
 
     boxxy.onPutState = function(newState) {
