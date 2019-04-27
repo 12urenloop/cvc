@@ -114,11 +114,11 @@ step counter eventBase event = do
         let team = sensorTeam event
         forM_ events $ \event' -> case event' of
             -- Add the lap in the database and update team record
-            LapCoreEvent time _ missed -> do
+            LapCoreEvent time duration missed -> do
+                let message = "CVC" ++ lapTimeMsg duration ++ missedMsg missed
                 Log.string logger "CountVonCount.Counter.step" $
-                    "Lap for " ++ show team
-                let message = pack $ reason missed
-                lapId' <- P.addLap database (P.teamId team) time message
+                    "Lap for " ++ show team ++ ": " ++ message
+                lapId' <- P.addLap database (P.teamId team) time (pack message)
                 lap    <- P.getLap database lapId'
                 team'  <- P.getTeam database (P.teamId team)
                 EventBase.publish eventBase $ LapEvent team' lap
@@ -129,8 +129,11 @@ step counter eventBase event = do
                     show team' ++ " @ " ++ show s
                 EventBase.publish eventBase $ PositionEvent team' cstate
 
-    reason []     = "CVC"
-    reason missed = printf "CVC (missed: %s)" $ intercalate ", " (map show missed)
+    lapTimeMsg = printf " [%0.1fs] "
+
+    missedMsg [] = ""
+    missedMsg m  = "(missed: " ++ intercalate ", " (map show m) ++ ")"
+
 
 
 --------------------------------------------------------------------------------
