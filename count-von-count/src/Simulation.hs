@@ -26,6 +26,14 @@ import           CountVonCount.Config
 import           CountVonCount.Management
 import           CountVonCount.Persistence
 
+--------------------------------------------------------------------------------
+detectionChance :: Double
+detectionChance = 0.1
+
+--------------------------------------------------------------------------------
+direction :: Int
+direction = 1 -- Go forwards
+-- direction = -1 -- Go backwards, usefull for testing cheat detection
 
 --------------------------------------------------------------------------------
 main :: IO ()
@@ -43,7 +51,7 @@ main = do
             }
 
         simulationState = SimulationState
-            { simulationTeams  = [(t, b, 0) | (t, Just b) <- teams]
+            { simulationTeams  = [(t, b, 0, 0, -1) | (t, Just b) <- teams]
             , simulationSocket = Nothing
             }
 
@@ -52,6 +60,14 @@ main = do
 
 --------------------------------------------------------------------------------
 type Position = Int
+
+
+--------------------------------------------------------------------------------
+type LastDetected = Int
+
+
+--------------------------------------------------------------------------------
+type Round = Int
 
 
 --------------------------------------------------------------------------------
@@ -64,7 +80,7 @@ data SimulationRead = SimulationRead
 
 --------------------------------------------------------------------------------
 data SimulationState = SimulationState
-    { simulationTeams  :: [(Team, Baton, Position)]
+    { simulationTeams  :: [(Team, Baton, Position, Round, LastDetected)]
     , simulationSocket :: Maybe IO.Handle
     }
 
@@ -100,20 +116,44 @@ render :: Simulation ()
 render = do
     teams <- simulationTeams    <$> get
     len   <- simulationLength   <$> ask
-    let nameLen = maximum [T.length (teamName t) | (t, _, _) <- teams] + 1
+    let nameLen = maximum [T.length (teamName t) | (t, _, _, _, _) <- teams]
 
+    -- Clear the page
     liftIO $ Ansi.setCursorPosition 0 0
 
+    -- Top line, shows the position of the stations
+    -- and the current detection chance
     stationLine <- forM [0 .. len - 1] $ \p -> do
         station <- stationAt p
         return $ maybe ' ' (const 'S') station
-    liftIO $ putStrLn $ replicate nameLen ' ' ++ stationLine
+    liftIO $ putStrLn $ replicate (nameLen + 2) ' '
+                        ++ stationLine
 
-    forM_ teams $ \(t, _, p) -> liftIO $ putStrLn $
-        pad nameLen (T.unpack (teamName t)) ++
-        [if i == p then 'X' else ' ' | i <- [0 .. len - 1]]
+    -- Line for each team
+    forM_ teams $ \(team, _, pos, rnd, lst) -> liftIO $ putStrLn $
+        pad nameLen (T.unpack (teamName team))   -- Team name (padded)
+        ++ " |"
+        ++ progress pos lst len                  -- Team progress
+        ++ "| "
+        ++ show rnd                              -- Team rounds
+
+    -- Legend
+    liftIO $ putStrLn $
+        replicate nameLen ' '
+        ++ "  X = current position\n"
+        ++ replicate nameLen ' '
+        ++ "  ? = last detected\n"
+        ++ replicate nameLen ' '
+        ++ "  Detection chance: "
+        ++ show (detectionChance * 100) ++ "%"
+
   where
-    pad len str = str ++ replicate (len - length str) ' '
+    pad len str       = str ++ replicate (len - length str) ' '
+    progress p l len  = [ positionChar i p l | i <- [0 .. len - 1]]
+    positionChar i p l
+      | i == p    = 'X'
+      | i == l    = '?'
+      | otherwise = ' '
 
 
 --------------------------------------------------------------------------------
@@ -124,12 +164,22 @@ step = do
     idx   <- liftIO $ randomRIO (0, length teams - 1)
 
     let teams' =
-            [ if i == idx then (t, b, (p + 1) `mod` len) else (t, b, p)
-            | (i, (t, b, p)) <- zip [0 ..] teams
+            [ if i == idx
+                then (t, b, stepPosition p len, stepRound r p len, l)
+                else (t, b, p, r, l)
+            | (i, (t, b, p, r, l)) <- zip [0 ..] teams
             ]
 
     modify $ \s -> s {simulationTeams = teams'}
+  where
+    stepPosition :: Position -> Int -> Position
+    stepPosition p len = (p + direction) `mod` len
 
+    stepRound :: Round -> Position -> Int -> Round
+    stepRound  r p len
+      | p + direction >= len = r + 1
+      | p + direction < 0    = r - 1
+      | otherwise            = r
 
 --------------------------------------------------------------------------------
 sensor :: Simulation ()
@@ -138,25 +188,40 @@ sensor = do
     msocket <- simulationSocket <$> get
     config  <- simulationConfig <$> ask
 
-    sensed <- fmap catMaybes $ forM teams $ \(_, b, p) -> do
+    -- If a team passes a station, it has a chance to be detected
+    sensed <- forM teams $ \(t, b, p, r, l) -> do
         ms <- stationAt p
+        rand <- liftIO $ randomRIO (0.0, 1.0)
         case ms of
-            Nothing -> return Nothing
-            Just s  -> return $ Just (stationMac s, batonMac b)
+            Nothing -> return ((t, b, p, r, l), Nothing)
+            Just s  -> return $ if rand < detectionChance
+                                then ((t, b, p, r, p), Just s)
+                                else ((t, b, p, r, l), Nothing)
 
+    -- Update teams with 'LastDetected'
+    modify $ \s -> s {simulationTeams = fmap fst sensed}
+
+    -- Send detections to CVC over the socket
+    -- (try to connect a new socket if it was disconected)
     socket <- liftIO $ handle handler $ do
         socket <- case msocket of
             Just s  -> return s
             Nothing -> connectTo $ configSensorPort config
 
-        forM_ sensed $ \(sMac, bMac) -> IO.hPutStrLn socket $ intercalate ","
-            [T.unpack sMac, "_", T.unpack bMac, "0"]
+        let detections = catMaybes $ fmap detect sensed
+        forM_ detections $
+           \(sMac, bMac) -> IO.hPutStrLn socket $
+              intercalate "," [T.unpack sMac, "_", T.unpack bMac, "0"]
 
         IO.hFlush socket
         return $ Just socket
 
+    -- Update the socket
     modify $ \s -> s {simulationSocket = socket}
   where
+    detect ((_, b, _, _, _), Just s ) = Just (stationMac s, batonMac b)
+    detect ( _,              Nothing) = Nothing
+
     handler :: IOException -> IO (Maybe IO.Handle)
     handler _ = return Nothing
     connectTo port = S.withSocketsDo $ do -- Networking boilerplate

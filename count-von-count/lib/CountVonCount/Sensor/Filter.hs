@@ -77,7 +77,7 @@ subscribe :: EventBase
           -> Log
           -> Double
           -> IO ()
-subscribe eventBase database logger rssiThreshold = do
+subscribe eventBase database logger rssiThreshold =
     EventBase.subscribe eventBase "CountVonCount.Sensor.Filter.subscribe" $
         \event -> do
             filtered <- filterSensorEvent' event

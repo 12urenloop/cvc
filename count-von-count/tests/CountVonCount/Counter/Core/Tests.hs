@@ -16,6 +16,7 @@ import           CountVonCount.Counter.Core
 import           CountVonCount.Counter.Fixtures
 import           CountVonCount.Counter.Fixtures.Internal
 import           CountVonCount.Persistence
+import           CountVonCount.TestSuite.Util
 
 
 --------------------------------------------------------------------------------
@@ -37,5 +38,5 @@ testCounterFixtureM cf = test emptyCounterState $
 
     test _     []                                = True
     test state (CounterFixture se expected : xs) =
-        let (es, _, state') = runCounterM (step se) state
+        let (es, _, state') = runCounterM (step testStations se) state
         in any isLapEvent es == expected && test state' xs

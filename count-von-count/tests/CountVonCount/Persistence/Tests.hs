@@ -38,9 +38,9 @@ tests = testGroup "CountVonCount.Persistence.Tests"
     , testCase "addLaps/getLatestLaps" $ testDatabase $ \db -> do
         r    <- addTeam db "wina"
         time <- liftIO getCurrentTime
-        let reason1 = Just "Because they're gay"
+        let reason1 = "Because they're gay"
             laps1   = 10
-            reason2 = Nothing
+            reason2 = ""
             laps2   = 2
         _    <- addLaps db r time reason1 laps1
         _    <- addLaps db r time reason2 laps2
@@ -53,9 +53,9 @@ tests = testGroup "CountVonCount.Persistence.Tests"
 
         -- Might a marginal difference in the times due to conversion,
         -- should never be more than one second
-        assert ((time, reason1, laps1) `eqLap` (laps !! 2))
-        assert ((time, reason2, laps2) `eqLap` (laps !! 1))
-        assert ((time, reason2, laps2) `eqLap` (laps !! 4))
+        assert ((time, Just reason1, laps1) `eqLap` (laps !! 2))
+        assert ((time, Just reason2, laps2) `eqLap` (laps !! 1))
+        assert ((time, Just reason2, laps2) `eqLap` (laps !! 4))
     ]
 
 

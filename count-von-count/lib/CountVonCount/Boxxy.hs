@@ -108,7 +108,7 @@ newBoxxies config logger database counter eventBase = do
         withBoxxies bs $ \b -> case counterEvent of
             Counter.LapEvent team lap         -> addLap b lap team
             Counter.PositionEvent team cstate ->
-                let Counter.CounterState _ sensorEvent _ timestamp = cstate
+                let Counter.CounterState _ sensorEvent _ _ timestamp = cstate
                 in updatePosition b team (sensorStation sensorEvent) timestamp
 
     return bs
@@ -224,7 +224,7 @@ teamJson t cstate = A.object
   where
     (pos, lu) = case cstate of
         Counter.NoCounterState          -> (Nothing, Nothing)
-        Counter.CounterState _ se _ lu' ->
+        Counter.CounterState _ se _ _ lu' ->
             (Just (P.refToText $ P.stationId $ sensorStation se), Just lu')
 
 

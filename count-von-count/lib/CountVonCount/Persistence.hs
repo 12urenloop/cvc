@@ -219,12 +219,12 @@ lapsTable = return
 
 
 --------------------------------------------------------------------------------
-addLap :: Database -> Ref Team -> UTCTime -> IO (Ref Lap)
-addLap db ref timestamp = addLaps db ref timestamp Nothing 1
+addLap :: Database -> Ref Team -> UTCTime -> Text -> IO (Ref Lap)
+addLap db ref timestamp reason = addLaps db ref timestamp reason 1
 
 
 --------------------------------------------------------------------------------
-addLaps :: Database -> Ref Team -> UTCTime -> Maybe Text -> Int -> IO (Ref Lap)
+addLaps :: Database -> Ref Team -> UTCTime -> Text -> Int -> IO (Ref Lap)
 addLaps db !ref !timestamp !reason !count = withConnection db $ \c -> do
     Sqlite.execute c
         "INSERT INTO laps (team_id, timestamp, reason, count) \
@@ -250,7 +250,7 @@ getLap db ref = withConnection db $ \c -> do
 getLatestLaps :: Database -> Maybe (Ref Team) -> Int -> IO [Lap]
 getLatestLaps db Nothing     n = withConnection db $ \c -> Sqlite.query c
     "SELECT * FROM laps ORDER BY id DESC LIMIT ?" (Sqlite.Only n)
-getLatestLaps db !(Just ref) n = withConnection db $ \c -> Sqlite.query c
+getLatestLaps db (Just ref) n = withConnection db $ \c -> Sqlite.query c
     "SELECT * FROM laps WHERE team_id = ? ORDER BY id DESC LIMIT ?"
     (ref, n)
 

@@ -14,7 +14,8 @@ import           Data.Text                               (Text)
 import qualified Data.Text                               as T
 import           Test.Framework                          (Test, testGroup)
 import           Test.Framework.Providers.HUnit          (testCase)
-import           Test.HUnit                              (Assertion, (@=?))
+import           Test.HUnit                              (Assertion,
+                                                          assertEqual)
 import           Text.Printf                             (printf)
 
 
@@ -40,6 +41,12 @@ counterTest :: Assertion
 counterTest = testLog $ \logger -> do
     -- Initialize stuffs
     db        <- newDatabase "test.db"
+
+    -- Add stations
+    forM_ testStations (\s -> addStation db (stationName s)
+                                            (stationMac s)
+                                            (stationPosition s))
+
     counter   <- Counter.newCounter logger db circuitLength maxSpeed
     eventBase <- newEventBase logger
     Counter.subscribe counter eventBase
@@ -64,7 +71,10 @@ counterTest = testLog $ \logger -> do
     -- Check the laps for each team
     forM_ ts $ \(ref, _, laps) -> do
         team <- getTeam db ref
-        laps @=? teamLaps team
+        assertEqual
+          (printf "Unexpected lap count for %s" (show team))
+          laps $
+          teamLaps team
 
     -- Cleanup
     deleteAll db

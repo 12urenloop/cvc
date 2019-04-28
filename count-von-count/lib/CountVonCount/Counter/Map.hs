@@ -36,12 +36,13 @@ emptyCounterMap = M.empty
 --------------------------------------------------------------------------------
 stepCounterMap :: Double
                -> Double
+               -> [Station]
                -> SensorEvent
                -> CounterMap
                -> ([CounterCoreEvent], [String], CounterMap)
-stepCounterMap circuitLength maxSpeed event !cmap =
+stepCounterMap lapLength maxSpd stations event !cmap =
     let state                = lookupCounterState teamRef cmap
-        app                  = stepCounterState circuitLength maxSpeed event
+        app                  = stepCounterState lapLength maxSpd stations event
         (es, tells, !state') = runCounterM app state
     in (es, map prepend tells, M.insert teamRef state' cmap)
   where
