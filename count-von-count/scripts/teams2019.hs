@@ -9,7 +9,7 @@ main = do
 
     -- Define stations: gyrid name and MAC-address of its bluetooth stick and distance
     -- TODO: Fix MAC addresses and distances
-    -- addStation db "nice-guy" "TODO" 1
+    addStation db "nice-guy" "00:01:95:0A:CC:3F" 1
     addStation db "mr-white" "00:01:95:0D:CF:E4" 48
     addStation db "mr-brown" "00:01:95:0D:D1:F0" 111
     addStation db "mr-orange" "00:01:95:0B:AD:8E" 185
