@@ -1,4 +1,9 @@
 {
+    "locations": {
+        "manualcount": "http://10.0.5.7",
+        "boxxy": "https://live.12urenloop.be"
+    },
+
   "offsets": {
     "1": 12,
     "2": 12,

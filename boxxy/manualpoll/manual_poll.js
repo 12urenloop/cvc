@@ -1,12 +1,7 @@
 const request = require("request");
-const MANUAL_HOST = "10.0.5.7";
-const MANUAL_PORT = 3000;
-const BOXXY_HOST = "localhost";
-const BOXXY_PORT = 8080;
-
 const config = require("./config.json");
 
-request(`http://${MANUAL_HOST}:${MANUAL_PORT}/teams`, function (error, response, body) {
+request(config.locations.manualcount, function (error, response, body) {
     const newState = {
         teams: {}
     };
@@ -25,11 +20,11 @@ request(`http://${MANUAL_HOST}:${MANUAL_PORT}/teams`, function (error, response,
         }
     );
 
-    request.put(`https://live.12urenloop.be/state`, {
+    request.put(`${config.locations.boxxy}/teams`, {
         json: true, body: newState,
         auth: {
-            user: "count-von-count",
-            pass: "tetten19",
+            user: config.user,
+            pass: config.pass,
             sendImmediately: false
         }
     })
