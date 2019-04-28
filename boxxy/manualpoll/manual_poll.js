@@ -1,7 +1,15 @@
 const request = require("request");
 const config = require("./config.json");
 
-request(config.locations.manualcount, function (error, response, body) {
+request(`${config.locations.manualcount}/teams`, function (error, response, body) {
+    if (error || response.statusCode !== 200) {
+        console.log(error);
+        if (response) {
+            console.log(response.statusCode)
+            console.log(response.statusMessage)
+        }
+        return
+    }
     const newState = {
         teams: {}
     };

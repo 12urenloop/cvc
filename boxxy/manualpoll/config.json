@@ -1,8 +1,10 @@
 {
     "locations": {
-        "manualcount": "http://10.0.5.7",
+        "manualcount": "http://10.0.5.7:3000",
         "boxxy": "https://live.12urenloop.be"
     },
+    "user": "count-von-count",
+    "pass": "tetten19",
 
   "offsets": {
     "1": 12,
