@@ -41,8 +41,8 @@ tests = testGroup "CountVonCount.Sensor.Tests"
         (s, b) @=? (testStations !! 3, testBatons !! 0)
     ]
   where
-    rssiTreshold = -20
+    rssiThreshold = -20
     fse re       = testDatabase $ \db -> testLog $ \l -> do
         teamRef <- addTeam db "wina"
         setTeamBaton db teamRef (Just $ batonId $ testBatons !! 0)
-        filterSensorEvent db l rssiTreshold re
+        filterSensorEvent db l rssiThreshold re
