@@ -50,10 +50,13 @@ main = do
     b14 <- addBaton db "20:11:02:15:01:77" "Baton T"
     b15 <- addBaton db "20:13:12:05:07:89" "Baton U"
     b16 <- addBaton db "00:13:12:06:50:94" "Baton V"
+
+    -- Sparebatons
     b17 <- addBaton db "00:12:02:01:06:25" "Baton W"
     b18 <- addBaton db "20:11:02:15:01:79" "Baton Y"
     b19 <- addBaton db "20:13:12:06:90:49" "Baton Z"
 
+    -- Broken
     -- b1 <- addBaton db "GEEN BEDRADING" "Baton A"
     -- b4 <- addBaton db "GEEN BATTERIJEN" "Baton D"
     -- b13 <- addBaton db "GEEN BEDRADING" "Baton M"
