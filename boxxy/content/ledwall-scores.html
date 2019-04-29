@@ -17,18 +17,18 @@
 
     boxxy.onUpdate = function() {
         var byScore = boxxy.teamsByScore();
-        $('#scoresresult').empty();
+        var byScoreLeft = byScore.slice(0, byScore.length / 2);
+        var byScoreRight = byScore.slice(byScore.length / 2);
+        $('#scoresresult-left').empty();
         var ol = $(document.createElement('ol'));
-        for(var i in byScore) ol.append(teamLi(byScore[i]));
-        $('#scoresresult').append(ol);
+        for(var i in byScoreLeft) ol.append(teamLi(byScoreLeft[i]));
+        $('#scoresresult-left').append(ol);
 
-        if(boxxy.notification) {
-            $('#notification').html('<p>' + boxxy.notification + '</p>');
-        }
-
-        if(boxxy.frozen && !boxxy.notification) {
-            $('#notification').html('<p><strong>Scores are frozen</strong></p>');
-        }
+        $('#scoresresult-right').empty();
+        var ol = $(document.createElement('ol'));
+        ol.attr("start", (byScore.length / 2)+ 1);
+        for(var i in byScoreRight) ol.append(teamLi(byScoreRight[i]));
+        $('#scoresresult-right').append(ol);
     }
 
     boxxy.onPutState = function(newState) {
@@ -44,7 +44,7 @@
 
     boxxy.listen(boxxyHost);
 </script>
-<div class="row twelve columns offset-by-three">
-  <div id="notification"></div>
-  <div id="scoresresult"><p>De scores worden geladen...</p></div>
+<div style="font-weight: bold; font-size: 38px" class="row">
+  <div id="scoresresult-left" class="scoresult-panels one-half column"><p>De scores worden geladen...</p></div>
+  <div id="scoresresult-right" class="scoresult-panels one-half column offset-by-one"><p>De scores worden geladen...</p></div>
 </div>

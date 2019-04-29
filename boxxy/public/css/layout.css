@@ -720,3 +720,25 @@ li {
 #scoresresult li .laps {
     float: right;
 }
+
+.scoresult-panels p {
+  text-align: center;
+}
+
+.scoresult-panels ol {
+    padding: 0px;
+}
+
+.scoresult-panels li .name {
+    margin-left: 10px;
+}
+
+.scoresult-panels li .laps {
+    margin-left: 30px;
+    float: right;
+}
+
+.scoresult-panels ol {
+    padding: 0px;
+}
+
