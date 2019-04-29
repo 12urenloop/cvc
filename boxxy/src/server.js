@@ -125,6 +125,15 @@ app.get('/', function(req, res) {
 });
 
 app.get('/ledwall', function(req, res) {
+    let locals = {
+        "title": "Live Scores",
+        "scripts": [
+            "/js/boxxy.js",
+            "/js/jquery-1.7.1.min.js",
+            "/socket.io/socket.io.js"
+        ],
+        "bg": "bg4"
+    };
     fs.readFile('content/ledwall-scores.html', function(err, data) {
         locals.scripts = locals.scripts || [];
         locals.content = data;
