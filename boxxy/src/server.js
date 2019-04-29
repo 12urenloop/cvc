@@ -124,6 +124,16 @@ app.get('/', function(req, res) {
     res.redirect('/scores');
 });
 
+app.get('/ledwall', function(req, res) {
+    fs.readFile('content/ledwall-scores.html', function(err, data) {
+        locals.scripts = locals.scripts || [];
+        locals.content = data;
+        locals.host    =
+            config.BOXXY_HOSTNAME + ':' + config.BOXXY_CLIENT_PORT;
+        res.render('ledwall.ejs', locals);
+    });
+});
+
 // DRY
 function page(route, content, locals) {
     app.get(route, function(req, res) {

@@ -2,7 +2,7 @@
 send() {
     curl -XPUT https://live.12urenloop.be/state \
          -H 'Content-Type: application/json' \
-         -u 'count-von-count:nettet' \
+         -u 'count-von-count:tetten19' \
          -d "$1"
 }
 

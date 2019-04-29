@@ -12,7 +12,7 @@ main = do
     addStation db "mr-blue (1)" "00:01:95:0A:56:3B" 1
     addStation db "nice-guy (2)" "00:01:95:0A:CC:3F" 50
     addStation db "mr-white (3)" "00:01:95:0D:CF:E4" 110
-    addStation db "mr-brown (4)" "00:01:95:0D:D1:F0" 190
+    addStation db "mr-pi (4)" "00:01:95:0D:D1:F0" 190
     addStation db "mr-orange (5)" "00:01:95:0B:AD:8E" 265
 
     -- Add teams --------------
@@ -35,15 +35,17 @@ main = do
 
     -- Add batons ---------------------------------
     b1 <- addBaton db "20:13:01:30:03:69" "Baton B"
-    b2 <- addBaton db "20:13:12:06:90:51" "Baton C"
-    b3 <- addBaton db "20:13:02:20:15:11" "Baton D"
+    -- b2 <- addBaton db "20:13:12:06:90:51" "Baton C"/
+    b2 <- addBaton db "20:13:12:05:07:89" "Baton U"
+    b3 <- addBaton db "30:14:08:26:28:17" "Baton N" -- Was weird once
+    -- b3 <- addBaton db "20:13:02:20:15:11" "Baton D"
     b4 <- addBaton db "20:13:01:24:00:43" "Baton F"
     b5 <- addBaton db "00:11:11:22:07:59" "Baton G" -- Potentially bad
     b6 <- addBaton db "20:13:02:18:02:86" "Baton H"
     b7 <- addBaton db "20:13:02:19:15:17" "Baton I"
     b8 <- addBaton db "20:13:01:31:01:32" "Baton J"
     b9 <- addBaton db "20:13:01:24:00:28" "Baton L"
-    b10 <- addBaton db "30:14:08:26:28:17" "Baton N" -- Was weird once
+    b10 <- addBaton db "30:14:08:18:33:10" "Baton Q" 
     b11 <- addBaton db "30:14:08:18:31:46" "Baton O"
     b12 <- addBaton db "20:11:02:15:01:77" "Baton T"
     b13 <- addBaton db "00:13:12:06:50:94" "Baton V"
@@ -52,9 +54,7 @@ main = do
     b16 <- addBaton db "20:13:12:06:90:49" "Baton Z"
 
     -- Sparebatons
-    b18 <- addBaton db "30:14:08:18:33:10" "Baton Q" 
     b19 <- addBaton db "20:13:01:24:10:46" "Baton E" -- wonky
-    b20 <- addBaton db "20:13:12:05:07:89" "Baton U"
     b21 <- addBaton db "20:11:02:15:01:93" "Baton R" -- wonky
 
     -- Broken

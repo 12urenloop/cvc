@@ -1,6 +1,6 @@
 circuitLength: 340
 maxSpeed:      12
-rssiThreshold: -60
+rssiThreshold: -70
 
 batonWatchdogLifespan: 30
 
@@ -17,4 +17,4 @@ boxxies:
       port:     80
       path:     ""
       user:     "count-von-count"
-      password: "tetten"
+      password: "foute tetten"
