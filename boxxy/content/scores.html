@@ -2,8 +2,12 @@
     var boxxy = boxxy.initialize();
 
     function teamLi(team) {
+        var name = team.name;
+        if(name.includes("VEK")) {
+            name = "ML & VEK";
+        }
         return '<li data-team="' + team.id + '">' +
-            '<span class="name">' + team.name + '</span>' +
+            '<span class="name">' + name + '</span>' +
             '<span class="laps">' + team.laps + '</span>' +
             '</li>'
     }
@@ -26,7 +30,7 @@
 
     boxxy.onPutState = function(newState) {
         /* Called when everything is (re)set */
-    }
+    }   
 
     boxxy.onAddLap = function(lap) {
         var li = $('[data-team="' + lap.team.id + '"]');
