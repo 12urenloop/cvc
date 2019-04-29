@@ -16,19 +16,19 @@
     }
 
     boxxy.onUpdate = function() {
-        var byScore = boxxy.teamsByScore();
-        var byScoreLeft = byScore.slice(0, byScore.length / 2);
-        var byScoreRight = byScore.slice(byScore.length / 2);
-        $('#scoresresult-left').empty();
+        var byScore = boxxy.teamsByScore().slice(0, 5);
+        $('#scoresresult').empty();
         var ol = $(document.createElement('ol'));
-        for(var i in byScoreLeft) ol.append(teamLi(byScoreLeft[i]));
-        $('#scoresresult-left').append(ol);
+        for(var i in byScore) ol.append(teamLi(byScore[i]));
+        $('#scoresresult').append(ol);
 
-        $('#scoresresult-right').empty();
-        var ol = $(document.createElement('ol'));
-        ol.attr("start", (byScore.length / 2)+ 1);
-        for(var i in byScoreRight) ol.append(teamLi(byScoreRight[i]));
-        $('#scoresresult-right').append(ol);
+        if(boxxy.notification) {
+            $('#notification').html('<p>' + boxxy.notification + '</p>');
+        }
+
+        if(boxxy.frozen && !boxxy.notification) {
+            $('#notification').html('<p><strong>Scores are frozen</strong></p>');
+        }
     }
 
     boxxy.onPutState = function(newState) {
@@ -44,7 +44,26 @@
 
     boxxy.listen(boxxyHost);
 </script>
-<div style="font-weight: bold; 30px; margin-top: 100px" class="row">
-  <div id="scoresresult-left" class="scoresult-panels one-half column"><p>De scores worden geladen...</p></div>
-  <div id="scoresresult-right" class="scoresult-panels one-half column offset-by-one"><p>De scores worden geladen...</p></div>
+<style>
+font-size: 80px;
+.container h2 {
+  display: none;
+}
+.container {
+  margin: 0 20px;
+}
+#scoresresult {
+  width: 90vw;
+}
+li {
+ line-height: 80px;
+  width: 800px;
+}
+.container .offset-by-three {
+    padding-left: 100px;
+}
+</style>
+<div style="font-size: 80px; font-weight: bold;" class="row twelve columns offset-by-three">
+  <div id="notification"></div>
+  <div id="scoresresult"><p>De scores worden geladen...</p></div>
 </div>
