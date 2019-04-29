@@ -126,7 +126,7 @@ app.get('/', function(req, res) {
 
 app.get('/ledwall', function(req, res) {
     let locals = {
-        "title": "Live Scores",
+        "title": "Scores 2019",
         "scripts": [
             "/js/boxxy.js",
             "/js/jquery-1.7.1.min.js",
@@ -167,7 +167,7 @@ page('/afterparty', 'content/afterparty.html', {
 });
 
 page('/scores', 'content/scores.html', {
-    "title": "Live Scores",
+    "title": "Scores 2019",
     "scripts": [
         "/js/boxxy.js",
         "/js/jquery-1.7.1.min.js",
