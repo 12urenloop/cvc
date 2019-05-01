@@ -8,7 +8,7 @@ ROLLING_AVG = 3
 
 TEAMS = ["HILOK", "VTK", "VLK", "VGK", "VEK", "Hermes, Veto & Lila",
          "Wetenschappen & VLAK", "VPPK & Moeder Lies",
-         "HK", "VRG", "Blandinia", "WVK", "SK", "Politea",
+         "HK", "VRG", "Blandinia", "WVK", "SK", "Politeia",
          "CHARPA", "VBK", "VDK & Pharma"]
 
 team_len = max(map(len, TEAMS))

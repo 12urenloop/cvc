@@ -75,7 +75,7 @@ Hermes, Veto & Lila  |       ?  X         | 3
 SK                   |       ?          X | 3
 WVK                  |                   X| 3
 HK                   |   X                | 3
-Politea              |            ? X     | 3
+Politeia              |            ? X     | 3
 VPPK & Moeder Lies   |?X                  | 4
 Wetenschappen & VLAK |   ?     X          | 3
 VRG                  |   ? X              | 4

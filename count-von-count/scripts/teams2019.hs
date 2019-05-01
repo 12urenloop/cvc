@@ -24,7 +24,7 @@ main = do
     t6 <- addTeam db "SK"
     t7 <- addTeam db "VGK"
     t8 <- addTeam db "HK"
-    t9 <- addTeam db "Politea"
+    t9 <- addTeam db "Politeia"
     t10 <- addTeam db "VRG"
     t11 <- addTeam db "Blandinia"
     t12 <- addTeam db "VPPK"
